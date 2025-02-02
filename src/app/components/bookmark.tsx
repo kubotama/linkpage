@@ -15,7 +15,12 @@ const bookmarks: Boolmark[] = [
   {
     url: "https://mail.google.com",
     title: "Gmail",
-    tags: ["google"],
+    tags: ["google", "日次"],
+  },
+  {
+    url: "https://www.amazon.co.jp/",
+    title: "Amazon",
+    tags: ["日次"],
   },
 ];
 

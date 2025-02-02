@@ -7,9 +7,12 @@ import { Bookmarks } from "./bookmark";
  * タグを指定しない場合、ブックマークのデータは空の配列となります。
  * タグに"github"を指定した場合、ブックマークのデータは、
  * [{"url":"https://github.com/kubotama/linkpage","title":"kubotama/linkpage", "tags":["github"]}]となります。
- * カテゴリーに"google"を指定した場合、ブックマークのデータは、
+ * タグに"google"を指定した場合、ブックマークのデータは、
  * [{"url":"https://www.google.com/","title":"Google", "tags":["google"]},
  * {"url":"https://mail.google.com","title":"Gmail","tags":["google"]}]となります。
+ * タグに"日次"を指定した場合、ブックマークのデータは、
+ * [{"url":"https://www.amazon.co.jp/","title":"Amazon", "tags":["日次"]},
+ * {"url":"https://mail.google.com","title":"Gmail","tags":["google", "日次"]}]となります。
  **/
 
 describe("ブックマークのデータのクラスのテスト", () => {
@@ -43,7 +46,24 @@ describe("ブックマークのデータのクラスのテスト", () => {
       {
         url: "https://mail.google.com",
         title: "Gmail",
-        tags: ["google"],
+        tags: ["google", "日次"],
+      },
+    ]);
+  });
+
+  it("タグに'日次'を指定した場合、正しいブックマークデータが戻る", () => {
+    const tag = "日次";
+    const bookmarks = Bookmarks(tag);
+    expect(bookmarks).toEqual([
+      {
+        url: "https://mail.google.com",
+        title: "Gmail",
+        tags: ["google", "日次"],
+      },
+      {
+        url: "https://www.amazon.co.jp/",
+        title: "Amazon",
+        tags: ["日次"],
       },
     ]);
   });
