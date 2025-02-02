@@ -1,4 +1,4 @@
-import { Bookmarks } from "./bookmark";
+import { Bookmarks, Tags } from "./bookmark";
 
 /***
  * このテストは、Bookmarksクラスのインスタンスを生成し、そのインスタンスのをテストします。
@@ -66,5 +66,18 @@ describe("ブックマークのデータのテスト", () => {
         tags: ["日次"],
       },
     ]);
+  });
+});
+
+/***
+ * このテストは、Tagsクラスのインスタンスを生成し、そのインスタンスのをテストします。
+ * Tagsクラスは、タグを管理するクラスです。
+ * Tagsクラスは、ブックマークに設定されているタグの一覧を取得することができます。
+ **/
+
+describe("タグのテスト", () => {
+  it("タグの一覧を取得する", () => {
+    const tags = Tags();
+    expect(tags).toEqual(new Set(["github", "google", "日次"]));
   });
 });

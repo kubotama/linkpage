@@ -26,3 +26,13 @@ const bookmarks: Boolmark[] = [
 export const Bookmarks = (tag: string): Boolmark[] => {
   return bookmarks.filter((bookmark) => bookmark.tags.includes(tag));
 };
+
+export const Tags = (): Set<string> => {
+  const tags = new Set<string>();
+  bookmarks.forEach((bookmark) => {
+    bookmark.tags.forEach((tag) => {
+      tags.add(tag);
+    });
+  });
+  return tags;
+};
