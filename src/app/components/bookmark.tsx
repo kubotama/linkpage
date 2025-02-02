@@ -1,5 +1,4 @@
-type Tags = string[];
-type Boolmark = { url: string; title: string; tags: Tags };
+type Boolmark = { url: string; title: string; tags: string[] };
 
 const bookmarks: Boolmark[] = [
   {
