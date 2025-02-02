@@ -1,7 +1,7 @@
 import { Bookmarks } from "./bookmark";
 
 /***
- * このテストは、Bookmarksaクラスのインスタンスを生成し、そのインスタンスのをテストします。
+ * このテストは、Bookmarksクラスのインスタンスを生成し、そのインスタンスのをテストします。
  * Bookmarksクラスは、ブックマークのデータを管理するクラスです。
  * Bookmarksクラスは、タグを指定することができます。
  * タグを指定しない場合、ブックマークのデータは空の配列となります。
@@ -15,7 +15,7 @@ import { Bookmarks } from "./bookmark";
  * {"url":"https://mail.google.com","title":"Gmail","tags":["google", "日次"]}]となります。
  **/
 
-describe("ブックマークのデータのクラスのテスト", () => {
+describe("ブックマークのデータのテスト", () => {
   it("タグを指定しない場合の長さ0の配列が戻る", () => {
     const tag = "";
     const bookmarks = Bookmarks(tag);
