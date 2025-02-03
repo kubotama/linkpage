@@ -21,4 +21,15 @@ describe("ブックマークのリンクのテスト", () => {
     const link = screen.getByText("kubotama/linkpage");
     expect(link).toHaveAttribute("href", bookmark.url);
   });
+
+  it("ブックマークのリンク(Gmail)のインスタンスが生成できる", () => {
+    const bookmark: Bookmark = {
+      url: "https://mail.google.com",
+      title: "Gmail",
+      tags: ["google", "日次"],
+    };
+    render(<BmLink bookmark={bookmark} />);
+    const link = screen.getByText("Gmail");
+    expect(link).toHaveAttribute("href", bookmark.url);
+  });
 });
