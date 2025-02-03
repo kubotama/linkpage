@@ -15,7 +15,6 @@ describe("ブックマークのリンクのテスト", () => {
     const bookmark: Bookmark = {
       url: "https://github.com/kubotama/linkpage",
       title: "kubotama/linkpage",
-      tags: ["github"],
     };
     render(<BmLink bookmark={bookmark} />);
     const link = screen.getByText("kubotama/linkpage");
@@ -26,7 +25,6 @@ describe("ブックマークのリンクのテスト", () => {
     const bookmark: Bookmark = {
       url: "https://mail.google.com",
       title: "Gmail",
-      tags: ["google", "日次"],
     };
     render(<BmLink bookmark={bookmark} />);
     const link = screen.getByText("Gmail");

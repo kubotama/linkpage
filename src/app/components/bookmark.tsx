@@ -1,42 +1,27 @@
 export type Bookmark = {
   url: string;
   title: string;
-  tags: string[];
 };
 
 const bookmarks: Bookmark[] = [
   {
     url: "https://github.com/kubotama/linkpage",
     title: "kubotama/linkpage",
-    tags: ["github"],
   },
   {
     url: "https://www.google.com/",
     title: "Google",
-    tags: ["google"],
   },
   {
     url: "https://mail.google.com",
     title: "Gmail",
-    tags: ["google", "日次"],
   },
   {
     url: "https://www.amazon.co.jp/",
     title: "Amazon",
-    tags: ["日次"],
   },
 ];
 
-export const Bookmarks = (tag: string): Bookmark[] => {
-  return bookmarks.filter((bookmark) => bookmark.tags.includes(tag));
-};
-
-export const Tags = (): Set<string> => {
-  const tags = new Set<string>();
-  bookmarks.forEach((bookmark) => {
-    bookmark.tags.forEach((tag) => {
-      tags.add(tag);
-    });
-  });
-  return tags;
+export const Bookmarks = (): Bookmark[] => {
+  return bookmarks;
 };
