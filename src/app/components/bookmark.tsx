@@ -1,6 +1,10 @@
-type Boolmark = { url: string; title: string; tags: string[] };
+export type Bookmark = {
+  url: string;
+  title: string;
+  tags: string[];
+};
 
-const bookmarks: Boolmark[] = [
+const bookmarks: Bookmark[] = [
   {
     url: "https://github.com/kubotama/linkpage",
     title: "kubotama/linkpage",
@@ -23,7 +27,7 @@ const bookmarks: Boolmark[] = [
   },
 ];
 
-export const Bookmarks = (tag: string): Boolmark[] => {
+export const Bookmarks = (tag: string): Bookmark[] => {
   return bookmarks.filter((bookmark) => bookmark.tags.includes(tag));
 };
 
