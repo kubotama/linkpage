@@ -4,9 +4,28 @@ import { render, screen } from "@testing-library/react";
 import Home from "./page";
 
 describe("テスト環境を動作確認するためのサンプルのテスト", () => {
-  it("Element", () => {
+  it("タイトル", () => {
     render(<Home />);
-    const Element = screen.getByText("linkpage");
-    expect(Element).toBeInTheDocument();
+    const title = screen.getByText("linkpage");
+    expect(title).toBeInTheDocument();
+  });
+
+  it("GitHubのリンクを生成するテスト", () => {
+    render(<Home />);
+    const GitHub = screen.getByText("kubotama/linkpage");
+    expect(GitHub).toBeInTheDocument();
+    expect(GitHub).toHaveAttribute(
+      "href",
+      "https://github.com/kubotama/linkpage"
+    );
+    expect(GitHub).toHaveAttribute("target", "_blank");
+  });
+
+  it("Amazonのリンクを生成するテスト", () => {
+    render(<Home />);
+    const GitHub = screen.getByText("Amazon");
+    expect(GitHub).toBeInTheDocument();
+    expect(GitHub).toHaveAttribute("href", "https://www.amazon.co.jp/");
+    expect(GitHub).toHaveAttribute("target", "_blank");
   });
 });
