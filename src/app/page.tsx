@@ -5,15 +5,15 @@ export default function Home() {
   return (
     <div>
       <div>linkpage</div>
-      <ul>
+      <div className="grid grid-cols-1">
         {bookmarks.map((bookmark, index) => (
-          <li key={index}>
+          <div className="grid-item" key={index}>
             <a href={bookmark.url} target="_blank">
               {bookmark.title}
             </a>
-          </li>
+          </div>
         ))}
-      </ul>
+      </div>
     </div>
   );
 }
