@@ -1,4 +1,4 @@
-import { Bookmarks } from "./bookmark";
+import { Bookmarks } from "./bmGrid";
 
 /***
  * このテストは、Bookmarksクラスのインスタンスを生成し、そのインスタンスのをテストします。

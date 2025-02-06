@@ -1,38 +1,12 @@
 "use client";
 
-import React, { useState, useEffect } from "react";
-
-import { Bookmarks, Bookmark } from "./components/bookmark";
+import { BmGrid } from "./components/bmGrid";
 
 export default function Home() {
   return (
     <div>
       <div>linkpage</div>
-      <BookmarkGrid />
+      <BmGrid />
     </div>
   );
 }
-
-const BookmarkGrid = () => {
-  const [bookmarks, setBookmarks] = useState<Bookmark[]>([]);
-  const [bookmarkGrid, setBookmarkGrid] = useState(<div></div>);
-
-  if (bookmarks.length === 0) {
-    Bookmarks().then((bookmarks) => setBookmarks(bookmarks));
-  }
-
-  useEffect(() => {
-    setBookmarkGrid(() => (
-      <>
-        {bookmarks.map((bookmark, index) => (
-          <div className="grid-item" key={index}>
-            <a href={bookmark.url} target="_blank">
-              {bookmark.title}
-            </a>
-          </div>
-        ))}
-      </>
-    ));
-  }, [bookmarks]);
-  return <div className="grid grid-cols-1">{bookmarkGrid}</div>;
-};

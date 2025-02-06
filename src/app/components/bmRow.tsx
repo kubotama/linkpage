@@ -1,11 +1,13 @@
 import React from "react";
 
-import { Bookmark } from "./bookmark";
+import { Bookmark } from "./bmGrid";
 
-export const BmRow = ({ bookmark }: { bookmark: Bookmark }) => {
+export const BmRow: React.FC<{ bookmark: Bookmark }> = ({ bookmark }) => {
   return (
-    <a href={bookmark.url} target="_blank">
-      {bookmark.title}
-    </a>
+    <div className="grid-item">
+      <a href={bookmark.url} target="_blank">
+        {bookmark.title}
+      </a>
+    </div>
   );
 };
