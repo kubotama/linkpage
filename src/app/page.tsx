@@ -18,7 +18,7 @@ const BookmarkGrid = () => {
   const [bookmarkGrid, setBookmarkGrid] = useState(<div></div>);
 
   if (bookmarks.length === 0) {
-    setBookmarks(Bookmarks());
+    Bookmarks().then((bookmarks) => setBookmarks(bookmarks));
   }
 
   useEffect(() => {

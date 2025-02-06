@@ -1,27 +1,17 @@
+import fetch from "cross-fetch";
+
 export type Bookmark = {
   url: string;
   title: string;
 };
 
-const bookmarks: Bookmark[] = [
-  {
-    url: "https://github.com/kubotama/linkpage",
-    title: "kubotama/linkpage",
-  },
-  {
-    url: "https://www.google.com/",
-    title: "Google",
-  },
-  {
-    url: "https://mail.google.com",
-    title: "Gmail",
-  },
-  {
-    url: "https://www.amazon.co.jp/",
-    title: "Amazon",
-  },
-];
+let bookmarks: Bookmark[] = [];
 
-export const Bookmarks = (): Bookmark[] => {
+export const Bookmarks = async (): Promise<Bookmark[]> => {
+  if (bookmarks.length === 0) {
+    const response = await fetch("http://localhost:3001/bookmark.json");
+    const data = await response.json();
+    bookmarks = data;
+  }
   return bookmarks;
 };
