@@ -9,7 +9,7 @@ export type Bookmark = {
 };
 
 export const Bookmarks = async (): Promise<Bookmark[]> => {
-  const response = await fetch("http://localhost:3001/bookmark.json");
+  const response = await fetch("http://localhost:3001/bookmark");
   return await response.json();
 };
 
