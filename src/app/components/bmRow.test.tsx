@@ -3,8 +3,8 @@ import React from "react";
 import { render, screen } from "@testing-library/react";
 import "@testing-library/jest-dom";
 
-import { BmLink } from "./bmlink";
-import { Bookmark } from "./bookmark";
+import { BmRow } from "./bmRow";
+import { Bookmark } from "./bmGrid";
 
 /***
  * このテストは、ブックマークのリンクのインスタンスを生成して、そのインスタンスが正しいかをテストする。
@@ -16,7 +16,7 @@ describe("ブックマークのリンクのテスト", () => {
       url: "https://github.com/kubotama/linkpage",
       title: "kubotama/linkpage",
     };
-    render(<BmLink bookmark={bookmark} />);
+    render(<BmRow bookmark={bookmark} key={1} />);
     const link = screen.getByText("kubotama/linkpage");
     expect(link).toHaveAttribute("href", bookmark.url);
   });
@@ -26,7 +26,7 @@ describe("ブックマークのリンクのテスト", () => {
       url: "https://mail.google.com",
       title: "Gmail",
     };
-    render(<BmLink bookmark={bookmark} />);
+    render(<BmRow bookmark={bookmark} key={2} />);
     const link = screen.getByText("Gmail");
     expect(link).toHaveAttribute("href", bookmark.url);
   });
