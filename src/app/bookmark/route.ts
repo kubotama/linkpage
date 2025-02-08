@@ -1,25 +1,9 @@
 "use server";
-export async function GET() {
-  const res = [
-    {
-      url: "https://github.com/kubotama/linkpage",
-      title: "kubotama/linkpage",
-    },
-    {
-      url: "https://www.google.com/",
-      title: "Google",
-    },
-    {
-      url: "https://mail.google.com",
-      title: "Gmail",
-    },
-    {
-      url: "https://www.amazon.co.jp/",
-      title: "Amazon",
-    },
-  ];
 
-  return new Response(JSON.stringify(res), {
+import fs from "fs";
+
+export async function GET() {
+  return new Response(fs.readFileSync("./bookmark.json", "utf-8"), {
     status: 200,
     headers: { "Content-Type": "application/json" },
   });
