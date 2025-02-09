@@ -11,29 +11,6 @@ import { BmGrid } from "./bmGrid";
  **/
 
 describe("ブックマークのデータのテスト", () => {
-  // it.skip("定義されているブックマークが返る", () => {
-  //   return Bookmarks().then((bookmarks) => {
-  //     expect(bookmarks).toEqual([
-  //       {
-  //         url: "https://github.com/kubotama/linkpage",
-  //         title: "kubotama/linkpage",
-  //       },
-  //       {
-  //         url: "https://www.google.com/",
-  //         title: "Google",
-  //       },
-  //       {
-  //         url: "https://mail.google.com",
-  //         title: "Gmail",
-  //       },
-  //       {
-  //         url: "https://www.amazon.co.jp/",
-  //         title: "Amazon",
-  //       },
-  //     ]);
-  //   });
-  // });
-
   it("GitHubのリンクを生成するテスト", async () => {
     render(<BmGrid />);
     await waitFor(() => {
