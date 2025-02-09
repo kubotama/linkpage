@@ -8,18 +8,23 @@ export type Bookmark = {
   title: string;
 };
 
-export const Bookmarks = async (): Promise<Bookmark[]> => {
-  const response = await fetch("http://localhost:3001/bookmark");
-  return await response.json();
-};
+// export const Bookmarks = async (): Promise<Bookmark[]> => {
+//   const response = await fetch("http://localhost:3001/bookmark");
+//   return await response.json();
+// };
 
 export const BmGrid = () => {
   const [bookmarks, setBookmarks] = useState<Bookmark[]>([]);
   const [bookmarkGrid, setBookmarkGrid] = useState(<div></div>);
 
-  if (bookmarks.length === 0) {
-    Bookmarks().then((bookmarks) => setBookmarks(bookmarks));
-  }
+  useEffect(() => {
+    // Bookmarks().then((bookmarks) => setBookmarks(bookmarks));
+    fetch("http://localhost:3001/bookmark")
+      .then((response) => response.json())
+      .then((bookmarks) => {
+        setBookmarks(bookmarks);
+      });
+  }, []);
 
   useEffect(() => {
     setBookmarkGrid(() => (
@@ -30,5 +35,19 @@ export const BmGrid = () => {
       </>
     ));
   }, [bookmarks]);
+
+  // if (bookmarks.length === 0) {
+  //   Bookmarks().then((bookmarks) => setBookmarks(bookmarks));
+  // }
+
+  // useEffect(() => {
+  //   setBookmarkGrid(() => (
+  //     <>
+  //       {bookmarks.map((bookmark, index) => (
+  //         <BmRow key={index} bookmark={bookmark} />
+  //       ))}
+  //     </>
+  //   ));
+  // }, [bookmarks]);
   return <div className="grid grid-cols-1">{bookmarkGrid}</div>;
 };
