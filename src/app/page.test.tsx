@@ -1,10 +1,12 @@
 import React from "react";
+
 import "@testing-library/jest-dom";
+import { render, screen, waitFor } from "@testing-library/react";
 import fetchMock from "jest-fetch-mock";
 
-import { render, screen, waitFor } from "@testing-library/react";
-import Home from "./page";
+fetchMock.enableMocks();
 
+import Home from "./page";
 import { Bookmark } from "./components/bmGrid";
 
 describe("テスト環境を動作確認するためのサンプルのテスト", () => {
@@ -14,8 +16,6 @@ describe("テスト環境を動作確認するためのサンプルのテスト"
     expect(title).toBeInTheDocument();
   });
 });
-
-fetchMock.enableMocks();
 
 describe("Home", () => {
   beforeEach(() => {
