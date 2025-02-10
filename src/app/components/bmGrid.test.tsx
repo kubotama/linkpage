@@ -2,7 +2,26 @@ import React from "react";
 import "@testing-library/jest-dom";
 import { render, screen, waitFor } from "@testing-library/react";
 
-import { BmGrid } from "./bmGrid";
+import { BmGrid, Bookmark } from "./bmGrid";
+
+const bookmarks: Bookmark[] = [
+  {
+    url: "https://github.com/kubotama/linkpage",
+    title: "kubotama/linkpage",
+  },
+  {
+    url: "https://www.google.com/",
+    title: "Google",
+  },
+  {
+    url: "https://mail.google.com",
+    title: "Gmail",
+  },
+  {
+    url: "https://www.amazon.co.jp/",
+    title: "Amazon",
+  },
+];
 
 /***
  * このテストは、Bookmarksクラスのインスタンスを生成し、そのインスタンスのをテストします。
@@ -12,25 +31,25 @@ import { BmGrid } from "./bmGrid";
 
 describe("ブックマークのデータのテスト", () => {
   it("GitHubのリンクを生成するテスト", async () => {
-    render(<BmGrid />);
+    render(<BmGrid bookmarks={bookmarks} />);
     await waitFor(() => {
-      const GitHub = screen.getByText("kubotama/linkpage");
-      expect(GitHub).toBeInTheDocument();
-      expect(GitHub).toHaveAttribute(
+      const bm = screen.getByText("kubotama/linkpage");
+      expect(bm).toBeInTheDocument();
+      expect(bm).toHaveAttribute(
         "href",
         "https://github.com/kubotama/linkpage"
       );
-      expect(GitHub).toHaveAttribute("target", "_blank");
+      expect(bm).toHaveAttribute("target", "_blank");
     });
   });
 
   it("Amazonのリンクを生成するテスト", async () => {
-    render(<BmGrid />);
+    render(<BmGrid bookmarks={bookmarks} />);
     await waitFor(() => {
-      const GitHub = screen.getByText("Amazon");
-      expect(GitHub).toBeInTheDocument();
-      expect(GitHub).toHaveAttribute("href", "https://www.amazon.co.jp/");
-      expect(GitHub).toHaveAttribute("target", "_blank");
+      const bm = screen.getByText("Amazon");
+      expect(bm).toBeInTheDocument();
+      expect(bm).toHaveAttribute("href", "https://www.amazon.co.jp/");
+      expect(bm).toHaveAttribute("target", "_blank");
     });
   });
 });
