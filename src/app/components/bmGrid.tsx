@@ -1,6 +1,5 @@
 import React, { useState, useEffect } from "react";
 
-import fetch from "cross-fetch";
 import { BmRow } from "./bmRow";
 
 export type Bookmark = {
@@ -8,17 +7,8 @@ export type Bookmark = {
   title: string;
 };
 
-export const BmGrid = () => {
-  const [bookmarks, setBookmarks] = useState<Bookmark[]>([]);
+export const BmGrid: React.FC<{ bookmarks: Bookmark[] }> = ({ bookmarks }) => {
   const [bookmarkGrid, setBookmarkGrid] = useState(<div></div>);
-
-  useEffect(() => {
-    fetch("http://localhost:3001/bookmark")
-      .then((response) => response.json())
-      .then((bookmarks) => {
-        setBookmarks(bookmarks);
-      });
-  }, []);
 
   useEffect(() => {
     setBookmarkGrid(() => (
