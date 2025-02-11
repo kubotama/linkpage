@@ -4,8 +4,6 @@ import "@testing-library/jest-dom";
 import { render, screen, waitFor } from "@testing-library/react";
 import fetchMock from "jest-fetch-mock";
 
-fetchMock.enableMocks();
-
 import Home from "./page";
 import { Bookmark } from "./components/bmGrid";
 
