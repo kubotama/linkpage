@@ -2,8 +2,6 @@
 
 import React, { useState, useEffect } from "react";
 
-import fetch from "cross-fetch";
-
 import { BmGrid, Bookmark } from "./components/bmGrid";
 
 export default function Home() {
