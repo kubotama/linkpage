@@ -1,0 +1,68 @@
+import React from "react";
+
+import "@testing-library/jest-dom";
+// import { render, screen, waitFor } from "@testing-library/react";
+import { render, screen, waitFor } from "@testing-library/react";
+import fetchMock from "jest-fetch-mock";
+
+import Home from "./page";
+
+describe("テスト環境を動作確認するためのサンプルのテスト", () => {
+  beforeEach(() => {
+    fetchMock.resetMocks();
+  });
+
+  it("タイトル", async () => {
+    const mockBookmarks = [
+      {
+        url: "https://github.com/kubotama/linkpage",
+        title: "kubotama/linkpage",
+      },
+      { url: "https://www.google.com/", title: "Google" },
+    ];
+
+    fetchMock.mockResponseOnce(JSON.stringify(mockBookmarks));
+
+    render(<Home />);
+    await waitFor(() => {
+      const title = screen.getByText("linkpage");
+      expect(title).toBeInTheDocument();
+    });
+  });
+
+  it("fetches and displays bookmarks", async () => {
+    const mockBookmarks = [
+      {
+        url: "https://github.com/kubotama/linkpage",
+        title: "kubotama/linkpage",
+      },
+      { url: "https://www.google.com/", title: "Google" },
+    ];
+
+    fetchMock.mockResponseOnce(JSON.stringify(mockBookmarks));
+
+    render(<Home />);
+
+    await waitFor(() => {
+      expect(screen.getByText("kubotama/linkpage")).toBeInTheDocument();
+      expect(screen.getByText("Google")).toBeInTheDocument();
+    });
+  });
+
+  it("renders BmGrid component", async () => {
+    const mockBookmarks = [
+      {
+        url: "https://github.com/kubotama/linkpage",
+        title: "kubotama/linkpage",
+      },
+    ];
+
+    fetchMock.mockResponseOnce(JSON.stringify(mockBookmarks));
+
+    render(<Home />);
+
+    await waitFor(() => {
+      expect(screen.getByText("kubotama/linkpage")).toBeInTheDocument();
+    });
+  });
+});
