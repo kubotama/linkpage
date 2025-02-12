@@ -4,8 +4,7 @@ import "@testing-library/jest-dom";
 import { render, screen, waitFor } from "@testing-library/react";
 import fetchMock from "jest-fetch-mock";
 
-import Home from "./page";
-import { Bookmark } from "./components/bmGrid";
+import Home, { Bookmark } from "./page";
 
 describe("テスト環境を動作確認するためのサンプルのテスト", () => {
   it("タイトル", () => {
@@ -54,5 +53,11 @@ describe("Home", () => {
     await waitFor(() => {
       expect(screen.getByText("kubotama/linkpage")).toBeInTheDocument();
     });
+  });
+
+  it("ローディング中にローディングメッセージが表示されること", () => {
+    fetchMock.mockResponseOnce(() => new Promise(() => {})); // リクエストがresolveしないようにする
+    render(<Home />);
+    expect(screen.getByText("Loading...")).toBeInTheDocument();
   });
 });
