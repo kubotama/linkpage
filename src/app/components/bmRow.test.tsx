@@ -4,6 +4,7 @@ import { render, screen } from "@testing-library/react";
 import "@testing-library/jest-dom";
 
 import { BmRow } from "./bmRow";
+import { Bookmark } from "../page";
 
 /***
  * このテストは、ブックマークのリンクのインスタンスを生成して、そのインスタンスが正しいかをテストする。
@@ -11,7 +12,7 @@ import { BmRow } from "./bmRow";
 
 describe("ブックマークのリンクのテスト", () => {
   it("ブックマークのリンク(GitHub)のインスタンスが生成できる", () => {
-    const bookmark = {
+    const bookmark: Bookmark = {
       url: "https://github.com/kubotama/linkpage",
       title: "kubotama/linkpage",
     };
@@ -21,7 +22,7 @@ describe("ブックマークのリンクのテスト", () => {
   });
 
   it("ブックマークのリンク(Gmail)のインスタンスが生成できる", () => {
-    const bookmark = {
+    const bookmark: Bookmark = {
       url: "https://mail.google.com",
       title: "Gmail",
     };

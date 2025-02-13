@@ -2,6 +2,7 @@ import fetch from "cross-fetch";
 
 import "@testing-library/jest-dom";
 import fetchMock from "jest-fetch-mock";
+import { Bookmark } from "../page";
 
 describe("ブックマークのAPIのテスト", () => {
   beforeEach(() => {
@@ -10,7 +11,7 @@ describe("ブックマークのAPIのテスト", () => {
 
   it("ブックマークのデータが取得できる", () => {
     const url = "http://localhost:3030/bookmark";
-    const mockBookmarks = [
+    const mockBookmarks: Bookmark[] = [
       {
         url: "https://github.com/kubotama/linkpage",
         title: "kubotama/linkpage",

@@ -3,8 +3,9 @@ import "@testing-library/jest-dom";
 import { render, screen } from "@testing-library/react";
 
 import { BmGrid } from "./bmGrid";
+import { Bookmark } from "../page";
 
-const bookmarks = [
+const bookmarks: Bookmark[] = [
   {
     url: "https://github.com/kubotama/linkpage",
     title: "kubotama/linkpage",
