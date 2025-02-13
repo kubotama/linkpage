@@ -9,7 +9,7 @@ describe("ブックマークのAPIのテスト", () => {
   });
 
   it("ブックマークのデータが取得できる", () => {
-    const url = "http://localhost:3000/bookmark";
+    const url = "http://localhost:3030/bookmark";
     const mockBookmarks = [
       {
         url: "https://github.com/kubotama/linkpage",

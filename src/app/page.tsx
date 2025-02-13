@@ -14,7 +14,7 @@ export default function Home() {
   const [bookmarkGrid, setBookmarkGrid] = useState(<div></div>);
 
   useEffect(() => {
-    fetch("http://localhost:3001/bookmark")
+    fetch("http://localhost:3030/bookmark")
       .then((response) => response.json())
       .then((bookmarks) => {
         setBookmarks(bookmarks);
