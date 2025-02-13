@@ -9,7 +9,7 @@ export type Bookmark = {
   title: string;
 };
 
-export default function Home() {
+export const Home: React.FC = () => {
   const [bookmarks, setBookmarks] = useState<Bookmark[]>([]);
   const [bookmarkGrid, setBookmarkGrid] = useState(<div></div>);
   const [loading, setLoading] = useState(true);
@@ -49,4 +49,6 @@ export default function Home() {
       <>{bookmarkGrid}</>
     </>
   );
-}
+};
+
+export default Home;
