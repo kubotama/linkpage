@@ -9,12 +9,15 @@ describe("タイトルを取得するAPIのテスト", () => {
   });
 
   it("github.com/kubotama/linkpage", () => {
+    const url = "https://github.com/kubotama/linkpage";
     fetchMock.mockResponseOnce(
       "<html><head><title>link page</title></head><body></body></html>"
     );
 
-    return GET().then((response) => {
+    return GET(url).then((response) => {
       expect(response.status).toBe(200);
+      expect(fetchMock.mock.calls.length).toEqual(1);
+      expect(fetchMock.mock.calls[0][0]).toEqual(url); // Update the expected URL here
       return response.text().then((text) => {
         expect(text).toBe("link page");
       });
