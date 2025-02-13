@@ -2,10 +2,16 @@
 
 import React, { useState, useEffect } from "react";
 
-import { BmGrid, Bookmark } from "./components/bmGrid";
+import { BmGrid } from "./components/bmGrid";
+
+export type Bookmark = {
+  url: string;
+  title: string;
+};
 
 export default function Home() {
   const [bookmarks, setBookmarks] = useState<Bookmark[]>([]);
+  const [bookmarkGrid, setBookmarkGrid] = useState(<div></div>);
 
   useEffect(() => {
     fetch("http://localhost:3001/bookmark")
@@ -15,10 +21,18 @@ export default function Home() {
       });
   }, []);
 
+  useEffect(() => {
+    if (bookmarks.length === 0) {
+      setBookmarkGrid(<div>Loading...</div>);
+    } else {
+      setBookmarkGrid(<BmGrid bookmarks={bookmarks} />);
+    }
+  }, [bookmarks]);
+
   return (
-    <div>
+    <>
       <div>linkpage</div>
-      <BmGrid bookmarks={bookmarks} />
-    </div>
+      <>{bookmarkGrid}</>
+    </>
   );
 }
