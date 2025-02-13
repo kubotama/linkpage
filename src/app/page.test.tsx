@@ -66,28 +66,8 @@ describe("テスト環境を動作確認するためのサンプルのテスト"
   });
 
   it("ローディング中にローディングメッセージが表示されること", () => {
-    // it("ローディング中にローディングメッセージが表示されること", async () => {
-    // const mockBookmarks: Bookmark[] = [
-    //   {
-    //     url: "https://github.com/kubotama/linkpage",
-    //     title: "kubotama/linkpage",
-    //   },
-    // ];
-
-    // fetchMock.mockResponseOnce(
-    //   () => new Promise(() => JSON.stringify(mockBookmarks))
-    // );
     fetchMock.mockResponseOnce(() => new Promise(() => [])); // リクエストがresolveしないようにする
-    // act(() => {
-    //   render(<Home />);
-    // });
     render(<Home />);
     expect(screen.getByText("Loading...")).toBeInTheDocument();
-
-    // await waitFor(() => {
-    //   const title = screen.getByText("linkpage");
-    //   expect(title).toBeInTheDocument();
-    // });
-    // done(expect(screen.getByText("linkpage")).toBeInTheDocument());
   });
 });
