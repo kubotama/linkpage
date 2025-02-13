@@ -24,8 +24,7 @@ describe("テスト環境を動作確認するためのサンプルのテスト"
 
     render(<Home />);
     await waitFor(() => {
-      const title = screen.getByText("linkpage");
-      expect(title).toBeInTheDocument();
+      expect(screen.getByText("kubotama/linkpage")).toBeInTheDocument();
     });
   });
 
