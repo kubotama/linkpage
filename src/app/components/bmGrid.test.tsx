@@ -1,8 +1,9 @@
 import React from "react";
 import "@testing-library/jest-dom";
-import { render, screen, waitFor } from "@testing-library/react";
+import { render, screen } from "@testing-library/react";
 
-import { BmGrid, Bookmark } from "./bmGrid";
+import { BmGrid } from "./bmGrid";
+import { Bookmark } from "../page";
 
 const bookmarks: Bookmark[] = [
   {
@@ -30,26 +31,19 @@ const bookmarks: Bookmark[] = [
  **/
 
 describe("ブックマークのデータのテスト", () => {
-  it("GitHubのリンクを生成するテスト", async () => {
+  it("GitHubのリンクを生成するテスト", () => {
     render(<BmGrid bookmarks={bookmarks} />);
-    await waitFor(() => {
-      const bm = screen.getByText("kubotama/linkpage");
-      expect(bm).toBeInTheDocument();
-      expect(bm).toHaveAttribute(
-        "href",
-        "https://github.com/kubotama/linkpage"
-      );
-      expect(bm).toHaveAttribute("target", "_blank");
-    });
+    const bm = screen.getByText("kubotama/linkpage");
+    expect(bm).toBeInTheDocument();
+    expect(bm).toHaveAttribute("href", "https://github.com/kubotama/linkpage");
+    expect(bm).toHaveAttribute("target", "_blank");
   });
 
-  it("Amazonのリンクを生成するテスト", async () => {
+  it("Amazonのリンクを生成するテスト", () => {
     render(<BmGrid bookmarks={bookmarks} />);
-    await waitFor(() => {
-      const bm = screen.getByText("Amazon");
-      expect(bm).toBeInTheDocument();
-      expect(bm).toHaveAttribute("href", "https://www.amazon.co.jp/");
-      expect(bm).toHaveAttribute("target", "_blank");
-    });
+    const bm = screen.getByText("Amazon");
+    expect(bm).toBeInTheDocument();
+    expect(bm).toHaveAttribute("href", "https://www.amazon.co.jp/");
+    expect(bm).toHaveAttribute("target", "_blank");
   });
 });

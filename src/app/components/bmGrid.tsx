@@ -1,11 +1,7 @@
 import React, { useState, useEffect } from "react";
 
 import { BmRow } from "./bmRow";
-
-export type Bookmark = {
-  url: string;
-  title: string;
-};
+import { Bookmark } from "../page";
 
 export const BmGrid: React.FC<{ bookmarks: Bookmark[] }> = ({ bookmarks }) => {
   const [bookmarkGrid, setBookmarkGrid] = useState(<div></div>);
