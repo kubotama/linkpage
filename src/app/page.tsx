@@ -2,25 +2,53 @@
 
 import React, { useState, useEffect } from "react";
 
-import fetch from "cross-fetch";
+import { BmGrid } from "./components/bmGrid";
 
-import { BmGrid, Bookmark } from "./components/bmGrid";
+export type Bookmark = {
+  url: string;
+  title: string;
+};
 
-export default function Home() {
+export const Home: React.FC = () => {
   const [bookmarks, setBookmarks] = useState<Bookmark[]>([]);
+  const [bookmarkGrid, setBookmarkGrid] = useState(<div></div>);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
-    fetch("http://localhost:3001/bookmark")
-      .then((response) => response.json())
-      .then((bookmarks) => {
-        setBookmarks(bookmarks);
+    fetch("http://localhost:3030/bookmark")
+      .then((response) => {
+        if (!response.ok) {
+          throw new Error("Failed to fetch");
+        }
+        return response.json();
+      })
+      .then((data) => {
+        setBookmarks(data);
+        setLoading(false);
+      })
+      .catch((error) => {
+        setError(error.message);
+        setLoading(false);
       });
   }, []);
 
+  useEffect(() => {
+    if (loading) {
+      setBookmarkGrid(<div>Loading...</div>);
+    } else if (error) {
+      setBookmarkGrid(<div>{error}</div>);
+    } else {
+      setBookmarkGrid(<BmGrid bookmarks={bookmarks} />);
+    }
+  }, [bookmarks, loading, error]);
+
   return (
-    <div>
+    <>
       <div>linkpage</div>
-      <BmGrid bookmarks={bookmarks} />
-    </div>
+      <>{bookmarkGrid}</>
+    </>
   );
-}
+};
+
+export default Home;

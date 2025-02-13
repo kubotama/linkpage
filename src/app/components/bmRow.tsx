@@ -1,6 +1,6 @@
 import React from "react";
 
-import { Bookmark } from "./bmGrid";
+import { Bookmark } from "../page";
 
 export const BmRow: React.FC<{ bookmark: Bookmark }> = ({ bookmark }) => {
   return (
