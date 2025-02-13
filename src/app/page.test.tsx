@@ -70,4 +70,24 @@ describe("テスト環境を動作確認するためのサンプルのテスト"
     render(<Home />);
     expect(screen.getByText("Loading...")).toBeInTheDocument();
   });
+
+  it("ブックマークのフェッチに失敗した場合、エラーメッセージが表示されること", async () => {
+    fetchMock.mockRejectOnce(new Error("Failed to fetch bookmarks"));
+
+    render(<Home />);
+
+    await waitFor(() => {
+      expect(screen.getByText("Failed to fetch bookmarks")).toBeInTheDocument();
+    });
+  });
+
+  it("ブックマークが存在しない場合、タイトル(linkpage)が表示されること", async () => {
+    fetchMock.mockResponseOnce(JSON.stringify([]));
+
+    render(<Home />);
+
+    await waitFor(() => {
+      expect(screen.getByText("linkpage")).toBeInTheDocument();
+    });
+  });
 });
