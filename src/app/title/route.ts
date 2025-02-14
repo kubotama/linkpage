@@ -1,14 +1,17 @@
-/* eslint-disable @typescript-eslint/no-unused-vars */
 "use server";
 
+import { JSDOM } from "jsdom";
+
 export async function GET(url: string) {
-  const response = await fetch("https://github.com/kubotama/linkpage");
+  const response = await fetch(url);
   if (!response.ok) {
     throw new Error("Failed to fetch");
   }
-  const text = await response.text();
-  return new Response("link page", {
+  const dom = new JSDOM(await response.text());
+  const title = dom.window.document.title;
+
+  return new Response(title, {
     status: 200,
-    headers: { "Content-Type": "application/text" },
+    headers: { "Content-Type": "text/plain" },
   });
 }
