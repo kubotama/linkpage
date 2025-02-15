@@ -9,6 +9,9 @@ export async function GET(url: string) {
   }
   const dom = new JSDOM(await response.text());
   const title = dom.window.document.title;
+  if (!title) {
+    throw new Error("Can't find title");
+  }
 
   return new Response(title, {
     status: 200,

@@ -35,4 +35,11 @@ describe("タイトルを取得するAPIのテスト", () => {
     const text = await response.text();
     expect(text).toBe("Google");
   });
+
+  it("URLから返されたHTMLにタイトルがない場合、エラーを返す", async () => {
+    const url = "https://www.google.com/";
+    fetchMock.mockResponseOnce("<html><head></head><body></body></html>");
+
+    await expect(GET(url)).rejects.toThrow("Can't find title");
+  });
 });
