@@ -16,7 +16,7 @@ export const Home: React.FC = () => {
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
-    fetch("http://localhost:3030/bookmark")
+    fetch("/bookmark")
       .then((response) => {
         if (!response.ok) {
           throw new Error("Failed to fetch");
