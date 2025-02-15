@@ -23,4 +23,20 @@ describe("タイトルを取得するAPIのテスト", () => {
       });
     });
   });
+
+  it("https://www.google.com/", () => {
+    const url = "https://www.google.com/";
+    fetchMock.mockResponseOnce(
+      "<html><head><title>Google</title></head><body></body></html>"
+    );
+
+    return GET(url).then((response) => {
+      expect(response.status).toBe(200);
+      expect(fetchMock.mock.calls.length).toEqual(1);
+      expect(fetchMock.mock.calls[0][0]).toEqual(url); // Update the expected URL here
+      return response.text().then((text) => {
+        expect(text).toBe("Google");
+      });
+    });
+  });
 });
