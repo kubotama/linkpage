@@ -1,13 +1,21 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 
-import { Bookmark } from "../page";
+export type Bookmark = {
+  url: string;
+  title: string;
+};
 
 export const BmRow: React.FC<{ bookmark: Bookmark }> = ({ bookmark }) => {
-  return (
-    <div className="grid-item">
-      <a href={bookmark.url} target="_blank">
-        {bookmark.title}
-      </a>
-    </div>
-  );
+  const [bmRow, setBmRow] = useState(<div></div>);
+  useEffect(() => {
+    setBmRow(() => (
+      <div className="grid-item">
+        <a href={bookmark.url} target="_blank">
+          {bookmark.title}
+        </a>
+      </div>
+    ));
+  }, [bookmark]);
+
+  return bmRow;
 };

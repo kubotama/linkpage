@@ -1,9 +1,9 @@
 // import fetch from "cross-fetch";
 
-import '@testing-library/jest-dom';
+import "@testing-library/jest-dom";
 
-import { Bookmark } from '../page';
-import { GET } from './route';
+import { Bookmark } from "../components/bmRow";
+import { GET } from "./route";
 
 describe("ブックマークのAPIのテスト", () => {
   it("ブックマークのデータが取得できる", async () => {
