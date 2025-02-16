@@ -1,20 +1,47 @@
 import React, { useState, useEffect } from "react";
 
 import { BmRow } from "./bmRow";
-import { Bookmark } from "./bmRow";
+// import { Bookmark } from "./bmRow";
 
-export const BmGrid: React.FC<{ bookmarks: Bookmark[] }> = ({ bookmarks }) => {
+export const BmGrid: React.FC = () => {
   const [bookmarkGrid, setBookmarkGrid] = useState(<div></div>);
+  const [bookmarks, setBookmarks] = useState<[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
-    setBookmarkGrid(() => (
-      <>
-        {bookmarks.map((bookmark, index) => (
-          <BmRow key={index} bookmark={bookmark} />
-        ))}
-      </>
-    ));
-  }, [bookmarks]);
+    fetch("/bookmark")
+      .then((response) => {
+        if (!response.ok) {
+          throw new Error("Failed to fetch");
+        }
+        return response.json();
+      })
+      .then((data) => {
+        setBookmarks(data);
+        setLoading(false);
+      })
+      .catch((error) => {
+        setError(error.message);
+        setLoading(false);
+      });
+  }, []);
 
-  return <div className="grid grid-cols-1">{bookmarkGrid}</div>;
+  useEffect(() => {
+    if (loading) {
+      setBookmarkGrid(<div>Loading...</div>);
+    } else if (error) {
+      setBookmarkGrid(<div>{error}</div>);
+    } else {
+      setBookmarkGrid(
+        <div className="grid grid-cols-1">
+          {bookmarks.map((bookmark, index) => (
+            <BmRow key={index} bookmark={bookmark} />
+          ))}
+        </div>
+      );
+    }
+  }, [bookmarks, loading, error]);
+
+  return bookmarkGrid;
 };
