@@ -4,7 +4,7 @@ import { render, screen } from "@testing-library/react";
 import "@testing-library/jest-dom";
 
 import { BmRow } from "./bmRow";
-import { Bookmark } from "../page";
+import { Bookmark } from "./bmRow";
 
 /***
  * このテストは、ブックマークのリンクのインスタンスを生成して、そのインスタンスが正しいかをテストする。

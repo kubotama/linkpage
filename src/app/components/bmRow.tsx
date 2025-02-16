@@ -1,6 +1,9 @@
 import React from "react";
 
-import { Bookmark } from "../page";
+export type Bookmark = {
+  url: string;
+  title: string;
+};
 
 export const BmRow: React.FC<{ bookmark: Bookmark }> = ({ bookmark }) => {
   return (

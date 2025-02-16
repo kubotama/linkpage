@@ -4,13 +4,8 @@ import React, { useState, useEffect } from "react";
 
 import { BmGrid } from "./components/bmGrid";
 
-export type Bookmark = {
-  url: string;
-  title: string;
-};
-
 export const Home: React.FC = () => {
-  const [bookmarks, setBookmarks] = useState<Bookmark[]>([]);
+  const [bookmarks, setBookmarks] = useState<[]>([]);
   const [bookmarkGrid, setBookmarkGrid] = useState(<div></div>);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);

@@ -3,7 +3,7 @@ import "@testing-library/jest-dom";
 import { render, screen } from "@testing-library/react";
 
 import { BmGrid } from "./bmGrid";
-import { Bookmark } from "../page";
+import { Bookmark } from "./bmRow";
 
 const bookmarks: Bookmark[] = [
   {
