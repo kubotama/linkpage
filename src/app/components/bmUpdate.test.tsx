@@ -35,4 +35,10 @@ describe("BmUpdate", () => {
     expect(screen.getByText("タイトル")).toBeInTheDocument();
     expect(screen.getByText("更新")).toBeInTheDocument();
   });
+
+  it("タイトルを取得するボタンをクリック", () => {
+    // タイトルを取得するボタンをクリックすると、タイトルを取得するAPIを呼び出す。
+    // パラメータとしてURLのテキストボックスに入力された文字列が渡される。
+    // タイトルのテキストボックスに、APIから返されたタイトルが表示される。
+  });
 });
