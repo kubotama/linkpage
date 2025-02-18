@@ -71,4 +71,17 @@ describe("タイトルを取得するAPIのテスト", () => {
     expect(response.status).toBe(500);
     expect(text).toBe("Failed to fetch");
   });
+
+  it("クエリにURLが指定されていない", async () => {
+    fetchMock.mockResponseOnce(
+      "<html><head><title>Google</title></head><body></body></html>"
+    );
+
+    const request = new Request(new URL("/title?url=", "http://localhost"));
+    const response = await GET(request);
+    const text = await response.text();
+    expect(fetchMock.mock.calls.length).toEqual(0);
+    expect(response.status).toBe(500);
+    expect(text).toBe("Can't find url");
+  });
 });
