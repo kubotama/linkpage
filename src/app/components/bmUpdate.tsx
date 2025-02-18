@@ -17,8 +17,6 @@ export const BmUpdate: React.FC<BmUpdateProps> = ({
     if (textUrlRef1.current && textTitleRef2.current) {
       const inputTextUrl = textUrlRef1.current.value;
       const inputTextTitle = textTitleRef2.current.value;
-      console.log("入力された文字列1:", inputTextUrl);
-      console.log("入力された文字列2:", inputTextTitle);
       onBmUpdate(inputTextUrl, inputTextTitle);
     }
   };
@@ -34,10 +32,12 @@ export const BmUpdate: React.FC<BmUpdateProps> = ({
       />
       <input
         type="text"
+        aria-label="title"
         value={textTitle}
         onChange={(e) => setTextTitle(e.target.value)}
         ref={textTitleRef2}
       />
+      <button>タイトル</button>
       <button onClick={handleClick}>更新</button>
     </div>
   );
