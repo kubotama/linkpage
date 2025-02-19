@@ -14,7 +14,10 @@ describe("タイトルを取得するAPIのテスト", () => {
       "<html><head><title>link page</title></head><body></body></html>"
     );
 
-    const response = await GET(url);
+    const request = new Request(
+      new URL("/title?url=" + url, "http://localhost")
+    );
+    const response = await GET(request);
     expect(response.status).toBe(200);
     expect(fetchMock.mock.calls.length).toEqual(1);
     expect(fetchMock.mock.calls[0][0]).toEqual(url); // Update the expected URL here
@@ -28,7 +31,10 @@ describe("タイトルを取得するAPIのテスト", () => {
       "<html><head><title>Google</title></head><body></body></html>"
     );
 
-    const response = await GET(url);
+    const request = new Request(
+      new URL("/title?url=" + url, "http://localhost")
+    );
+    const response = await GET(request);
     expect(response.status).toBe(200);
     expect(fetchMock.mock.calls.length).toEqual(1);
     expect(fetchMock.mock.calls[0][0]).toEqual(url); // Update the expected URL here
@@ -40,7 +46,10 @@ describe("タイトルを取得するAPIのテスト", () => {
     const url = "https://www.google.com/";
     fetchMock.mockResponseOnce("<html><head></head><body></body></html>");
 
-    const response = await GET(url);
+    const request = new Request(
+      new URL("/title?url=" + url, "http://localhost")
+    );
+    const response = await GET(request);
     const text = await response.text();
     expect(fetchMock.mock.calls.length).toEqual(1);
     expect(fetchMock.mock.calls[0][0]).toEqual(url); // Update the expected URL here
@@ -52,11 +61,27 @@ describe("タイトルを取得するAPIのテスト", () => {
     const url = "https://www.google.com/";
     fetchMock.mockRejectOnce();
 
-    const response = await GET(url);
+    const request = new Request(
+      new URL("/title?url=" + url, "http://localhost")
+    );
+    const response = await GET(request);
     const text = await response.text();
     expect(fetchMock.mock.calls.length).toEqual(1);
     expect(fetchMock.mock.calls[0][0]).toEqual(url); // Update the expected URL here
     expect(response.status).toBe(500);
     expect(text).toBe("Failed to fetch");
+  });
+
+  it("クエリにURLが指定されていない", async () => {
+    fetchMock.mockResponseOnce(
+      "<html><head><title>Google</title></head><body></body></html>"
+    );
+
+    const request = new Request(new URL("/title?url=", "http://localhost"));
+    const response = await GET(request);
+    const text = await response.text();
+    expect(fetchMock.mock.calls.length).toEqual(0);
+    expect(response.status).toBe(500);
+    expect(text).toBe("Can't find url");
   });
 });
