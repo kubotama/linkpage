@@ -3,9 +3,9 @@ import { render, fireEvent, screen, waitFor } from "@testing-library/react";
 import "@testing-library/jest-dom";
 import fetchMock from "jest-fetch-mock";
 
-import { BmUpdate } from "./bmUpdate";
+import { BmDetail } from "./bmDetail";
 
-describe("BmUpdate", () => {
+describe("BmDetail", () => {
   beforeEach(() => {
     fetchMock.resetMocks();
   });
@@ -14,7 +14,7 @@ describe("BmUpdate", () => {
     const url = "https://mail.google.com/mail/";
     const onBmUpdate = jest.fn(); // モック関数を作成
 
-    render(<BmUpdate onBmUpdate={onBmUpdate} />);
+    render(<BmDetail onBmUpdate={onBmUpdate} />);
 
     const urlInput = screen.getByLabelText("url");
     const updateButton = screen.getByText("更新");
@@ -31,7 +31,7 @@ describe("BmUpdate", () => {
   it("すべてのエレメントが表示される", () => {
     const onBmUpdate = jest.fn(); // モック関数を作成
 
-    render(<BmUpdate onBmUpdate={onBmUpdate} />);
+    render(<BmDetail onBmUpdate={onBmUpdate} />);
 
     expect(screen.getByLabelText("url")).toBeVisible();
     expect(screen.getByLabelText("title")).toBeInTheDocument();
@@ -47,7 +47,7 @@ describe("BmUpdate", () => {
     const title = "Gmail";
     const onBmUpdate = jest.fn(); // モック関数を作成
 
-    render(<BmUpdate onBmUpdate={onBmUpdate} />);
+    render(<BmDetail onBmUpdate={onBmUpdate} />);
     const urlInput = screen.getByLabelText("url");
     const titleInput = screen.getByLabelText("title") as HTMLInputElement;
     const titleButton = screen.getByText("タイトル");
@@ -61,6 +61,37 @@ describe("BmUpdate", () => {
 
     await waitFor(() => {
       expect(titleInput.value).toEqual(title);
+      expect(fetchMock).toHaveBeenCalledTimes(1);
+      expect(fetchMock.mock.calls[0][0]).toEqual("/title?url=" + url);
+    });
+  });
+
+  it("パラメータとして渡されたURLにアクセスできない場合、タイトルのテキストボックスに、なにも表示しない。", async () => {
+    // タイトルを取得するボタンをクリックして、エラーコード500の場合、タイトルのテキストボックスに、なにも表示しない。
+    const url = "https://mail.google.com/mail/";
+    const onBmUpdate = jest.fn(); // モック関数を作成
+
+    fetchMock.mockResponseOnce(
+      JSON.stringify({ message: "Can't find title" }),
+      { status: 500 }
+    );
+
+    render(<BmDetail onBmUpdate={onBmUpdate} />);
+
+    const urlInput = screen.getByLabelText("url");
+    const titleInput = screen.getByLabelText("title");
+    const titleButton = screen.getByText("タイトル");
+
+    fireEvent.change(urlInput, {
+      target: { value: url },
+    });
+    fireEvent.click(titleButton);
+
+    await waitFor(() => {
+      if (!(titleInput instanceof HTMLInputElement)) {
+        fail();
+      }
+      expect(titleInput.value).toEqual("");
       expect(fetchMock).toHaveBeenCalledTimes(1);
       expect(fetchMock.mock.calls[0][0]).toEqual("/title?url=" + url);
     });

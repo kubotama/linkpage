@@ -1,11 +1,11 @@
 // MyComponent.tsx
 import React, { useState, useRef } from "react";
 
-interface BmUpdateProps {
+interface BmDetailProps {
   onBmUpdate: (textUrl: string, textTitle: string) => void;
 }
 
-export const BmUpdate: React.FC<BmUpdateProps> = ({
+export const BmDetail: React.FC<BmDetailProps> = ({
   onBmUpdate: onBmUpdate,
 }) => {
   const [textUrl, setTextUrl] = useState("");
@@ -53,4 +53,4 @@ export const BmUpdate: React.FC<BmUpdateProps> = ({
   );
 };
 
-export default BmUpdate;
+export default BmDetail;
