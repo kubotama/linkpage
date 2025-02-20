@@ -96,4 +96,35 @@ describe("BmDetail", () => {
       expect(fetchMock.mock.calls[0][0]).toEqual("/title?url=" + url);
     });
   });
+
+  it("APIからタイトルを取得した後に、テキストボックスでタイトルを編集した場合、更新ボタンをクリックすると編集後のテキストが渡される。", async () => {
+    // APIからタイトルを取得した後に、テキストボックスでタイトルを編集した場合、更新ボタンをクリックすると編集後のテキストが渡される。
+    const url = "https://mail.google.com/mail/";
+    const title = "Gmail";
+    const title_edited = "GMAIL";
+    const onBmUpdate = jest.fn(); // モック関数を作成
+
+    render(<BmDetail onBmUpdate={onBmUpdate} />);
+    const urlInput = screen.getByLabelText("url");
+    const titleInput = screen.getByLabelText("title") as HTMLInputElement;
+    const titleButton = screen.getByText("タイトル");
+    const updateButton = screen.getByText("更新");
+
+    fetchMock.mockResponseOnce(title);
+
+    fireEvent.change(urlInput, {
+      target: { value: url },
+    });
+    fireEvent.click(titleButton);
+
+    await waitFor(() => {
+      fireEvent.change(titleInput, {
+        target: { value: title_edited },
+      });
+      fireEvent.click(updateButton);
+      expect(titleInput.value).toEqual(title_edited);
+      expect(fetchMock).toHaveBeenCalledTimes(1);
+      expect(fetchMock.mock.calls[0][0]).toEqual("/title?url=" + url);
+    });
+  });
 });
