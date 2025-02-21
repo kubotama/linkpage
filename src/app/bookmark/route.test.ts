@@ -36,4 +36,16 @@ describe("ブックマークのAPIのテスト", () => {
     const json = await response.json();
     expect(json).toEqual(bookmarks);
   });
+
+  it("ブックマークのファイルが存在しない場合", async () => {
+    // ブックマークのファイルが存在しない場合、エラーコード(500)、エラーメッセージ(Bookmark file not found)を返す。
+    (fs.readFileSync as jest.Mock).mockImplementation(() => {
+      throw new Error("File not found");
+    });
+
+    const response = await GET();
+    expect(response.status).toBe(500);
+    const json = await response.text();
+    expect(json).toEqual("File not found");
+  });
 });
