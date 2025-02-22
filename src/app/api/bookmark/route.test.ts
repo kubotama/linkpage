@@ -1,6 +1,6 @@
 import "@testing-library/jest-dom";
 import * as fs from "fs/promises";
-import { Bookmark } from "../components/bmRow";
+import { Bookmark } from "../../components/bmRow";
 import { GET } from "./route";
 
 jest.mock("fs/promises");

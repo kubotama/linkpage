@@ -22,7 +22,7 @@ export const BmDetail: React.FC<BmDetailProps> = ({
   };
 
   const titleClick = () => {
-    fetch("/title?url=" + textUrl)
+    fetch("/api/title?url=" + textUrl)
       .then((response) => {
         return response.text();
       })

@@ -9,7 +9,7 @@ export const BmGrid: React.FC = () => {
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
-    fetch("/bookmark")
+    fetch("/api/bookmark")
       .then((response) => {
         if (!response.ok) {
           throw new Error("Failed to fetch");
