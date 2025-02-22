@@ -6,6 +6,7 @@ export async function GET() {
   const bookmark_filename = "./bookmark.json";
   try {
     const bookmarks = fs.readFileSync(bookmark_filename, "utf-8");
+    JSON.parse(bookmarks);
     return new Response(bookmarks, {
       status: 200,
       headers: { "Content-Type": "application/json" },
