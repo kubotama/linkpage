@@ -12,15 +12,9 @@ export async function GET() {
       headers: { "Content-Type": "application/json" },
     });
   } catch (error: unknown) {
-    if (error instanceof Error)
-      return new Response(error.message, {
-        status: 500,
-        headers: { "Content-Type": "application/plain" },
-      });
+    return new Response((error as Error).message, {
+      status: 500,
+      headers: { "Content-Type": "text/plain" },
+    });
   }
-  // This code should not be executed
-  return new Response("Should not be executed", {
-    status: 500,
-    headers: { "Content-Type": "application/plain" },
-  });
 }
