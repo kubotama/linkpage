@@ -90,4 +90,16 @@ describe("ブックマークのデータのテスト", () => {
       expect(screen.queryByText("linkpage")).toBeNull();
     });
   });
+
+  it("fetchしたときにエラーコード(500)が返ってきた場合", async () => {
+    fetchMock.mockResponseOnce(JSON.stringify({ message: "Internal Error" }), {
+      status: 500,
+      statusText: "Internal Error",
+    });
+    render(<BmGrid />);
+
+    await waitFor(() => {
+      expect(screen.getByText("Failed to fetch")).toBeInTheDocument();
+    });
+  });
 });
