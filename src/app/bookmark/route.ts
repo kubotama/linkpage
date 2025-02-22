@@ -18,6 +18,7 @@ export async function GET() {
         headers: { "Content-Type": "application/plain" },
       });
   }
+  // This code should not be executed
   return new Response("Should not be executed", {
     status: 500,
     headers: { "Content-Type": "application/plain" },
