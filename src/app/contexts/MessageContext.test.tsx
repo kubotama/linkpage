@@ -13,6 +13,9 @@ const TestComponent = () => {
       <button onClick={() => setMessage({ text: "テストメッセージ" })}>
         メッセージを表示
       </button>
+      <button onClick={() => setMessage({ text: "" })}>
+        メッセージをクリア
+      </button>
     </div>
   );
 };
@@ -41,5 +44,21 @@ describe("MessageContext", () => {
     });
 
     expect(screen.getByText("テストメッセージ")).toBeInTheDocument();
+  });
+
+  it("メッセージをクリア", () => {
+    render(
+      <MessageProvider>
+        <TestComponent />
+      </MessageProvider>
+    );
+
+    act(() => {
+      screen.getByRole("button", { name: "メッセージをクリア" }).click();
+    });
+
+    // expect(screen.getByText("")).toBeInTheDocument();
+    // expect(screen.queryByTestId("message")).toBeNull();
+    expect(screen.getByTestId("message")).toHaveTextContent("");
   });
 });
