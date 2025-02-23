@@ -7,7 +7,14 @@ const BmMessage = () => {
     return <div></div>; // メッセージがない場合は何も表示しない
   }
 
-  return <div>{message.text}</div>;
+  return message.text.length > 0 ? (
+    <div>
+      {message.text}
+      <button>確認</button>
+    </div>
+  ) : (
+    <div>linkpage</div>
+  );
 };
 
 export default BmMessage;

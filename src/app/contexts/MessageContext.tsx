@@ -20,7 +20,7 @@ interface MessageProviderProps {
 export const MessageProvider: React.FC<MessageProviderProps> = ({
   children,
 }) => {
-  const [message, setMessage] = useState<Message | null>({ text: "linkpage" });
+  const [message, setMessage] = useState<Message | null>({ text: "" });
 
   return (
     <MessageContext.Provider value={{ message, setMessage }}>

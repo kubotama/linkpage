@@ -1,21 +1,21 @@
 import React from "react";
 
-import { render, screen } from "@testing-library/react";
+import { render, screen, act } from "@testing-library/react";
 import "@testing-library/jest-dom";
 
 import BmMessage from "./bmMessage";
-import { MessageProvider } from "../contexts/MessageContext";
-
-const TestComponent = () => {
-  return (
-    <div>
-      <BmMessage />
-    </div>
-  );
-};
+import { MessageProvider, useMessage } from "../contexts/MessageContext";
 
 describe("BmMessage", () => {
   it("初期状態", () => {
+    const TestComponent = () => {
+      return (
+        <div>
+          <BmMessage />
+        </div>
+      );
+    };
+
     render(
       <MessageProvider>
         <TestComponent />
@@ -23,19 +23,37 @@ describe("BmMessage", () => {
     );
 
     expect(screen.getByText("linkpage")).toBeInTheDocument();
+    expect(screen.queryByRole("button", { name: "確認" })).toBeNull();
   });
 
-  // it("メッセージを表示できること", () => {
-  //   render(
-  //     <MessageProvider>
-  //       <TestComponent />
-  //     </MessageProvider>
-  //   );
+  it("設定したメッセージを表示できること", () => {
+    const TestComponent = () => {
+      const { setMessage } = useMessage();
 
-  //   act(() => {
-  //     screen.getByRole("button", { name: "確認" }).click();
-  //   });
+      return (
+        <div>
+          <BmMessage />
+          <button onClick={() => setMessage({ text: "テストメッセージ" })}>
+            メッセージを表示
+          </button>
+        </div>
+      );
+    };
 
-  //   expect(screen.getByText("テストメッセージ")).toBeInTheDocument();
-  // });
+    render(
+      <MessageProvider>
+        <TestComponent />
+      </MessageProvider>
+    );
+
+    expect(screen.queryByText("テストメッセージ")).toBeNull();
+    expect(screen.queryByRole("button", { name: "確認" })).toBeNull();
+
+    act(() => {
+      screen.getByRole("button", { name: "メッセージを表示" }).click();
+    });
+
+    expect(screen.getByText("テストメッセージ")).toBeInTheDocument();
+    expect(screen.getByRole("button", { name: "確認" })).toBeInTheDocument();
+  });
 });

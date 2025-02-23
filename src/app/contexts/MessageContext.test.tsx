@@ -29,7 +29,7 @@ describe("MessageContext", () => {
     );
 
     // 初期状態ではlinkpageが表示されていることを確認する
-    expect(screen.getByTestId("message")).toHaveTextContent("linkpage");
+    expect(screen.getByTestId("message")).toHaveTextContent("");
   });
 
   it("メッセージを設定", () => {
