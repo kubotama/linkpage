@@ -26,7 +26,7 @@ describe("テスト環境を動作確認するためのサンプルのテスト"
     render(<Home />);
     await waitFor(() => {
       expect(fetchMock.call.length).toEqual(1);
-      expect(fetchMock.mock.calls[0][0]).toEqual("/bookmark");
+      expect(fetchMock.mock.calls[0][0]).toEqual("/api/bookmark");
       expect(screen.getByText("kubotama/linkpage")).toBeInTheDocument();
     });
   });

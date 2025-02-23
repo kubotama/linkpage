@@ -62,7 +62,7 @@ describe("BmDetail", () => {
     await waitFor(() => {
       expect(titleInput.value).toEqual(title);
       expect(fetchMock).toHaveBeenCalledTimes(1);
-      expect(fetchMock.mock.calls[0][0]).toEqual("/title?url=" + url);
+      expect(fetchMock.mock.calls[0][0]).toEqual("/api/title?url=" + url);
     });
   });
 
@@ -93,7 +93,7 @@ describe("BmDetail", () => {
       }
       expect(titleInput.value).toEqual("");
       expect(fetchMock).toHaveBeenCalledTimes(1);
-      expect(fetchMock.mock.calls[0][0]).toEqual("/title?url=" + url);
+      expect(fetchMock.mock.calls[0][0]).toEqual("/api/title?url=" + url);
     });
   });
 
@@ -124,7 +124,7 @@ describe("BmDetail", () => {
       fireEvent.click(updateButton);
       expect(titleInput.value).toEqual(title_edited);
       expect(fetchMock).toHaveBeenCalledTimes(1);
-      expect(fetchMock.mock.calls[0][0]).toEqual("/title?url=" + url);
+      expect(fetchMock.mock.calls[0][0]).toEqual("/api/title?url=" + url);
     });
   });
 });
