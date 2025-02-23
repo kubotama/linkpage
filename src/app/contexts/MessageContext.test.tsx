@@ -1,6 +1,6 @@
 import React from "react";
 
-import { render, screen } from "@testing-library/react";
+import { render, screen, act } from "@testing-library/react";
 import "@testing-library/jest-dom";
 
 import { MessageProvider, useMessage } from "./MessageContext";
@@ -27,5 +27,19 @@ describe("MessageContext", () => {
 
     // 初期状態ではlinkpageが表示されていることを確認する
     expect(screen.getByTestId("message")).toHaveTextContent("linkpage");
+  });
+
+  it("メッセージを設定", () => {
+    render(
+      <MessageProvider>
+        <TestComponent />
+      </MessageProvider>
+    );
+
+    act(() => {
+      screen.getByRole("button", { name: "メッセージを表示" }).click();
+    });
+
+    expect(screen.getByText("テストメッセージ")).toBeInTheDocument();
   });
 });
