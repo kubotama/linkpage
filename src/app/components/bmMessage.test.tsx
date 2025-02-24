@@ -1,10 +1,11 @@
-import React from "react";
-
-import { render, screen, act } from "@testing-library/react";
 import "@testing-library/jest-dom";
 
-import BmMessage from "./bmMessage";
+import React from "react";
+
+import { act, render, screen } from "@testing-library/react";
+
 import { MessageProvider, useMessage } from "../contexts/MessageContext";
+import BmMessage from "./bmMessage";
 
 describe("BmMessage", () => {
   it("初期状態", () => {

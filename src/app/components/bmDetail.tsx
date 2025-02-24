@@ -1,5 +1,4 @@
-// MyComponent.tsx
-import React, { useState, useRef } from "react";
+import React, { useRef, useState } from "react";
 
 interface BmDetailProps {
   onBmUpdate: (textUrl: string, textTitle: string) => void;
