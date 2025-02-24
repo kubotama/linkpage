@@ -6,9 +6,7 @@ const BmMessage = () => {
   const { message, setMessage } = useMessage();
 
   useEffect(() => {
-    if (message === null) {
-      setBmMessageText(<div>linkpage</div>);
-    } else if (message.text.length > 0) {
+    if (message !== null && message.text.length > 0) {
       setBmMessageText(
         <div>
           {message.text}
