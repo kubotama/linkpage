@@ -1,11 +1,12 @@
+import "@testing-library/jest-dom";
+
+import fetchMock from "jest-fetch-mock";
 import React from "react";
 
-import "@testing-library/jest-dom";
 import { render, screen, waitFor } from "@testing-library/react";
-import fetchMock from "jest-fetch-mock";
 
-import Home from "./page";
 import { Bookmark } from "./components/bmRow";
+import Home from "./page";
 
 describe("テスト環境を動作確認するためのサンプルのテスト", () => {
   beforeEach(() => {

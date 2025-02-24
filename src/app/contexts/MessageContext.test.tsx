@@ -1,7 +1,8 @@
+import "@testing-library/jest-dom";
+
 import React from "react";
 
-import { render, screen, act } from "@testing-library/react";
-import "@testing-library/jest-dom";
+import { act, render, screen } from "@testing-library/react";
 
 import { MessageProvider, useMessage } from "./MessageContext";
 

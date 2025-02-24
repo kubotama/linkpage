@@ -1,7 +1,9 @@
-import React from "react";
 import "@testing-library/jest-dom";
-import { render, screen, waitFor } from "@testing-library/react";
+
 import fetchMock from "jest-fetch-mock";
+import React from "react";
+
+import { render, screen, waitFor } from "@testing-library/react";
 
 import { BmGrid } from "./bmGrid";
 import { Bookmark } from "./bmRow";

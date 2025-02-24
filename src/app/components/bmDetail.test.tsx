@@ -1,7 +1,9 @@
-import React from "react";
-import { render, fireEvent, screen, waitFor } from "@testing-library/react";
 import "@testing-library/jest-dom";
+
 import fetchMock from "jest-fetch-mock";
+import React from "react";
+
+import { fireEvent, render, screen, waitFor } from "@testing-library/react";
 
 import { BmDetail } from "./bmDetail";
 
