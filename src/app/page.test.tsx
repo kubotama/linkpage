@@ -26,7 +26,7 @@ describe("テスト環境を動作確認するためのサンプルのテスト"
 
     render(<Home />);
     await waitFor(() => {
-      expect(screen.getByText("linkpage")).toBeInTheDocument();
+      expect(screen.getByTestId("bm-message")).toHaveTextContent(/^linkpage$/);
       expect(screen.queryByRole("button", { name: "確認" })).toBeNull();
 
       expect(fetchMock.call.length).toEqual(1);
