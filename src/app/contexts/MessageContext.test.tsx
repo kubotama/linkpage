@@ -62,4 +62,19 @@ describe("MessageContext", () => {
     // expect(screen.queryByTestId("message")).toBeNull();
     expect(screen.getByTestId("message")).toHaveTextContent("");
   });
+
+  it("プロバイダーの外で利用した場合", () => {
+    try {
+      render(<TestComponent />);
+      fail("発生すべき例外が発生しませんでした");
+    } catch (error: unknown) {
+      if (error instanceof Error) {
+        expect(error.message).toBe(
+          "useMessage must be used within a MessageProvider"
+        );
+      } else {
+        fail("予期しない例外が発生しました");
+      }
+    }
+  });
 });
