@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from "react";
 
+import { useMessage } from "../contexts/MessageContext";
 import { BmRow } from "./bmRow";
 
 export const BmGrid: React.FC = () => {
@@ -7,6 +8,7 @@ export const BmGrid: React.FC = () => {
   const [bookmarks, setBookmarks] = useState<[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const { setMessage } = useMessage();
 
   useEffect(() => {
     fetch("/api/bookmark")
@@ -28,7 +30,8 @@ export const BmGrid: React.FC = () => {
 
   useEffect(() => {
     if (loading) {
-      setBookmarkGrid(<div>Loading...</div>);
+      setBookmarkGrid(<div></div>);
+      setMessage({ text: "Loading..." });
     } else if (error) {
       setBookmarkGrid(<div>{error}</div>);
     } else {

@@ -5,6 +5,8 @@ import React from "react";
 
 import { render, screen, waitFor } from "@testing-library/react";
 
+import BmMessage from "../components/bmMessage";
+import { MessageProvider } from "../contexts/MessageContext";
 import { BmGrid } from "./bmGrid";
 import { Bookmark } from "./bmRow";
 
@@ -41,7 +43,12 @@ describe("ブックマークのデータのテスト", () => {
   it("GitHubのリンクを生成するテスト", async () => {
     fetchMock.mockResponseOnce(JSON.stringify(mockBookmarks));
 
-    render(<BmGrid />);
+    render(
+      <MessageProvider>
+        <BmMessage />
+        <BmGrid />
+      </MessageProvider>
+    );
 
     await waitFor(() => {
       const bm = screen.getByText("kubotama/linkpage");
@@ -57,7 +64,12 @@ describe("ブックマークのデータのテスト", () => {
   it("Amazonのリンクを生成するテスト", async () => {
     fetchMock.mockResponseOnce(JSON.stringify(mockBookmarks));
 
-    render(<BmGrid />);
+    render(
+      <MessageProvider>
+        <BmMessage />
+        <BmGrid />
+      </MessageProvider>
+    );
 
     await waitFor(() => {
       const bm = screen.getByText("Amazon");
@@ -69,8 +81,14 @@ describe("ブックマークのデータのテスト", () => {
 
   it("ローディング中にローディングメッセージが表示されること", () => {
     fetchMock.mockResponseOnce(() => new Promise(() => [])); // リクエストがresolveしないようにする
-    render(<BmGrid />);
-    expect(screen.getByText("Loading...")).toBeInTheDocument();
+    render(
+      <MessageProvider>
+        <BmMessage />
+        <BmGrid />
+      </MessageProvider>
+    );
+
+    expect(screen.getByTestId("bm-message")).toHaveTextContent(/^Loading...$/);
   });
 
   it("ブックマークのフェッチに失敗した場合、エラーメッセージが表示されること", async () => {
