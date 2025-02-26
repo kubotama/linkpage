@@ -5,7 +5,10 @@ import React from "react";
 
 import { fireEvent, render, screen, waitFor } from "@testing-library/react";
 
+import { MessageProvider } from "../contexts/MessageContext";
+
 import { BmDetail } from "./bmDetail";
+import BmMessage from "./bmMessage";
 
 describe("BmDetail", () => {
   beforeEach(() => {
@@ -16,7 +19,12 @@ describe("BmDetail", () => {
     const url = "https://mail.google.com/mail/";
     const onBmUpdate = jest.fn(); // モック関数を作成
 
-    render(<BmDetail onBmUpdate={onBmUpdate} />);
+    render(
+      <MessageProvider>
+        <BmMessage />
+        <BmDetail onBmUpdate={onBmUpdate} />
+      </MessageProvider>
+    );
 
     const urlInput = screen.getByLabelText("url");
     const updateButton = screen.getByText("更新");
@@ -33,7 +41,12 @@ describe("BmDetail", () => {
   it("すべてのエレメントが表示される", () => {
     const onBmUpdate = jest.fn(); // モック関数を作成
 
-    render(<BmDetail onBmUpdate={onBmUpdate} />);
+    render(
+      <MessageProvider>
+        <BmMessage />
+        <BmDetail onBmUpdate={onBmUpdate} />
+      </MessageProvider>
+    );
 
     expect(screen.getByLabelText("url")).toBeVisible();
     expect(screen.getByLabelText("title")).toBeInTheDocument();
@@ -49,7 +62,13 @@ describe("BmDetail", () => {
     const title = "Gmail";
     const onBmUpdate = jest.fn(); // モック関数を作成
 
-    render(<BmDetail onBmUpdate={onBmUpdate} />);
+    render(
+      <MessageProvider>
+        <BmMessage />
+        <BmDetail onBmUpdate={onBmUpdate} />
+      </MessageProvider>
+    );
+
     const urlInput = screen.getByLabelText("url");
     const titleInput = screen.getByLabelText("title") as HTMLInputElement;
     const titleButton = screen.getByText("タイトル");
@@ -68,17 +87,22 @@ describe("BmDetail", () => {
     });
   });
 
-  it("パラメータとして渡されたURLにアクセスできない場合、タイトルのテキストボックスに、なにも表示しない。", async () => {
+  it("パラメータとして渡されたURLにアクセスできない場合、メッセージ領域にエラーメッセージを表示する。", async () => {
     // タイトルを取得するボタンをクリックして、エラーコード500の場合、タイトルのテキストボックスに、なにも表示しない。
     const url = "https://mail.google.com/mail/";
     const onBmUpdate = jest.fn(); // モック関数を作成
 
-    fetchMock.mockResponseOnce(
-      JSON.stringify({ message: "Can't find title" }),
-      { status: 500 }
-    );
+    fetchMock.mockResponseOnce("Can't find title", {
+      status: 500,
+      headers: { "Content-Type": "text/plain" },
+    });
 
-    render(<BmDetail onBmUpdate={onBmUpdate} />);
+    render(
+      <MessageProvider>
+        <BmMessage />
+        <BmDetail onBmUpdate={onBmUpdate} />
+      </MessageProvider>
+    );
 
     const urlInput = screen.getByLabelText("url");
     const titleInput = screen.getByLabelText("title");
@@ -96,6 +120,13 @@ describe("BmDetail", () => {
       expect(titleInput.value).toEqual("");
       expect(fetchMock).toHaveBeenCalledTimes(1);
       expect(fetchMock.mock.calls[0][0]).toEqual("/api/title?url=" + url);
+
+      expect(screen.getByTestId("bm-message")).toHaveTextContent(
+        /^Can't find title$/
+      );
+      expect(
+        screen.queryByRole("button", { name: "確認" })
+      ).toBeInTheDocument();
     });
   });
 
@@ -106,7 +137,14 @@ describe("BmDetail", () => {
     const title_edited = "GMAIL";
     const onBmUpdate = jest.fn(); // モック関数を作成
 
-    render(<BmDetail onBmUpdate={onBmUpdate} />);
+    // render(<BmDetail onBmUpdate={onBmUpdate} />);
+    render(
+      <MessageProvider>
+        <BmMessage />
+        <BmDetail onBmUpdate={onBmUpdate} />
+      </MessageProvider>
+    );
+
     const urlInput = screen.getByLabelText("url");
     const titleInput = screen.getByLabelText("title") as HTMLInputElement;
     const titleButton = screen.getByText("タイトル");

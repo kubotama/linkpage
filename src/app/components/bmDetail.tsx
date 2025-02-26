@@ -1,5 +1,7 @@
 import React, { useRef, useState } from "react";
 
+import { useMessage } from "../contexts/MessageContext";
+
 interface BmDetailProps {
   onBmUpdate: (textUrl: string, textTitle: string) => void;
 }
@@ -11,6 +13,7 @@ export const BmDetail: React.FC<BmDetailProps> = ({
   const [textTitle, setTextTitle] = useState("");
   const textUrlRef1 = useRef<HTMLInputElement>(null);
   const textTitleRef2 = useRef<HTMLInputElement>(null);
+  const { setMessage } = useMessage();
 
   const updateClick = () => {
     if (textUrlRef1.current && textTitleRef2.current) {
@@ -20,14 +23,16 @@ export const BmDetail: React.FC<BmDetailProps> = ({
     }
   };
 
-  const titleClick = () => {
-    fetch("/api/title?url=" + textUrl)
-      .then((response) => {
-        return response.text();
-      })
-      .then((text) => {
-        setTextTitle(text);
-      });
+  const titleClick = async () => {
+    const response = await fetch("/api/title?url=" + textUrl);
+    const text = await response.text();
+
+    if (!response.ok) {
+      setTextTitle("");
+      setMessage({ text: text });
+    } else {
+      setTextTitle(text);
+    }
   };
 
   return (
