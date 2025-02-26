@@ -33,7 +33,8 @@ export const BmGrid: React.FC = () => {
       setBookmarkGrid(<div></div>);
       setMessage({ text: "Loading..." });
     } else if (error) {
-      setBookmarkGrid(<div>{error}</div>);
+      setBookmarkGrid(<div></div>);
+      setMessage({ text: error });
     } else {
       setBookmarkGrid(
         <div className="grid grid-cols-1">
@@ -43,7 +44,7 @@ export const BmGrid: React.FC = () => {
         </div>
       );
     }
-  }, [bookmarks, loading, error]);
+  }, [bookmarks, loading, error, setMessage]);
 
   return bookmarkGrid;
 };

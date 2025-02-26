@@ -94,10 +94,17 @@ describe("ブックマークのデータのテスト", () => {
   it("ブックマークのフェッチに失敗した場合、エラーメッセージが表示されること", async () => {
     fetchMock.mockRejectOnce(new Error("Failed to fetch bookmarks"));
 
-    render(<BmGrid />);
+    render(
+      <MessageProvider>
+        <BmMessage />
+        <BmGrid />
+      </MessageProvider>
+    );
 
     await waitFor(() => {
-      expect(screen.getByText("Failed to fetch bookmarks")).toBeInTheDocument();
+      expect(screen.getByTestId("bm-message")).toHaveTextContent(
+        /^Failed to fetch bookmarks$/
+      );
     });
   });
 
