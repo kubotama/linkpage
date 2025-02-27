@@ -1,31 +1,35 @@
-import React, { useEffect, useState } from "react";
+import React, { JSX, useEffect, useState } from "react";
 
 import { useMessage } from "../contexts/MessageContext";
-import { BmRow } from "./bmRow";
+import { BmRow, Bookmark } from "./bmRow"; // Import the Bookmark type
 
 export const BmGrid: React.FC = () => {
-  const [bookmarkGrid, setBookmarkGrid] = useState(<div></div>);
-  const [bookmarks, setBookmarks] = useState<[]>([]);
-  const [loading, setLoading] = useState(true);
+  const [bookmarkGrid, setBookmarkGrid] = useState<JSX.Element>(<div></div>);
+  const [bookmarks, setBookmarks] = useState<Bookmark[]>([]); // Type as Bookmark[]
+  const [loading, setLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
   const { setMessage } = useMessage();
 
   useEffect(() => {
-    fetch("/api/bookmark")
-      .then((response) => {
+    const fetchData = async () => {
+      try {
+        const response = await fetch("/api/bookmark");
+
         if (!response.ok) {
-          throw new Error("Failed to fetch");
+          const message = `Failed to fetch: ${response.status} ${response.statusText}`;
+          throw new Error(message);
         }
-        return response.json();
-      })
-      .then((data) => {
+
+        const data: Bookmark[] = await response.json(); // Type the data as Bookmark[]
         setBookmarks(data);
+      } catch (error: unknown) {
+        setError((error as Error).message);
+      } finally {
         setLoading(false);
-      })
-      .catch((error) => {
-        setError(error.message);
-        setLoading(false);
-      });
+      }
+    };
+
+    fetchData();
   }, []);
 
   useEffect(() => {
@@ -36,6 +40,7 @@ export const BmGrid: React.FC = () => {
       setBookmarkGrid(<div></div>);
       setMessage({ text: error });
     } else {
+      setMessage({ text: "" });
       setBookmarkGrid(
         <div className="grid grid-cols-1">
           {bookmarks.map((bookmark, index) => (

@@ -111,22 +111,40 @@ describe("ブックマークのデータのテスト", () => {
   it("ブックマークが存在しない場合、タイトル(linkpage)が表示されること", async () => {
     fetchMock.mockResponseOnce(JSON.stringify([]));
 
-    render(<BmGrid />);
+    render(
+      <MessageProvider>
+        <BmMessage />
+        <BmGrid />
+      </MessageProvider>
+    );
 
     await waitFor(() => {
-      expect(screen.queryByText("linkpage")).toBeNull();
+      expect(screen.getByTestId("bm-message")).toHaveTextContent(/^linkpage$/);
     });
   });
 
   it("fetchしたときにエラーコード(500)が返ってきた場合", async () => {
-    fetchMock.mockResponseOnce(JSON.stringify({ message: "Internal Error" }), {
+    // fetchMock.mockResponseOnce(JSON.stringify({ message: "Internal Error" }), {
+    //   status: 500,
+    // });
+    fetchMock.mockResponseOnce("Internal Error", {
       status: 500,
-      statusText: "Internal Error",
+      headers: { "Content-Type": "text/plain" },
     });
-    render(<BmGrid />);
+
+    // render(<BmGrid />);
+    render(
+      <MessageProvider>
+        <BmMessage />
+        <BmGrid />
+      </MessageProvider>
+    );
 
     await waitFor(() => {
-      expect(screen.getByText("Failed to fetch")).toBeInTheDocument();
+      // expect(screen.getByText("Failed to fetch")).toBeInTheDocument();
+      expect(screen.getByTestId("bm-message")).toHaveTextContent(
+        "Failed to fetch:"
+      );
     });
   });
 });
