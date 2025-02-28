@@ -1,4 +1,4 @@
-import React, { useRef, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 
 import { useMessage } from "../contexts/MessageContext";
 
@@ -11,6 +11,8 @@ export const BmDetail: React.FC<BmDetailProps> = ({
 }) => {
   const [textUrl, setTextUrl] = useState("");
   const [textTitle, setTextTitle] = useState("");
+  const [textUrlDisabled, setTextUrlDisabled] = useState(true);
+  const [textTitleDisabled, setTextTitleDisabled] = useState(true);
   const textUrlRef1 = useRef<HTMLInputElement>(null);
   const textTitleRef2 = useRef<HTMLInputElement>(null);
   const { setMessage } = useMessage();
@@ -35,6 +37,20 @@ export const BmDetail: React.FC<BmDetailProps> = ({
     }
   };
 
+  useEffect(() => {
+    if (textUrl === "") {
+      setTextUrlDisabled(true);
+      setTextTitleDisabled(true);
+    } else {
+      setTextUrlDisabled(false);
+      if (textTitle === "") {
+        setTextTitleDisabled(true);
+      } else {
+        setTextTitleDisabled(false);
+      }
+    }
+  }, [textUrl, textTitle]);
+
   return (
     <div>
       <input
@@ -51,8 +67,12 @@ export const BmDetail: React.FC<BmDetailProps> = ({
         onChange={(e) => setTextTitle(e.target.value)}
         ref={textTitleRef2}
       />
-      <button onClick={titleClick}>タイトル</button>
-      <button onClick={updateClick}>更新</button>
+      <button onClick={titleClick} disabled={textUrlDisabled}>
+        タイトル
+      </button>
+      <button onClick={updateClick} disabled={textTitleDisabled}>
+        更新
+      </button>
     </div>
   );
 };

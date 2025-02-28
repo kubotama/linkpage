@@ -6,7 +6,6 @@ import React from "react";
 import { fireEvent, render, screen, waitFor } from "@testing-library/react";
 
 import { MessageProvider } from "../contexts/MessageContext";
-
 import { BmDetail } from "./bmDetail";
 import BmMessage from "./bmMessage";
 
@@ -27,15 +26,19 @@ describe("BmDetail", () => {
     );
 
     const urlInput = screen.getByLabelText("url");
+    const textInput = screen.getByLabelText("title") as HTMLInputElement;
     const updateButton = screen.getByText("更新");
 
     fireEvent.change(urlInput, {
       target: { value: url },
     });
+    fireEvent.change(textInput, {
+      target: { value: "Gmail" },
+    });
     fireEvent.click(updateButton);
 
     expect(onBmUpdate).toHaveBeenCalledTimes(1);
-    expect(onBmUpdate).toHaveBeenCalledWith(url, "");
+    expect(onBmUpdate).toHaveBeenCalledWith(url, "Gmail");
   });
 
   it("すべてのエレメントが表示される", () => {
@@ -166,5 +169,26 @@ describe("BmDetail", () => {
       expect(fetchMock).toHaveBeenCalledTimes(1);
       expect(fetchMock.mock.calls[0][0]).toEqual("/api/title?url=" + url);
     });
+  });
+
+  it("URLが空白の場合、タイトルボタン、更新ボタンが無効になっている。", async () => {
+    const onBmUpdate = jest.fn();
+
+    render(
+      <MessageProvider>
+        <BmMessage />
+        <BmDetail onBmUpdate={onBmUpdate} />
+      </MessageProvider>
+    );
+
+    const urlInput = screen.getByLabelText("url");
+    const titleButton = screen.getByText("タイトル");
+    const updateButton = screen.getByText("更新");
+
+    fireEvent.change(urlInput, {
+      target: { value: "" },
+    });
+    expect(titleButton).toBeDisabled();
+    expect(updateButton).toBeDisabled();
   });
 });
