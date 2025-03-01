@@ -7,6 +7,7 @@ import { render, screen, waitFor } from "@testing-library/react";
 
 import BmMessage from "../components/bmMessage";
 import { MessageProvider } from "../contexts/MessageContext";
+import { BookmarkProvider } from "../contexts/BookmarkContext";
 import { BmGrid } from "./bmGrid";
 import { Bookmark } from "./bmRow";
 
@@ -45,8 +46,10 @@ describe("ブックマークのデータのテスト", () => {
 
     render(
       <MessageProvider>
-        <BmMessage />
-        <BmGrid />
+        <BookmarkProvider>
+          <BmMessage />
+          <BmGrid />
+        </BookmarkProvider>
       </MessageProvider>
     );
 
@@ -64,10 +67,18 @@ describe("ブックマークのデータのテスト", () => {
   it("Amazonのリンクを生成するテスト", async () => {
     fetchMock.mockResponseOnce(JSON.stringify(mockBookmarks));
 
+    // render(
+    //   <MessageProvider>
+    //     <BmMessage />
+    //     <BmGrid />
+    //   </MessageProvider>
+    // );
     render(
       <MessageProvider>
-        <BmMessage />
-        <BmGrid />
+        <BookmarkProvider>
+          <BmMessage />
+          <BmGrid />
+        </BookmarkProvider>
       </MessageProvider>
     );
 
@@ -81,10 +92,18 @@ describe("ブックマークのデータのテスト", () => {
 
   it("ローディング中にローディングメッセージが表示されること", () => {
     fetchMock.mockResponseOnce(() => new Promise(() => [])); // リクエストがresolveしないようにする
+    // render(
+    //   <MessageProvider>
+    //     <BmMessage />
+    //     <BmGrid />
+    //   </MessageProvider>
+    // );
     render(
       <MessageProvider>
-        <BmMessage />
-        <BmGrid />
+        <BookmarkProvider>
+          <BmMessage />
+          <BmGrid />
+        </BookmarkProvider>
       </MessageProvider>
     );
 
@@ -94,10 +113,18 @@ describe("ブックマークのデータのテスト", () => {
   it("ブックマークのフェッチに失敗した場合、エラーメッセージが表示されること", async () => {
     fetchMock.mockRejectOnce(new Error("Failed to fetch bookmarks"));
 
+    // render(
+    //   <MessageProvider>
+    //     <BmMessage />
+    //     <BmGrid />
+    //   </MessageProvider>
+    // );
     render(
       <MessageProvider>
-        <BmMessage />
-        <BmGrid />
+        <BookmarkProvider>
+          <BmMessage />
+          <BmGrid />
+        </BookmarkProvider>
       </MessageProvider>
     );
 
@@ -111,10 +138,18 @@ describe("ブックマークのデータのテスト", () => {
   it("ブックマークが存在しない場合、タイトル(linkpage)が表示されること", async () => {
     fetchMock.mockResponseOnce(JSON.stringify([]));
 
+    // render(
+    //   <MessageProvider>
+    //     <BmMessage />
+    //     <BmGrid />
+    //   </MessageProvider>
+    // );
     render(
       <MessageProvider>
-        <BmMessage />
-        <BmGrid />
+        <BookmarkProvider>
+          <BmMessage />
+          <BmGrid />
+        </BookmarkProvider>
       </MessageProvider>
     );
 
@@ -124,19 +159,23 @@ describe("ブックマークのデータのテスト", () => {
   });
 
   it("fetchしたときにエラーコード(500)が返ってきた場合", async () => {
-    // fetchMock.mockResponseOnce(JSON.stringify({ message: "Internal Error" }), {
-    //   status: 500,
-    // });
     fetchMock.mockResponseOnce("Internal Error", {
       status: 500,
       headers: { "Content-Type": "text/plain" },
     });
 
-    // render(<BmGrid />);
+    // render(
+    //   <MessageProvider>
+    //     <BmMessage />
+    //     <BmGrid />
+    //   </MessageProvider>
+    // );
     render(
       <MessageProvider>
-        <BmMessage />
-        <BmGrid />
+        <BookmarkProvider>
+          <BmMessage />
+          <BmGrid />
+        </BookmarkProvider>
       </MessageProvider>
     );
 
