@@ -57,4 +57,21 @@ describe("BookmarkProvider", () => {
       expect(screen.getByText("Test")).toBeInTheDocument();
     });
   });
+
+  it("ローディング中に「ローディング中...」が表示される。", async () => {
+    fetchMock.mockResponseOnce(() => new Promise(() => [])); // リクエストがresolveしないようにする
+
+    render(
+      <BookmarkProvider>
+        <TestComponent />
+      </BookmarkProvider>
+    );
+
+    await waitFor(() => {
+      expect(screen.getByText("Loading...")).toBeInTheDocument();
+      expect(screen.queryByRole("list")).not.toBeInTheDocument();
+      expect(screen.queryByText("Example")).not.toBeInTheDocument();
+      expect(screen.queryByText("Test")).not.toBeInTheDocument();
+    });
+  });
 });
