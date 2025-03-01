@@ -6,7 +6,7 @@ import React from "react";
 import { render, screen, waitFor } from "@testing-library/react";
 
 import { Bookmark } from "../components/bmRow";
-import { BookmarkProvider, useBookmarks } from "./BookmarkContext";
+import { BookmarkProvider, useBookmark } from "./BookmarkContext";
 
 const mockBookmarks: Bookmark[] = [
   {
@@ -21,7 +21,7 @@ const mockBookmarks: Bookmark[] = [
 
 // テスト用のコンシューマーコンポーネント
 const TestComponent = () => {
-  const { bookmarks, loading, error } = useBookmarks();
+  const { bookmarks, loading, error } = useBookmark();
 
   if (loading) return <div>Loading...</div>;
   if (error) return <div>{error}</div>;
@@ -93,5 +93,20 @@ describe("BookmarkProvider", () => {
       expect(screen.queryByText("Example")).not.toBeInTheDocument();
       expect(screen.queryByText("Test")).not.toBeInTheDocument();
     });
+  });
+
+  it("プロバイダーの外で利用した場合", () => {
+    try {
+      render(<TestComponent />);
+      fail("発生すべき例外が発生しませんでした");
+    } catch (error: unknown) {
+      if (error instanceof Error) {
+        expect(error.message).toBe(
+          "useBookmark must be used within a BookmarkProvider"
+        );
+      } else {
+        fail("予期しない例外が発生しました");
+      }
+    }
   });
 });
