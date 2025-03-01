@@ -24,7 +24,7 @@ const TestComponent = () => {
   const { bookmarks, loading, error } = useBookmarks();
 
   if (loading) return <div>Loading...</div>;
-  if (error) return <div>Error: {error}</div>;
+  if (error) return <div>{error}</div>;
 
   return (
     <div>
@@ -69,6 +69,26 @@ describe("BookmarkProvider", () => {
 
     await waitFor(() => {
       expect(screen.getByText("Loading...")).toBeInTheDocument();
+      expect(screen.queryByRole("list")).not.toBeInTheDocument();
+      expect(screen.queryByText("Example")).not.toBeInTheDocument();
+      expect(screen.queryByText("Test")).not.toBeInTheDocument();
+    });
+  });
+
+  it("HTTPステータス500でfetchした場合、エラーメッセージが表示される", async () => {
+    fetchMock.mockResponseOnce("Internal Error", {
+      status: 500,
+      headers: { "Content-Type": "text/plain" },
+    });
+
+    render(
+      <BookmarkProvider>
+        <TestComponent />
+      </BookmarkProvider>
+    );
+
+    await waitFor(() => {
+      expect(screen.getByText("Failed to fetch: 500")).toBeInTheDocument();
       expect(screen.queryByRole("list")).not.toBeInTheDocument();
       expect(screen.queryByText("Example")).not.toBeInTheDocument();
       expect(screen.queryByText("Test")).not.toBeInTheDocument();
