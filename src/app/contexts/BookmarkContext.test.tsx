@@ -100,13 +100,9 @@ describe("BookmarkProvider", () => {
       render(<TestComponent />);
       fail("発生すべき例外が発生しませんでした");
     } catch (error: unknown) {
-      if (error instanceof Error) {
-        expect(error.message).toBe(
-          "useBookmark must be used within a BookmarkProvider"
-        );
-      } else {
-        fail("予期しない例外が発生しました");
-      }
+      expect((error as Error).message).toBe(
+        "useBookmark must be used within a BookmarkProvider"
+      );
     }
   });
 });
