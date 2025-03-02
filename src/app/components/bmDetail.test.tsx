@@ -190,4 +190,50 @@ describe("BmDetail", () => {
     expect(titleButton).toBeDisabled();
     expect(updateButton).toBeDisabled();
   });
+
+  it("URLが入力されていて、タイトルが空白の場合、タイトルボタンが有効、更新ボタンが無効になっている。", async () => {
+    const onBmUpdate = jest.fn();
+
+    render(
+      <MessageProvider>
+        <BmMessage />
+        <BmDetail onBmUpdate={onBmUpdate} />
+      </MessageProvider>
+    );
+
+    const urlInput = screen.getByLabelText("url");
+    const titleButton = screen.getByText("タイトル");
+    const updateButton = screen.getByText("更新");
+
+    fireEvent.change(urlInput, {
+      target: { value: "https://mail.google.com/mail/" },
+    });
+    expect(titleButton).toBeEnabled();
+    expect(updateButton).toBeDisabled();
+  });
+
+  it("URLとタイトルが入力されている場合、タイトルボタン、更新ボタンが有効になっている。", async () => {
+    const onBmUpdate = jest.fn();
+
+    render(
+      <MessageProvider>
+        <BmMessage />
+        <BmDetail onBmUpdate={onBmUpdate} />
+      </MessageProvider>
+    );
+
+    const urlInput = screen.getByLabelText("url");
+    const titleInput = screen.getByLabelText("title") as HTMLInputElement;
+    const titleButton = screen.getByText("タイトル");
+    const updateButton = screen.getByText("更新");
+
+    fireEvent.change(urlInput, {
+      target: { value: "https://mail.google.com/mail/" },
+    });
+    fireEvent.change(titleInput, {
+      target: { value: "Gmail" },
+    });
+    expect(titleButton).toBeEnabled();
+    expect(updateButton).toBeEnabled();
+  });
 });
