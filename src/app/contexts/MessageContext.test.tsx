@@ -58,8 +58,6 @@ describe("MessageContext", () => {
       screen.getByRole("button", { name: "メッセージをクリア" }).click();
     });
 
-    // expect(screen.getByText("")).toBeInTheDocument();
-    // expect(screen.queryByTestId("message")).toBeNull();
     expect(screen.getByTestId("message")).toHaveTextContent("");
   });
 

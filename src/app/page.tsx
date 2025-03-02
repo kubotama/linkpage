@@ -1,14 +1,16 @@
 "use client";
 
-import { BmGrid } from "./components/bmGrid";
+import React from "react";
+
 import BmMessage from "./components/bmMessage";
+import { LinkPage } from "./components/LinkPage";
 import { MessageProvider } from "./contexts/MessageContext";
 
 export const Home: React.FC = () => {
   return (
     <MessageProvider>
       <BmMessage />
-      <BmGrid />
+      <LinkPage />
     </MessageProvider>
   );
 };

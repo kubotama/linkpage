@@ -24,7 +24,7 @@ describe("BmMessage", () => {
     );
 
     expect(screen.getByText("linkpage")).toBeInTheDocument();
-    expect(screen.queryByRole("button", { name: "確認" })).toBeNull();
+    expect(screen.getByRole("button", { name: "確認" })).toBeInTheDocument();
   });
 
   it("設定したメッセージを表示できること", () => {
@@ -48,7 +48,7 @@ describe("BmMessage", () => {
     );
 
     expect(screen.queryByText("テストメッセージ")).toBeNull();
-    expect(screen.queryByRole("button", { name: "確認" })).toBeNull();
+    expect(screen.getByRole("button", { name: "確認" })).toBeInTheDocument();
 
     act(() => {
       screen.getByRole("button", { name: "メッセージを表示" }).click();
@@ -89,6 +89,6 @@ describe("BmMessage", () => {
 
     expect(screen.getByText("linkpage")).toBeInTheDocument();
     expect(screen.queryByText("テストメッセージ")).toBeNull();
-    expect(screen.queryByRole("button", { name: "確認" })).toBeNull();
+    expect(screen.getByRole("button", { name: "確認" })).toBeInTheDocument();
   });
 });
