@@ -1,16 +1,16 @@
 import React, { JSX, useEffect, useState } from "react";
 
-import { useBookmark } from "../contexts/BookmarkContext";
-import { useMessage } from "../contexts/MessageContext";
-import { BmRow } from "./bmRow"; // Import the Bookmark type
+// import { useBookmark } from "../contexts/BookmarkContext";
+// import { useMessage } from "../contexts/MessageContext";
+import { BmRow, Bookmark } from "./bmRow"; // Import the Bookmark type
 
-export const BmGrid: React.FC = () => {
+export const BmGrid: React.FC<{ bookmarks: Bookmark[] }> = ({ bookmarks }) => {
   const [bookmarkGrid, setBookmarkGrid] = useState<JSX.Element>(<div></div>);
   // const [bookmarks, setBookmarks] = useState<Bookmark[]>([]); // Type as Bookmark[]
   // const [loading, setLoading] = useState<boolean>(true);
   // const [error, setError] = useState<string | null>(null);
-  const { setMessage } = useMessage();
-  const { bookmarks, loading, error } = useBookmark();
+  // const { setMessage } = useMessage();
+  // const { bookmarks, loading, error } = useBookmark();
 
   // useEffect(() => {
   //   const fetchData = async () => {
@@ -34,24 +34,34 @@ export const BmGrid: React.FC = () => {
   //   fetchData();
   // }, []);
 
+  // useEffect(() => {
+  //   if (loading) {
+  //     setBookmarkGrid(<div></div>);
+  //     setMessage({ text: "Loading..." });
+  //   } else if (error) {
+  //     setBookmarkGrid(<div></div>);
+  //     setMessage({ text: error });
+  //   } else {
+  //     setMessage({ text: "" });
+  //     setBookmarkGrid(
+  //       <div className="grid grid-cols-1">
+  //         {bookmarks.map((bookmark, index) => (
+  //           <BmRow key={index} bookmark={bookmark} />
+  //         ))}
+  //       </div>
+  //     );
+  //   }
+  // }, [bookmarks, loading, error, setMessage]);
+
   useEffect(() => {
-    if (loading) {
-      setBookmarkGrid(<div></div>);
-      setMessage({ text: "Loading..." });
-    } else if (error) {
-      setBookmarkGrid(<div></div>);
-      setMessage({ text: error });
-    } else {
-      setMessage({ text: "" });
-      setBookmarkGrid(
-        <div className="grid grid-cols-1">
-          {bookmarks.map((bookmark, index) => (
-            <BmRow key={index} bookmark={bookmark} />
-          ))}
-        </div>
-      );
-    }
-  }, [bookmarks, loading, error, setMessage]);
+    setBookmarkGrid(
+      <div className="grid grid-cols-1">
+        {bookmarks.map((bookmark, index) => (
+          <BmRow key={index} bookmark={bookmark} />
+        ))}
+      </div>
+    );
+  }, [bookmarks]);
 
   return bookmarkGrid;
 };
