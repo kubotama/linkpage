@@ -12,17 +12,17 @@ const BmMessage = () => {
         {message !== null && message.text.length > 0 ? (
           <>
             <div data-testid="bm-message">{message.text}</div>
-            <button
-              onClick={() => {
-                setMessage({ text: "" });
-              }}
-            >
-              確認
-            </button>
           </>
         ) : (
           <div data-testid="bm-message">linkpage</div>
         )}
+        <button
+          onClick={() => {
+            setMessage({ text: "" });
+          }}
+        >
+          確認
+        </button>
       </div>
     );
   }, [message, setMessage]);
