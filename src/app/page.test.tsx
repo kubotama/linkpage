@@ -29,6 +29,14 @@ describe("テスト環境を動作確認するためのサンプルのテスト"
       expect(screen.getByTestId("bm-message")).toHaveTextContent(/^linkpage$/);
       expect(screen.getByRole("button", { name: "確認" })).toBeInTheDocument();
 
+      expect(screen.getByText("kubotama/linkpage")).toBeInTheDocument();
+      expect(screen.getByText("Google")).toBeInTheDocument();
+
+      expect(screen.getByLabelText("url")).toBeInTheDocument();
+      expect(screen.getByLabelText("title")).toBeInTheDocument();
+      expect(screen.getByText("タイトル")).toBeInTheDocument();
+      expect(screen.getByText("更新")).toBeInTheDocument();
+
       expect(fetchMock.call.length).toEqual(1);
       expect(fetchMock.mock.calls[0][0]).toEqual("/api/bookmark");
       expect(screen.getByText("kubotama/linkpage")).toBeInTheDocument();
