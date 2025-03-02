@@ -140,7 +140,6 @@ describe("BmDetail", () => {
     const title_edited = "GMAIL";
     const onBmUpdate = jest.fn(); // モック関数を作成
 
-    // render(<BmDetail onBmUpdate={onBmUpdate} />);
     render(
       <MessageProvider>
         <BmMessage />
