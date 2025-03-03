@@ -49,9 +49,15 @@ export const BookmarkManager = ({}) => {
       });
   }, []);
 
+  const handleAddBookmark = (textUrl: string, textTitle: string) => {
+    const newBookmark = { url: textUrl, title: textTitle };
+    const newBookmarks = [...bookmarks, newBookmark];
+    setBookmarks(newBookmarks);
+  };
+
   return (
     <>
-      <BmDetail onAddBookmark={() => {}} />
+      <BmDetail onAddBookmark={handleAddBookmark} />
       <BmGrid bookmarks={bookmarks} />
     </>
   );

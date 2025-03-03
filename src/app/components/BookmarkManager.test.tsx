@@ -3,7 +3,7 @@ import "@testing-library/jest-dom";
 import fetchMock from "jest-fetch-mock";
 import React from "react";
 
-import { render, screen, waitFor } from "@testing-library/react";
+import { fireEvent, render, screen, waitFor } from "@testing-library/react";
 
 import { MessageProvider } from "../contexts/MessageContext";
 import BmMessage from "./bmMessage";
@@ -80,6 +80,43 @@ describe("BookmarkManagerの表示を確認", () => {
       expect(screen.getByTestId("bm-message")).toHaveTextContent(
         /Failed to fetch: \[500\] Internal Server Error$/
       );
+    });
+  });
+});
+
+describe("更新されたブックマークが、APIにPOSTで送られる。", () => {
+  it("更新ボタンをクリックすると、画面のブックマークの最後に追加される", async () => {
+    // Initial GET request mock
+    fetchMock.mockResponseOnce(JSON.stringify(mockBookmarks));
+
+    render(
+      <MessageProvider>
+        <BmMessage />
+        <BookmarkManager />
+      </MessageProvider>
+    );
+
+    await waitFor(() => {
+      // Verify initial fetch was called
+      expect(fetchMock).toHaveBeenCalledWith("/api/bookmark");
+      expect(screen.queryByText("Example Site")).toBeNull();
+    });
+
+    const urlInput = screen.getByLabelText("url");
+    const titleInput = screen.getByLabelText("title") as HTMLInputElement;
+    const updateButton = screen.getByText("更新");
+
+    fireEvent.change(urlInput, {
+      target: { value: "https://www.example.com" },
+    });
+    fireEvent.change(titleInput, {
+      target: { value: "Example Site" },
+    });
+    fireEvent.click(updateButton);
+
+    // Trigger bookmark update
+    await waitFor(() => {
+      expect(screen.getByText("Example Site")).toBeInTheDocument();
     });
   });
 });
