@@ -51,7 +51,7 @@ export const BookmarkManager = ({}) => {
 
   return (
     <>
-      <BmDetail onBmUpdate={() => {}} />
+      <BmDetail onAddBookmark={() => {}} />
       <BmGrid bookmarks={bookmarks} />
     </>
   );

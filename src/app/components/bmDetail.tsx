@@ -3,11 +3,11 @@ import React, { useEffect, useRef, useState } from "react";
 import { useMessage } from "../contexts/MessageContext";
 
 interface BmDetailProps {
-  onBmUpdate: (textUrl: string, textTitle: string) => void;
+  onAddBookmark: (textUrl: string, textTitle: string) => void;
 }
 
 export const BmDetail: React.FC<BmDetailProps> = ({
-  onBmUpdate: onBmUpdate,
+  onAddBookmark: onAddBookmark,
 }) => {
   const [textUrl, setTextUrl] = useState("");
   const [textTitle, setTextTitle] = useState("");
@@ -21,7 +21,7 @@ export const BmDetail: React.FC<BmDetailProps> = ({
     if (textUrlRef1.current && textTitleRef2.current) {
       const inputTextUrl = textUrlRef1.current.value;
       const inputTextTitle = textTitleRef2.current.value;
-      onBmUpdate(inputTextUrl, inputTextTitle);
+      onAddBookmark(inputTextUrl, inputTextTitle);
     }
   };
 

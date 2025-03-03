@@ -16,12 +16,12 @@ describe("BmDetail", () => {
 
   it("入力された文字列が親コンポーネントに渡されること", () => {
     const url = "https://mail.google.com/mail/";
-    const onBmUpdate = jest.fn(); // モック関数を作成
+    const onAddBookmark = jest.fn(); // モック関数を作成
 
     render(
       <MessageProvider>
         <BmMessage />
-        <BmDetail onBmUpdate={onBmUpdate} />
+        <BmDetail onAddBookmark={onAddBookmark} />
       </MessageProvider>
     );
 
@@ -37,17 +37,17 @@ describe("BmDetail", () => {
     });
     fireEvent.click(updateButton);
 
-    expect(onBmUpdate).toHaveBeenCalledTimes(1);
-    expect(onBmUpdate).toHaveBeenCalledWith(url, "Gmail");
+    expect(onAddBookmark).toHaveBeenCalledTimes(1);
+    expect(onAddBookmark).toHaveBeenCalledWith(url, "Gmail");
   });
 
   it("すべてのエレメントが表示される", () => {
-    const onBmUpdate = jest.fn(); // モック関数を作成
+    const onAddBookmark = jest.fn(); // モック関数を作成
 
     render(
       <MessageProvider>
         <BmMessage />
-        <BmDetail onBmUpdate={onBmUpdate} />
+        <BmDetail onAddBookmark={onAddBookmark} />
       </MessageProvider>
     );
 
@@ -63,12 +63,12 @@ describe("BmDetail", () => {
     // タイトルのテキストボックスに、APIから返されたタイトルが表示される。
     const url = "https://mail.google.com/mail/";
     const title = "Gmail";
-    const onBmUpdate = jest.fn(); // モック関数を作成
+    const onAddBookmark = jest.fn(); // モック関数を作成
 
     render(
       <MessageProvider>
         <BmMessage />
-        <BmDetail onBmUpdate={onBmUpdate} />
+        <BmDetail onAddBookmark={onAddBookmark} />
       </MessageProvider>
     );
 
@@ -93,7 +93,7 @@ describe("BmDetail", () => {
   it("パラメータとして渡されたURLにアクセスできない場合、メッセージ領域にエラーメッセージを表示する。", async () => {
     // タイトルを取得するボタンをクリックして、エラーコード500の場合、タイトルのテキストボックスに、なにも表示しない。
     const url = "https://mail.google.com/mail/";
-    const onBmUpdate = jest.fn(); // モック関数を作成
+    const onAddBookmark = jest.fn(); // モック関数を作成
 
     fetchMock.mockResponseOnce("Can't find title", {
       status: 500,
@@ -103,7 +103,7 @@ describe("BmDetail", () => {
     render(
       <MessageProvider>
         <BmMessage />
-        <BmDetail onBmUpdate={onBmUpdate} />
+        <BmDetail onAddBookmark={onAddBookmark} />
       </MessageProvider>
     );
 
@@ -138,12 +138,12 @@ describe("BmDetail", () => {
     const url = "https://mail.google.com/mail/";
     const title = "Gmail";
     const title_edited = "GMAIL";
-    const onBmUpdate = jest.fn(); // モック関数を作成
+    const onAddBookmark = jest.fn(); // モック関数を作成
 
     render(
       <MessageProvider>
         <BmMessage />
-        <BmDetail onBmUpdate={onBmUpdate} />
+        <BmDetail onAddBookmark={onAddBookmark} />
       </MessageProvider>
     );
 
@@ -171,12 +171,12 @@ describe("BmDetail", () => {
   });
 
   it("URLが空白の場合、タイトルボタン、更新ボタンが無効になっている。", async () => {
-    const onBmUpdate = jest.fn();
+    const onAddBookmark = jest.fn();
 
     render(
       <MessageProvider>
         <BmMessage />
-        <BmDetail onBmUpdate={onBmUpdate} />
+        <BmDetail onAddBookmark={onAddBookmark} />
       </MessageProvider>
     );
 
@@ -192,12 +192,12 @@ describe("BmDetail", () => {
   });
 
   it("URLが入力されていて、タイトルが空白の場合、タイトルボタンが有効、更新ボタンが無効になっている。", async () => {
-    const onBmUpdate = jest.fn();
+    const onAddBookmark = jest.fn();
 
     render(
       <MessageProvider>
         <BmMessage />
-        <BmDetail onBmUpdate={onBmUpdate} />
+        <BmDetail onAddBookmark={onAddBookmark} />
       </MessageProvider>
     );
 
@@ -213,12 +213,12 @@ describe("BmDetail", () => {
   });
 
   it("URLとタイトルが入力されている場合、タイトルボタン、更新ボタンが有効になっている。", async () => {
-    const onBmUpdate = jest.fn();
+    const onAddBookmark = jest.fn();
 
     render(
       <MessageProvider>
         <BmMessage />
-        <BmDetail onBmUpdate={onBmUpdate} />
+        <BmDetail onAddBookmark={onAddBookmark} />
       </MessageProvider>
     );
 
