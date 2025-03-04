@@ -16,6 +16,7 @@ export const BookmarkManager = ({}) => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const { setMessage } = useMessage();
+  // const [isFirstLoading, setIsFirstLoading] = useState(true);
 
   useEffect(() => {
     if (loading) {
@@ -49,10 +50,31 @@ export const BookmarkManager = ({}) => {
       });
   }, []);
 
+  // useEffect(() => {
+  //   if (isFirstLoading) {
+  //     setIsFirstLoading(false);
+  //     return;
+  //   }
+  //   fetch("/api/bookmark", {
+  //     method: "POST",
+  //     headers: {
+  //       "Content-Type": "application/json",
+  //     },
+  //     body: JSON.stringify(bookmarks),
+  //   });
+  // }, [bookmarks, isFirstLoading]);
+
   const handleAddBookmark = (textUrl: string, textTitle: string) => {
     const newBookmark = { url: textUrl, title: textTitle };
     const newBookmarks = [...bookmarks, newBookmark];
     setBookmarks(newBookmarks);
+    fetch("/api/bookmark", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(newBookmarks),
+    });
   };
 
   return (

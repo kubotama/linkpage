@@ -85,6 +85,10 @@ describe("BookmarkManagerの表示を確認", () => {
 });
 
 describe("更新されたブックマークが、APIにPOSTで送られる。", () => {
+  beforeEach(() => {
+    fetchMock.resetMocks();
+  });
+
   it("更新ボタンをクリックすると、画面のブックマークの最後に追加される", async () => {
     // Initial GET request mock
     fetchMock.mockResponseOnce(JSON.stringify(mockBookmarks));
@@ -117,6 +121,59 @@ describe("更新されたブックマークが、APIにPOSTで送られる。", 
     // Trigger bookmark update
     await waitFor(() => {
       expect(screen.getByText("Example Site")).toBeInTheDocument();
+    });
+  });
+
+  it("更新されたブックマークが、APIにPOSTで送られる", async () => {
+    // Initial GET request mock
+    fetchMock.mockResponseOnce(JSON.stringify(mockBookmarks));
+
+    render(
+      <MessageProvider>
+        <BmMessage />
+        <BookmarkManager />
+      </MessageProvider>
+    );
+
+    await waitFor(() => {
+      // Verify initial fetch was called
+      expect(fetchMock).toHaveBeenCalledWith("/api/bookmark");
+      expect(fetchMock.mock.calls.length).toEqual(1);
+      expect(screen.queryByText("Example Site")).toBeNull();
+    });
+
+    const urlInput = screen.getByLabelText("url");
+    const titleInput = screen.getByLabelText("title") as HTMLInputElement;
+    const updateButton = screen.getByText("更新");
+
+    const updatedBookmark = {
+      url: "https://www.example.com",
+      title: "Example Site",
+    };
+
+    // POST request mock
+    fetchMock.mockResponse(JSON.stringify(updatedBookmark), {
+      status: 200,
+    });
+
+    fireEvent.change(urlInput, {
+      target: { value: "https://www.example.com" },
+    });
+    fireEvent.change(titleInput, {
+      target: { value: "Example Site" },
+    });
+    fireEvent.click(updateButton);
+
+    // Trigger bookmark update
+    await waitFor(() => {
+      expect(fetchMock.mock.calls.length).toEqual(2);
+      expect(fetchMock).toHaveBeenCalledWith("/api/bookmark", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify([...mockBookmarks, updatedBookmark]),
+      });
     });
   });
 });
