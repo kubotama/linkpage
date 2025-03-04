@@ -176,4 +176,45 @@ describe("更新されたブックマークが、APIにPOSTで送られる。", 
       });
     });
   });
+
+  it("更新されたブックマークが、APIからエラーが返ってきた場合、エラーメッセージが表示される", async () => {
+    fetchMock.mockResponseOnce(JSON.stringify(mockBookmarks));
+
+    render(
+      <MessageProvider>
+        <BmMessage />
+        <BookmarkManager />
+      </MessageProvider>
+    );
+
+    await waitFor(() => {
+      // Verify initial fetch was called
+      expect(fetchMock).toHaveBeenCalledWith("/api/bookmark");
+      expect(fetchMock.mock.calls.length).toEqual(1);
+    });
+
+    const urlInput = screen.getByLabelText("url");
+    const titleInput = screen.getByLabelText("title") as HTMLInputElement;
+    const updateButton = screen.getByText("更新");
+
+    fetchMock.mockResponseOnce("API Error", {
+      status: 500,
+      headers: { "Content-Type": "text/plain" },
+    });
+
+    fireEvent.change(urlInput, {
+      target: { value: "https://www.example.com" },
+    });
+    fireEvent.change(titleInput, {
+      target: { value: "Example Site" },
+    });
+    fireEvent.click(updateButton);
+
+    await waitFor(() => {
+      expect(fetchMock.mock.calls.length).toEqual(2);
+      expect(screen.getByTestId("bm-message")).toHaveTextContent(
+        /Failed to fetch: \[500\] Internal Server Error$/
+      );
+    });
+  });
 });

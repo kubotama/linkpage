@@ -74,6 +74,12 @@ export const BookmarkManager = ({}) => {
         "Content-Type": "application/json",
       },
       body: JSON.stringify(newBookmarks),
+    }).then((response) => {
+      if (!response.ok) {
+        setError(
+          `Failed to fetch: [${response.status}] ${response.statusText}`
+        );
+      }
     });
   };
 
