@@ -5,12 +5,6 @@ import BmDetail from "./bmDetail";
 import { BmGrid } from "./bmGrid";
 import { Bookmark } from "./bmRow";
 
-// interface BookmarkManagerProps {
-//   onBookmarksUpdate: (bookmarks: Bookmark[]) => void;
-//   onLoadingChange: (loading: boolean) => void;
-//   onError: (error: string | null) => void;
-// }
-
 export const BookmarkManager = ({}) => {
   const [bookmarks, setBookmarks] = useState<Bookmark[]>([]);
   const [loading, setLoading] = useState(true);
@@ -50,20 +44,6 @@ export const BookmarkManager = ({}) => {
       });
   }, []);
 
-  // useEffect(() => {
-  //   if (isFirstLoading) {
-  //     setIsFirstLoading(false);
-  //     return;
-  //   }
-  //   fetch("/api/bookmark", {
-  //     method: "POST",
-  //     headers: {
-  //       "Content-Type": "application/json",
-  //     },
-  //     body: JSON.stringify(bookmarks),
-  //   });
-  // }, [bookmarks, isFirstLoading]);
-
   const handleAddBookmark = (textUrl: string, textTitle: string) => {
     const newBookmark = { url: textUrl, title: textTitle };
     const newBookmarks = [...bookmarks, newBookmark];
@@ -85,8 +65,6 @@ export const BookmarkManager = ({}) => {
       })
       .catch((error) => {
         setError(`BookmarkManager: ${error}`);
-        // const errorMessage = (error as Error).message;
-        // setError(errorMessage);
       });
   };
 
