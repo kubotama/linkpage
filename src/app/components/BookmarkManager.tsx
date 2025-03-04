@@ -68,19 +68,26 @@ export const BookmarkManager = ({}) => {
     const newBookmark = { url: textUrl, title: textTitle };
     const newBookmarks = [...bookmarks, newBookmark];
     setBookmarks(newBookmarks);
+
     fetch("/api/bookmark", {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
       },
       body: JSON.stringify(newBookmarks),
-    }).then((response) => {
-      if (!response.ok) {
-        setError(
-          `Failed to fetch: [${response.status}] ${response.statusText}`
-        );
-      }
-    });
+    })
+      .then((response) => {
+        if (!response.ok) {
+          setError(
+            `BookmarkManager: [${response.status}] ${response.statusText}`
+          );
+        }
+      })
+      .catch((error) => {
+        setError(`BookmarkManager: ${error}`);
+        // const errorMessage = (error as Error).message;
+        // setError(errorMessage);
+      });
   };
 
   return (
