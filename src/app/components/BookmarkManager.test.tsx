@@ -3,105 +3,256 @@ import "@testing-library/jest-dom";
 import fetchMock from "jest-fetch-mock";
 import React from "react";
 
-import { render, screen, waitFor } from "@testing-library/react";
+import { fireEvent, render, screen, waitFor } from "@testing-library/react";
 
+import { MessageProvider } from "../contexts/MessageContext";
+import BmMessage from "./bmMessage";
 import { Bookmark } from "./bmRow";
 import { BookmarkManager } from "./BookmarkManager";
 
 const mockBookmarks: Bookmark[] = [
   {
-    url: "https://example.com",
-    title: "Example",
+    url: "https://github.com/kubotama/linkpage",
+    title: "kubotama/linkpage",
   },
   {
-    url: "https://test.com",
-    title: "Test",
+    url: "https://www.google.com/",
+    title: "Google",
+  },
+  {
+    url: "https://mail.google.com",
+    title: "Gmail",
+  },
+  {
+    url: "https://www.amazon.co.jp/",
+    title: "Amazon",
   },
 ];
 
-describe("BookmarkManager", () => {
-  const mockOnBookmarksUpdate = jest.fn();
-  const mockOnLoadingChange = jest.fn();
-  const mockOnError = jest.fn();
-
+describe("BookmarkManagerの表示を確認", () => {
   beforeEach(() => {
     fetchMock.resetMocks();
-    jest.clearAllMocks();
   });
 
-  it("ブックマークの取得に成功した場合、コールバックが正しく呼ばれる", async () => {
+  it("すべてのエレメントが表示されることを確認", async () => {
     fetchMock.mockResponseOnce(JSON.stringify(mockBookmarks));
 
     render(
-      <BookmarkManager
-        onBookmarksUpdate={mockOnBookmarksUpdate}
-        onLoadingChange={mockOnLoadingChange}
-        onError={mockOnError}
-      >
-        <div>Test Content</div>
-      </BookmarkManager>
+      <MessageProvider>
+        <BookmarkManager />
+      </MessageProvider>
     );
 
     await waitFor(() => {
-      expect(mockOnBookmarksUpdate).toHaveBeenCalledWith(mockBookmarks);
-      expect(mockOnLoadingChange).toHaveBeenCalledWith(false);
-      expect(mockOnError).not.toHaveBeenCalled();
+      const bm = screen.getByText("Amazon");
+      expect(bm).toBeInTheDocument();
+      expect(bm).toHaveAttribute("href", "https://www.amazon.co.jp/");
+      expect(bm).toHaveAttribute("target", "_blank");
     });
   });
 
-  it("ローディング状態が正しく更新される", async () => {
+  it("ローディング中にローディングメッセージが表示されること", () => {
     fetchMock.mockResponseOnce(() => new Promise(() => [])); // リクエストがresolveしないようにする
-
     render(
-      <BookmarkManager
-        onBookmarksUpdate={mockOnBookmarksUpdate}
-        onLoadingChange={mockOnLoadingChange}
-        onError={mockOnError}
-      >
-        <div>Test Content</div>
-      </BookmarkManager>
+      <MessageProvider>
+        <BmMessage />
+        <BookmarkManager />
+      </MessageProvider>
     );
 
-    expect(mockOnLoadingChange).not.toHaveBeenCalledWith(false);
+    expect(screen.getByTestId("bm-message")).toHaveTextContent(/^Loading...$/);
   });
 
-  it("HTTPステータス500でfetchした場合、エラーコールバックが呼ばれる", async () => {
+  it("HTTPステータス500でfetchした場合、エラーメッセージが表示される", async () => {
     fetchMock.mockResponseOnce("Internal Error", {
       status: 500,
       headers: { "Content-Type": "text/plain" },
     });
 
     render(
-      <BookmarkManager
-        onBookmarksUpdate={mockOnBookmarksUpdate}
-        onLoadingChange={mockOnLoadingChange}
-        onError={mockOnError}
-      >
-        <div>Test Content</div>
-      </BookmarkManager>
+      <MessageProvider>
+        <BmMessage />
+        <BookmarkManager />
+      </MessageProvider>
     );
 
     await waitFor(() => {
-      expect(mockOnError).toHaveBeenCalledWith(
-        "Failed to fetch: [500] Internal Server Error"
+      expect(screen.getByTestId("bm-message")).toHaveTextContent(
+        /Failed to fetch: \[500\] Internal Server Error$/
       );
-      expect(mockOnLoadingChange).toHaveBeenCalledWith(false);
-      expect(mockOnBookmarksUpdate).not.toHaveBeenCalled();
+    });
+  });
+});
+
+describe("更新されたブックマークが、APIにPOSTで送られる。", () => {
+  beforeEach(() => {
+    fetchMock.resetMocks();
+  });
+
+  it("更新ボタンをクリックすると、画面のブックマークの最後に追加される", async () => {
+    // Initial GET request mock
+    fetchMock.mockResponseOnce(JSON.stringify(mockBookmarks));
+
+    render(
+      <MessageProvider>
+        <BmMessage />
+        <BookmarkManager />
+      </MessageProvider>
+    );
+
+    await waitFor(() => {
+      // Verify initial fetch was called
+      expect(fetchMock).toHaveBeenCalledWith("/api/bookmark");
+      expect(screen.queryByText("Example Site")).toBeNull();
+    });
+
+    const urlInput = screen.getByLabelText("url");
+    const titleInput = screen.getByLabelText("title") as HTMLInputElement;
+    const updateButton = screen.getByText("更新");
+
+    fireEvent.change(urlInput, {
+      target: { value: "https://www.example.com" },
+    });
+    fireEvent.change(titleInput, {
+      target: { value: "Example Site" },
+    });
+    fireEvent.click(updateButton);
+
+    // Trigger bookmark update
+    await waitFor(() => {
+      expect(screen.getByText("Example Site")).toBeInTheDocument();
     });
   });
 
-  it("子コンポーネントが正しくレンダリングされる", () => {
+  it("更新されたブックマークが、APIにPOSTで送られる", async () => {
+    // Initial GET request mock
+    fetchMock.mockResponseOnce(JSON.stringify(mockBookmarks));
+
     render(
-      <BookmarkManager
-        onBookmarksUpdate={mockOnBookmarksUpdate}
-        onLoadingChange={mockOnLoadingChange}
-        onError={mockOnError}
-      >
-        <div data-testid="test-content">Test Content</div>
-      </BookmarkManager>
+      <MessageProvider>
+        <BmMessage />
+        <BookmarkManager />
+      </MessageProvider>
     );
 
-    expect(screen.getByTestId("test-content")).toBeInTheDocument();
-    expect(screen.getByText("Test Content")).toBeInTheDocument();
+    await waitFor(() => {
+      // Verify initial fetch was called
+      expect(fetchMock).toHaveBeenCalledWith("/api/bookmark");
+      expect(fetchMock.mock.calls.length).toEqual(1);
+      expect(screen.queryByText("Example Site")).toBeNull();
+    });
+
+    const urlInput = screen.getByLabelText("url");
+    const titleInput = screen.getByLabelText("title") as HTMLInputElement;
+    const updateButton = screen.getByText("更新");
+
+    const updatedBookmark = {
+      url: "https://www.example.com",
+      title: "Example Site",
+    };
+
+    // POST request mock
+    fetchMock.mockResponse(JSON.stringify(updatedBookmark), {
+      status: 200,
+    });
+
+    fireEvent.change(urlInput, {
+      target: { value: "https://www.example.com" },
+    });
+    fireEvent.change(titleInput, {
+      target: { value: "Example Site" },
+    });
+    fireEvent.click(updateButton);
+
+    // Trigger bookmark update
+    await waitFor(() => {
+      expect(fetchMock.mock.calls.length).toEqual(2);
+      expect(fetchMock).toHaveBeenCalledWith("/api/bookmark", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify([...mockBookmarks, updatedBookmark]),
+      });
+    });
+  });
+
+  it("更新されたブックマークが、APIからエラーが返ってきた場合、エラーメッセージが表示される", async () => {
+    fetchMock.mockResponseOnce(JSON.stringify(mockBookmarks));
+
+    render(
+      <MessageProvider>
+        <BmMessage />
+        <BookmarkManager />
+      </MessageProvider>
+    );
+
+    await waitFor(() => {
+      // Verify initial fetch was called
+      expect(fetchMock).toHaveBeenCalledWith("/api/bookmark");
+      expect(fetchMock.mock.calls.length).toEqual(1);
+    });
+
+    const urlInput = screen.getByLabelText("url");
+    const titleInput = screen.getByLabelText("title") as HTMLInputElement;
+    const updateButton = screen.getByText("更新");
+
+    fetchMock.mockResponseOnce("API Error", {
+      status: 500,
+      headers: { "Content-Type": "text/plain" },
+    });
+
+    fireEvent.change(urlInput, {
+      target: { value: "https://www.example.com" },
+    });
+    fireEvent.change(titleInput, {
+      target: { value: "Example Site" },
+    });
+    fireEvent.click(updateButton);
+
+    await waitFor(() => {
+      expect(fetchMock.mock.calls.length).toEqual(2);
+      expect(screen.getByTestId("bm-message")).toHaveTextContent(
+        /BookmarkManager: \[500\] Internal Server Error$/
+      );
+    });
+  });
+
+  it("ブックマークを更新するAPIのfetchがrejectした場合、エラーメッセージが表示される", async () => {
+    fetchMock.mockResponseOnce(JSON.stringify(mockBookmarks));
+
+    render(
+      <MessageProvider>
+        <BmMessage />
+        <BookmarkManager />
+      </MessageProvider>
+    );
+
+    await waitFor(() => {
+      // Verify initial fetch was called
+      expect(fetchMock).toHaveBeenCalledWith("/api/bookmark");
+      expect(fetchMock.mock.calls.length).toEqual(1);
+    });
+
+    const urlInput = screen.getByLabelText("url");
+    const titleInput = screen.getByLabelText("title") as HTMLInputElement;
+    const updateButton = screen.getByText("更新");
+
+    fetchMock.mockRejectOnce(new Error("API Error"));
+
+    fireEvent.change(urlInput, {
+      target: { value: "https://www.example.com" },
+    });
+    fireEvent.change(titleInput, {
+      target: { value: "Example Site" },
+    });
+    fireEvent.click(updateButton);
+
+    await waitFor(() => {
+      expect(fetchMock.mock.calls.length).toEqual(2);
+      expect(screen.getByTestId("bm-message")).toHaveTextContent(
+        "BookmarkManager: Error: API Error"
+      );
+    });
   });
 });
