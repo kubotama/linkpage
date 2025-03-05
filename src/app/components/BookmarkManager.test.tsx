@@ -111,13 +111,6 @@ describe("更新されたブックマークが、APIにPOSTで送られる。", 
     const titleInput = screen.getByLabelText("title") as HTMLInputElement;
     const updateButton = screen.getByText("更新");
 
-    // fireEvent.change(urlInput, {
-    //   target: { value: "https://www.example.com" },
-    // });
-    // fireEvent.change(titleInput, {
-    //   target: { value: "Example Site" },
-    // });
-    // fireEvent.click(updateButton);
     await userEvent.type(urlInput, "https://www.example.com");
     await userEvent.type(titleInput, "Example Site");
     await userEvent.click(updateButton);
@@ -160,13 +153,6 @@ describe("更新されたブックマークが、APIにPOSTで送られる。", 
       status: 200,
     });
 
-    // fireEvent.change(urlInput, {
-    //   target: { value: "https://www.example.com" },
-    // });
-    // fireEvent.change(titleInput, {
-    //   target: { value: "Example Site" },
-    // });
-    // fireEvent.click(updateButton);
     await userEvent.type(urlInput, "https://www.example.com");
     await userEvent.type(titleInput, "Example Site");
     await userEvent.click(updateButton);
@@ -209,13 +195,6 @@ describe("更新されたブックマークが、APIにPOSTで送られる。", 
       headers: { "Content-Type": "text/plain" },
     });
 
-    // fireEvent.change(urlInput, {
-    //   target: { value: "https://www.example.com" },
-    // });
-    // fireEvent.change(titleInput, {
-    //   target: { value: "Example Site" },
-    // });
-    // fireEvent.click(updateButton);
     await userEvent.type(urlInput, "https://www.example.com");
     await userEvent.type(titleInput, "Example Site");
     await userEvent.click(updateButton);
@@ -250,13 +229,6 @@ describe("更新されたブックマークが、APIにPOSTで送られる。", 
 
     fetchMock.mockRejectOnce(new Error("API Error"));
 
-    // fireEvent.change(urlInput, {
-    //   target: { value: "https://www.example.com" },
-    // });
-    // fireEvent.change(titleInput, {
-    //   target: { value: "Example Site" },
-    // });
-    // fireEvent.click(updateButton);
     await userEvent.type(urlInput, "https://www.example.com");
     await userEvent.type(titleInput, "Example Site");
     await userEvent.click(updateButton);
