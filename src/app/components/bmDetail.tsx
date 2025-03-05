@@ -1,8 +1,9 @@
 import React, { useEffect, useRef, useState } from "react";
+
 import Button from "@mui/material/Button";
+
 // import TextField from "@mui/material/TextField";
 // import Input from "@mui/material/Input";
-
 import { useMessage } from "../contexts/MessageContext";
 
 interface BmDetailProps {
@@ -65,6 +66,7 @@ export const BmDetail: React.FC<BmDetailProps> = ({
         ref={textUrlRef1}
       />
       <input
+        id="title"
         type="text"
         aria-label="title"
         value={textTitle}

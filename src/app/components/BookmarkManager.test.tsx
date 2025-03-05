@@ -3,7 +3,8 @@ import "@testing-library/jest-dom";
 import fetchMock from "jest-fetch-mock";
 import React from "react";
 
-import { fireEvent, render, screen, waitFor } from "@testing-library/react";
+import { render, screen, waitFor } from "@testing-library/react";
+import userEvent from "@testing-library/user-event";
 
 import { MessageProvider } from "../contexts/MessageContext";
 import BmMessage from "./bmMessage";
@@ -110,13 +111,16 @@ describe("更新されたブックマークが、APIにPOSTで送られる。", 
     const titleInput = screen.getByLabelText("title") as HTMLInputElement;
     const updateButton = screen.getByText("更新");
 
-    fireEvent.change(urlInput, {
-      target: { value: "https://www.example.com" },
-    });
-    fireEvent.change(titleInput, {
-      target: { value: "Example Site" },
-    });
-    fireEvent.click(updateButton);
+    // fireEvent.change(urlInput, {
+    //   target: { value: "https://www.example.com" },
+    // });
+    // fireEvent.change(titleInput, {
+    //   target: { value: "Example Site" },
+    // });
+    // fireEvent.click(updateButton);
+    await userEvent.type(urlInput, "https://www.example.com");
+    await userEvent.type(titleInput, "Example Site");
+    await userEvent.click(updateButton);
 
     // Trigger bookmark update
     await waitFor(() => {
@@ -156,13 +160,16 @@ describe("更新されたブックマークが、APIにPOSTで送られる。", 
       status: 200,
     });
 
-    fireEvent.change(urlInput, {
-      target: { value: "https://www.example.com" },
-    });
-    fireEvent.change(titleInput, {
-      target: { value: "Example Site" },
-    });
-    fireEvent.click(updateButton);
+    // fireEvent.change(urlInput, {
+    //   target: { value: "https://www.example.com" },
+    // });
+    // fireEvent.change(titleInput, {
+    //   target: { value: "Example Site" },
+    // });
+    // fireEvent.click(updateButton);
+    await userEvent.type(urlInput, "https://www.example.com");
+    await userEvent.type(titleInput, "Example Site");
+    await userEvent.click(updateButton);
 
     // Trigger bookmark update
     await waitFor(() => {
@@ -202,13 +209,16 @@ describe("更新されたブックマークが、APIにPOSTで送られる。", 
       headers: { "Content-Type": "text/plain" },
     });
 
-    fireEvent.change(urlInput, {
-      target: { value: "https://www.example.com" },
-    });
-    fireEvent.change(titleInput, {
-      target: { value: "Example Site" },
-    });
-    fireEvent.click(updateButton);
+    // fireEvent.change(urlInput, {
+    //   target: { value: "https://www.example.com" },
+    // });
+    // fireEvent.change(titleInput, {
+    //   target: { value: "Example Site" },
+    // });
+    // fireEvent.click(updateButton);
+    await userEvent.type(urlInput, "https://www.example.com");
+    await userEvent.type(titleInput, "Example Site");
+    await userEvent.click(updateButton);
 
     await waitFor(() => {
       expect(fetchMock.mock.calls.length).toEqual(2);
@@ -240,13 +250,16 @@ describe("更新されたブックマークが、APIにPOSTで送られる。", 
 
     fetchMock.mockRejectOnce(new Error("API Error"));
 
-    fireEvent.change(urlInput, {
-      target: { value: "https://www.example.com" },
-    });
-    fireEvent.change(titleInput, {
-      target: { value: "Example Site" },
-    });
-    fireEvent.click(updateButton);
+    // fireEvent.change(urlInput, {
+    //   target: { value: "https://www.example.com" },
+    // });
+    // fireEvent.change(titleInput, {
+    //   target: { value: "Example Site" },
+    // });
+    // fireEvent.click(updateButton);
+    await userEvent.type(urlInput, "https://www.example.com");
+    await userEvent.type(titleInput, "Example Site");
+    await userEvent.click(updateButton);
 
     await waitFor(() => {
       expect(fetchMock.mock.calls.length).toEqual(2);

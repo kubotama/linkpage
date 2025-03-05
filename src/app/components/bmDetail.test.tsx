@@ -3,8 +3,8 @@ import "@testing-library/jest-dom";
 import fetchMock from "jest-fetch-mock";
 import React from "react";
 
-import { fireEvent, render, screen, waitFor } from "@testing-library/react";
-// import userEvent from "@testing-library/user-event";
+import { render, screen, waitFor } from "@testing-library/react";
+import userEvent from "@testing-library/user-event";
 
 import { MessageProvider } from "../contexts/MessageContext";
 import { BmDetail } from "./bmDetail";
@@ -15,7 +15,7 @@ describe("BmDetail", () => {
     fetchMock.resetMocks();
   });
 
-  it("入力された文字列が親コンポーネントに渡されること", () => {
+  it("入力された文字列が親コンポーネントに渡されること", async () => {
     const url = "https://mail.google.com/mail/";
     const onAddBookmark = jest.fn(); // モック関数を作成
 
@@ -30,17 +30,17 @@ describe("BmDetail", () => {
     const textInput = screen.getByLabelText("title") as HTMLInputElement;
     const updateButton = screen.getByText("更新");
 
-    fireEvent.change(urlInput, {
-      target: { value: url },
-    });
-    fireEvent.change(textInput, {
-      target: { value: "Gmail" },
-    });
-    // userEvent.type(urlInput, url);
-    // userEvent.type(textInput, "Gmail");
+    // fireEvent.change(urlInput, {
+    //   target: { value: url },
+    // });
+    // fireEvent.change(textInput, {
+    //   target: { value: "Gmail" },
+    // });
+    await userEvent.type(urlInput, url);
+    await userEvent.type(textInput, "Gmail");
 
-    fireEvent.click(updateButton);
-    // userEvent.click(updateButton);
+    // fireEvent.click(updateButton);
+    await userEvent.click(updateButton);
 
     expect(onAddBookmark).toHaveBeenCalledTimes(1);
     expect(onAddBookmark).toHaveBeenCalledWith(url, "Gmail");
@@ -83,10 +83,12 @@ describe("BmDetail", () => {
 
     fetchMock.mockResponseOnce(title);
 
-    fireEvent.change(urlInput, {
-      target: { value: url },
-    });
-    fireEvent.click(titleButton);
+    // fireEvent.change(urlInput, {
+    //   target: { value: url },
+    // });
+    // fireEvent.click(titleButton);
+    await userEvent.type(urlInput, url);
+    await userEvent.click(titleButton);
 
     await waitFor(() => {
       expect(titleInput.value).toEqual(title);
@@ -116,10 +118,12 @@ describe("BmDetail", () => {
     const titleInput = screen.getByLabelText("title");
     const titleButton = screen.getByText("タイトル");
 
-    fireEvent.change(urlInput, {
-      target: { value: url },
-    });
-    fireEvent.click(titleButton);
+    // fireEvent.change(urlInput, {
+    //   target: { value: url },
+    // });
+    // fireEvent.click(titleButton);
+    await userEvent.type(urlInput, url);
+    await userEvent.click(titleButton);
 
     await waitFor(() => {
       if (!(titleInput instanceof HTMLInputElement)) {
@@ -159,16 +163,22 @@ describe("BmDetail", () => {
 
     fetchMock.mockResponseOnce(title);
 
-    fireEvent.change(urlInput, {
-      target: { value: url },
-    });
-    fireEvent.click(titleButton);
+    // fireEvent.change(urlInput, {
+    //   target: { value: url },
+    // });
+    // fireEvent.click(titleButton);
+    await userEvent.type(urlInput, url);
+    await userEvent.click(titleButton);
+
+    await userEvent.clear(titleInput);
+    await userEvent.type(titleInput, title_edited);
+    await userEvent.click(updateButton);
 
     await waitFor(() => {
-      fireEvent.change(titleInput, {
-        target: { value: title_edited },
-      });
-      fireEvent.click(updateButton);
+      // fireEvent.change(titleInput, {
+      //   target: { value: title_edited },
+      // });
+      // fireEvent.click(updateButton);
       expect(titleInput.value).toEqual(title_edited);
       expect(fetchMock).toHaveBeenCalledTimes(1);
       expect(fetchMock.mock.calls[0][0]).toEqual("/api/title?url=" + url);
@@ -189,10 +199,11 @@ describe("BmDetail", () => {
     const titleButton = screen.getByText("タイトル");
     const updateButton = screen.getByText("更新");
 
-    fireEvent.change(urlInput, {
-      target: { value: "" },
-    });
-    // userEvent.clear(urlInput);
+    // fireEvent.change(urlInput, {
+    //   target: { value: "" },
+    // });
+    await userEvent.clear(urlInput);
+
     expect(titleButton).toBeDisabled();
     expect(updateButton).toBeDisabled();
   });
@@ -211,9 +222,11 @@ describe("BmDetail", () => {
     const titleButton = screen.getByText("タイトル");
     const updateButton = screen.getByText("更新");
 
-    fireEvent.change(urlInput, {
-      target: { value: "https://mail.google.com/mail/" },
-    });
+    // fireEvent.change(urlInput, {
+    //   target: { value: "https://mail.google.com/mail/" },
+    // });
+    await userEvent.type(urlInput, "https://mail.google.com/mail/");
+
     expect(titleButton).toBeEnabled();
     expect(updateButton).toBeDisabled();
   });
@@ -233,12 +246,15 @@ describe("BmDetail", () => {
     const titleButton = screen.getByText("タイトル");
     const updateButton = screen.getByText("更新");
 
-    fireEvent.change(urlInput, {
-      target: { value: "https://mail.google.com/mail/" },
-    });
-    fireEvent.change(titleInput, {
-      target: { value: "Gmail" },
-    });
+    // fireEvent.change(urlInput, {
+    //   target: { value: "https://mail.google.com/mail/" },
+    // });
+    // fireEvent.change(titleInput, {
+    //   target: { value: "Gmail" },
+    // });
+    await userEvent.type(urlInput, "https://mail.google.com/mail/");
+    await userEvent.type(titleInput, "Gmail");
+
     expect(titleButton).toBeEnabled();
     expect(updateButton).toBeEnabled();
   });
