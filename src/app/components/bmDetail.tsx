@@ -1,4 +1,7 @@
 import React, { useEffect, useRef, useState } from "react";
+import Button from "@mui/material/Button";
+// import TextField from "@mui/material/TextField";
+// import Input from "@mui/material/Input";
 
 import { useMessage } from "../contexts/MessageContext";
 
@@ -54,6 +57,7 @@ export const BmDetail: React.FC<BmDetailProps> = ({
   return (
     <div>
       <input
+        id="url"
         type="text"
         aria-label="url"
         value={textUrl}
@@ -67,12 +71,12 @@ export const BmDetail: React.FC<BmDetailProps> = ({
         onChange={(e) => setTextTitle(e.target.value)}
         ref={textTitleRef2}
       />
-      <button onClick={titleClick} disabled={textUrlDisabled}>
+      <Button onClick={titleClick} disabled={textUrlDisabled}>
         タイトル
-      </button>
-      <button onClick={updateClick} disabled={textTitleDisabled}>
+      </Button>
+      <Button onClick={updateClick} disabled={textTitleDisabled}>
         更新
-      </button>
+      </Button>
     </div>
   );
 };

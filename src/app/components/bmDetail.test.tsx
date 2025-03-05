@@ -4,6 +4,7 @@ import fetchMock from "jest-fetch-mock";
 import React from "react";
 
 import { fireEvent, render, screen, waitFor } from "@testing-library/react";
+// import userEvent from "@testing-library/user-event";
 
 import { MessageProvider } from "../contexts/MessageContext";
 import { BmDetail } from "./bmDetail";
@@ -35,7 +36,11 @@ describe("BmDetail", () => {
     fireEvent.change(textInput, {
       target: { value: "Gmail" },
     });
+    // userEvent.type(urlInput, url);
+    // userEvent.type(textInput, "Gmail");
+
     fireEvent.click(updateButton);
+    // userEvent.click(updateButton);
 
     expect(onAddBookmark).toHaveBeenCalledTimes(1);
     expect(onAddBookmark).toHaveBeenCalledWith(url, "Gmail");
@@ -187,6 +192,7 @@ describe("BmDetail", () => {
     fireEvent.change(urlInput, {
       target: { value: "" },
     });
+    // userEvent.clear(urlInput);
     expect(titleButton).toBeDisabled();
     expect(updateButton).toBeDisabled();
   });

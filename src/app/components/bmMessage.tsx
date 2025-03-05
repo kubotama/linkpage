@@ -1,3 +1,4 @@
+import Button from "@mui/material/Button";
 import { useEffect, useState } from "react";
 
 import { useMessage } from "../contexts/MessageContext";
@@ -16,13 +17,13 @@ const BmMessage = () => {
         ) : (
           <div data-testid="bm-message">linkpage</div>
         )}
-        <button
+        <Button
           onClick={() => {
             setMessage({ text: "" });
           }}
         >
           確認
-        </button>
+        </Button>
       </div>
     );
   }, [message, setMessage]);

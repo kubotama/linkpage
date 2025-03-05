@@ -12,6 +12,12 @@
     "lint": "next lint"
   },
   "dependencies": {
+    "@emotion/cache": "^11.14.0",
+    "@emotion/react": "^11.14.0",
+    "@emotion/styled": "^11.14.0",
+    "@mui/material": "^6.4.6",
+    "@mui/material-nextjs": "^6.4.3",
+    "@testing-library/user-event": "^14.6.1",
     "@types/jsdom": "^21.1.7",
     "jsdom": "^26.0.0",
     "next": "15.1.7",
