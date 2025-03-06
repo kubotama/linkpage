@@ -194,7 +194,7 @@ describe("BmDetail", () => {
     const urlInput = screen.getByRole("textbox", { name: "url" });
     const titleInput = screen.getByRole("textbox", { name: "title" });
 
-    const titleButton = screen.getByText("タイトル");
+    const titleButton = screen.getByRole("button", { name: "タイトル" });
 
     await user.type(urlInput, url);
     await user.click(titleButton);
