@@ -107,16 +107,14 @@ describe("更新されたブックマークが、APIにPOSTで送られる。", 
       expect(screen.queryByText("Example Site")).toBeNull();
     });
 
-    // const urlInput = screen.getByLabelText("url");
-    // const titleInput = screen.getByLabelText("title") as HTMLInputElement;
-
     const urlInput = screen.getByRole("textbox", { name: "url" });
     const titleInput = screen.getByRole("textbox", { name: "title" });
-    const updateButton = screen.getByText("更新");
+    const updateButton = screen.getByRole("button", { name: "更新" });
 
-    await userEvent.type(urlInput, "https://www.example.com");
-    await userEvent.type(titleInput, "Example Site");
-    await userEvent.click(updateButton);
+    const user = userEvent.setup();
+    await user.type(urlInput, "https://www.example.com");
+    await user.type(titleInput, "Example Site");
+    await user.click(updateButton);
 
     // Trigger bookmark update
     await waitFor(() => {
@@ -142,12 +140,9 @@ describe("更新されたブックマークが、APIにPOSTで送られる。", 
       expect(screen.queryByText("Example Site")).toBeNull();
     });
 
-    // const urlInput = screen.getByLabelText("url");
-    // const titleInput = screen.getByLabelText("title") as HTMLInputElement;
-
     const urlInput = screen.getByRole("textbox", { name: "url" });
     const titleInput = screen.getByRole("textbox", { name: "title" });
-    const updateButton = screen.getByText("更新");
+    const updateButton = screen.getByRole("button", { name: "更新" });
 
     const updatedBookmark = {
       url: "https://www.example.com",
@@ -159,9 +154,11 @@ describe("更新されたブックマークが、APIにPOSTで送られる。", 
       status: 200,
     });
 
-    await userEvent.type(urlInput, "https://www.example.com");
-    await userEvent.type(titleInput, "Example Site");
-    await userEvent.click(updateButton);
+    const user = userEvent.setup();
+
+    await user.type(urlInput, "https://www.example.com");
+    await user.type(titleInput, "Example Site");
+    await user.click(updateButton);
 
     // Trigger bookmark update
     await waitFor(() => {
@@ -192,21 +189,19 @@ describe("更新されたブックマークが、APIにPOSTで送られる。", 
       expect(fetchMock.mock.calls.length).toEqual(1);
     });
 
-    // const urlInput = screen.getByLabelText("url");
-    // const titleInput = screen.getByLabelText("title") as HTMLInputElement;
-
     const urlInput = screen.getByRole("textbox", { name: "url" });
     const titleInput = screen.getByRole("textbox", { name: "title" });
-    const updateButton = screen.getByText("更新");
+    const updateButton = screen.getByRole("button", { name: "更新" });
 
     fetchMock.mockResponseOnce("API Error", {
       status: 500,
       headers: { "Content-Type": "text/plain" },
     });
 
-    await userEvent.type(urlInput, "https://www.example.com");
-    await userEvent.type(titleInput, "Example Site");
-    await userEvent.click(updateButton);
+    const user = userEvent.setup();
+    await user.type(urlInput, "https://www.example.com");
+    await user.type(titleInput, "Example Site");
+    await user.click(updateButton);
 
     await waitFor(() => {
       expect(fetchMock.mock.calls.length).toEqual(2);
@@ -232,18 +227,16 @@ describe("更新されたブックマークが、APIにPOSTで送られる。", 
       expect(fetchMock.mock.calls.length).toEqual(1);
     });
 
-    // const urlInput = screen.getByLabelText("url");
-    // const titleInput = screen.getByLabelText("title") as HTMLInputElement;
-
     const urlInput = screen.getByRole("textbox", { name: "url" });
     const titleInput = screen.getByRole("textbox", { name: "title" });
-    const updateButton = screen.getByText("更新");
+    const updateButton = screen.getByRole("button", { name: "更新" });
 
     fetchMock.mockRejectOnce(new Error("API Error"));
 
-    await userEvent.type(urlInput, "https://www.example.com");
-    await userEvent.type(titleInput, "Example Site");
-    await userEvent.click(updateButton);
+    const user = userEvent.setup();
+    await user.type(urlInput, "https://www.example.com");
+    await user.type(titleInput, "Example Site");
+    await user.click(updateButton);
 
     await waitFor(() => {
       expect(fetchMock.mock.calls.length).toEqual(2);
