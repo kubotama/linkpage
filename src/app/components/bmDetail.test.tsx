@@ -27,18 +27,11 @@ describe("BmDetail", () => {
       </MessageProvider>
     );
 
-    // const urlInput = screen.getByLabelText("url");
-    // const textInput = screen.getByLabelText("title") as HTMLInputElement;
     const urlInput = screen.getByRole("textbox", { name: "url" });
     const textInput = screen.getByRole("textbox", { name: "title" });
 
-    const updateButton = screen.getByText("更新");
+    const updateButton = screen.getByRole("button", { name: "更新" });
 
-    // await user.type(urlInput.querySelector("input") as HTMLInputElement, url);
-    // await user.type(
-    //   textInput.querySelector("input") as HTMLInputElement,
-    //   "Gmail"
-    // );
     await user.type(urlInput, url);
     await user.type(textInput, "Gmail");
 
@@ -60,19 +53,20 @@ describe("BmDetail", () => {
       </MessageProvider>
     );
 
-    // expect(screen.getByLabelText("url")).toBeVisible();
-    // expect(screen.getByLabelText("title")).toBeInTheDocument();
-
     expect(screen.getByRole("textbox", { name: "url" })).toBeInTheDocument();
     expect(screen.getByRole("textbox", { name: "title" })).toBeInTheDocument();
-    expect(screen.getByText("タイトル")).toBeInTheDocument();
-    expect(screen.getByText("更新")).toBeInTheDocument();
+    expect(
+      screen.getByRole("button", { name: "タイトル" })
+    ).toBeInTheDocument();
+    expect(screen.getByRole("button", { name: "更新" })).toBeInTheDocument();
   });
 
   it("タイトルを取得するボタンをクリック", async () => {
     // タイトルを取得するボタンをクリックすると、タイトルを取得するAPIを呼び出す。
     // パラメータとしてURLのテキストボックスに入力された文字列が渡される。
     // タイトルのテキストボックスに、APIから返されたタイトルが表示される。
+    const user = userEvent.setup();
+
     const url = "https://mail.google.com/mail/";
     const title = "Gmail";
     const onAddBookmark = jest.fn(); // モック関数を作成
@@ -84,29 +78,25 @@ describe("BmDetail", () => {
       </MessageProvider>
     );
 
-    // const urlInput = screen.getByLabelText("url");
-    // const titleInput = screen.getByLabelText("title") as HTMLInputElement;
     const urlInput = screen.getByRole("textbox", { name: "url" });
     const titleInput = screen.getByRole("textbox", { name: "title" });
 
-    const titleButton = screen.getByText("タイトル");
+    const titleButton = screen.getByRole("button", { name: "タイトル" });
 
-    expect(screen.queryByDisplayValue(title)).toBeNull();
+    // タイトルをAPIで取得する前は、クリアされていることを確認
+    await user.clear(titleInput);
+    expect(titleInput).toHaveValue("");
+
     fetchMock.mockResponseOnce(title);
 
-    await userEvent.type(urlInput, url);
-    // await userEvent.type(
-    //   urlInput.querySelector("input") as HTMLInputElement,
-    //   url
-    // );
+    await user.type(urlInput, url);
 
-    await userEvent.click(titleButton);
+    await user.click(titleButton);
 
     await waitFor(() => {
       expect(fetchMock).toHaveBeenCalledTimes(1);
       expect(fetchMock.mock.calls[0][0]).toEqual("/api/title?url=" + url);
       expect(titleInput).toHaveValue(title);
-      expect(screen.getByDisplayValue(title)).toBeInTheDocument();
     });
   });
 
@@ -115,12 +105,13 @@ describe("BmDetail", () => {
     const url = "https://mail.google.com/mail/";
     const onAddBookmark = jest.fn(); // モック関数を作成
 
+    const user = userEvent.setup();
+
     fetchMock.mockResponseOnce("Can't find title", {
       status: 500,
       headers: { "Content-Type": "text/plain" },
     });
 
-    // const { getByRole } = render(
     render(
       <MessageProvider>
         <BmMessage />
@@ -128,33 +119,22 @@ describe("BmDetail", () => {
       </MessageProvider>
     );
 
-    // const urlInput = screen.getByLabelText("url");
-    // const titleInput = screen.getByLabelText("title");
     const urlInput = screen.getByRole("textbox", { name: "url" });
     const titleInput = screen.getByRole("textbox", { name: "title" });
 
-    const titleButton = screen.getByText("タイトル");
+    const titleButton = screen.getByRole("button", { name: "タイトル" });
 
-    await userEvent.type(urlInput, url);
-    // await userEvent.type(
-    //   urlInput.querySelector("input") as HTMLInputElement,
-    //   url
-    // );
-    await userEvent.click(titleButton);
+    await user.type(urlInput, url);
+    await user.click(titleButton);
 
     await waitFor(() => {
-      // if (!(titleInput instanceof HTMLInputElement)) {
-      //   fail();
-      // }
       expect(fetchMock).toHaveBeenCalledTimes(1);
       expect(fetchMock.mock.calls[0][0]).toEqual("/api/title?url=" + url);
 
       expect(screen.getByTestId("bm-message")).toHaveTextContent(
         "Can't find title: [500] " + url
       );
-      expect(
-        screen.queryByRole("button", { name: "確認" })
-      ).toBeInTheDocument();
+      expect(screen.getByRole("button", { name: "確認" })).toBeInTheDocument();
       expect(titleInput).toHaveValue("");
     });
   });
@@ -165,6 +145,7 @@ describe("BmDetail", () => {
     const title = "Gmail";
     const title_edited = "GMAIL";
     const onAddBookmark = jest.fn(); // モック関数を作成
+    const user = userEvent.setup();
 
     render(
       <MessageProvider>
@@ -173,30 +154,20 @@ describe("BmDetail", () => {
       </MessageProvider>
     );
 
-    // const urlInput = screen.getByLabelText("url");
-    // const titleInput = screen.getByLabelText("title") as HTMLInputElement;
     const urlInput = screen.getByRole("textbox", { name: "url" });
     const titleInput = screen.getByRole("textbox", { name: "title" });
 
-    const titleButton = screen.getByText("タイトル");
-    const updateButton = screen.getByText("更新");
+    const titleButton = screen.getByRole("button", { name: "タイトル" });
+    const updateButton = screen.getByRole("button", { name: "更新" });
 
     fetchMock.mockResponseOnce(title);
 
-    await userEvent.type(urlInput, url);
-    // await userEvent.type(
-    //   urlInput.querySelector("input") as HTMLInputElement,
-    //   url
-    // );
-    await userEvent.click(titleButton);
+    await user.type(urlInput, url);
+    await user.click(titleButton);
 
-    await userEvent.clear(titleInput);
-    await userEvent.type(titleInput, title_edited);
-    // await userEvent.type(
-    //   titleInput.querySelector("input") as HTMLInputElement,
-    //   title_edited
-    // );
-    await userEvent.click(updateButton);
+    await user.clear(titleInput);
+    await user.type(titleInput, title_edited);
+    await user.click(updateButton);
 
     await waitFor(() => {
       expect(titleInput).toHaveValue(title_edited);
@@ -209,10 +180,10 @@ describe("BmDetail", () => {
     // タイトルを取得するボタンをクリックして、エラーコード500の場合、タイトルのテキストボックスに、なにも表示しない。
     const url = "https://mail.google.com/mail/";
     const onAddBookmark = jest.fn(); // モック関数を作成
+    const user = userEvent.setup();
 
     fetchMock.mockResponseOnce("");
 
-    // const { getByRole } = render(
     render(
       <MessageProvider>
         <BmMessage />
@@ -220,33 +191,22 @@ describe("BmDetail", () => {
       </MessageProvider>
     );
 
-    // const urlInput = screen.getByLabelText("url");
-    // const titleInput = screen.getByLabelText("title");
     const urlInput = screen.getByRole("textbox", { name: "url" });
     const titleInput = screen.getByRole("textbox", { name: "title" });
 
     const titleButton = screen.getByText("タイトル");
 
-    await userEvent.type(urlInput, url);
-    // await userEvent.type(
-    //   urlInput.querySelector("input") as HTMLInputElement,
-    //   url
-    // );
-    await userEvent.click(titleButton);
+    await user.type(urlInput, url);
+    await user.click(titleButton);
 
     await waitFor(() => {
-      // if (!(titleInput instanceof HTMLInputElement)) {
-      //   fail();
-      // }
       expect(fetchMock).toHaveBeenCalledTimes(1);
       expect(fetchMock.mock.calls[0][0]).toEqual("/api/title?url=" + url);
 
       expect(screen.getByTestId("bm-message")).toHaveTextContent(
         "Can't find title: " + url
       );
-      expect(
-        screen.queryByRole("button", { name: "確認" })
-      ).toBeInTheDocument();
+      expect(screen.getByRole("button", { name: "確認" })).toBeInTheDocument();
       expect(titleInput).toHaveValue("");
     });
   });

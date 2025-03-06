@@ -21,21 +21,9 @@ export const BmDetail: React.FC<BmDetailProps> = ({
   };
 
   const titleClick = async () => {
-    //   const response = await fetch("/api/title?url=" + textUrl);
-    //   const text = await response.text();
-
-    //   if (!response.ok) {
-    //     setTextTitle("");
-    //     setMessage({ text: text });
-    //   } else {
-    //     setTextTitle(text);
-    //     setMessage({ text: "" });
-    //   }
     fetch("/api/title?url=" + textUrl)
       .then((response) => {
         if (!response.ok) {
-          // setTextTitle("");
-          // setMessage({ text: "Can't find title" });
           throw new Error(`Can't find title: [${response.status}] `);
         } else {
           return response.text();
@@ -43,8 +31,6 @@ export const BmDetail: React.FC<BmDetailProps> = ({
       })
       .then((text) => {
         if (!text) {
-          // setTextTitle("");
-          // setMessage({ text: "Can't find title" });
           throw new Error(`Can't find title: `);
         } else {
           setTextTitle(text);
