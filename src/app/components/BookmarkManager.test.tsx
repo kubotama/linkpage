@@ -107,8 +107,11 @@ describe("更新されたブックマークが、APIにPOSTで送られる。", 
       expect(screen.queryByText("Example Site")).toBeNull();
     });
 
-    const urlInput = screen.getByLabelText("url");
-    const titleInput = screen.getByLabelText("title") as HTMLInputElement;
+    // const urlInput = screen.getByLabelText("url");
+    // const titleInput = screen.getByLabelText("title") as HTMLInputElement;
+
+    const urlInput = screen.getByRole("textbox", { name: "url" });
+    const titleInput = screen.getByRole("textbox", { name: "title" });
     const updateButton = screen.getByText("更新");
 
     await userEvent.type(urlInput, "https://www.example.com");
@@ -139,8 +142,11 @@ describe("更新されたブックマークが、APIにPOSTで送られる。", 
       expect(screen.queryByText("Example Site")).toBeNull();
     });
 
-    const urlInput = screen.getByLabelText("url");
-    const titleInput = screen.getByLabelText("title") as HTMLInputElement;
+    // const urlInput = screen.getByLabelText("url");
+    // const titleInput = screen.getByLabelText("title") as HTMLInputElement;
+
+    const urlInput = screen.getByRole("textbox", { name: "url" });
+    const titleInput = screen.getByRole("textbox", { name: "title" });
     const updateButton = screen.getByText("更新");
 
     const updatedBookmark = {
@@ -186,8 +192,11 @@ describe("更新されたブックマークが、APIにPOSTで送られる。", 
       expect(fetchMock.mock.calls.length).toEqual(1);
     });
 
-    const urlInput = screen.getByLabelText("url");
-    const titleInput = screen.getByLabelText("title") as HTMLInputElement;
+    // const urlInput = screen.getByLabelText("url");
+    // const titleInput = screen.getByLabelText("title") as HTMLInputElement;
+
+    const urlInput = screen.getByRole("textbox", { name: "url" });
+    const titleInput = screen.getByRole("textbox", { name: "title" });
     const updateButton = screen.getByText("更新");
 
     fetchMock.mockResponseOnce("API Error", {
@@ -223,8 +232,11 @@ describe("更新されたブックマークが、APIにPOSTで送られる。", 
       expect(fetchMock.mock.calls.length).toEqual(1);
     });
 
-    const urlInput = screen.getByLabelText("url");
-    const titleInput = screen.getByLabelText("title") as HTMLInputElement;
+    // const urlInput = screen.getByLabelText("url");
+    // const titleInput = screen.getByLabelText("title") as HTMLInputElement;
+
+    const urlInput = screen.getByRole("textbox", { name: "url" });
+    const titleInput = screen.getByRole("textbox", { name: "title" });
     const updateButton = screen.getByText("更新");
 
     fetchMock.mockRejectOnce(new Error("API Error"));

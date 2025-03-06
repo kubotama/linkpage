@@ -1,9 +1,8 @@
-import React, { useEffect, useRef, useState } from "react";
+import React, { useState } from "react";
 
 import Button from "@mui/material/Button";
+import TextField from "@mui/material/TextField";
 
-// import TextField from "@mui/material/TextField";
-// import Input from "@mui/material/Input";
 import { useMessage } from "../contexts/MessageContext";
 
 interface BmDetailProps {
@@ -15,70 +14,73 @@ export const BmDetail: React.FC<BmDetailProps> = ({
 }) => {
   const [textUrl, setTextUrl] = useState("");
   const [textTitle, setTextTitle] = useState("");
-  const [textUrlDisabled, setTextUrlDisabled] = useState(true);
-  const [textTitleDisabled, setTextTitleDisabled] = useState(true);
-  const textUrlRef1 = useRef<HTMLInputElement>(null);
-  const textTitleRef2 = useRef<HTMLInputElement>(null);
   const { setMessage } = useMessage();
 
   const updateClick = () => {
-    if (textUrlRef1.current && textTitleRef2.current) {
-      const inputTextUrl = textUrlRef1.current.value;
-      const inputTextTitle = textTitleRef2.current.value;
-      onAddBookmark(inputTextUrl, inputTextTitle);
-    }
+    onAddBookmark(textUrl, textTitle);
   };
 
   const titleClick = async () => {
-    const response = await fetch("/api/title?url=" + textUrl);
-    const text = await response.text();
+    //   const response = await fetch("/api/title?url=" + textUrl);
+    //   const text = await response.text();
 
-    if (!response.ok) {
-      setTextTitle("");
-      setMessage({ text: text });
-    } else {
-      setTextTitle(text);
-    }
+    //   if (!response.ok) {
+    //     setTextTitle("");
+    //     setMessage({ text: text });
+    //   } else {
+    //     setTextTitle(text);
+    //     setMessage({ text: "" });
+    //   }
+    fetch("/api/title?url=" + textUrl)
+      .then((response) => {
+        if (!response.ok) {
+          // setTextTitle("");
+          // setMessage({ text: "Can't find title" });
+          throw new Error(`Can't find title: [${response.status}] `);
+        } else {
+          return response.text();
+        }
+      })
+      .then((text) => {
+        if (!text) {
+          // setTextTitle("");
+          // setMessage({ text: "Can't find title" });
+          throw new Error(`Can't find title: `);
+        } else {
+          setTextTitle(text);
+          setMessage({ text: "" });
+        }
+      })
+      .catch((error) => {
+        setTextTitle("");
+        setMessage({ text: error.message + textUrl });
+      });
   };
-
-  useEffect(() => {
-    if (textUrl === "") {
-      setTextUrlDisabled(true);
-      setTextTitleDisabled(true);
-    } else {
-      setTextUrlDisabled(false);
-      if (textTitle === "") {
-        setTextTitleDisabled(true);
-      } else {
-        setTextTitleDisabled(false);
-      }
-    }
-  }, [textUrl, textTitle]);
 
   return (
     <div>
-      <input
+      <TextField
         id="url"
         type="text"
+        label="url"
         aria-label="url"
         value={textUrl}
-        onChange={(e) => setTextUrl(e.target.value)}
-        ref={textUrlRef1}
+        onChange={(e) => {
+          setTextUrl(e.target.value);
+        }}
       />
-      <input
+      <TextField
         id="title"
         type="text"
+        label="title"
         aria-label="title"
         value={textTitle}
-        onChange={(e) => setTextTitle(e.target.value)}
-        ref={textTitleRef2}
+        onChange={(e) => {
+          setTextTitle(e.target.value);
+        }}
       />
-      <Button onClick={titleClick} disabled={textUrlDisabled}>
-        タイトル
-      </Button>
-      <Button onClick={updateClick} disabled={textTitleDisabled}>
-        更新
-      </Button>
+      <Button onClick={titleClick}>タイトル</Button>
+      <Button onClick={updateClick}>更新</Button>
     </div>
   );
 };

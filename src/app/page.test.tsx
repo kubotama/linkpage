@@ -32,8 +32,13 @@ describe("テスト環境を動作確認するためのサンプルのテスト"
       expect(screen.getByText("kubotama/linkpage")).toBeInTheDocument();
       expect(screen.getByText("Google")).toBeInTheDocument();
 
-      expect(screen.getByLabelText("url")).toBeInTheDocument();
-      expect(screen.getByLabelText("title")).toBeInTheDocument();
+      // expect(screen.getByLabelText("url")).toBeInTheDocument();
+      // expect(screen.getByLabelText("title")).toBeInTheDocument();
+
+      expect(screen.getByRole("textbox", { name: "url" })).toBeInTheDocument();
+      expect(
+        screen.getByRole("textbox", { name: "title" })
+      ).toBeInTheDocument();
       expect(screen.getByText("タイトル")).toBeInTheDocument();
       expect(screen.getByText("更新")).toBeInTheDocument();
 
