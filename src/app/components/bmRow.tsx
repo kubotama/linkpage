@@ -1,9 +1,6 @@
 import React, { useEffect, useState } from "react";
 
-export type Bookmark = {
-  url: string;
-  title: string;
-};
+import { Bookmark } from "./BookmarkManager";
 
 export const BmRow: React.FC<{ bookmark: Bookmark }> = ({ bookmark }) => {
   const [bmRow, setBmRow] = useState(<div></div>);

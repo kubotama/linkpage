@@ -3,14 +3,17 @@ import React, { useEffect, useState } from "react";
 import { useMessage } from "../contexts/MessageContext";
 import BmDetail from "./bmDetail";
 import { BmGrid } from "./bmGrid";
-import { Bookmark } from "./bmRow";
+
+export type Bookmark = {
+  url: string;
+  title: string;
+};
 
 export const BookmarkManager = ({}) => {
   const [bookmarks, setBookmarks] = useState<Bookmark[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const { setMessage } = useMessage();
-  // const [isFirstLoading, setIsFirstLoading] = useState(true);
 
   useEffect(() => {
     if (loading) {

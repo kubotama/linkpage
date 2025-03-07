@@ -4,7 +4,8 @@ import React from "react";
 
 import { render, screen } from "@testing-library/react";
 
-import { BmRow, Bookmark } from "./bmRow";
+import { BmRow } from "./bmRow";
+import { Bookmark } from "./BookmarkManager";
 
 /***
  * このテストは、ブックマークのリンクのインスタンスを生成して、そのインスタンスが正しいかをテストする。

@@ -8,8 +8,7 @@ import userEvent from "@testing-library/user-event";
 
 import { MessageProvider } from "../contexts/MessageContext";
 import BmMessage from "./bmMessage";
-import { Bookmark } from "./bmRow";
-import { BookmarkManager } from "./BookmarkManager";
+import { Bookmark, BookmarkManager } from "./BookmarkManager";
 
 const mockBookmarks: Bookmark[] = [
   {
