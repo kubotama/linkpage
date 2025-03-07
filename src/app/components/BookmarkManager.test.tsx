@@ -3,7 +3,8 @@ import "@testing-library/jest-dom";
 import fetchMock from "jest-fetch-mock";
 import React from "react";
 
-import { fireEvent, render, screen, waitFor } from "@testing-library/react";
+import { render, screen, waitFor } from "@testing-library/react";
+import userEvent from "@testing-library/user-event";
 
 import { MessageProvider } from "../contexts/MessageContext";
 import BmMessage from "./bmMessage";
@@ -106,17 +107,14 @@ describe("更新されたブックマークが、APIにPOSTで送られる。", 
       expect(screen.queryByText("Example Site")).toBeNull();
     });
 
-    const urlInput = screen.getByLabelText("url");
-    const titleInput = screen.getByLabelText("title") as HTMLInputElement;
-    const updateButton = screen.getByText("更新");
+    const urlInput = screen.getByRole("textbox", { name: "url" });
+    const titleInput = screen.getByRole("textbox", { name: "title" });
+    const updateButton = screen.getByRole("button", { name: "更新" });
 
-    fireEvent.change(urlInput, {
-      target: { value: "https://www.example.com" },
-    });
-    fireEvent.change(titleInput, {
-      target: { value: "Example Site" },
-    });
-    fireEvent.click(updateButton);
+    const user = userEvent.setup();
+    await user.type(urlInput, "https://www.example.com");
+    await user.type(titleInput, "Example Site");
+    await user.click(updateButton);
 
     // Trigger bookmark update
     await waitFor(() => {
@@ -142,9 +140,9 @@ describe("更新されたブックマークが、APIにPOSTで送られる。", 
       expect(screen.queryByText("Example Site")).toBeNull();
     });
 
-    const urlInput = screen.getByLabelText("url");
-    const titleInput = screen.getByLabelText("title") as HTMLInputElement;
-    const updateButton = screen.getByText("更新");
+    const urlInput = screen.getByRole("textbox", { name: "url" });
+    const titleInput = screen.getByRole("textbox", { name: "title" });
+    const updateButton = screen.getByRole("button", { name: "更新" });
 
     const updatedBookmark = {
       url: "https://www.example.com",
@@ -156,13 +154,11 @@ describe("更新されたブックマークが、APIにPOSTで送られる。", 
       status: 200,
     });
 
-    fireEvent.change(urlInput, {
-      target: { value: "https://www.example.com" },
-    });
-    fireEvent.change(titleInput, {
-      target: { value: "Example Site" },
-    });
-    fireEvent.click(updateButton);
+    const user = userEvent.setup();
+
+    await user.type(urlInput, "https://www.example.com");
+    await user.type(titleInput, "Example Site");
+    await user.click(updateButton);
 
     // Trigger bookmark update
     await waitFor(() => {
@@ -193,22 +189,19 @@ describe("更新されたブックマークが、APIにPOSTで送られる。", 
       expect(fetchMock.mock.calls.length).toEqual(1);
     });
 
-    const urlInput = screen.getByLabelText("url");
-    const titleInput = screen.getByLabelText("title") as HTMLInputElement;
-    const updateButton = screen.getByText("更新");
+    const urlInput = screen.getByRole("textbox", { name: "url" });
+    const titleInput = screen.getByRole("textbox", { name: "title" });
+    const updateButton = screen.getByRole("button", { name: "更新" });
 
     fetchMock.mockResponseOnce("API Error", {
       status: 500,
       headers: { "Content-Type": "text/plain" },
     });
 
-    fireEvent.change(urlInput, {
-      target: { value: "https://www.example.com" },
-    });
-    fireEvent.change(titleInput, {
-      target: { value: "Example Site" },
-    });
-    fireEvent.click(updateButton);
+    const user = userEvent.setup();
+    await user.type(urlInput, "https://www.example.com");
+    await user.type(titleInput, "Example Site");
+    await user.click(updateButton);
 
     await waitFor(() => {
       expect(fetchMock.mock.calls.length).toEqual(2);
@@ -234,19 +227,16 @@ describe("更新されたブックマークが、APIにPOSTで送られる。", 
       expect(fetchMock.mock.calls.length).toEqual(1);
     });
 
-    const urlInput = screen.getByLabelText("url");
-    const titleInput = screen.getByLabelText("title") as HTMLInputElement;
-    const updateButton = screen.getByText("更新");
+    const urlInput = screen.getByRole("textbox", { name: "url" });
+    const titleInput = screen.getByRole("textbox", { name: "title" });
+    const updateButton = screen.getByRole("button", { name: "更新" });
 
     fetchMock.mockRejectOnce(new Error("API Error"));
 
-    fireEvent.change(urlInput, {
-      target: { value: "https://www.example.com" },
-    });
-    fireEvent.change(titleInput, {
-      target: { value: "Example Site" },
-    });
-    fireEvent.click(updateButton);
+    const user = userEvent.setup();
+    await user.type(urlInput, "https://www.example.com");
+    await user.type(titleInput, "Example Site");
+    await user.click(updateButton);
 
     await waitFor(() => {
       expect(fetchMock.mock.calls.length).toEqual(2);
