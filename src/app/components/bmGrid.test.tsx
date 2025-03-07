@@ -5,7 +5,7 @@ import React from "react";
 import { render, screen } from "@testing-library/react";
 
 import { BmGrid } from "./bmGrid";
-import { Bookmark } from "./bmRow";
+import { Bookmark } from "./BookmarkManager";
 
 const mockBookmarks: Bookmark[] = [
   {

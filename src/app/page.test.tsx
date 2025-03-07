@@ -5,7 +5,7 @@ import React from "react";
 
 import { render, screen, waitFor } from "@testing-library/react";
 
-import { Bookmark } from "./components/bmRow";
+import { Bookmark } from "./components/BookmarkManager";
 import Home from "./page";
 
 describe("テスト環境を動作確認するためのサンプルのテスト", () => {
