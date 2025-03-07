@@ -12,7 +12,7 @@ export type Bookmark = {
 export const BookmarkManager = ({}) => {
   const [bookmarks, setBookmarks] = useState<Bookmark[]>([]);
   const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
+  const [error, setError] = useState("");
   const { setMessage } = useMessage();
 
   useEffect(() => {
