@@ -73,9 +73,7 @@ export const BookmarkManager = ({}) => {
 
   return (
     <>
-      <hr style={{ marginTop: "20px", marginBottom: "20px" }} />
       <BmDetail onAddBookmark={handleAddBookmark} />
-      <hr style={{ marginTop: "30px" }} />
       <BmGrid bookmarks={bookmarks} />
     </>
   );

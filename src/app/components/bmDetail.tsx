@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 
 import Button from "@mui/material/Button";
-import TextField from "@mui/material/TextField";
+import Box from "@mui/material/Box";
 
 import { useMessage } from "../contexts/MessageContext";
 
@@ -45,48 +45,48 @@ export const BmDetail: React.FC<BmDetailProps> = ({
 
   return (
     <div>
-      <div style={{ marginBottom: "10px" }}>
+      <Box display="flex" alignItems="center" sx={{ marginBottom: "20px" }}>
         <Button
           variant="contained"
           color="primary"
-          style={{ width: "100px", height: "40px", marginRight: "10px" }}
+          sx={{ width: "100px", height: "2rem", marginRight: "20px" }}
           onClick={titleClick}
         >
           タイトル
         </Button>
-        <TextField
+        <input
+          style={{ width: "50%", height: "20px" }}
           id="url"
+          placeholder="URL"
           type="text"
           aria-label="url"
-          label="url"
           value={textUrl}
-          style={{ width: "50%", height: "40px" }}
           onChange={(e) => {
             setTextUrl(e.target.value);
           }}
         />
-      </div>
-      <div style={{ marginBottom: "10px" }}>
+      </Box>
+      <Box display="flex" alignItems="center">
         <Button
           variant="contained"
           color="primary"
-          style={{ width: "100px", height: "40px", marginRight: "10px" }}
+          style={{ width: "100px", height: "2rem", marginRight: "20px" }}
           onClick={updateClick}
         >
           追加
         </Button>
-        <TextField
+        <input
+          style={{ width: "50%", height: "20px" }}
           id="title"
+          placeholder="タイトル"
           type="text"
           aria-label="title"
-          label="title"
           value={textTitle}
-          style={{ width: "50%", height: "40px" }}
           onChange={(e) => {
             setTextTitle(e.target.value);
           }}
         />
-      </div>
+      </Box>
     </div>
   );
 };
