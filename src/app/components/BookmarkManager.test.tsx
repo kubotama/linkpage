@@ -108,7 +108,7 @@ describe("更新されたブックマークが、APIにPOSTで送られる。", 
 
     const urlInput = screen.getByRole("textbox", { name: "url" });
     const titleInput = screen.getByRole("textbox", { name: "title" });
-    const updateButton = screen.getByRole("button", { name: "更新" });
+    const updateButton = screen.getByRole("button", { name: "追加" });
 
     const user = userEvent.setup();
     await user.type(urlInput, "https://www.example.com");
@@ -141,7 +141,7 @@ describe("更新されたブックマークが、APIにPOSTで送られる。", 
 
     const urlInput = screen.getByRole("textbox", { name: "url" });
     const titleInput = screen.getByRole("textbox", { name: "title" });
-    const updateButton = screen.getByRole("button", { name: "更新" });
+    const updateButton = screen.getByRole("button", { name: "追加" });
 
     const updatedBookmark = {
       url: "https://www.example.com",
@@ -190,7 +190,7 @@ describe("更新されたブックマークが、APIにPOSTで送られる。", 
 
     const urlInput = screen.getByRole("textbox", { name: "url" });
     const titleInput = screen.getByRole("textbox", { name: "title" });
-    const updateButton = screen.getByRole("button", { name: "更新" });
+    const updateButton = screen.getByRole("button", { name: "追加" });
 
     fetchMock.mockResponseOnce("API Error", {
       status: 500,
@@ -228,7 +228,7 @@ describe("更新されたブックマークが、APIにPOSTで送られる。", 
 
     const urlInput = screen.getByRole("textbox", { name: "url" });
     const titleInput = screen.getByRole("textbox", { name: "title" });
-    const updateButton = screen.getByRole("button", { name: "更新" });
+    const updateButton = screen.getByRole("button", { name: "追加" });
 
     fetchMock.mockRejectOnce(new Error("API Error"));
 

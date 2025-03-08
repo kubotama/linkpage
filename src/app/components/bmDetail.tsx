@@ -45,28 +45,48 @@ export const BmDetail: React.FC<BmDetailProps> = ({
 
   return (
     <div>
-      <TextField
-        id="url"
-        type="text"
-        label="url"
-        aria-label="url"
-        value={textUrl}
-        onChange={(e) => {
-          setTextUrl(e.target.value);
-        }}
-      />
-      <TextField
-        id="title"
-        type="text"
-        label="title"
-        aria-label="title"
-        value={textTitle}
-        onChange={(e) => {
-          setTextTitle(e.target.value);
-        }}
-      />
-      <Button onClick={titleClick}>タイトル</Button>
-      <Button onClick={updateClick}>更新</Button>
+      <div style={{ marginBottom: "10px" }}>
+        <Button
+          variant="contained"
+          color="primary"
+          style={{ width: "100px", height: "40px", marginRight: "10px" }}
+          onClick={titleClick}
+        >
+          タイトル
+        </Button>
+        <TextField
+          id="url"
+          type="text"
+          aria-label="url"
+          label="url"
+          value={textUrl}
+          style={{ width: "50%", height: "40px" }}
+          onChange={(e) => {
+            setTextUrl(e.target.value);
+          }}
+        />
+      </div>
+      <div style={{ marginBottom: "10px" }}>
+        <Button
+          variant="contained"
+          color="primary"
+          style={{ width: "100px", height: "40px", marginRight: "10px" }}
+          onClick={updateClick}
+        >
+          追加
+        </Button>
+        <TextField
+          id="title"
+          type="text"
+          aria-label="title"
+          label="title"
+          value={textTitle}
+          style={{ width: "50%", height: "40px" }}
+          onChange={(e) => {
+            setTextTitle(e.target.value);
+          }}
+        />
+      </div>
     </div>
   );
 };

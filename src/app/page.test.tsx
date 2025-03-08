@@ -40,7 +40,7 @@ describe("テスト環境を動作確認するためのサンプルのテスト"
         screen.getByRole("textbox", { name: "title" })
       ).toBeInTheDocument();
       expect(screen.getByText("タイトル")).toBeInTheDocument();
-      expect(screen.getByText("更新")).toBeInTheDocument();
+      expect(screen.getByText("追加")).toBeInTheDocument();
 
       expect(fetchMock.call.length).toEqual(1);
       expect(fetchMock.mock.calls[0][0]).toEqual("/api/bookmark");
