@@ -10,13 +10,6 @@ const BmMessage = () => {
   useEffect(() => {
     setBmMessageText(
       <div>
-        {message !== null && message.text.length > 0 ? (
-          <>
-            <div data-testid="bm-message">{message.text}</div>
-          </>
-        ) : (
-          <div data-testid="bm-message">linkpage</div>
-        )}
         <Button
           onClick={() => {
             setMessage({ text: "" });
@@ -24,6 +17,13 @@ const BmMessage = () => {
         >
           確認
         </Button>
+        <span data-testid="bm-message">
+          {message !== null && message.text.length > 0 ? (
+            <>{message.text}</>
+          ) : (
+            <>linkpage</>
+          )}
+        </span>
       </div>
     );
   }, [message, setMessage]);
