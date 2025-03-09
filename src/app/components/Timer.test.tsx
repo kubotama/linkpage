@@ -27,4 +27,16 @@ describe("Timer", () => {
       expect(screen.queryByRole("button", { name: "開始" })).toBeNull();
     });
   });
+
+  it("停止ボタンを押すと開始ボタンが表示される", async () => {
+    const user = userEvent.setup();
+
+    render(<Timer />);
+    await user.click(screen.getByRole("button", { name: "開始" }));
+    await user.click(screen.getByRole("button", { name: "停止" }));
+    await waitFor(() => {
+      expect(screen.getByRole("button", { name: "開始" })).toBeInTheDocument();
+      expect(screen.queryByRole("button", { name: "停止" })).toBeNull();
+    });
+  });
 });
