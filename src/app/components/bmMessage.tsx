@@ -1,5 +1,7 @@
-import Button from "@mui/material/Button";
 import { useEffect, useState } from "react";
+
+import Box from "@mui/material/Box";
+import Button from "@mui/material/Button";
 
 import { useMessage } from "../contexts/MessageContext";
 
@@ -10,20 +12,28 @@ const BmMessage = () => {
   useEffect(() => {
     setBmMessageText(
       <div>
-        {message !== null && message.text.length > 0 ? (
-          <>
-            <div data-testid="bm-message">{message.text}</div>
-          </>
-        ) : (
-          <div data-testid="bm-message">linkpage</div>
-        )}
-        <Button
-          onClick={() => {
-            setMessage({ text: "" });
-          }}
-        >
-          確認
-        </Button>
+        <Box display="flex" alignItems="center">
+          <Button
+            variant="contained"
+            color="primary"
+            sx={{ width: "6rem", height: "2rem", marginRight: "0.7rem" }}
+            onClick={() => {
+              setMessage({ text: "" });
+            }}
+          >
+            確認
+          </Button>
+          <span
+            data-testid="bm-message"
+            style={{ fontSize: "1.2rem", padding: "0.5rem" }}
+          >
+            {message !== null && message.text.length > 0 ? (
+              <>{message.text}</>
+            ) : (
+              <>linkpage</>
+            )}
+          </span>
+        </Box>
       </div>
     );
   }, [message, setMessage]);

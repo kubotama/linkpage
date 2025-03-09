@@ -1,10 +1,9 @@
 import React, { useState } from "react";
 
+import Box from "@mui/material/Box";
 import Button from "@mui/material/Button";
-import TextField from "@mui/material/TextField";
 
 import { useMessage } from "../contexts/MessageContext";
-
 interface BmDetailProps {
   onAddBookmark: (textUrl: string, textTitle: string) => void;
 }
@@ -44,29 +43,61 @@ export const BmDetail: React.FC<BmDetailProps> = ({
   };
 
   return (
-    <div>
-      <TextField
-        id="url"
-        type="text"
-        label="url"
-        aria-label="url"
-        value={textUrl}
-        onChange={(e) => {
-          setTextUrl(e.target.value);
-        }}
-      />
-      <TextField
-        id="title"
-        type="text"
-        label="title"
-        aria-label="title"
-        value={textTitle}
-        onChange={(e) => {
-          setTextTitle(e.target.value);
-        }}
-      />
-      <Button onClick={titleClick}>タイトル</Button>
-      <Button onClick={updateClick}>更新</Button>
+    <div style={{ marginTop: "20px", marginBottom: "20px" }}>
+      <Box display="flex" alignItems="center" sx={{ marginBottom: "10px" }}>
+        <Button
+          variant="contained"
+          color="primary"
+          sx={{ width: "6rem", height: "2rem", marginRight: "0.7rem" }}
+          onClick={titleClick}
+        >
+          タイトル
+        </Button>
+        <input
+          style={{
+            padding: "0.5rem",
+            width: "80%",
+            height: "1.2rem",
+            maxWidth: "1200px",
+            minWidth: "800px",
+          }}
+          id="url"
+          placeholder="URL"
+          type="text"
+          aria-label="url"
+          value={textUrl}
+          onChange={(e) => {
+            setTextUrl(e.target.value);
+          }}
+        />
+      </Box>
+      <Box display="flex" alignItems="center">
+        <Button
+          variant="contained"
+          color="primary"
+          sx={{ width: "6rem", height: "2rem", marginRight: "0.7rem" }}
+          onClick={updateClick}
+        >
+          追加
+        </Button>
+        <input
+          style={{
+            padding: "0.5rem",
+            width: "80%",
+            height: "1.2rem",
+            maxWidth: "1200px",
+            minWidth: "800px",
+          }}
+          id="title"
+          placeholder="タイトル"
+          type="text"
+          aria-label="title"
+          value={textTitle}
+          onChange={(e) => {
+            setTextTitle(e.target.value);
+          }}
+        />
+      </Box>
     </div>
   );
 };

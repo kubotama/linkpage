@@ -30,7 +30,7 @@ describe("BmDetail", () => {
     const urlInput = screen.getByRole("textbox", { name: "url" });
     const textInput = screen.getByRole("textbox", { name: "title" });
 
-    const updateButton = screen.getByRole("button", { name: "更新" });
+    const updateButton = screen.getByRole("button", { name: "追加" });
 
     await user.type(urlInput, url);
     await user.type(textInput, "Gmail");
@@ -58,7 +58,7 @@ describe("BmDetail", () => {
     expect(
       screen.getByRole("button", { name: "タイトル" })
     ).toBeInTheDocument();
-    expect(screen.getByRole("button", { name: "更新" })).toBeInTheDocument();
+    expect(screen.getByRole("button", { name: "追加" })).toBeInTheDocument();
   });
 
   it("タイトルを取得するボタンをクリック", async () => {
@@ -158,7 +158,7 @@ describe("BmDetail", () => {
     const titleInput = screen.getByRole("textbox", { name: "title" });
 
     const titleButton = screen.getByRole("button", { name: "タイトル" });
-    const updateButton = screen.getByRole("button", { name: "更新" });
+    const updateButton = screen.getByRole("button", { name: "追加" });
 
     fetchMock.mockResponseOnce(title);
 
