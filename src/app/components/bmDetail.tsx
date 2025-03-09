@@ -1,10 +1,9 @@
 import React, { useState } from "react";
 
-import Button from "@mui/material/Button";
 import Box from "@mui/material/Box";
+import Button from "@mui/material/Button";
 
 import { useMessage } from "../contexts/MessageContext";
-
 interface BmDetailProps {
   onAddBookmark: (textUrl: string, textTitle: string) => void;
 }
@@ -44,18 +43,24 @@ export const BmDetail: React.FC<BmDetailProps> = ({
   };
 
   return (
-    <div>
-      <Box display="flex" alignItems="center" sx={{ marginBottom: "20px" }}>
+    <div style={{ marginTop: "20px", marginBottom: "20px" }}>
+      <Box display="flex" alignItems="center" sx={{ marginBottom: "10px" }}>
         <Button
           variant="contained"
           color="primary"
-          sx={{ width: "100px", height: "2rem", marginRight: "20px" }}
+          sx={{ width: "6rem", height: "2rem", marginRight: "0.7rem" }}
           onClick={titleClick}
         >
           タイトル
         </Button>
         <input
-          style={{ width: "50%", height: "20px" }}
+          style={{
+            padding: "0.5rem",
+            width: "80%",
+            height: "1.2rem",
+            maxWidth: "1200px",
+            minWidth: "800px",
+          }}
           id="url"
           placeholder="URL"
           type="text"
@@ -70,13 +75,19 @@ export const BmDetail: React.FC<BmDetailProps> = ({
         <Button
           variant="contained"
           color="primary"
-          style={{ width: "100px", height: "2rem", marginRight: "20px" }}
+          sx={{ width: "6rem", height: "2rem", marginRight: "0.7rem" }}
           onClick={updateClick}
         >
           追加
         </Button>
         <input
-          style={{ width: "50%", height: "20px" }}
+          style={{
+            padding: "0.5rem",
+            width: "80%",
+            height: "1.2rem",
+            maxWidth: "1200px",
+            minWidth: "800px",
+          }}
           id="title"
           placeholder="タイトル"
           type="text"
