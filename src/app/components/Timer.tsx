@@ -7,16 +7,11 @@ const DURATION_TIME = 160;
 export const Timer: React.FC = () => {
   const [buttonTimer, setButtonTimer] = useState("開始");
   const [isStarted, setIsStarted] = useState(false);
-  // const [durationTime] = useState(DURATION_TIME);
-  // const [mm, setMm] = useState(0);
-  // const [ss, setSs] = useState(0);
 
   //  簡易的なビープ音再生
   function playBeep() {
     // 型定義を拡張
-    const AudioContext =
-      // window.AudioContext || (window as any).webkitAudioContext;
-      window.AudioContext;
+    const AudioContext = window.AudioContext;
 
     const audioCtx = new AudioContext();
     const oscillator = audioCtx.createOscillator();
@@ -25,7 +20,6 @@ export const Timer: React.FC = () => {
     oscillator.connect(audioCtx.destination);
     oscillator.start();
     oscillator.stop(audioCtx.currentTime + 0.5);
-    // oscillator.disconnect();
   }
 
   // expiryTimestamp を生成するヘルパー
@@ -33,28 +27,18 @@ export const Timer: React.FC = () => {
     return new Date(Date.now() + duration * 1000);
   };
 
-  // const handleExpire = () => {
-  //   // setMm(Math.floor(DURATION_TIME / 60));
-  //   // setSs(DURATION_TIME % 60);
-  //   playBeep();
-  //   // start();
-  //   // restart(getExpiryTimestamp(DURATION_TIME));
-  // };
-
   const { seconds, minutes, isRunning, restart, pause } = useTimer({
     expiryTimestamp: getExpiryTimestamp(DURATION_TIME),
     autoStart: false,
-    // onExpire: () => handleExpire(),
   });
 
   const handlerClick = () => {
     if (!isRunning) {
       setIsStarted(true);
       restart(getExpiryTimestamp(DURATION_TIME));
-      // start();
     } else {
-      pause();
       setIsStarted(false);
+      pause();
     }
   };
 
@@ -66,17 +50,9 @@ export const Timer: React.FC = () => {
       if (isStarted) {
         playBeep();
         restart(getExpiryTimestamp(DURATION_TIME));
-        // } else {
-        //   setIsStarted(true);
       }
-      // start();
     }
   }, [isRunning, isStarted, restart]);
-
-  // useEffect(() => {
-  //   setMm(minutes);
-  //   setSs(seconds);
-  // }, [minutes, seconds]);
 
   return (
     <div>
