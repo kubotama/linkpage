@@ -3,16 +3,13 @@ import { useTimer } from "react-timer-hook";
 
 import { Button } from "@mui/material";
 
-const DURATION_TIME = 160;
+const DURATION_TIME = 170;
 export const Timer: React.FC = () => {
   const [buttonTimer, setButtonTimer] = useState("開始");
   const [isStarted, setIsStarted] = useState(false);
 
-  //  簡易的なビープ音再生
-  function playBeep() {
-    // 型定義を拡張
+  const playBeep = () => {
     const AudioContext = window.AudioContext;
-
     const audioCtx = new AudioContext();
     const oscillator = audioCtx.createOscillator();
     oscillator.type = "sine";
@@ -20,7 +17,7 @@ export const Timer: React.FC = () => {
     oscillator.connect(audioCtx.destination);
     oscillator.start();
     oscillator.stop(audioCtx.currentTime + 0.5);
-  }
+  };
 
   // expiryTimestamp を生成するヘルパー
   const getExpiryTimestamp = (duration: number): Date => {
@@ -32,14 +29,13 @@ export const Timer: React.FC = () => {
     autoStart: false,
   });
 
-  const handlerClick = () => {
-    if (!isRunning) {
-      setIsStarted(true);
-      restart(getExpiryTimestamp(DURATION_TIME));
-    } else {
-      setIsStarted(false);
+  const handleButtonClick = () => {
+    if (isRunning) {
       pause();
+    } else {
+      restart(getExpiryTimestamp(DURATION_TIME));
     }
+    setIsStarted(!isRunning);
   };
 
   useEffect(() => {
@@ -56,7 +52,7 @@ export const Timer: React.FC = () => {
 
   return (
     <div>
-      <Button onClick={handlerClick} variant="contained">
+      <Button onClick={handleButtonClick} variant="contained">
         {buttonTimer}
       </Button>
       {minutes.toString().padStart(2, "0")}:
