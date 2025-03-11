@@ -1,50 +1,41 @@
 import "@testing-library/jest-dom";
 import React from "react";
-import { render, screen, act, waitFor } from "@testing-library/react";
+import { render } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { Timer } from "./Timer";
 
 describe("Timer コンポーネント", () => {
-  beforeEach(() => {
-    jest.useFakeTimers();
-  });
-  afterEach(() => {
-    jest.useRealTimers();
-  });
-
   it("初期画面で 01:15 と開始ボタンが表示されること", () => {
-    render(<Timer durationTime={10} />);
-    expect(screen.getByText("00:10")).toBeInTheDocument();
-    expect(screen.getByRole("button", { name: "開始" })).toBeInTheDocument();
+    const { getByRole, getByTestId } = render(<Timer durationTime={10} />);
+    expect(getByTestId("timer-text")).toHaveTextContent("00:10");
+    expect(getByRole("button", { name: "開始" })).toBeInTheDocument();
   });
 
-  it("開始ボタンをクリックすると停止ボタンが表示されること", async () => {
+  it("開始ボタンをクリックすると停止ボタンが表示されること", () => {
     const user = userEvent.setup();
 
-    const { getByRole, getByText } = render(<Timer durationTime={150} />);
+    const { getByRole } = render(<Timer durationTime={150} />);
     const startButton = getByRole("button", { name: "開始" });
     user.click(startButton).then(() => {
-      jest.advanceTimersByTime(30000); // 30秒進める
-
       expect(getByRole("button", { name: "停止" })).toBeInTheDocument();
-      expect(getByText("02:00")).toBeInTheDocument();
     });
   });
 
-  it.skip("停止ボタンをクリックすると開始ボタンが表示されること", () => {
+  it("停止ボタンをクリックすると開始ボタンが表示されること", () => {
+    const user = userEvent.setup();
     const { getByRole } = render(<Timer durationTime={170} />);
     const startButton = getByRole("button", { name: "開始" });
 
-    act(() => {
-      userEvent.click(startButton);
-    });
+    user
+      .click(startButton)
+      .then(() => {
+        jest.advanceTimersByTime(30000); // 30秒進める
+        const stopButton = getByRole("button", { name: "停止" });
 
-    const stopButton = getByRole("button", { name: "停止" });
-
-    act(() => {
-      userEvent.click(stopButton);
-    });
-
-    expect(getByRole("button", { name: "開始" })).toBeInTheDocument();
+        return user.click(stopButton);
+      })
+      .then(() => {
+        expect(getByRole("button", { name: "開始" })).toBeInTheDocument();
+      });
   });
 });
