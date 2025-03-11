@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { useTimer } from "react-timer-hook";
 
-import { Button } from "@mui/material";
+import { Box, Button } from "@mui/material";
 
 export const Timer: React.FC<{ durationTime: number }> = ({ durationTime }) => {
   const [buttonTimer, setButtonTimer] = useState("開始");
@@ -50,12 +50,19 @@ export const Timer: React.FC<{ durationTime: number }> = ({ durationTime }) => {
   }, [durationTime, isRunning, isStarted, restart]);
 
   return (
-    <div>
-      <Button onClick={handleButtonClick} variant="contained">
+    <Box display="flex" alignItems="center">
+      <Button
+        color="primary"
+        sx={{ width: "6rem", height: "2rem", marginRight: "0.7rem" }}
+        onClick={handleButtonClick}
+        variant="contained"
+      >
         {buttonTimer}
       </Button>
-      {minutes.toString().padStart(2, "0")}:
-      {seconds.toString().padStart(2, "0")}
-    </div>
+      <span style={{ fontSize: "1.5rem", padding: "0.5rem" }}>
+        {minutes.toString().padStart(2, "0")}:
+        {seconds.toString().padStart(2, "0")}
+      </span>
+    </Box>
   );
 };

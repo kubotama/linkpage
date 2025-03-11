@@ -6,8 +6,8 @@ import { Timer } from "./Timer";
 
 describe("Timer コンポーネント", () => {
   it("初期画面で 01:15 と開始ボタンが表示されること", () => {
-    const { getByRole, getByTestId } = render(<Timer durationTime={10} />);
-    expect(getByTestId("timer-text")).toHaveTextContent("00:10");
+    const { getByRole, getByText } = render(<Timer durationTime={75} />);
+    expect(getByText("01:15")).toBeInTheDocument();
     expect(getByRole("button", { name: "開始" })).toBeInTheDocument();
   });
 
