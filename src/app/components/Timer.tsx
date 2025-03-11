@@ -3,8 +3,7 @@ import { useTimer } from "react-timer-hook";
 
 import { Button } from "@mui/material";
 
-const DURATION_TIME = 170;
-export const Timer: React.FC = () => {
+export const Timer: React.FC<{ durationTime: number }> = ({ durationTime }) => {
   const [buttonTimer, setButtonTimer] = useState("開始");
   const [isStarted, setIsStarted] = useState(false);
 
@@ -25,7 +24,7 @@ export const Timer: React.FC = () => {
   };
 
   const { seconds, minutes, isRunning, restart, pause } = useTimer({
-    expiryTimestamp: getExpiryTimestamp(DURATION_TIME),
+    expiryTimestamp: getExpiryTimestamp(durationTime),
     autoStart: false,
   });
 
@@ -33,7 +32,7 @@ export const Timer: React.FC = () => {
     if (isRunning) {
       pause();
     } else {
-      restart(getExpiryTimestamp(DURATION_TIME));
+      restart(getExpiryTimestamp(durationTime));
     }
     setIsStarted(!isRunning);
   };
@@ -45,10 +44,10 @@ export const Timer: React.FC = () => {
       setButtonTimer("開始");
       if (isStarted) {
         playBeep();
-        restart(getExpiryTimestamp(DURATION_TIME));
+        restart(getExpiryTimestamp(durationTime));
       }
     }
-  }, [isRunning, isStarted, restart]);
+  }, [durationTime, isRunning, isStarted, restart]);
 
   return (
     <div>
