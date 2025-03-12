@@ -211,3 +211,31 @@ describe("BmDetail", () => {
     });
   });
 });
+
+describe("URLから無駄な文字列を削除する#61", () => {
+  describe("#や?の後ろを削除する", () => {
+    it("https://mail.google.com/mail/u/0/#inbox", async () => {
+      const user = userEvent.setup();
+      const url = "https://mail.google.com/mail/u/0/#inboxs";
+
+      render(
+        <MessageProvider>
+          <BmMessage />
+          <BmDetail onAddBookmark={jest.fn()} />
+        </MessageProvider>
+      );
+
+      const urlInput = screen.getByRole("textbox", { name: "url" });
+      const urlButton = screen.getByRole("button", { name: "URL" });
+
+      await user.type(urlInput, url);
+      await user.click(urlButton);
+
+      await waitFor(() => {
+        expect(urlInput).toHaveValue("https://mail.google.com/mail/u/0/");
+      });
+    });
+  });
+
+  describe("URLから、/の階層を一段、削除する", () => {});
+});

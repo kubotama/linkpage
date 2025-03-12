@@ -42,8 +42,15 @@ export const BmDetail: React.FC<BmDetailProps> = ({
       });
   };
 
+  const urlClick = () => {
+    setTextUrl("https://mail.google.com/mail/u/0/");
+  };
+
   return (
     <div style={{ marginTop: "20px", marginBottom: "20px" }}>
+      <Box display="flex" alignItems="center">
+        <Button onClick={urlClick}>URL</Button>
+      </Box>
       <Box display="flex" alignItems="center" sx={{ marginBottom: "10px" }}>
         <Button
           variant="contained"
