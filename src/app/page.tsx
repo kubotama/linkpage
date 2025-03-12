@@ -6,6 +6,7 @@ import BmMessage from "./components/bmMessage";
 import { BookmarkManager } from "./components/BookmarkManager";
 import { MessageProvider } from "./contexts/MessageContext";
 import styles from "./styles.module.css";
+import { Timer } from "./components/Timer";
 
 export const Home: React.FC = () => {
   return (
@@ -13,6 +14,7 @@ export const Home: React.FC = () => {
       <div className={styles.container}>
         <div className="centering-item">
           <BmMessage />
+          <Timer durationTime={180} />
           <BookmarkManager />
         </div>
       </div>
