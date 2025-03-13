@@ -53,6 +53,11 @@ export const BmDetail: React.FC<BmDetailProps> = ({
     }
   };
 
+  const pathClick = () => {
+    // URLに/の階層を一段、削除する。
+    setTextUrl("https://mail.google.com/mail/u/");
+  };
+
   return (
     <div style={{ marginTop: "20px", marginBottom: "20px" }}>
       <Box display="flex" alignItems="center">
@@ -67,6 +72,15 @@ export const BmDetail: React.FC<BmDetailProps> = ({
         >
           タイトル
         </Button>
+        <Button
+          variant="contained"
+          color="primary"
+          sx={{ width: "6rem", height: "2rem", marginRight: "0.7rem" }}
+          onClick={pathClick}
+        >
+          ←
+        </Button>
+
         <input
           style={{
             padding: "0.5rem",
