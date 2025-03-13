@@ -237,9 +237,34 @@ describe("URLから無駄な文字列を削除する#61", () => {
     });
   });
 
-  it("https://mail.google.com/mail/u/0/#inbox", async () => {
+  it("https://xtech.nikkei.com/atcl/nxt/column/18/00148/030500376/?n_cid=nbpnxt_mled_itmh", async () => {
     const user = userEvent.setup();
-    const url = "https://mail.google.com/mail/u/0/#inboxs";
+    const url =
+      "https://xtech.nikkei.com/atcl/nxt/column/18/00148/030500376/?n_cid=nbpnxt_mled_itmh";
+
+    render(
+      <MessageProvider>
+        <BmMessage />
+        <BmDetail onAddBookmark={jest.fn()} />
+      </MessageProvider>
+    );
+
+    const urlInput = screen.getByRole("textbox", { name: "url" });
+    const urlButton = screen.getByRole("button", { name: "URL" });
+
+    await user.type(urlInput, url);
+    await user.click(urlButton);
+
+    await waitFor(() => {
+      expect(urlInput).toHaveValue(
+        "https://xtech.nikkei.com/atcl/nxt/column/18/00148/030500376/"
+      );
+    });
+  });
+
+  it("https://mail.google.com/mail/u/0/", async () => {
+    const user = userEvent.setup();
+    const url = "https://mail.google.com/mail/u/0/";
 
     render(
       <MessageProvider>

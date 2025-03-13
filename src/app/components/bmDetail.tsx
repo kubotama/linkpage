@@ -44,6 +44,7 @@ export const BmDetail: React.FC<BmDetailProps> = ({
 
   const urlClick = () => {
     // #や?の後ろを削除する
+    // #や?のない場合は、入力されたURLをそのままとする
     const regex = /(http|https):\/\/(.*?)(?:[#\?].*|$)/;
     const matches = textUrl.match(regex);
 
