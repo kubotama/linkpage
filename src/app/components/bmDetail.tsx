@@ -43,7 +43,13 @@ export const BmDetail: React.FC<BmDetailProps> = ({
   };
 
   const urlClick = () => {
-    setTextUrl("https://mail.google.com/mail/u/0/");
+    // #や?の後ろを削除する
+    const regex = /(http|https):\/\/(.*?)(?:[#\?].*|$)/;
+    const matches = textUrl.match(regex);
+
+    if (matches && matches.length > 2) {
+      setTextUrl(matches[1] + "://" + matches[2]);
+    }
   };
 
   return (
