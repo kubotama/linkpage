@@ -42,8 +42,52 @@ export const BmDetail: React.FC<BmDetailProps> = ({
       });
   };
 
+  const urlClick = () => {
+    // #や?の後ろを削除する
+    // #や?のない場合は、入力されたURLをそのままとする
+    const regex = /(https?:\/\/(.*?))(?:[#\?].*|$)/;
+    const matches = textUrl.match(regex);
+
+    if (matches && matches.length > 2) {
+      setTextUrl(matches[1]);
+    }
+  };
+
+  const pathClick = () => {
+    const regex_notslash = /^(http:\/\/|https:\/\/)(.*\/)[^\/]+$/;
+    const match_notslash = textUrl.match(regex_notslash);
+    if (match_notslash) {
+      setTextUrl(match_notslash[1] + match_notslash[2]);
+      return;
+    }
+    const regex_slash = /^(http:\/\/|https:\/\/)(.+\/)[^\/]+\/$/;
+    const match_slash = textUrl.match(regex_slash);
+    if (match_slash) {
+      setTextUrl(match_slash[1] + match_slash[2]);
+      return;
+    }
+  };
+
   return (
     <div style={{ marginTop: "20px", marginBottom: "20px" }}>
+      <Box display="flex" alignItems="center" sx={{ marginBottom: "10px" }}>
+        <Button
+          variant="contained"
+          color="primary"
+          sx={{ width: "3rem", height: "2rem", marginRight: "0.7rem" }}
+          onClick={urlClick}
+        >
+          URL
+        </Button>
+        <Button
+          variant="contained"
+          color="primary"
+          sx={{ width: "3rem", height: "2rem", marginRight: "0.7rem" }}
+          onClick={pathClick}
+        >
+          ←
+        </Button>
+      </Box>
       <Box display="flex" alignItems="center" sx={{ marginBottom: "10px" }}>
         <Button
           variant="contained"

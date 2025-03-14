@@ -65,6 +65,25 @@ linkpage はリンクデータを JSON 形式で管理します。基本的な�
 
 ブックマークを登録するときの参考にするために、入力した URL のページの title タグを取得できます。取得したタイトルを編集してブックマークを登録できます。
 
+ブックマークを登録するときのURLを整形する機能があります。
+
+- #や?の後ろを削除します。
+
+|整形前|整形後|
+|-----|-----|
+|https://mail.google.com/mail/u/0/#inbox|https://mail.google.com/mail/u/0/|
+
+- URLから/の階層を一段、削除します。
+
+|整形前|整形後|
+|-----|-----|
+|https://mail.google.com/mail/u/0/#inbox|https://mail.google.com/mail/u/0/|
+|https://mail.google.com/mail/u/0/|https://mail.google.com/mail/u/|
+|https://mail.google.com/mail/u/0|https://mail.google.com/mail/u/|
+|https://xtech.nikkei.com/atcl/nxt/column/18/00148/030500376/?n_cid=nbpnxt_mled_itmh|https://xtech.nikkei.com/atcl/nxt/column/18/00148/030500376/
+|https://xtech.nikkei.com|https://xtech.nikkei.com|
+|https://xtech.nikkei.com/|https://xtech.nikkei.com/|
+
 ## カスタマイズ
 
 独自のリンク集を作成するには、`bookmark.json`ファイルを編集してください。

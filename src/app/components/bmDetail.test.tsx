@@ -211,3 +211,193 @@ describe("BmDetail", () => {
     });
   });
 });
+
+describe("URLから無駄な文字列を削除する#61", () => {
+  describe("#や?の後ろを削除する", () => {
+    it("https://mail.google.com/mail/u/0/#inbox", async () => {
+      const user = userEvent.setup();
+      const url = "https://mail.google.com/mail/u/0/#inbox";
+
+      render(
+        <MessageProvider>
+          <BmMessage />
+          <BmDetail onAddBookmark={jest.fn()} />
+        </MessageProvider>
+      );
+
+      const urlInput = screen.getByRole("textbox", { name: "url" });
+      const urlButton = screen.getByRole("button", { name: "URL" });
+
+      await user.type(urlInput, url);
+      await user.click(urlButton);
+
+      await waitFor(() => {
+        expect(urlInput).toHaveValue("https://mail.google.com/mail/u/0/");
+      });
+    });
+
+    it("https://xtech.nikkei.com/atcl/nxt/column/18/00148/030500376/?n_cid=nbpnxt_mled_itmh", async () => {
+      const user = userEvent.setup();
+      const url =
+        "https://xtech.nikkei.com/atcl/nxt/column/18/00148/030500376/?n_cid=nbpnxt_mled_itmh";
+
+      render(
+        <MessageProvider>
+          <BmMessage />
+          <BmDetail onAddBookmark={jest.fn()} />
+        </MessageProvider>
+      );
+
+      const urlInput = screen.getByRole("textbox", { name: "url" });
+      const urlButton = screen.getByRole("button", { name: "URL" });
+
+      await user.type(urlInput, url);
+      await user.click(urlButton);
+
+      await waitFor(() => {
+        expect(urlInput).toHaveValue(
+          "https://xtech.nikkei.com/atcl/nxt/column/18/00148/030500376/"
+        );
+      });
+    });
+
+    it("https://mail.google.com/mail/u/0/", async () => {
+      const user = userEvent.setup();
+      const url = "https://mail.google.com/mail/u/0/";
+
+      render(
+        <MessageProvider>
+          <BmMessage />
+          <BmDetail onAddBookmark={jest.fn()} />
+        </MessageProvider>
+      );
+
+      const urlInput = screen.getByRole("textbox", { name: "url" });
+      const urlButton = screen.getByRole("button", { name: "URL" });
+
+      await user.type(urlInput, url);
+      await user.click(urlButton);
+
+      await waitFor(() => {
+        expect(urlInput).toHaveValue("https://mail.google.com/mail/u/0/");
+      });
+    });
+  });
+
+  describe("URLから、/の階層を一段、削除する", () => {
+    it("https://mail.google.com/mail/u/0/", async () => {
+      const user = userEvent.setup();
+      const url = "https://mail.google.com/mail/u/0/#inbox";
+
+      render(
+        <MessageProvider>
+          <BmMessage />
+          <BmDetail onAddBookmark={jest.fn()} />
+        </MessageProvider>
+      );
+
+      const urlInput = screen.getByRole("textbox", { name: "url" });
+      const pathButton = screen.getByRole("button", { name: "←" });
+
+      await user.type(urlInput, url);
+      await user.click(pathButton);
+
+      await waitFor(() => {
+        expect(urlInput).toHaveValue("https://mail.google.com/mail/u/0/");
+      });
+    });
+
+    it("https://xtech.nikkei.com/atcl/nxt/column/18/00148/030500376", async () => {
+      const user = userEvent.setup();
+      const url = "https://xtech.nikkei.com/atcl/nxt/column/18/00148/030500376";
+
+      render(
+        <MessageProvider>
+          <BmMessage />
+          <BmDetail onAddBookmark={jest.fn()} />
+        </MessageProvider>
+      );
+
+      const urlInput = screen.getByRole("textbox", { name: "url" });
+      const pathButton = screen.getByRole("button", { name: "←" });
+
+      await user.type(urlInput, url);
+      await user.click(pathButton);
+
+      await waitFor(() => {
+        expect(urlInput).toHaveValue(
+          "https://xtech.nikkei.com/atcl/nxt/column/18/00148/"
+        );
+      });
+    });
+
+    it("https://xtech.nikkei.com/atcl/nxt/column/18/00148/030500376/", async () => {
+      const user = userEvent.setup();
+      const url =
+        "https://xtech.nikkei.com/atcl/nxt/column/18/00148/030500376/";
+
+      render(
+        <MessageProvider>
+          <BmMessage />
+          <BmDetail onAddBookmark={jest.fn()} />
+        </MessageProvider>
+      );
+
+      const urlInput = screen.getByRole("textbox", { name: "url" });
+      const pathButton = screen.getByRole("button", { name: "←" });
+
+      await user.type(urlInput, url);
+      await user.click(pathButton);
+
+      await waitFor(() => {
+        expect(urlInput).toHaveValue(
+          "https://xtech.nikkei.com/atcl/nxt/column/18/00148/"
+        );
+      });
+    });
+
+    it("https://xtech.nikkei.com", async () => {
+      const user = userEvent.setup();
+      const url = "https://xtech.nikkei.com";
+
+      render(
+        <MessageProvider>
+          <BmMessage />
+          <BmDetail onAddBookmark={jest.fn()} />
+        </MessageProvider>
+      );
+
+      const urlInput = screen.getByRole("textbox", { name: "url" });
+      const pathButton = screen.getByRole("button", { name: "←" });
+
+      await user.type(urlInput, url);
+      await user.click(pathButton);
+
+      await waitFor(() => {
+        expect(urlInput).toHaveValue("https://xtech.nikkei.com");
+      });
+    });
+
+    it("https://xtech.nikkei.com/", async () => {
+      const user = userEvent.setup();
+      const url = "https://xtech.nikkei.com/";
+
+      render(
+        <MessageProvider>
+          <BmMessage />
+          <BmDetail onAddBookmark={jest.fn()} />
+        </MessageProvider>
+      );
+
+      const urlInput = screen.getByRole("textbox", { name: "url" });
+      const pathButton = screen.getByRole("button", { name: "←" });
+
+      await user.type(urlInput, url);
+      await user.click(pathButton);
+
+      await waitFor(() => {
+        expect(urlInput).toHaveValue("https://xtech.nikkei.com/");
+      });
+    });
+  });
+});
