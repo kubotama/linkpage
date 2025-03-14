@@ -216,7 +216,7 @@ describe("URLから無駄な文字列を削除する#61", () => {
   describe("#や?の後ろを削除する", () => {
     it("https://mail.google.com/mail/u/0/#inbox", async () => {
       const user = userEvent.setup();
-      const url = "https://mail.google.com/mail/u/0/#inboxs";
+      const url = "https://mail.google.com/mail/u/0/#inbox";
 
       render(
         <MessageProvider>

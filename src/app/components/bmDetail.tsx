@@ -45,11 +45,11 @@ export const BmDetail: React.FC<BmDetailProps> = ({
   const urlClick = () => {
     // #や?の後ろを削除する
     // #や?のない場合は、入力されたURLをそのままとする
-    const regex = /(http|https):\/\/(.*?)(?:[#\?].*|$)/;
+    const regex = /(https?:\/\/(.*?))(?:[#\?].*|$)/;
     const matches = textUrl.match(regex);
 
     if (matches && matches.length > 2) {
-      setTextUrl(matches[1] + "://" + matches[2]);
+      setTextUrl(matches[1]);
     }
   };
 
