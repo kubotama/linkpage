@@ -54,14 +54,39 @@ export const BmDetail: React.FC<BmDetailProps> = ({
   };
 
   const pathClick = () => {
-    // URLに/の階層を一段、削除する。
-    setTextUrl("https://mail.google.com/mail/u/");
+    const regex_notslash = /^(http:\/\/|https:\/\/)(.*\/)[^\/]+$/;
+    const match_notslash = textUrl.match(regex_notslash);
+    if (match_notslash) {
+      setTextUrl(match_notslash[1] + match_notslash[2]);
+      return;
+    }
+    const regex_slash = /^(http:\/\/|https:\/\/)(.+\/)[^\/]+\/$/;
+    const match_slash = textUrl.match(regex_slash);
+    if (match_slash) {
+      setTextUrl(match_slash[1] + match_slash[2]);
+      return;
+    }
   };
 
   return (
     <div style={{ marginTop: "20px", marginBottom: "20px" }}>
-      <Box display="flex" alignItems="center">
-        <Button onClick={urlClick}>URL</Button>
+      <Box display="flex" alignItems="center" sx={{ marginBottom: "10px" }}>
+        <Button
+          variant="contained"
+          color="primary"
+          sx={{ width: "3rem", height: "2rem", marginRight: "0.7rem" }}
+          onClick={urlClick}
+        >
+          URL
+        </Button>
+        <Button
+          variant="contained"
+          color="primary"
+          sx={{ width: "3rem", height: "2rem", marginRight: "0.7rem" }}
+          onClick={pathClick}
+        >
+          ←
+        </Button>
       </Box>
       <Box display="flex" alignItems="center" sx={{ marginBottom: "10px" }}>
         <Button
@@ -72,15 +97,6 @@ export const BmDetail: React.FC<BmDetailProps> = ({
         >
           タイトル
         </Button>
-        <Button
-          variant="contained"
-          color="primary"
-          sx={{ width: "6rem", height: "2rem", marginRight: "0.7rem" }}
-          onClick={pathClick}
-        >
-          ←
-        </Button>
-
         <input
           style={{
             padding: "0.5rem",
