@@ -226,7 +226,7 @@ describe("URLから無駄な文字列を削除する#61", () => {
       );
 
       const urlInput = screen.getByRole("textbox", { name: "url" });
-      const urlButton = screen.getByRole("button", { name: "URL" });
+      const urlButton = screen.getByRole("button", { name: "パラメータ" });
 
       await user.type(urlInput, url);
       await user.click(urlButton);
@@ -249,7 +249,7 @@ describe("URLから無駄な文字列を削除する#61", () => {
       );
 
       const urlInput = screen.getByRole("textbox", { name: "url" });
-      const urlButton = screen.getByRole("button", { name: "URL" });
+      const urlButton = screen.getByRole("button", { name: "パラメータ" });
 
       await user.type(urlInput, url);
       await user.click(urlButton);
@@ -273,7 +273,7 @@ describe("URLから無駄な文字列を削除する#61", () => {
       );
 
       const urlInput = screen.getByRole("textbox", { name: "url" });
-      const urlButton = screen.getByRole("button", { name: "URL" });
+      const urlButton = screen.getByRole("button", { name: "パラメータ" });
 
       await user.type(urlInput, url);
       await user.click(urlButton);
