@@ -74,15 +74,15 @@ export const BmDetail: React.FC<BmDetailProps> = ({
         <Button
           variant="contained"
           color="primary"
-          sx={{ width: "3rem", height: "2rem", marginRight: "0.7rem" }}
+          sx={{ width: "7rem", height: "2rem", marginRight: "0.7rem" }}
           onClick={urlClick}
         >
-          URL
+          パラメータ
         </Button>
         <Button
           variant="contained"
           color="primary"
-          sx={{ width: "3rem", height: "2rem", marginRight: "0.7rem" }}
+          sx={{ width: "7rem", height: "2rem", marginRight: "0.7rem" }}
           onClick={pathClick}
         >
           ←
