@@ -402,11 +402,11 @@ describe("URLから無駄な文字列を削除する#61", () => {
   });
 });
 
-// window.open のモック
+// Mock for window.open to test the 'Open' button functionality
 const mockOpen = jest.fn();
 const originalOpen = window.open;
 
-// window.location のモック用の設定
+// Interface to mock window.location for testing purposes
 interface MockedLocation {
   href: string;
 }
