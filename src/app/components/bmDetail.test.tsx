@@ -401,3 +401,73 @@ describe("URLから無駄な文字列を削除する#61", () => {
     });
   });
 });
+
+// window.open のモック
+const mockOpen = jest.fn();
+const originalOpen = window.open;
+
+// window.location のモック用の設定
+interface MockedLocation {
+  href: string;
+}
+
+describe("UrlOpener Component", () => {
+  let originalLocation: Location;
+
+  beforeAll(() => {
+    // 元のlocationを保存
+    originalLocation = window.location;
+
+    // window.open をモック
+    window.open = mockOpen as typeof window.open;
+
+    // window.location をモックする代替アプローチ
+    // Object.definePropertyを使用して一時的にlocationプロパティを再定義
+    const mockLocation = { href: "" };
+    Object.defineProperty(window, "location", {
+      configurable: true,
+      value: mockLocation,
+      writable: true,
+    });
+  });
+
+  afterAll(() => {
+    // テスト後に元の実装を復元
+    window.open = originalOpen;
+
+    // locationを元に戻す
+    Object.defineProperty(window, "location", {
+      configurable: true,
+      value: originalLocation,
+      writable: true,
+    });
+  });
+
+  beforeEach(() => {
+    // 各テスト前にモックをリセット
+    jest.clearAllMocks();
+
+    // hrefをリセット
+    (window.location as MockedLocation).href = "";
+  });
+
+  it("「開く」ボタンをクリック", async () => {
+    const user = userEvent.setup();
+    const url = "https://xtech.nikkei.com/";
+
+    render(
+      <MessageProvider>
+        <BmMessage />
+        <BmDetail onAddBookmark={jest.fn()} />
+      </MessageProvider>
+    );
+
+    const urlInput = screen.getByRole("textbox", { name: "url" });
+    const openButton = screen.getByRole("button", { name: "開く" });
+
+    await user.type(urlInput, url);
+    await user.click(openButton);
+
+    expect(mockOpen).toHaveBeenCalledWith(url, "_blank", "noopener,noreferrer");
+  });
+});

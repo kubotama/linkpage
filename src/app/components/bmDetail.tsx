@@ -68,6 +68,11 @@ export const BmDetail: React.FC<BmDetailProps> = ({
     }
   };
 
+  const openClick = () => {
+    // 新しいウィンドウでURLを開く
+    window.open(textUrl, "_blank", "noopener,noreferrer");
+  };
+
   return (
     <div style={{ marginTop: "20px", marginBottom: "20px" }}>
       <Box display="flex" alignItems="center" sx={{ marginBottom: "10px" }}>
@@ -87,6 +92,7 @@ export const BmDetail: React.FC<BmDetailProps> = ({
         >
           ←
         </Button>
+        <Button onClick={openClick}>開く</Button>
       </Box>
       <Box display="flex" alignItems="center" sx={{ marginBottom: "10px" }}>
         <Button
