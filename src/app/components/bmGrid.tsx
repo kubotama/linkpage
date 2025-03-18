@@ -1,6 +1,6 @@
 import React, { JSX, useEffect, useState } from "react";
 
-import { BmRow } from "./bmRow";
+// import { BmRow } from "./bmRow";
 import { Bookmark } from "./BookmarkManager";
 
 export const BmGrid: React.FC<{ bookmarks: Bookmark[] }> = ({ bookmarks }) => {
@@ -10,7 +10,11 @@ export const BmGrid: React.FC<{ bookmarks: Bookmark[] }> = ({ bookmarks }) => {
     setBookmarkGrid(
       <div className="grid grid-cols-1">
         {bookmarks.map((bookmark, index) => (
-          <BmRow key={index} bookmark={bookmark} />
+          <div key={index} className="grid-item">
+            <a href={bookmark.url} target="_blank">
+              {bookmark.title}
+            </a>
+          </div>
         ))}
       </div>
     );
