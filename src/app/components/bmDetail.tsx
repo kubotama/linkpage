@@ -68,9 +68,37 @@ export const BmDetail: React.FC<BmDetailProps> = ({
     }
   };
 
+  const openClick = () => {
+    try {
+      new URL(textUrl);
+      // 新しいウィンドウでURLを開く
+      window.open(textUrl, "_blank", "noopener,noreferrer");
+    } catch (error: unknown) {
+      setMessage({ text: (error as Error).message });
+    }
+  };
+
   return (
     <div style={{ marginTop: "20px", marginBottom: "20px" }}>
       <Box display="flex" alignItems="center" sx={{ marginBottom: "10px" }}>
+        <Button
+          variant="contained"
+          color="primary"
+          sx={{ width: "8rem", height: "2rem", marginRight: "0.7rem" }}
+          onClick={titleClick}
+        >
+          タイトル
+        </Button>
+
+        <Button
+          variant="contained"
+          color="primary"
+          sx={{ width: "8rem", height: "2rem", marginRight: "0.7rem" }}
+          onClick={updateClick}
+        >
+          追加
+        </Button>
+
         <Button
           variant="contained"
           color="primary"
@@ -79,6 +107,7 @@ export const BmDetail: React.FC<BmDetailProps> = ({
         >
           パラメータ
         </Button>
+
         <Button
           variant="contained"
           color="primary"
@@ -87,20 +116,19 @@ export const BmDetail: React.FC<BmDetailProps> = ({
         >
           ←
         </Button>
-      </Box>
-      <Box display="flex" alignItems="center" sx={{ marginBottom: "10px" }}>
         <Button
           variant="contained"
           color="primary"
-          sx={{ width: "6rem", height: "2rem", marginRight: "0.7rem" }}
-          onClick={titleClick}
+          sx={{ width: "7rem", height: "2rem", marginRight: "0.7rem" }}
+          onClick={openClick}
         >
-          タイトル
+          開く
         </Button>
+      </Box>
+      <Box display="flex" alignItems="center" sx={{ marginBottom: "10px" }}>
         <input
           style={{
             padding: "0.5rem",
-            width: "80%",
             height: "1.2rem",
             maxWidth: "1200px",
             minWidth: "800px",
@@ -116,18 +144,9 @@ export const BmDetail: React.FC<BmDetailProps> = ({
         />
       </Box>
       <Box display="flex" alignItems="center">
-        <Button
-          variant="contained"
-          color="primary"
-          sx={{ width: "6rem", height: "2rem", marginRight: "0.7rem" }}
-          onClick={updateClick}
-        >
-          追加
-        </Button>
         <input
           style={{
             padding: "0.5rem",
-            width: "80%",
             height: "1.2rem",
             maxWidth: "1200px",
             minWidth: "800px",

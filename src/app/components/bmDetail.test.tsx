@@ -401,3 +401,95 @@ describe("URLから無駄な文字列を削除する#61", () => {
     });
   });
 });
+
+// Mock for window.open to test the 'Open' button functionality
+const mockOpen = jest.fn();
+const originalOpen = window.open;
+
+// Interface to mock window.location for testing purposes
+interface MockedLocation {
+  href: string;
+}
+
+describe("UrlOpener Component", () => {
+  let originalLocation: Location;
+
+  beforeAll(() => {
+    // 元のlocationを保存
+    originalLocation = window.location;
+
+    // window.open をモック
+    window.open = mockOpen as typeof window.open;
+
+    // window.location をモックする代替アプローチ
+    // Object.definePropertyを使用して一時的にlocationプロパティを再定義
+    const mockLocation = { href: "" };
+    Object.defineProperty(window, "location", {
+      configurable: true,
+      value: mockLocation,
+      writable: true,
+    });
+  });
+
+  afterAll(() => {
+    // テスト後に元の実装を復元
+    window.open = originalOpen;
+
+    // locationを元に戻す
+    Object.defineProperty(window, "location", {
+      configurable: true,
+      value: originalLocation,
+      writable: true,
+    });
+  });
+
+  beforeEach(() => {
+    // 各テスト前にモックをリセット
+    jest.clearAllMocks();
+
+    // hrefをリセット
+    (window.location as MockedLocation).href = "";
+  });
+
+  it("「開く」ボタンをクリック", async () => {
+    const user = userEvent.setup();
+    const url = "https://xtech.nikkei.com/";
+
+    render(
+      <MessageProvider>
+        <BmMessage />
+        <BmDetail onAddBookmark={jest.fn()} />
+      </MessageProvider>
+    );
+
+    const urlInput = screen.getByRole("textbox", { name: "url" });
+    const openButton = screen.getByRole("button", { name: "開く" });
+
+    await user.type(urlInput, url);
+    await user.click(openButton);
+
+    expect(mockOpen).toHaveBeenCalledWith(url, "_blank", "noopener,noreferrer");
+  });
+
+  it("不正なURLを入力した場合", async () => {
+    const user = userEvent.setup();
+
+    render(
+      <MessageProvider>
+        <BmMessage />
+        <BmDetail onAddBookmark={jest.fn()} />
+      </MessageProvider>
+    );
+
+    const urlInput = screen.getByRole("textbox", { name: "url" });
+    const openButton = screen.getByRole("button", { name: "開く" });
+
+    await user.type(urlInput, "invalid-url");
+    await user.click(openButton);
+
+    expect(screen.getByTestId("bm-message")).toHaveTextContent(
+      "Invalid URL: invalid-url"
+    );
+    expect(mockOpen).not.toHaveBeenCalled();
+  });
+});

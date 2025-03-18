@@ -84,6 +84,8 @@ linkpage はリンクデータを JSON 形式で管理します。基本的な�
 | https://xtech.nikkei.com                                                            | https://xtech.nikkei.com                                     |
 | https://xtech.nikkei.com/                                                           | https://xtech.nikkei.com/                                    |
 
+- 入力された URL を開きます。(「開く」ボタン)
+
 ## カスタマイズ
 
 独自のリンク集を作成するには、`bookmark.json`ファイルを編集してください。
