@@ -69,8 +69,13 @@ export const BmDetail: React.FC<BmDetailProps> = ({
   };
 
   const openClick = () => {
-    // 新しいウィンドウでURLを開く
-    window.open(textUrl, "_blank", "noopener,noreferrer");
+    try {
+      new URL(textUrl);
+      // 新しいウィンドウでURLを開く
+      window.open(textUrl, "_blank", "noopener,noreferrer");
+    } catch (error: unknown) {
+      setMessage({ text: (error as Error).message });
+    }
   };
 
   return (

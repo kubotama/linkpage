@@ -470,4 +470,26 @@ describe("UrlOpener Component", () => {
 
     expect(mockOpen).toHaveBeenCalledWith(url, "_blank", "noopener,noreferrer");
   });
+
+  it("不正なURLを入力した場合", async () => {
+    const user = userEvent.setup();
+
+    render(
+      <MessageProvider>
+        <BmMessage />
+        <BmDetail onAddBookmark={jest.fn()} />
+      </MessageProvider>
+    );
+
+    const urlInput = screen.getByRole("textbox", { name: "url" });
+    const openButton = screen.getByRole("button", { name: "開く" });
+
+    await user.type(urlInput, "invalid-url");
+    await user.click(openButton);
+
+    expect(screen.getByTestId("bm-message")).toHaveTextContent(
+      "Invalid URL: invalid-url"
+    );
+    expect(mockOpen).not.toHaveBeenCalled();
+  });
 });
