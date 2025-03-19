@@ -13,14 +13,21 @@ linkpage は、手元にあると便利なツールを集めたウェブアプ�
 
 ## インストール方法
 
-```bash
 # リポジトリのクローン
+
+```bash
 git clone https://github.com/kubotama/linkpage.git
+```
 
 # プロジェクトディレクトリに移動
+
+```bash
 cd linkpage
+```
 
 # 依存パッケージのインストール
+
+```bash
 npm install
 ```
 
