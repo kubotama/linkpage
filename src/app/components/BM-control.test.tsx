@@ -1,57 +1,49 @@
 import "@testing-library/jest-dom";
 
 import fetchMock from "jest-fetch-mock";
-import React from "react";
+import React, { act } from "react";
 
-import { render, screen, waitFor } from "@testing-library/react";
-import userEvent from "@testing-library/user-event";
+import { fireEvent, render, screen, waitFor } from "@testing-library/react";
 
 import { MessageProvider } from "../contexts/MessageContext";
-import { BmDetail } from "./bmDetail";
 import BmMessage from "./bmMessage";
+import { Bookmark, BookmarkManager } from "./BookmarkManager";
 
-describe("BmDetail", () => {
+const mockBookmarks: Bookmark[] = [
+  {
+    url: "https://github.com/kubotama/linkpage",
+    title: "kubotama/linkpage",
+  },
+  {
+    url: "https://www.google.com/",
+    title: "Google",
+  },
+  {
+    url: "https://mail.google.com",
+    title: "Gmail",
+  },
+  {
+    url: "https://www.amazon.co.jp/",
+    title: "Amazon",
+  },
+];
+
+describe("BookmarkManagerのURLとタイトルのテキストとボタンのテスト", () => {
   beforeEach(() => {
     fetchMock.resetMocks();
   });
 
-  it("入力された文字列が親コンポーネントに渡されること", async () => {
-    const user = userEvent.setup();
-    const url = "https://mail.google.com/mail/";
-    const onAddBookmark = jest.fn(); // モック関数を作成
+  it("すべてのエレメントが表示される", async () => {
+    fetchMock.mockResponseOnce(JSON.stringify(mockBookmarks));
 
-    render(
-      <MessageProvider>
-        <BmMessage />
-        <BmDetail onAddBookmark={onAddBookmark} />
-      </MessageProvider>
-    );
-
-    const urlInput = screen.getByRole("textbox", { name: "url" });
-    const textInput = screen.getByRole("textbox", { name: "title" });
-
-    const updateButton = screen.getByRole("button", { name: "追加" });
-
-    await user.type(urlInput, url);
-    await user.type(textInput, "Gmail");
-
-    await user.click(updateButton);
-
-    await waitFor(() => {
-      expect(onAddBookmark).toHaveBeenCalledTimes(1);
-      expect(onAddBookmark).toHaveBeenCalledWith(url, "Gmail");
+    await act(async () => {
+      render(
+        <MessageProvider>
+          <BmMessage />
+          <BookmarkManager />
+        </MessageProvider>
+      );
     });
-  });
-
-  it("すべてのエレメントが表示される", () => {
-    const onAddBookmark = jest.fn(); // モック関数を作成
-
-    render(
-      <MessageProvider>
-        <BmMessage />
-        <BmDetail onAddBookmark={onAddBookmark} />
-      </MessageProvider>
-    );
 
     expect(screen.getByRole("textbox", { name: "url" })).toBeInTheDocument();
     expect(screen.getByRole("textbox", { name: "title" })).toBeInTheDocument();
@@ -65,18 +57,23 @@ describe("BmDetail", () => {
     // タイトルを取得するボタンをクリックすると、タイトルを取得するAPIを呼び出す。
     // パラメータとしてURLのテキストボックスに入力された文字列が渡される。
     // タイトルのテキストボックスに、APIから返されたタイトルが表示される。
-    const user = userEvent.setup();
+    // const user = userEvent.setup();
 
     const url = "https://mail.google.com/mail/";
     const title = "Gmail";
-    const onAddBookmark = jest.fn(); // モック関数を作成
 
-    render(
-      <MessageProvider>
-        <BmMessage />
-        <BmDetail onAddBookmark={onAddBookmark} />
-      </MessageProvider>
-    );
+    fetchMock.mockResponseOnce(JSON.stringify(mockBookmarks));
+
+    await act(async () => {
+      render(
+        <MessageProvider>
+          <BmMessage />
+          <BookmarkManager />
+        </MessageProvider>
+      );
+    });
+
+    fetchMock.resetMocks();
 
     const urlInput = screen.getByRole("textbox", { name: "url" });
     const titleInput = screen.getByRole("textbox", { name: "title" });
@@ -84,14 +81,19 @@ describe("BmDetail", () => {
     const titleButton = screen.getByRole("button", { name: "タイトル" });
 
     // タイトルをAPIで取得する前は、クリアされていることを確認
-    await user.clear(titleInput);
-    expect(titleInput).toHaveValue("");
+    await act(async () => {
+      fireEvent.change(titleInput, { target: { value: "" } });
+    });
+    await waitFor(() => {
+      expect(titleInput).toHaveValue("");
+    });
 
     fetchMock.mockResponseOnce(title);
 
-    await user.type(urlInput, url);
-
-    await user.click(titleButton);
+    await act(async () => {
+      fireEvent.change(urlInput, { target: { value: url } });
+      fireEvent.click(titleButton);
+    });
 
     await waitFor(() => {
       expect(fetchMock).toHaveBeenCalledTimes(1);
@@ -103,29 +105,30 @@ describe("BmDetail", () => {
   it("パラメータとして渡されたURLにアクセスできない場合、メッセージ領域にエラーメッセージを表示する。", async () => {
     // タイトルを取得するボタンをクリックして、エラーコード500の場合、タイトルのテキストボックスに、なにも表示しない。
     const url = "https://mail.google.com/mail/";
-    const onAddBookmark = jest.fn(); // モック関数を作成
 
-    const user = userEvent.setup();
+    fetchMock.mockResponseOnce(JSON.stringify(mockBookmarks));
+
+    render(
+      <MessageProvider>
+        <BmMessage />
+        <BookmarkManager />
+      </MessageProvider>
+    );
+
+    fetchMock.resetMocks();
 
     fetchMock.mockResponseOnce("Can't find title", {
       status: 500,
       headers: { "Content-Type": "text/plain" },
     });
 
-    render(
-      <MessageProvider>
-        <BmMessage />
-        <BmDetail onAddBookmark={onAddBookmark} />
-      </MessageProvider>
-    );
-
     const urlInput = screen.getByRole("textbox", { name: "url" });
     const titleInput = screen.getByRole("textbox", { name: "title" });
 
     const titleButton = screen.getByRole("button", { name: "タイトル" });
 
-    await user.type(urlInput, url);
-    await user.click(titleButton);
+    fireEvent.change(urlInput, { target: { value: url } });
+    fireEvent.click(titleButton);
 
     await waitFor(() => {
       expect(fetchMock).toHaveBeenCalledTimes(1);
@@ -144,15 +147,17 @@ describe("BmDetail", () => {
     const url = "https://mail.google.com/mail/";
     const title = "Gmail";
     const title_edited = "GMAIL";
-    const onAddBookmark = jest.fn(); // モック関数を作成
-    const user = userEvent.setup();
+
+    fetchMock.mockResponseOnce(JSON.stringify(mockBookmarks));
 
     render(
       <MessageProvider>
         <BmMessage />
-        <BmDetail onAddBookmark={onAddBookmark} />
+        <BookmarkManager />
       </MessageProvider>
     );
+
+    fetchMock.resetMocks();
 
     const urlInput = screen.getByRole("textbox", { name: "url" });
     const titleInput = screen.getByRole("textbox", { name: "title" });
@@ -162,42 +167,44 @@ describe("BmDetail", () => {
 
     fetchMock.mockResponseOnce(title);
 
-    await user.type(urlInput, url);
-    await user.click(titleButton);
+    fireEvent.change(urlInput, { target: { value: url } });
+    fireEvent.click(titleButton);
 
-    await user.clear(titleInput);
-    await user.type(titleInput, title_edited);
-    await user.click(updateButton);
+    fireEvent.change(titleInput, { target: { value: "" } });
+    fireEvent.change(titleInput, { target: { value: title_edited } });
+    fireEvent.click(updateButton);
 
     await waitFor(() => {
       expect(titleInput).toHaveValue(title_edited);
-      expect(fetchMock).toHaveBeenCalledTimes(1);
+      expect(fetchMock).toHaveBeenCalledTimes(2);
       expect(fetchMock.mock.calls[0][0]).toEqual("/api/title?url=" + url);
+      expect(fetchMock.mock.calls[1][0]).toEqual("/api/bookmark");
     });
   });
 
   it("APIからタイトルが返ってこない場合、メッセージ領域にエラーメッセージを表示する。", async () => {
     // タイトルを取得するボタンをクリックして、エラーコード500の場合、タイトルのテキストボックスに、なにも表示しない。
     const url = "https://mail.google.com/mail/";
-    const onAddBookmark = jest.fn(); // モック関数を作成
-    const user = userEvent.setup();
 
-    fetchMock.mockResponseOnce("");
+    fetchMock.mockResponseOnce(JSON.stringify(mockBookmarks));
 
     render(
       <MessageProvider>
         <BmMessage />
-        <BmDetail onAddBookmark={onAddBookmark} />
+        <BookmarkManager />
       </MessageProvider>
     );
+
+    fetchMock.resetMocks();
+    fetchMock.mockResponseOnce("");
 
     const urlInput = screen.getByRole("textbox", { name: "url" });
     const titleInput = screen.getByRole("textbox", { name: "title" });
 
     const titleButton = screen.getByRole("button", { name: "タイトル" });
 
-    await user.type(urlInput, url);
-    await user.click(titleButton);
+    fireEvent.change(urlInput, { target: { value: url } });
+    fireEvent.click(titleButton);
 
     await waitFor(() => {
       expect(fetchMock).toHaveBeenCalledTimes(1);
@@ -215,21 +222,22 @@ describe("BmDetail", () => {
 describe("URLから無駄な文字列を削除する#61", () => {
   describe("#や?の後ろを削除する", () => {
     it("https://mail.google.com/mail/u/0/#inbox", async () => {
-      const user = userEvent.setup();
       const url = "https://mail.google.com/mail/u/0/#inbox";
+
+      fetchMock.mockResponseOnce(JSON.stringify(mockBookmarks));
 
       render(
         <MessageProvider>
           <BmMessage />
-          <BmDetail onAddBookmark={jest.fn()} />
+          <BookmarkManager />
         </MessageProvider>
       );
 
       const urlInput = screen.getByRole("textbox", { name: "url" });
       const urlButton = screen.getByRole("button", { name: "パラメータ" });
 
-      await user.type(urlInput, url);
-      await user.click(urlButton);
+      fireEvent.change(urlInput, { target: { value: url } });
+      fireEvent.click(urlButton);
 
       await waitFor(() => {
         expect(urlInput).toHaveValue("https://mail.google.com/mail/u/0/");
@@ -237,22 +245,23 @@ describe("URLから無駄な文字列を削除する#61", () => {
     });
 
     it("https://xtech.nikkei.com/atcl/nxt/column/18/00148/030500376/?n_cid=nbpnxt_mled_itmh", async () => {
-      const user = userEvent.setup();
       const url =
         "https://xtech.nikkei.com/atcl/nxt/column/18/00148/030500376/?n_cid=nbpnxt_mled_itmh";
+
+      fetchMock.mockResponseOnce(JSON.stringify(mockBookmarks));
 
       render(
         <MessageProvider>
           <BmMessage />
-          <BmDetail onAddBookmark={jest.fn()} />
+          <BookmarkManager />
         </MessageProvider>
       );
 
       const urlInput = screen.getByRole("textbox", { name: "url" });
       const urlButton = screen.getByRole("button", { name: "パラメータ" });
 
-      await user.type(urlInput, url);
-      await user.click(urlButton);
+      fireEvent.change(urlInput, { target: { value: url } });
+      fireEvent.click(urlButton);
 
       await waitFor(() => {
         expect(urlInput).toHaveValue(
@@ -262,142 +271,141 @@ describe("URLから無駄な文字列を削除する#61", () => {
     });
 
     it("https://mail.google.com/mail/u/0/", async () => {
-      const user = userEvent.setup();
       const url = "https://mail.google.com/mail/u/0/";
 
       render(
         <MessageProvider>
           <BmMessage />
-          <BmDetail onAddBookmark={jest.fn()} />
+          <BookmarkManager />
         </MessageProvider>
       );
 
       const urlInput = screen.getByRole("textbox", { name: "url" });
       const urlButton = screen.getByRole("button", { name: "パラメータ" });
 
-      await user.type(urlInput, url);
-      await user.click(urlButton);
+      fireEvent.change(urlInput, { target: { value: url } });
+      fireEvent.click(urlButton);
 
       await waitFor(() => {
         expect(urlInput).toHaveValue("https://mail.google.com/mail/u/0/");
       });
     });
   });
+});
 
-  describe("URLから、/の階層を一段、削除する", () => {
-    it("https://mail.google.com/mail/u/0/", async () => {
-      const user = userEvent.setup();
-      const url = "https://mail.google.com/mail/u/0/#inbox";
+describe("URLから、/の階層を一段、削除する", () => {
+  it("https://mail.google.com/mail/u/0/", async () => {
+    const url = "https://mail.google.com/mail/u/0/#inbox";
+    fetchMock.mockResponseOnce(JSON.stringify(mockBookmarks));
 
-      render(
-        <MessageProvider>
-          <BmMessage />
-          <BmDetail onAddBookmark={jest.fn()} />
-        </MessageProvider>
-      );
+    render(
+      <MessageProvider>
+        <BmMessage />
+        <BookmarkManager />
+      </MessageProvider>
+    );
 
-      const urlInput = screen.getByRole("textbox", { name: "url" });
-      const pathButton = screen.getByRole("button", { name: "←" });
+    const urlInput = screen.getByRole("textbox", { name: "url" });
+    const pathButton = screen.getByRole("button", { name: "←" });
 
-      await user.type(urlInput, url);
-      await user.click(pathButton);
+    fireEvent.change(urlInput, { target: { value: url } });
+    fireEvent.click(pathButton);
 
-      await waitFor(() => {
-        expect(urlInput).toHaveValue("https://mail.google.com/mail/u/0/");
-      });
+    await waitFor(() => {
+      expect(urlInput).toHaveValue("https://mail.google.com/mail/u/0/");
     });
+  });
 
-    it("https://xtech.nikkei.com/atcl/nxt/column/18/00148/030500376", async () => {
-      const user = userEvent.setup();
-      const url = "https://xtech.nikkei.com/atcl/nxt/column/18/00148/030500376";
+  it("https://xtech.nikkei.com/atcl/nxt/column/18/00148/030500376", async () => {
+    const url = "https://xtech.nikkei.com/atcl/nxt/column/18/00148/030500376";
+    fetchMock.mockResponseOnce(JSON.stringify(mockBookmarks));
 
-      render(
-        <MessageProvider>
-          <BmMessage />
-          <BmDetail onAddBookmark={jest.fn()} />
-        </MessageProvider>
+    render(
+      <MessageProvider>
+        <BmMessage />
+        <BookmarkManager />
+      </MessageProvider>
+    );
+
+    const urlInput = screen.getByRole("textbox", { name: "url" });
+    const pathButton = screen.getByRole("button", { name: "←" });
+
+    fireEvent.change(urlInput, { target: { value: url } });
+    fireEvent.click(pathButton);
+
+    await waitFor(() => {
+      expect(urlInput).toHaveValue(
+        "https://xtech.nikkei.com/atcl/nxt/column/18/00148/"
       );
-
-      const urlInput = screen.getByRole("textbox", { name: "url" });
-      const pathButton = screen.getByRole("button", { name: "←" });
-
-      await user.type(urlInput, url);
-      await user.click(pathButton);
-
-      await waitFor(() => {
-        expect(urlInput).toHaveValue(
-          "https://xtech.nikkei.com/atcl/nxt/column/18/00148/"
-        );
-      });
     });
+  });
 
-    it("https://xtech.nikkei.com/atcl/nxt/column/18/00148/030500376/", async () => {
-      const user = userEvent.setup();
-      const url =
-        "https://xtech.nikkei.com/atcl/nxt/column/18/00148/030500376/";
+  it("https://xtech.nikkei.com/atcl/nxt/column/18/00148/030500376/", async () => {
+    const url = "https://xtech.nikkei.com/atcl/nxt/column/18/00148/030500376/";
+    fetchMock.mockResponseOnce(JSON.stringify(mockBookmarks));
 
-      render(
-        <MessageProvider>
-          <BmMessage />
-          <BmDetail onAddBookmark={jest.fn()} />
-        </MessageProvider>
+    render(
+      <MessageProvider>
+        <BmMessage />
+        <BookmarkManager />
+      </MessageProvider>
+    );
+
+    const urlInput = screen.getByRole("textbox", { name: "url" });
+    const pathButton = screen.getByRole("button", { name: "←" });
+
+    fireEvent.change(urlInput, { target: { value: url } });
+    fireEvent.click(pathButton);
+
+    await waitFor(() => {
+      expect(urlInput).toHaveValue(
+        "https://xtech.nikkei.com/atcl/nxt/column/18/00148/"
       );
-
-      const urlInput = screen.getByRole("textbox", { name: "url" });
-      const pathButton = screen.getByRole("button", { name: "←" });
-
-      await user.type(urlInput, url);
-      await user.click(pathButton);
-
-      await waitFor(() => {
-        expect(urlInput).toHaveValue(
-          "https://xtech.nikkei.com/atcl/nxt/column/18/00148/"
-        );
-      });
     });
+  });
 
-    it("https://xtech.nikkei.com", async () => {
-      const user = userEvent.setup();
-      const url = "https://xtech.nikkei.com";
+  it("https://xtech.nikkei.com", async () => {
+    const url = "https://xtech.nikkei.com";
+    fetchMock.mockResponseOnce(JSON.stringify(mockBookmarks));
 
-      render(
-        <MessageProvider>
-          <BmMessage />
-          <BmDetail onAddBookmark={jest.fn()} />
-        </MessageProvider>
-      );
+    render(
+      <MessageProvider>
+        <BmMessage />
+        <BookmarkManager />
+      </MessageProvider>
+    );
 
-      const urlInput = screen.getByRole("textbox", { name: "url" });
-      const pathButton = screen.getByRole("button", { name: "←" });
+    const urlInput = screen.getByRole("textbox", { name: "url" });
+    const pathButton = screen.getByRole("button", { name: "←" });
 
-      await user.type(urlInput, url);
-      await user.click(pathButton);
+    fireEvent.change(urlInput, { target: { value: url } });
+    fireEvent.click(pathButton);
 
-      await waitFor(() => {
-        expect(urlInput).toHaveValue("https://xtech.nikkei.com");
-      });
+    await waitFor(() => {
+      expect(urlInput).toHaveValue("https://xtech.nikkei.com");
     });
+  });
 
-    it("https://xtech.nikkei.com/", async () => {
-      const user = userEvent.setup();
-      const url = "https://xtech.nikkei.com/";
+  it("https://xtech.nikkei.com/", async () => {
+    const url = "https://xtech.nikkei.com/";
 
-      render(
-        <MessageProvider>
-          <BmMessage />
-          <BmDetail onAddBookmark={jest.fn()} />
-        </MessageProvider>
-      );
+    fetchMock.mockResponseOnce(JSON.stringify(mockBookmarks));
 
-      const urlInput = screen.getByRole("textbox", { name: "url" });
-      const pathButton = screen.getByRole("button", { name: "←" });
+    render(
+      <MessageProvider>
+        <BmMessage />
+        <BookmarkManager />
+      </MessageProvider>
+    );
 
-      await user.type(urlInput, url);
-      await user.click(pathButton);
+    const urlInput = screen.getByRole("textbox", { name: "url" });
+    const pathButton = screen.getByRole("button", { name: "←" });
 
-      await waitFor(() => {
-        expect(urlInput).toHaveValue("https://xtech.nikkei.com/");
-      });
+    fireEvent.change(urlInput, { target: { value: url } });
+    fireEvent.click(pathButton);
+
+    await waitFor(() => {
+      expect(urlInput).toHaveValue("https://xtech.nikkei.com/");
     });
   });
 });
@@ -411,7 +419,7 @@ interface MockedLocation {
   href: string;
 }
 
-describe("UrlOpener Component", () => {
+describe("入力されたURLを新しいタブで開く", () => {
   let originalLocation: Location;
 
   beforeAll(() => {
@@ -452,40 +460,44 @@ describe("UrlOpener Component", () => {
   });
 
   it("「開く」ボタンをクリック", async () => {
-    const user = userEvent.setup();
     const url = "https://xtech.nikkei.com/";
 
-    render(
-      <MessageProvider>
-        <BmMessage />
-        <BmDetail onAddBookmark={jest.fn()} />
-      </MessageProvider>
-    );
+    fetchMock.mockResponseOnce(JSON.stringify(mockBookmarks));
+
+    await act(async () => {
+      render(
+        <MessageProvider>
+          <BmMessage />
+          <BookmarkManager />
+        </MessageProvider>
+      );
+    });
 
     const urlInput = screen.getByRole("textbox", { name: "url" });
     const openButton = screen.getByRole("button", { name: "開く" });
 
-    await user.type(urlInput, url);
-    await user.click(openButton);
+    fireEvent.change(urlInput, { target: { value: url } });
+    fireEvent.click(openButton);
 
     expect(mockOpen).toHaveBeenCalledWith(url, "_blank", "noopener,noreferrer");
   });
 
   it("不正なURLを入力した場合", async () => {
-    const user = userEvent.setup();
-
-    render(
-      <MessageProvider>
-        <BmMessage />
-        <BmDetail onAddBookmark={jest.fn()} />
-      </MessageProvider>
-    );
+    fetchMock.mockResponseOnce(JSON.stringify(mockBookmarks));
+    await act(async () => {
+      render(
+        <MessageProvider>
+          <BmMessage />
+          <BookmarkManager />
+        </MessageProvider>
+      );
+    });
 
     const urlInput = screen.getByRole("textbox", { name: "url" });
     const openButton = screen.getByRole("button", { name: "開く" });
 
-    await user.type(urlInput, "invalid-url");
-    await user.click(openButton);
+    fireEvent.change(urlInput, { target: { value: "invalid-url" } });
+    fireEvent.click(openButton);
 
     expect(screen.getByTestId("bm-message")).toHaveTextContent(
       "Invalid URL: invalid-url"
