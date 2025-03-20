@@ -36,11 +36,14 @@ describe("BookmarkManagerの表示を確認", () => {
   it("すべてのエレメントが表示されることを確認", async () => {
     fetchMock.mockResponseOnce(JSON.stringify(mockBookmarks));
 
-    render(
-      <MessageProvider>
-        <BookmarkManager />
-      </MessageProvider>
-    );
+    await act(async () => {
+      render(
+        <MessageProvider>
+          <BmMessage />
+          <BookmarkManager />
+        </MessageProvider>
+      );
+    });
 
     await waitFor(() => {
       const bm = screen.getByText("Amazon");
@@ -68,12 +71,14 @@ describe("BookmarkManagerの表示を確認", () => {
       headers: { "Content-Type": "text/plain" },
     });
 
-    render(
-      <MessageProvider>
-        <BmMessage />
-        <BookmarkManager />
-      </MessageProvider>
-    );
+    await act(async () => {
+      render(
+        <MessageProvider>
+          <BmMessage />
+          <BookmarkManager />
+        </MessageProvider>
+      );
+    });
 
     await waitFor(() => {
       expect(screen.getByTestId("bm-message")).toHaveTextContent(
@@ -142,12 +147,20 @@ describe("BookmarkManagerのURLとタイトルのテキストとボタンのテ�
 
     fetchMock.mockResponseOnce(JSON.stringify(mockBookmarks));
 
-    render(
-      <MessageProvider>
-        <BmMessage />
-        <BookmarkManager />
-      </MessageProvider>
-    );
+    // render(
+    //   <MessageProvider>
+    //     <BmMessage />
+    //     <BookmarkManager />
+    //   </MessageProvider>
+    // );
+    await act(async () => {
+      render(
+        <MessageProvider>
+          <BmMessage />
+          <BookmarkManager />
+        </MessageProvider>
+      );
+    });
 
     fetchMock.resetMocks();
 
@@ -161,8 +174,10 @@ describe("BookmarkManagerのURLとタイトルのテキストとボタンのテ�
 
     const titleButton = screen.getByRole("button", { name: "タイトル" });
 
-    fireEvent.change(urlInput, { target: { value: url } });
-    fireEvent.click(titleButton);
+    await act(async () => {
+      fireEvent.change(urlInput, { target: { value: url } });
+      fireEvent.click(titleButton);
+    });
 
     await waitFor(() => {
       expect(fetchMock).toHaveBeenCalledTimes(1);
@@ -184,12 +199,14 @@ describe("BookmarkManagerのURLとタイトルのテキストとボタンのテ�
 
     fetchMock.mockResponseOnce(JSON.stringify(mockBookmarks));
 
-    render(
-      <MessageProvider>
-        <BmMessage />
-        <BookmarkManager />
-      </MessageProvider>
-    );
+    await act(async () => {
+      render(
+        <MessageProvider>
+          <BmMessage />
+          <BookmarkManager />
+        </MessageProvider>
+      );
+    });
 
     fetchMock.resetMocks();
 
@@ -222,12 +239,14 @@ describe("BookmarkManagerのURLとタイトルのテキストとボタンのテ�
 
     fetchMock.mockResponseOnce(JSON.stringify(mockBookmarks));
 
-    render(
-      <MessageProvider>
-        <BmMessage />
-        <BookmarkManager />
-      </MessageProvider>
-    );
+    await act(async () => {
+      render(
+        <MessageProvider>
+          <BmMessage />
+          <BookmarkManager />
+        </MessageProvider>
+      );
+    });
 
     fetchMock.resetMocks();
     fetchMock.mockResponseOnce("");
@@ -237,8 +256,10 @@ describe("BookmarkManagerのURLとタイトルのテキストとボタンのテ�
 
     const titleButton = screen.getByRole("button", { name: "タイトル" });
 
-    fireEvent.change(urlInput, { target: { value: url } });
-    fireEvent.click(titleButton);
+    await act(async () => {
+      fireEvent.change(urlInput, { target: { value: url } });
+      fireEvent.click(titleButton);
+    });
 
     await waitFor(() => {
       expect(fetchMock).toHaveBeenCalledTimes(1);
@@ -260,18 +281,21 @@ describe("「パラメータ」ボタン: URLから無駄な文字列を削除�
 
       fetchMock.mockResponseOnce(JSON.stringify(mockBookmarks));
 
-      render(
-        <MessageProvider>
-          <BmMessage />
-          <BookmarkManager />
-        </MessageProvider>
-      );
-
+      await act(async () => {
+        render(
+          <MessageProvider>
+            <BmMessage />
+            <BookmarkManager />
+          </MessageProvider>
+        );
+      });
       const urlInput = screen.getByRole("textbox", { name: "url" });
       const urlButton = screen.getByRole("button", { name: "パラメータ" });
 
-      fireEvent.change(urlInput, { target: { value: url } });
-      fireEvent.click(urlButton);
+      await act(async () => {
+        fireEvent.change(urlInput, { target: { value: url } });
+        fireEvent.click(urlButton);
+      });
 
       await waitFor(() => {
         expect(urlInput).toHaveValue("https://mail.google.com/mail/u/0/");
@@ -284,18 +308,22 @@ describe("「パラメータ」ボタン: URLから無駄な文字列を削除�
 
       fetchMock.mockResponseOnce(JSON.stringify(mockBookmarks));
 
-      render(
-        <MessageProvider>
-          <BmMessage />
-          <BookmarkManager />
-        </MessageProvider>
-      );
+      await act(async () => {
+        render(
+          <MessageProvider>
+            <BmMessage />
+            <BookmarkManager />
+          </MessageProvider>
+        );
+      });
 
       const urlInput = screen.getByRole("textbox", { name: "url" });
       const urlButton = screen.getByRole("button", { name: "パラメータ" });
 
-      fireEvent.change(urlInput, { target: { value: url } });
-      fireEvent.click(urlButton);
+      await act(async () => {
+        fireEvent.change(urlInput, { target: { value: url } });
+        fireEvent.click(urlButton);
+      });
 
       await waitFor(() => {
         expect(urlInput).toHaveValue(
@@ -307,18 +335,22 @@ describe("「パラメータ」ボタン: URLから無駄な文字列を削除�
     it("https://mail.google.com/mail/u/0/", async () => {
       const url = "https://mail.google.com/mail/u/0/";
 
-      render(
-        <MessageProvider>
-          <BmMessage />
-          <BookmarkManager />
-        </MessageProvider>
-      );
+      await act(async () => {
+        render(
+          <MessageProvider>
+            <BmMessage />
+            <BookmarkManager />
+          </MessageProvider>
+        );
+      });
 
       const urlInput = screen.getByRole("textbox", { name: "url" });
       const urlButton = screen.getByRole("button", { name: "パラメータ" });
 
-      fireEvent.change(urlInput, { target: { value: url } });
-      fireEvent.click(urlButton);
+      await act(async () => {
+        fireEvent.change(urlInput, { target: { value: url } });
+        fireEvent.click(urlButton);
+      });
 
       await waitFor(() => {
         expect(urlInput).toHaveValue("https://mail.google.com/mail/u/0/");
@@ -332,18 +364,22 @@ describe("「←」ボタン: URLから、/の階層を一段、削除する", (
     const url = "https://mail.google.com/mail/u/0/#inbox";
     fetchMock.mockResponseOnce(JSON.stringify(mockBookmarks));
 
-    render(
-      <MessageProvider>
-        <BmMessage />
-        <BookmarkManager />
-      </MessageProvider>
-    );
+    await act(async () => {
+      render(
+        <MessageProvider>
+          <BmMessage />
+          <BookmarkManager />
+        </MessageProvider>
+      );
+    });
 
     const urlInput = screen.getByRole("textbox", { name: "url" });
     const pathButton = screen.getByRole("button", { name: "←" });
 
-    fireEvent.change(urlInput, { target: { value: url } });
-    fireEvent.click(pathButton);
+    await act(async () => {
+      fireEvent.change(urlInput, { target: { value: url } });
+      fireEvent.click(pathButton);
+    });
 
     await waitFor(() => {
       expect(urlInput).toHaveValue("https://mail.google.com/mail/u/0/");
@@ -354,18 +390,22 @@ describe("「←」ボタン: URLから、/の階層を一段、削除する", (
     const url = "https://xtech.nikkei.com/atcl/nxt/column/18/00148/030500376";
     fetchMock.mockResponseOnce(JSON.stringify(mockBookmarks));
 
-    render(
-      <MessageProvider>
-        <BmMessage />
-        <BookmarkManager />
-      </MessageProvider>
-    );
+    await act(async () => {
+      render(
+        <MessageProvider>
+          <BmMessage />
+          <BookmarkManager />
+        </MessageProvider>
+      );
+    });
 
     const urlInput = screen.getByRole("textbox", { name: "url" });
     const pathButton = screen.getByRole("button", { name: "←" });
 
-    fireEvent.change(urlInput, { target: { value: url } });
-    fireEvent.click(pathButton);
+    await act(async () => {
+      fireEvent.change(urlInput, { target: { value: url } });
+      fireEvent.click(pathButton);
+    });
 
     await waitFor(() => {
       expect(urlInput).toHaveValue(
@@ -378,18 +418,22 @@ describe("「←」ボタン: URLから、/の階層を一段、削除する", (
     const url = "https://xtech.nikkei.com/atcl/nxt/column/18/00148/030500376/";
     fetchMock.mockResponseOnce(JSON.stringify(mockBookmarks));
 
-    render(
-      <MessageProvider>
-        <BmMessage />
-        <BookmarkManager />
-      </MessageProvider>
-    );
+    await act(async () => {
+      render(
+        <MessageProvider>
+          <BmMessage />
+          <BookmarkManager />
+        </MessageProvider>
+      );
+    });
 
     const urlInput = screen.getByRole("textbox", { name: "url" });
     const pathButton = screen.getByRole("button", { name: "←" });
 
-    fireEvent.change(urlInput, { target: { value: url } });
-    fireEvent.click(pathButton);
+    await act(async () => {
+      fireEvent.change(urlInput, { target: { value: url } });
+      fireEvent.click(pathButton);
+    });
 
     await waitFor(() => {
       expect(urlInput).toHaveValue(
@@ -402,18 +446,21 @@ describe("「←」ボタン: URLから、/の階層を一段、削除する", (
     const url = "https://xtech.nikkei.com";
     fetchMock.mockResponseOnce(JSON.stringify(mockBookmarks));
 
-    render(
-      <MessageProvider>
-        <BmMessage />
-        <BookmarkManager />
-      </MessageProvider>
-    );
-
+    await act(async () => {
+      render(
+        <MessageProvider>
+          <BmMessage />
+          <BookmarkManager />
+        </MessageProvider>
+      );
+    });
     const urlInput = screen.getByRole("textbox", { name: "url" });
     const pathButton = screen.getByRole("button", { name: "←" });
 
-    fireEvent.change(urlInput, { target: { value: url } });
-    fireEvent.click(pathButton);
+    await act(async () => {
+      fireEvent.change(urlInput, { target: { value: url } });
+      fireEvent.click(pathButton);
+    });
 
     await waitFor(() => {
       expect(urlInput).toHaveValue("https://xtech.nikkei.com");
@@ -425,18 +472,22 @@ describe("「←」ボタン: URLから、/の階層を一段、削除する", (
 
     fetchMock.mockResponseOnce(JSON.stringify(mockBookmarks));
 
-    render(
-      <MessageProvider>
-        <BmMessage />
-        <BookmarkManager />
-      </MessageProvider>
-    );
+    await act(async () => {
+      render(
+        <MessageProvider>
+          <BmMessage />
+          <BookmarkManager />
+        </MessageProvider>
+      );
+    });
 
     const urlInput = screen.getByRole("textbox", { name: "url" });
     const pathButton = screen.getByRole("button", { name: "←" });
 
-    fireEvent.change(urlInput, { target: { value: url } });
-    fireEvent.click(pathButton);
+    await act(async () => {
+      fireEvent.change(urlInput, { target: { value: url } });
+      fireEvent.click(pathButton);
+    });
 
     await waitFor(() => {
       expect(urlInput).toHaveValue("https://xtech.nikkei.com/");
@@ -510,8 +561,10 @@ describe("「開く」ボタン: 入力されたURLを新しいタブで開く",
     const urlInput = screen.getByRole("textbox", { name: "url" });
     const openButton = screen.getByRole("button", { name: "開く" });
 
-    fireEvent.change(urlInput, { target: { value: url } });
-    fireEvent.click(openButton);
+    await act(async () => {
+      fireEvent.change(urlInput, { target: { value: url } });
+      fireEvent.click(openButton);
+    });
 
     expect(mockOpen).toHaveBeenCalledWith(url, "_blank", "noopener,noreferrer");
   });
@@ -530,8 +583,10 @@ describe("「開く」ボタン: 入力されたURLを新しいタブで開く",
     const urlInput = screen.getByRole("textbox", { name: "url" });
     const openButton = screen.getByRole("button", { name: "開く" });
 
-    fireEvent.change(urlInput, { target: { value: "invalid-url" } });
-    fireEvent.click(openButton);
+    await act(async () => {
+      fireEvent.change(urlInput, { target: { value: "invalid-url" } });
+      fireEvent.click(openButton);
+    });
 
     expect(screen.getByTestId("bm-message")).toHaveTextContent(
       "Invalid URL: invalid-url"
@@ -549,12 +604,14 @@ describe("更新されたブックマークが、APIにPOSTで送られる。", 
     // Initial GET request mock
     fetchMock.mockResponseOnce(JSON.stringify(mockBookmarks));
 
-    render(
-      <MessageProvider>
-        <BmMessage />
-        <BookmarkManager />
-      </MessageProvider>
-    );
+    await act(async () => {
+      render(
+        <MessageProvider>
+          <BmMessage />
+          <BookmarkManager />
+        </MessageProvider>
+      );
+    });
 
     await waitFor(() => {
       // Verify initial fetch was called
@@ -584,12 +641,14 @@ describe("更新されたブックマークが、APIにPOSTで送られる。", 
     // Initial GET request mock
     fetchMock.mockResponseOnce(JSON.stringify(mockBookmarks));
 
-    render(
-      <MessageProvider>
-        <BmMessage />
-        <BookmarkManager />
-      </MessageProvider>
-    );
+    await act(async () => {
+      render(
+        <MessageProvider>
+          <BmMessage />
+          <BookmarkManager />
+        </MessageProvider>
+      );
+    });
 
     await waitFor(() => {
       // Verify initial fetch was called
@@ -636,13 +695,14 @@ describe("更新されたブックマークが、APIにPOSTで送られる。", 
   it("更新されたブックマークが、APIからエラーが返ってきた場合、エラーメッセージが表示される", async () => {
     fetchMock.mockResponseOnce(JSON.stringify(mockBookmarks));
 
-    render(
-      <MessageProvider>
-        <BmMessage />
-        <BookmarkManager />
-      </MessageProvider>
-    );
-
+    await act(async () => {
+      render(
+        <MessageProvider>
+          <BmMessage />
+          <BookmarkManager />
+        </MessageProvider>
+      );
+    });
     await waitFor(() => {
       // Verify initial fetch was called
       expect(fetchMock).toHaveBeenCalledWith("/api/bookmark");
@@ -677,12 +737,14 @@ describe("更新されたブックマークが、APIにPOSTで送られる。", 
   it("ブックマークを更新するAPIのfetchがrejectした場合、エラーメッセージが表示される", async () => {
     fetchMock.mockResponseOnce(JSON.stringify(mockBookmarks));
 
-    render(
-      <MessageProvider>
-        <BmMessage />
-        <BookmarkManager />
-      </MessageProvider>
-    );
+    await act(async () => {
+      render(
+        <MessageProvider>
+          <BmMessage />
+          <BookmarkManager />
+        </MessageProvider>
+      );
+    });
 
     await waitFor(() => {
       // Verify initial fetch was called
