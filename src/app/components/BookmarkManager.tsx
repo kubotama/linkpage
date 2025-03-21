@@ -81,6 +81,7 @@ export const BookmarkManager = ({}) => {
     handleAddBookmark(textUrl, textTitle);
   };
 
+  // titleClick fetches the title of the URL
   const titleClick = async () => {
     fetch("/api/title?url=" + textUrl)
       .then((response) => {
@@ -104,6 +105,7 @@ export const BookmarkManager = ({}) => {
       });
   };
 
+  // urlClick delete the parameter of URL
   const urlClick = () => {
     // #や?の後ろを削除する
     // #や?のない場合は、入力されたURLをそのままとする
@@ -115,6 +117,7 @@ export const BookmarkManager = ({}) => {
     }
   };
 
+  // pathClick truncate the most last part of path
   const pathClick = () => {
     const regex_notslash = /^(http:\/\/|https:\/\/)(.*\/)[^\/]+$/;
     const match_notslash = textUrl.match(regex_notslash);
@@ -130,6 +133,7 @@ export const BookmarkManager = ({}) => {
     }
   };
 
+  // openClick opens the URL in a new tab
   const openClick = () => {
     try {
       new URL(textUrl);
@@ -138,6 +142,12 @@ export const BookmarkManager = ({}) => {
     } catch (error: unknown) {
       setMessage({ text: (error as Error).message });
     }
+  };
+
+  // clearClick clears the URL and Title input fields
+  const clearClick = () => {
+    setTextUrl("");
+    setTextTitle("");
   };
 
   return (
@@ -160,6 +170,15 @@ export const BookmarkManager = ({}) => {
             onClick={updateClick}
           >
             追加
+          </Button>
+
+          <Button
+            variant="contained"
+            color="primary"
+            sx={{ width: "8rem", height: "2rem", marginRight: "0.7rem" }}
+            onClick={clearClick}
+          >
+            クリア
           </Button>
 
           <Button
