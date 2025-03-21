@@ -5,9 +5,9 @@ import React, { act } from "react";
 
 import { render, screen, waitFor } from "@testing-library/react";
 
-import { MessageProvider } from "../contexts/MessageContext";
-import BmMessage from "./bmMessage";
-import { Bookmark, BookmarkManager } from "./BookmarkManager";
+import { MessageProvider } from "../../contexts/MessageContext";
+import BmMessage from "../bmMessage";
+import { Bookmark, BookmarkManager } from "../BookmarkManager";
 
 const mockBookmarks: Bookmark[] = [
   {
