@@ -140,6 +140,11 @@ export const BookmarkManager = ({}) => {
     }
   };
 
+  const clearClick = () => {
+    setTextUrl("");
+    setTextTitle("");
+  };
+
   return (
     <>
       <div style={{ marginTop: "20px", marginBottom: "20px" }}>
@@ -160,6 +165,15 @@ export const BookmarkManager = ({}) => {
             onClick={updateClick}
           >
             追加
+          </Button>
+
+          <Button
+            variant="contained"
+            color="primary"
+            sx={{ width: "8rem", height: "2rem", marginRight: "0.7rem" }}
+            onClick={clearClick}
+          >
+            クリア
           </Button>
 
           <Button
