@@ -41,22 +41,28 @@ linkpage は、手元にあると便利なツールを集めたウェブアプ�
 
 ## インストール方法
 
-# リポジトリのクローン
+### リポジトリのクローン
 
 ```bash
 git clone https://github.com/kubotama/linkpage.git
 ```
 
-# プロジェクトディレクトリに移動
+### プロジェクトディレクトリに移動
 
 ```bash
 cd linkpage
 ```
 
-# 依存パッケージのインストール
+### 依存パッケージのインストール
 
 ```bash
 npm install
+```
+
+### テストプログラムの実行
+
+```bash
+npm run test
 ```
 
 ## 使用方法
