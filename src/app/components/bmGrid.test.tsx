@@ -2,7 +2,7 @@ import "@testing-library/jest-dom";
 
 import React from "react";
 
-import { render, screen } from "@testing-library/react";
+import { render, screen, within } from "@testing-library/react";
 
 import { BmGrid } from "./bmGrid";
 import { Bookmark } from "./BookmarkManager";
@@ -26,34 +26,44 @@ const mockBookmarks: Bookmark[] = [
   },
 ];
 
-/***
- * このテストは、Bookmarksクラスのインスタンスを生成し、そのインスタンスのをテストします。
- * Bookmarksクラスは、ブックマークのデータを定義するクラスです。
- * Bookmarksクラスに定義されているブックマークを返します。
- **/
-
-describe("ブックマークのデータを表示を確認", () => {
-  it("ブックマークのデータを表示を確認", () => {
+describe("BmGrid", () => {
+  it("テーブルとヘッダーが正しく表示される", () => {
     render(<BmGrid bookmarks={mockBookmarks} />);
 
-    const bm1 = screen.getByText("kubotama/linkpage");
-    expect(bm1).toBeInTheDocument();
-    expect(bm1).toHaveAttribute("href", "https://github.com/kubotama/linkpage");
-    expect(bm1).toHaveAttribute("target", "_blank");
+    const table = screen.getByRole("table");
+    expect(table).toBeInTheDocument();
 
-    const bm2 = screen.getByText("Google");
-    expect(bm2).toBeInTheDocument();
-    expect(bm2).toHaveAttribute("href", "https://www.google.com/");
-    expect(bm2).toHaveAttribute("target", "_blank");
+    const headers = within(table).getAllByRole("columnheader");
+    expect(headers).toHaveLength(1);
+    expect(headers[0]).toHaveTextContent("Title");
+  });
 
-    const bm3 = screen.getByText("Gmail");
-    expect(bm3).toBeInTheDocument();
-    expect(bm3).toHaveAttribute("href", "https://mail.google.com");
-    expect(bm3).toHaveAttribute("target", "_blank");
+  it("ブックマークデータが正しく表示される", () => {
+    render(<BmGrid bookmarks={mockBookmarks} />);
 
-    const bm4 = screen.getByText("Amazon");
-    expect(bm4).toBeInTheDocument();
-    expect(bm4).toHaveAttribute("href", "https://www.amazon.co.jp/");
-    expect(bm4).toHaveAttribute("target", "_blank");
+    const rows = screen.getAllByRole("row");
+    // ヘッダー行を含むため、mockBookmarks.length + 1
+    expect(rows).toHaveLength(mockBookmarks.length + 1);
+
+    mockBookmarks.forEach((bookmark, index) => {
+      const cells = within(rows[index + 1]).getAllByRole("cell");
+      const link = within(cells[0]).getByRole("link");
+
+      expect(link).toHaveAttribute("href", bookmark.url);
+      expect(link).toHaveAttribute("target", "_blank");
+      expect(link).toHaveAttribute("rel", "noopener noreferrer");
+      expect(link).toHaveTextContent(bookmark.title);
+      // expect(cells[1]).toHaveTextContent(bookmark.url);
+    });
+  });
+
+  it("空のブックマークリストでテーブルが表示される", () => {
+    render(<BmGrid bookmarks={[]} />);
+
+    const table = screen.getByRole("table");
+    expect(table).toBeInTheDocument();
+
+    const rows = screen.getAllByRole("row");
+    expect(rows).toHaveLength(1); // ヘッダー行のみ
   });
 });
