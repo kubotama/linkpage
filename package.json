@@ -1,6 +1,6 @@
 {
   "name": "linkpage",
-  "version": "0.4.2",
+  "version": "0.4.3",
   "private": true,
   "scripts": {
     "dev": "next dev --turbopack",
@@ -17,7 +17,7 @@
     "@emotion/styled": "^11.14.0",
     "@mui/material": "^6.4.7",
     "@mui/material-nextjs": "^6.4.3",
-    "next": "15.2.1",
+    "next": "15.2.3",
     "react": "^19.0.0",
     "react-dom": "^19.0.0",
     "react-timer-hook": "^4.0.1"
