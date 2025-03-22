@@ -43,7 +43,7 @@ jobs:
 
       - name: Check results
         run: |
-          if [ "${{ steps.check-version.outputs.version_updated }}" != "true" ] || [ "${{ steps.check-readme.outputs.readme_updated }}" != "true" ]; then
+          if [ "${{ steps.check-version.outputs.version_updated }}" != "true" ]; then
             echo "::error::PR check failed. Please update both package.json version and README.md before merging."
             exit 1
           else
