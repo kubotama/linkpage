@@ -1,7 +1,7 @@
 import "@testing-library/jest-dom";
-import React from "react";
-import { render } from "@testing-library/react";
-import userEvent from "@testing-library/user-event";
+import React, { act } from "react";
+import { fireEvent, render, waitFor } from "@testing-library/react";
+// import userEvent from "@testing-library/user-event";
 import { Timer } from "./Timer";
 
 describe("Timer コンポーネント", () => {
@@ -11,31 +11,44 @@ describe("Timer コンポーネント", () => {
     expect(getByRole("button", { name: "開始" })).toBeInTheDocument();
   });
 
-  it("開始ボタンをクリックすると停止ボタンが表示されること", () => {
-    const user = userEvent.setup();
+  it("開始ボタンをクリックすると停止ボタンが表示されること", async () => {
+    const { getByRole, queryByText } = render(<Timer durationTime={150} />);
 
-    const { getByRole } = render(<Timer durationTime={150} />);
+    // 開始ボタンをクリックする(=開始ボタンが表示されている)
     const startButton = getByRole("button", { name: "開始" });
-    user.click(startButton).then(() => {
+    await act(async () => {
+      fireEvent.click(startButton);
+    });
+
+    await waitFor(() => {
+      // 停止ボタンが表示されている
       expect(getByRole("button", { name: "停止" })).toBeInTheDocument();
+      // 開始ボタンは表示されていない
+      expect(queryByText("開始")).not.toBeInTheDocument();
     });
   });
 
-  it("停止ボタンをクリックすると開始ボタンが表示されること", () => {
-    const user = userEvent.setup();
-    const { getByRole } = render(<Timer durationTime={170} />);
+  it("停止ボタンをクリックすると開始ボタンが表示されること", async () => {
+    const { getByRole, queryByText } = render(<Timer durationTime={170} />);
+
+    // 開始ボタンをクリックする(=開始ボタンが表示されている)
     const startButton = getByRole("button", { name: "開始" });
+    await act(async () => {
+      fireEvent.click(startButton);
+    });
+    jest.advanceTimersByTime(30000); // 30秒進める
 
-    user
-      .click(startButton)
-      .then(() => {
-        jest.advanceTimersByTime(30000); // 30秒進める
-        const stopButton = getByRole("button", { name: "停止" });
+    // 停止ボタンをクリックする(=停止ボタンが表示されている)
+    const stopButton = getByRole("button", { name: "停止" });
+    await act(async () => {
+      fireEvent.click(stopButton);
+    });
 
-        return user.click(stopButton);
-      })
-      .then(() => {
-        expect(getByRole("button", { name: "開始" })).toBeInTheDocument();
-      });
+    await waitFor(() => {
+      // 開始ボタンが表示されている
+      expect(getByRole("button", { name: "開始" })).toBeInTheDocument();
+      // 停止ボタンは表示されていない
+      expect(queryByText("停止")).not.toBeInTheDocument();
+    });
   });
 });
