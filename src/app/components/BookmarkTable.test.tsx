@@ -4,7 +4,7 @@ import React from "react";
 
 import { render, screen, within } from "@testing-library/react";
 
-import { BmGrid } from "./bmGrid";
+import { BookmarkTable } from "./BookmarkTable";
 import { Bookmark } from "./BookmarkManager";
 
 const mockBookmarks: Bookmark[] = [
@@ -26,9 +26,9 @@ const mockBookmarks: Bookmark[] = [
   },
 ];
 
-describe("BmGrid", () => {
+describe("BookmarkTableのテスト", () => {
   it("テーブルとヘッダーが正しく表示される", () => {
-    render(<BmGrid bookmarks={mockBookmarks} />);
+    render(<BookmarkTable bookmarks={mockBookmarks} />);
 
     const table = screen.getByRole("table");
     expect(table).toBeInTheDocument();
@@ -39,7 +39,7 @@ describe("BmGrid", () => {
   });
 
   it("ブックマークデータが正しく表示される", () => {
-    render(<BmGrid bookmarks={mockBookmarks} />);
+    render(<BookmarkTable bookmarks={mockBookmarks} />);
 
     const rows = screen.getAllByRole("row");
     // ヘッダー行を含むため、mockBookmarks.length + 1
@@ -58,7 +58,7 @@ describe("BmGrid", () => {
   });
 
   it("空のブックマークリストでテーブルが表示される", () => {
-    render(<BmGrid bookmarks={[]} />);
+    render(<BookmarkTable bookmarks={[]} />);
 
     const table = screen.getByRole("table");
     expect(table).toBeInTheDocument();

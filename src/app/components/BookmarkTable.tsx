@@ -12,7 +12,9 @@ import {
 
 import { Bookmark } from "./BookmarkManager";
 
-export const BmGrid: React.FC<{ bookmarks: Bookmark[] }> = ({ bookmarks }) => {
+export const BookmarkTable: React.FC<{ bookmarks: Bookmark[] }> = ({
+  bookmarks,
+}) => {
   return (
     <TableContainer component={Paper}>
       <Table aria-label="bookmarks table">
