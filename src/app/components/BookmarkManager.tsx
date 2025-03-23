@@ -5,8 +5,7 @@ import Box from "@mui/material/Box";
 import Button from "@mui/material/Button";
 
 import { useMessage } from "../contexts/MessageContext";
-// import BmDetail from "./bmDetail";
-import { BmGrid } from "./bmGrid";
+import { BookmarkTable } from "./BookmarkTable";
 
 export type Bookmark = {
   url: string;
@@ -244,7 +243,7 @@ export const BookmarkManager = ({}) => {
           />
         </Box>
       </div>
-      <BmGrid bookmarks={bookmarks} />
+      <BookmarkTable bookmarks={bookmarks} />
     </>
   );
 };
