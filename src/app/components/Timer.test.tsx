@@ -7,16 +7,29 @@ import { fireEvent, render, waitFor } from "@testing-library/react";
 import { Timer } from "./Timer";
 
 describe("Timer コンポーネント", () => {
+  const formatTime = (minutes: number, seconds: number): string => {
+    return `${minutes.toString().padStart(2, "0")}:${seconds
+      .toString()
+      .padStart(2, "0")}`;
+  };
+  const formatFromSecond = (totalSeconds: number): string => {
+    const minutes = Math.floor(totalSeconds / 60);
+    const seconds = totalSeconds % 60;
+    return formatTime(minutes, seconds);
+  };
+
   it("初期画面で 01:15 と開始ボタンが表示されること", () => {
     const { getByRole, getByText } = render(<Timer durationTime={75} />);
     expect(getByText("01:15")).toBeInTheDocument();
     expect(getByRole("button", { name: "開始" })).toBeInTheDocument();
   });
 
+  // タイマーのモックを設定
   beforeEach(() => {
     jest.useFakeTimers();
   });
 
+  // テスト後のクリーンアップ
   afterEach(() => {
     jest.useRealTimers();
     jest.clearAllMocks();
@@ -24,6 +37,8 @@ describe("Timer コンポーネント", () => {
 
   it("開始ボタンをクリックすると停止ボタンが表示されること", async () => {
     const { getByRole, queryByText } = render(<Timer durationTime={150} />);
+
+    // 開始ボタンをクリックすると、ボタンのラベルが停止に変わることをテストします
 
     // 開始ボタンをクリックする(=開始ボタンが表示されている)
     const startButton = getByRole("button", { name: "開始" });
@@ -40,19 +55,22 @@ describe("Timer コンポーネント", () => {
   });
 
   it("停止ボタンをクリックすると開始ボタンが表示されること", async () => {
+    const durationTime = 170;
     const { getByRole, queryByText, getByTestId } = render(
-      <Timer durationTime={170} />
+      <Timer durationTime={durationTime} />
     );
 
     // 開始ボタンをクリックする(=開始ボタンが表示されている)
     const startButton = getByRole("button", { name: "開始" });
     await act(async () => {
       fireEvent.click(startButton);
-      jest.advanceTimersByTime(30000); // 30秒進める
+      // タイマーが実行中である
+      jest.advanceTimersByTime(30000);
     });
 
-    // 停止ボタンをクリックする(=停止ボタンが表示されている)
+    // 停止ボタンが表示されている
     const stopButton = getByRole("button", { name: "停止" });
+    // 停止ボタンをクリックする
     await act(async () => {
       fireEvent.click(stopButton);
     });
@@ -63,7 +81,9 @@ describe("Timer コンポーネント", () => {
       // 停止ボタンは表示されていない
       expect(queryByText("停止")).not.toBeInTheDocument();
       // アラームタイムが02:50と表示されている
-      expect(getByTestId("timer-text")).toHaveTextContent("02:50");
+      expect(getByTestId("timer-text")).toHaveTextContent(
+        formatFromSecond(durationTime)
+      );
     });
   });
 

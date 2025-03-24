@@ -6,11 +6,14 @@ import { Box, Button } from "@mui/material";
 type ButtonLabel = "開始" | "停止";
 
 export const Timer: React.FC<{ durationTime: number }> = ({ durationTime }) => {
+  // 分と秒からタイマーの文字列を生成する
   const formatTime = (minutes: number, seconds: number): string => {
     return `${minutes.toString().padStart(2, "0")}:${seconds
       .toString()
       .padStart(2, "0")}`;
   };
+
+  // 秒からタイマーの文字列を生成する
   const formatFromSecond = (totalSeconds: number): string => {
     const minutes = Math.floor(totalSeconds / 60);
     const seconds = totalSeconds % 60;
