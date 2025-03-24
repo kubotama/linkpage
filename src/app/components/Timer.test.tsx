@@ -40,14 +40,18 @@ describe("Timer コンポーネント", () => {
   });
 
   it("停止ボタンをクリックすると開始ボタンが表示されること", async () => {
-    const { getByRole, queryByText } = render(<Timer durationTime={170} />);
+    // await act(async () => {
+    const { getByRole, queryByText, getByTestId } = render(
+      <Timer durationTime={170} />
+    );
+    // });
 
     // 開始ボタンをクリックする(=開始ボタンが表示されている)
     const startButton = getByRole("button", { name: "開始" });
     await act(async () => {
       fireEvent.click(startButton);
+      jest.advanceTimersByTime(30000); // 30秒進める
     });
-    jest.advanceTimersByTime(30000); // 30秒進める
 
     // 停止ボタンをクリックする(=停止ボタンが表示されている)
     const stopButton = getByRole("button", { name: "停止" });
@@ -60,6 +64,8 @@ describe("Timer コンポーネント", () => {
       expect(getByRole("button", { name: "開始" })).toBeInTheDocument();
       // 停止ボタンは表示されていない
       expect(queryByText("停止")).not.toBeInTheDocument();
+      // アラームタイムが02:50と表示されている
+      expect(getByTestId("timer-text")).toHaveTextContent("02:50");
     });
   });
 
