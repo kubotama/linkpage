@@ -40,11 +40,9 @@ describe("Timer コンポーネント", () => {
   });
 
   it("停止ボタンをクリックすると開始ボタンが表示されること", async () => {
-    // await act(async () => {
     const { getByRole, queryByText, getByTestId } = render(
       <Timer durationTime={170} />
     );
-    // });
 
     // 開始ボタンをクリックする(=開始ボタンが表示されている)
     const startButton = getByRole("button", { name: "開始" });
