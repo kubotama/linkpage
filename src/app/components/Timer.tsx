@@ -55,9 +55,9 @@ export const Timer: React.FC<{ durationTime: number }> = ({ durationTime }) => {
   };
 
   useEffect(() => {
+    setTimerText(formatTime(minutes, seconds));
     if (isRunning) {
       setButtonTimer("停止");
-      setTimerText(formatTime(minutes, seconds));
     } else {
       setButtonTimer("開始");
 
