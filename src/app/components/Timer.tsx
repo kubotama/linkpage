@@ -48,6 +48,7 @@ export const Timer: React.FC<{ durationTime: number }> = ({ durationTime }) => {
   const handleButtonClick = () => {
     if (isRunning) {
       pause();
+      setTimerText(formatFromSecond(durationTime));
     } else {
       restart(getExpiryTimestamp(durationTime));
     }
@@ -55,9 +56,9 @@ export const Timer: React.FC<{ durationTime: number }> = ({ durationTime }) => {
   };
 
   useEffect(() => {
-    setTimerText(formatTime(minutes, seconds));
     if (isRunning) {
       setButtonTimer("停止");
+      setTimerText(formatTime(minutes, seconds));
     } else {
       setButtonTimer("開始");
 
