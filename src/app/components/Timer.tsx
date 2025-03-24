@@ -3,6 +3,8 @@ import { useTimer } from "react-timer-hook";
 
 import { Box, Button } from "@mui/material";
 
+type ButtonLabel = "開始" | "停止";
+
 export const Timer: React.FC<{ durationTime: number }> = ({ durationTime }) => {
   const formatTime = (minutes: number, seconds: number): string => {
     return `${minutes.toString().padStart(2, "0")}:${seconds
@@ -15,7 +17,7 @@ export const Timer: React.FC<{ durationTime: number }> = ({ durationTime }) => {
     return formatTime(minutes, seconds);
   };
 
-  const [buttonTimer, setButtonTimer] = useState("開始");
+  const [buttonTimer, setButtonTimer] = useState<ButtonLabel>("開始");
   const [isStarted, setIsStarted] = useState(false);
   const [timerText, setTimerText] = useState(formatFromSecond(durationTime));
 
