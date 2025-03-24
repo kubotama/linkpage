@@ -4,8 +4,20 @@ import { useTimer } from "react-timer-hook";
 import { Box, Button } from "@mui/material";
 
 export const Timer: React.FC<{ durationTime: number }> = ({ durationTime }) => {
+  const formatTime = (minutes: number, seconds: number): string => {
+    return `${minutes.toString().padStart(2, "0")}:${seconds
+      .toString()
+      .padStart(2, "0")}`;
+  };
+  const formatFromSecond = (totalSeconds: number): string => {
+    const minutes = Math.floor(totalSeconds / 60);
+    const seconds = totalSeconds % 60;
+    return formatTime(minutes, seconds);
+  };
+
   const [buttonTimer, setButtonTimer] = useState("開始");
   const [isStarted, setIsStarted] = useState(false);
+  const [timerText, setTimerText] = useState(formatFromSecond(durationTime));
 
   const playBeep = () => {
     const AudioContext = window.AudioContext;
@@ -40,14 +52,16 @@ export const Timer: React.FC<{ durationTime: number }> = ({ durationTime }) => {
   useEffect(() => {
     if (isRunning) {
       setButtonTimer("停止");
+      setTimerText(formatTime(minutes, seconds));
     } else {
       setButtonTimer("開始");
+
       if (isStarted) {
         playBeep();
         restart(getExpiryTimestamp(durationTime));
       }
     }
-  }, [durationTime, isRunning, isStarted, restart]);
+  }, [durationTime, isRunning, isStarted, minutes, restart, seconds]);
 
   return (
     <Box display="flex" alignItems="center">
@@ -59,9 +73,11 @@ export const Timer: React.FC<{ durationTime: number }> = ({ durationTime }) => {
       >
         {buttonTimer}
       </Button>
-      <span style={{ fontSize: "1.5rem", padding: "0.5rem" }}>
-        {minutes.toString().padStart(2, "0")}:
-        {seconds.toString().padStart(2, "0")}
+      <span
+        data-testid="timer-text"
+        style={{ fontSize: "1.5rem", padding: "0.5rem" }}
+      >
+        {timerText}
       </span>
     </Box>
   );
