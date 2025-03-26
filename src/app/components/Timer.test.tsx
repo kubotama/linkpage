@@ -27,9 +27,9 @@ describe("Timer コンポーネント", () => {
 
   it("初期画面で 01:15 と開始ボタンが表示されること", async () => {
     const durationTime = 75;
-    fetchMock.mockResponseOnce(durationTime.toString());
 
     await act(async () => {
+      fetchMock.mockResponseOnce(durationTime.toString());
       render(<Timer />);
     });
 
@@ -48,33 +48,40 @@ describe("Timer コンポーネント", () => {
 
   it("開始ボタンをクリックすると停止ボタンが表示されること", async () => {
     const durationTime = 150;
-    fetchMock.mockResponseOnce(durationTime.toString());
 
-    const { getByRole, queryByText } = render(<Timer />);
+    await act(async () => {
+      fetchMock.mockResponseOnce(durationTime.toString());
+      render(<Timer />);
+    });
 
     // 開始ボタンをクリックすると、ボタンのラベルが停止に変わることをテストします
 
     // 開始ボタンをクリックする(=開始ボタンが表示されている)
-    const startButton = getByRole("button", { name: "開始" });
+    const startButton = screen.getByRole("button", { name: "開始" });
     await act(async () => {
       fireEvent.click(startButton);
     });
 
     await waitFor(() => {
       // 停止ボタンが表示されている
-      expect(getByRole("button", { name: "停止" })).toBeInTheDocument();
+      expect(screen.getByRole("button", { name: "停止" })).toBeInTheDocument();
       // 開始ボタンは表示されていない
-      expect(queryByText("開始")).not.toBeInTheDocument();
+      expect(screen.queryByText("開始")).not.toBeInTheDocument();
     });
   });
 
   it("停止ボタンをクリックすると開始ボタンが表示されること", async () => {
+    // fetchMock.mockResponseOnce(durationTime.toString());
+    // const { getByRole, queryByText, getByTestId } = render(<Timer />);
+
     const durationTime = 170;
-    fetchMock.mockResponseOnce(durationTime.toString());
-    const { getByRole, queryByText, getByTestId } = render(<Timer />);
+    await act(async () => {
+      fetchMock.mockResponseOnce(durationTime.toString());
+      render(<Timer />);
+    });
 
     // 開始ボタンをクリックする(=開始ボタンが表示されている)
-    const startButton = getByRole("button", { name: "開始" });
+    const startButton = screen.getByRole("button", { name: "開始" });
     await act(async () => {
       fireEvent.click(startButton);
       // タイマーが実行中である
@@ -82,7 +89,7 @@ describe("Timer コンポーネント", () => {
     });
 
     // 停止ボタンが表示されている
-    const stopButton = getByRole("button", { name: "停止" });
+    const stopButton = screen.getByRole("button", { name: "停止" });
     // 停止ボタンをクリックする
     await act(async () => {
       fireEvent.click(stopButton);
@@ -90,11 +97,11 @@ describe("Timer コンポーネント", () => {
 
     await waitFor(() => {
       // 開始ボタンが表示されている
-      expect(getByRole("button", { name: "開始" })).toBeInTheDocument();
+      expect(screen.getByRole("button", { name: "開始" })).toBeInTheDocument();
       // 停止ボタンは表示されていない
-      expect(queryByText("停止")).not.toBeInTheDocument();
+      expect(screen.queryByText("停止")).not.toBeInTheDocument();
       // アラームタイムが02:50と表示されている
-      expect(getByTestId("timer-text")).toHaveTextContent(
+      expect(screen.getByTestId("timer-text")).toHaveTextContent(
         formatFromSecond(durationTime)
       );
     });
@@ -122,9 +129,8 @@ describe("Timer コンポーネント", () => {
     // @ts-ignore
     window.AudioContext = jest.fn(() => mockAudioContext);
 
-    fetchMock.mockResponseOnce("5");
-
     await act(async () => {
+      fetchMock.mockResponseOnce("5");
       render(<Timer />);
     });
 
@@ -158,9 +164,8 @@ describe("Timer コンポーネント", () => {
 
 describe("Timer API", () => {
   it("Timer APIへのGetでのアクセス", async () => {
-    fetchMock.mockResponseOnce("180");
-
     await act(async () => {
+      fetchMock.mockResponseOnce("100");
       render(<Timer />);
     });
 
@@ -170,7 +175,7 @@ describe("Timer API", () => {
 
     await waitFor(() => {
       expect(startButton).toBeInTheDocument();
-      expect(timerText).toHaveTextContent("03:00");
+      expect(timerText).toHaveTextContent("01:40");
       expect(fetchMock.call.length).toEqual(1);
       expect(fetchMock.mock.calls[0][0]).toEqual("/api/timer");
     });

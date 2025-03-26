@@ -22,10 +22,9 @@ describe("テスト環境を動作確認するためのサンプルのテスト"
       { url: "https://www.google.com/", title: "Google" },
     ];
 
-    fetchMock.mockResponseOnce("180");
-    fetchMock.mockResponseOnce(JSON.stringify(mockBookmarks));
-
     await act(async () => {
+      fetchMock.mockResponseOnce("180");
+      fetchMock.mockResponseOnce(JSON.stringify(mockBookmarks));
       render(<Home />);
     });
 
