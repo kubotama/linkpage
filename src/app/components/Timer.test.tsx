@@ -1,12 +1,19 @@
 import "@testing-library/jest-dom";
 
+import fetchMock from "jest-fetch-mock";
 import React, { act } from "react";
 
-import { fireEvent, render, waitFor } from "@testing-library/react";
+import { fireEvent, render, waitFor, screen } from "@testing-library/react";
 
 import { Timer } from "./Timer";
 
 describe("Timer コンポーネント", () => {
+  beforeEach(() => {
+    // タイマーのモックを設定
+    jest.useFakeTimers();
+    fetchMock.resetMocks();
+  });
+
   const formatTime = (minutes: number, seconds: number): string => {
     return `${minutes.toString().padStart(2, "0")}:${seconds
       .toString()
@@ -18,15 +25,19 @@ describe("Timer コンポーネント", () => {
     return formatTime(minutes, seconds);
   };
 
-  it("初期画面で 01:15 と開始ボタンが表示されること", () => {
-    const { getByRole, getByText } = render(<Timer durationTime={75} />);
-    expect(getByText("01:15")).toBeInTheDocument();
-    expect(getByRole("button", { name: "開始" })).toBeInTheDocument();
-  });
+  it("初期画面で 01:15 と開始ボタンが表示されること", async () => {
+    const durationTime = 75;
+    fetchMock.mockResponseOnce(durationTime.toString());
 
-  // タイマーのモックを設定
-  beforeEach(() => {
-    jest.useFakeTimers();
+    await act(async () => {
+      render(<Timer />);
+    });
+
+    await waitFor(() => {
+      expect(fetchMock.call.length).toBe(1);
+      expect(screen.getByText("01:15")).toBeInTheDocument();
+      expect(screen.getByRole("button", { name: "開始" })).toBeInTheDocument();
+    });
   });
 
   // テスト後のクリーンアップ
@@ -36,7 +47,10 @@ describe("Timer コンポーネント", () => {
   });
 
   it("開始ボタンをクリックすると停止ボタンが表示されること", async () => {
-    const { getByRole, queryByText } = render(<Timer durationTime={150} />);
+    const durationTime = 150;
+    fetchMock.mockResponseOnce(durationTime.toString());
+
+    const { getByRole, queryByText } = render(<Timer />);
 
     // 開始ボタンをクリックすると、ボタンのラベルが停止に変わることをテストします
 
@@ -56,9 +70,8 @@ describe("Timer コンポーネント", () => {
 
   it("停止ボタンをクリックすると開始ボタンが表示されること", async () => {
     const durationTime = 170;
-    const { getByRole, queryByText, getByTestId } = render(
-      <Timer durationTime={durationTime} />
-    );
+    fetchMock.mockResponseOnce(durationTime.toString());
+    const { getByRole, queryByText, getByTestId } = render(<Timer />);
 
     // 開始ボタンをクリックする(=開始ボタンが表示されている)
     const startButton = getByRole("button", { name: "開始" });
@@ -109,11 +122,14 @@ describe("Timer コンポーネント", () => {
     // @ts-ignore
     window.AudioContext = jest.fn(() => mockAudioContext);
 
-    // 5秒のタイマーをセット
-    const { getByRole } = render(<Timer durationTime={5} />);
+    fetchMock.mockResponseOnce("5");
+
+    await act(async () => {
+      render(<Timer />);
+    });
 
     // タイマーを開始
-    const startButton = getByRole("button", { name: "開始" });
+    const startButton = screen.getByRole("button", { name: "開始" });
     await act(async () => {
       fireEvent.click(startButton);
     });
@@ -136,6 +152,45 @@ describe("Timer コンポーネント", () => {
         440,
         0
       );
+    });
+  });
+});
+
+describe("Timer API", () => {
+  it("Timer APIへのGetでのアクセス", async () => {
+    fetchMock.mockResponseOnce("180");
+
+    await act(async () => {
+      render(<Timer />);
+    });
+
+    const { getByRole, getByTestId } = screen;
+    const startButton = getByRole("button", { name: "開始" });
+    const timerText = getByTestId("timer-text");
+
+    await waitFor(() => {
+      expect(startButton).toBeInTheDocument();
+      expect(timerText).toHaveTextContent("03:00");
+      expect(fetchMock.call.length).toEqual(1);
+      expect(fetchMock.mock.calls[0][0]).toEqual("/api/timer");
+    });
+  });
+
+  it("Timer APIへのアクセス失敗のテスト", async () => {
+    fetchMock.mockResponseOnce("タイマーの時間を取得できませんでした。", {
+      status: 500,
+      headers: { "Content-Type": "text/plain" },
+    });
+
+    await act(async () => {
+      render(<Timer />);
+    });
+
+    const { getByRole } = screen;
+    const startButton = getByRole("button", { name: "開始" });
+
+    await waitFor(() => {
+      expect(startButton).toBeDisabled();
     });
   });
 });

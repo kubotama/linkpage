@@ -5,7 +5,10 @@ import { Box, Button } from "@mui/material";
 
 type ButtonLabel = "開始" | "停止";
 
-export const Timer: React.FC<{ durationTime: number }> = ({ durationTime }) => {
+export const Timer: React.FC = () => {
+  const [durationTime, setDurationTime] = useState<number>(0);
+  const [isTimerDisabled, setIsTimerDisabled] = useState(false);
+
   // 分と秒からタイマーの文字列を生成する
   const formatTime = (minutes: number, seconds: number): string => {
     return `${minutes.toString().padStart(2, "0")}:${seconds
@@ -13,16 +16,33 @@ export const Timer: React.FC<{ durationTime: number }> = ({ durationTime }) => {
       .padStart(2, "0")}`;
   };
 
+  useEffect(() => {
+    fetch("/api/timer")
+      .then((response) => {
+        if (!response.ok) {
+          throw new Error(response.statusText);
+        }
+        return response.text();
+      })
+      .then((text) => {
+        setDurationTime(Number(text));
+        setIsTimerDisabled(false);
+      })
+      .catch(() => {
+        setIsTimerDisabled(true);
+      });
+  }, []);
+
   // 秒からタイマーの文字列を生成する
-  const formatFromSecond = (totalSeconds: number): string => {
+  const formatFromSecond = React.useCallback((totalSeconds: number): string => {
     const minutes = Math.floor(totalSeconds / 60);
     const seconds = totalSeconds % 60;
     return formatTime(minutes, seconds);
-  };
+  }, []);
 
   const [buttonTimer, setButtonTimer] = useState<ButtonLabel>("開始");
   const [isStarted, setIsStarted] = useState(false);
-  const [timerText, setTimerText] = useState(formatFromSecond(durationTime));
+  const [timerText, setTimerText] = useState(formatFromSecond(180));
 
   const playBeep = () => {
     const AudioContext = window.AudioContext;
@@ -61,18 +81,28 @@ export const Timer: React.FC<{ durationTime: number }> = ({ durationTime }) => {
       setTimerText(formatTime(minutes, seconds));
     } else {
       setButtonTimer("開始");
+      setTimerText(formatFromSecond(durationTime));
 
       if (isStarted) {
         playBeep();
         restart(getExpiryTimestamp(durationTime));
       }
     }
-  }, [durationTime, isRunning, isStarted, minutes, restart, seconds]);
+  }, [
+    durationTime,
+    formatFromSecond,
+    isRunning,
+    isStarted,
+    minutes,
+    restart,
+    seconds,
+  ]);
 
   return (
     <Box display="flex" alignItems="center">
       <Button
         color="primary"
+        disabled={isTimerDisabled}
         sx={{ width: "6rem", height: "2rem", marginRight: "0.7rem" }}
         onClick={handleButtonClick}
         variant="contained"

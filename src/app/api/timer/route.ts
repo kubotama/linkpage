@@ -1,5 +1,6 @@
 export async function GET() {
-  return new Response("180", {
+  const durationTime = 180;
+  return new Response(durationTime.toString(), {
     status: 200,
     headers: { "Content-Type": "text/plain" },
   });

@@ -14,7 +14,7 @@ export const Home: React.FC = () => {
       <div className={styles.container}>
         <div className="centering-item">
           <BmMessage />
-          <Timer durationTime={180} />
+          <Timer />
           <BookmarkManager />
         </div>
       </div>
