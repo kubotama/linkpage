@@ -10,14 +10,18 @@ async function initializeDb() {
     driver: sqlite3.Database,
   });
 
-  await db.exec(`
+  try {
+    await db.exec(`
     CREATE TABLE IF NOT EXISTS timer_logs (
       id INTEGER PRIMARY KEY AUTOINCREMENT,
       duration INTEGER NOT NULL,
       timestamp DATETIME DEFAULT CURRENT_TIMESTAMP
     )
   `);
-
+  } catch (error) {
+    console.error("Failed to initialize database:", error);
+    throw error; // Re-throw the error to prevent the application from continuing with a broken database connection
+  }
   return db;
 }
 
@@ -32,7 +36,11 @@ export async function GET() {
 export async function POST(request: Request) {
   try {
     const data = await request.json();
-    if (!data.duration || typeof data.duration !== "number") {
+    if (
+      !data.duration ||
+      typeof data.duration !== "number" ||
+      data.duration <= 0
+    ) {
       return new Response("Invalid duration parameter", {
         status: 400,
         headers: { "Content-Type": "text/plain" },

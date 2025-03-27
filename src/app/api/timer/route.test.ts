@@ -1,10 +1,10 @@
-import '@testing-library/jest-dom';
+import "@testing-library/jest-dom";
 
-import { open } from 'sqlite';
+import { open } from "sqlite";
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
-import sqlite3 from 'sqlite3';
+import sqlite3 from "sqlite3";
 
-import { GET, POST } from './route';
+import { GET, POST } from "./route";
 
 jest.mock("sqlite3");
 jest.mock("sqlite");
@@ -63,6 +63,19 @@ describe("Timer POST API", () => {
 
     const response = await POST(request);
 
+    expect(response.status).toBe(400);
+    expect(await response.text()).toBe("Invalid duration parameter");
+  });
+
+  it("durationが0の場合にエラーを返すこと", async () => {
+    const request = new Request("http://localhost:3000/api/timer", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({ duration: 0 }),
+    });
+    const response = await POST(request);
     expect(response.status).toBe(400);
     expect(await response.text()).toBe("Invalid duration parameter");
   });
