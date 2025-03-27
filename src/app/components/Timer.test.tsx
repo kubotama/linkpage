@@ -71,9 +71,6 @@ describe("Timer コンポーネント", () => {
   });
 
   it("停止ボタンをクリックすると開始ボタンが表示されること", async () => {
-    // fetchMock.mockResponseOnce(durationTime.toString());
-    // const { getByRole, queryByText, getByTestId } = render(<Timer />);
-
     const durationTime = 170;
     await act(async () => {
       fetchMock.mockResponseOnce(durationTime.toString());
