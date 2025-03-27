@@ -85,7 +85,6 @@ export const Timer: React.FC = () => {
     // if (isRunning) {
     if (status === "開始") {
       pause();
-      setTimerText(formatFromSecond(durationTime));
       setStatus("停止");
     } else if (status === "停止") {
       restart(getExpiryTimestamp(durationTime));
