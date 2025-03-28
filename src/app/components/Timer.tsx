@@ -26,6 +26,32 @@ export const Timer: React.FC = () => {
     );
   };
 
+  const formatInput = (totalSeconds: number): React.JSX.Element => {
+    const m = Math.floor(totalSeconds / 60);
+    const s = totalSeconds % 60;
+    const mText = m.toString().padStart(2, "0");
+    const sText = s.toString().padStart(2, "0");
+    return (
+      <>
+        <input
+          data-testid="timer-input-minutes"
+          size={1}
+          style={{ fontSize: "1.5rem", padding: "0.5rem" }}
+          value={mText}
+          readOnly
+        />
+        <span style={{ fontSize: "1.5rem", padding: "0.5rem" }}>:</span>
+        <input
+          data-testid="timer-input-seconds"
+          size={1}
+          style={{ fontSize: "1.5rem", padding: "0.5rem" }}
+          value={sText}
+          readOnly
+        />
+      </>
+    );
+  };
+
   useEffect(() => {
     fetch("/api/timer")
       .then((response) => {
@@ -86,6 +112,7 @@ export const Timer: React.FC = () => {
     if (status === "開始") {
       pause();
       setStatus("停止");
+      // } else {
     } else if (status === "停止") {
       restart(getExpiryTimestamp(durationTime));
       setStatus("開始");
@@ -100,7 +127,8 @@ export const Timer: React.FC = () => {
     } else {
       setButtonTimer("開始");
       setIsTimerDisabled(false);
-      setTimerText(formatFromSecond(durationTime));
+      // setTimerText(formatFromSecond(durationTime));
+      setTimerText(formatInput(durationTime));
 
       if (isStarted) {
         playBeep();

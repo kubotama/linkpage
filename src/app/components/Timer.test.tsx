@@ -14,17 +14,6 @@ describe("Timer コンポーネント", () => {
     fetchMock.resetMocks();
   });
 
-  const formatTime = (minutes: number, seconds: number): string => {
-    return `${minutes.toString().padStart(2, "0")}:${seconds
-      .toString()
-      .padStart(2, "0")}`;
-  };
-  const formatFromSecond = (totalSeconds: number): string => {
-    const minutes = Math.floor(totalSeconds / 60);
-    const seconds = totalSeconds % 60;
-    return formatTime(minutes, seconds);
-  };
-
   it("初期画面で 01:15 と開始ボタンが表示されること", async () => {
     const durationTime = 75;
 
@@ -35,7 +24,8 @@ describe("Timer コンポーネント", () => {
 
     await waitFor(() => {
       expect(fetchMock.call.length).toBe(1);
-      expect(screen.getByText("01:15")).toBeInTheDocument();
+      expect(screen.getByTestId("timer-input-minutes")).toHaveValue("01");
+      expect(screen.getByTestId("timer-input-seconds")).toHaveValue("15");
       expect(screen.getByRole("button", { name: "開始" })).toBeInTheDocument();
     });
   });
@@ -98,9 +88,11 @@ describe("Timer コンポーネント", () => {
       // 停止ボタンは表示されていない
       expect(screen.queryByText("停止")).not.toBeInTheDocument();
       // アラームタイムが02:50と表示されている
-      expect(screen.getByTestId("timer-text")).toHaveTextContent(
-        formatFromSecond(durationTime)
-      );
+      // expect(screen.getByTestId("timer-text")).toHaveTextContent(
+      //   formatFromSecond(durationTime)
+      // );
+      expect(screen.getByTestId("timer-input-minutes")).toHaveValue("02");
+      expect(screen.getByTestId("timer-input-seconds")).toHaveValue("50");
     });
   });
 
@@ -168,11 +160,13 @@ describe("Timer API", () => {
 
     const { getByRole, getByTestId } = screen;
     const startButton = getByRole("button", { name: "開始" });
-    const timerText = getByTestId("timer-text");
+    // const timerText = getByTestId("timer-text");
 
     await waitFor(() => {
       expect(startButton).toBeInTheDocument();
-      expect(timerText).toHaveTextContent("01:40");
+      // expect(timerText).toHaveTextContent("01:40");
+      expect(getByTestId("timer-input-minutes")).toHaveValue("01");
+      expect(getByTestId("timer-input-seconds")).toHaveValue("40");
       expect(fetchMock.call.length).toEqual(1);
       expect(fetchMock.mock.calls[0][0]).toEqual("/api/timer");
     });
