@@ -1,1 +1,1 @@
-export const DB_PATH = "./timer.sqlite";
+export const TIMER_DB_PATH = "timer.sqlite";

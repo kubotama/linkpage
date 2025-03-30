@@ -8,7 +8,7 @@ const TEST_DB_PATH = "./test-timer.sqlite";
 
 // テスト用のDBパスを使用するようにモック
 jest.mock("../../filename", () => ({
-  DB_PATH: "./test-timer.sqlite",
+  TIMER_DB_PATH: "./test-timer.sqlite",
 }));
 
 describe("Timer API", () => {

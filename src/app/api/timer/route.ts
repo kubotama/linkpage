@@ -1,13 +1,15 @@
 import { open } from "sqlite";
 import sqlite3 from "sqlite3";
 
-import { DB_PATH } from "../../filename";
+import { TIMER_DB_PATH } from "../../filename";
+
+const timerDb = process.env.TIMER_DB_PATH || TIMER_DB_PATH;
 
 // DBの初期化関数
 async function initializeDb() {
   try {
     const db = await open({
-      filename: DB_PATH,
+      filename: timerDb,
       driver: sqlite3.Database,
     });
 
@@ -28,7 +30,7 @@ async function initializeDb() {
 export async function GET() {
   try {
     const db = await open({
-      filename: DB_PATH,
+      filename: timerDb,
       driver: sqlite3.Database,
     });
 
