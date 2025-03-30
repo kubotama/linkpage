@@ -1,7 +1,7 @@
 import { open } from "sqlite";
 import sqlite3 from "sqlite3";
 
-const DB_PATH = "./timer.sqlite";
+import { DB_PATH } from "../../filename";
 
 // DBの初期化関数
 async function initializeDb() {
@@ -26,11 +26,29 @@ async function initializeDb() {
 }
 
 export async function GET() {
-  const durationTime = 180;
-  return new Response(durationTime.toString(), {
-    status: 200,
-    headers: { "Content-Type": "text/plain" },
-  });
+  try {
+    const db = await open({
+      filename: DB_PATH,
+      driver: sqlite3.Database,
+    });
+
+    const row = await db.get(
+      "SELECT duration FROM timer_logs ORDER BY  DESC LIMIT 1"
+    );
+    await db.close();
+
+    const durationTime = row?.duration ?? 180; // Default to 180 if no records exist
+    return new Response(durationTime.toString(), {
+      status: 200,
+      headers: { "Content-Type": "text/plain" },
+    });
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  } catch (error) {
+    return new Response("180", {
+      status: 200,
+      headers: { "Content-Type": "text/plain" },
+    });
+  }
 }
 
 export async function POST(request: Request) {
