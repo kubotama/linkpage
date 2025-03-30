@@ -33,7 +33,7 @@ export async function GET() {
     });
 
     const row = await db.get(
-      "SELECT duration FROM timer_logs ORDER BY  DESC LIMIT 1"
+      "SELECT duration FROM timer_logs ORDER BY id DESC LIMIT 1"
     );
     await db.close();
 
