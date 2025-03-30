@@ -3,54 +3,18 @@ import { useTimer } from "react-timer-hook";
 
 import { Box, Button } from "@mui/material";
 
-type ButtonLabel = "開始" | "停止";
+// type ButtonLabel = "開始" | "停止";
 type Status = "ロード中" | "開始" | "停止" | "エラー";
 
 export const Timer: React.FC = () => {
   const [durationTime, setDurationTime] = useState<number>(0);
   const [isTimerDisabled, setIsTimerDisabled] = useState(true);
   const [status, setStatus] = useState<Status>("ロード中");
-  const [timerText, setTimerText] = useState(<>タイマーの時間をロード中...</>);
-
-  // 分と秒からタイマーの文字列を生成する
-  const formatTime = (m: number, s: number): React.JSX.Element => {
-    const mText = m.toString().padStart(2, "0");
-    const sText = s.toString().padStart(2, "0");
-    return (
-      <span
-        data-testid="timer-text"
-        style={{ fontSize: "1.5rem", padding: "0.5rem" }}
-      >
-        {mText}:{sText}
-      </span>
-    );
-  };
-
-  const formatInput = (totalSeconds: number): React.JSX.Element => {
-    const m = Math.floor(totalSeconds / 60);
-    const s = totalSeconds % 60;
-    const mText = m.toString().padStart(2, "0");
-    const sText = s.toString().padStart(2, "0");
-    return (
-      <>
-        <input
-          data-testid="timer-input-minutes"
-          size={1}
-          style={{ fontSize: "1.5rem", padding: "0.5rem" }}
-          value={mText}
-          readOnly
-        />
-        <span style={{ fontSize: "1.5rem", padding: "0.5rem" }}>:</span>
-        <input
-          data-testid="timer-input-seconds"
-          size={1}
-          style={{ fontSize: "1.5rem", padding: "0.5rem" }}
-          value={sText}
-          readOnly
-        />
-      </>
-    );
-  };
+  const [minutesInput, setMinutesInput] = useState<string>("");
+  const [secondsInput, setSecondsInput] = useState<string>("");
+  const [minutesText, setMinutesText] = useState<string>("");
+  const [secondsText, setSecondsText] = useState<string>("");
+  const [errorMessage, setErrorMessage] = useState<string>("");
 
   useEffect(() => {
     fetch("/api/timer")
@@ -61,30 +25,26 @@ export const Timer: React.FC = () => {
         return response.text();
       })
       .then((text) => {
-        setDurationTime(Number(text));
+        const timerTime = Number(text);
+        setDurationTime(timerTime);
         setIsTimerDisabled(false);
         setStatus("停止");
       })
       .catch((error) => {
         setIsTimerDisabled(true);
-        setTimerText(<>{error.message}</>);
+        setErrorMessage(error.message);
         setStatus("エラー");
       });
   }, []);
 
-  // 秒からタイマーの文字列を生成する
-  const formatFromSecond = React.useCallback(
-    (totalSeconds: number): React.JSX.Element => {
-      const minutes = Math.floor(totalSeconds / 60);
-      const seconds = totalSeconds % 60;
-      return formatTime(minutes, seconds);
-    },
-    []
-  );
-
-  const [buttonTimer, setButtonTimer] = useState<ButtonLabel>("開始");
-  const [isStarted, setIsStarted] = useState(false);
-  // const [timerText, setTimerText] = useState(formatFromSecond(180));
+  useEffect(() => {
+    const m = Math.floor(durationTime / 60);
+    const s = durationTime % 60;
+    const mText = m.toString().padStart(2, "0");
+    const sText = s.toString().padStart(2, "0");
+    setMinutesInput(mText);
+    setSecondsInput(sText);
+  }, [durationTime]);
 
   const playBeep = () => {
     const AudioContext = window.AudioContext;
@@ -107,56 +67,101 @@ export const Timer: React.FC = () => {
     autoStart: false,
   });
 
-  const handleButtonClick = () => {
-    // if (isRunning) {
-    if (status === "開始") {
-      pause();
-      setStatus("停止");
-      // } else {
-    } else if (status === "停止") {
-      restart(getExpiryTimestamp(durationTime));
-      setStatus("開始");
-    }
-    setIsStarted(!isRunning);
-  };
-
   useEffect(() => {
     if (isRunning) {
-      setButtonTimer("停止");
-      setTimerText(formatTime(minutes, seconds));
-    } else {
-      setButtonTimer("開始");
-      setIsTimerDisabled(false);
-      // setTimerText(formatFromSecond(durationTime));
-      setTimerText(formatInput(durationTime));
-
-      if (isStarted) {
-        playBeep();
-        restart(getExpiryTimestamp(durationTime));
-      }
+      const mText = minutes.toString().padStart(2, "0");
+      const sText = seconds.toString().padStart(2, "0");
+      setMinutesText(mText);
+      setSecondsText(sText);
+    } else if (status === "開始") {
+      playBeep();
+      restart(getExpiryTimestamp(durationTime));
     }
-  }, [
-    durationTime,
-    formatFromSecond,
-    isRunning,
-    isStarted,
-    minutes,
-    restart,
-    seconds,
-  ]);
+  }, [durationTime, isRunning, minutes, restart, seconds, status]);
+
+  const startClick = () => {
+    const m = Number(minutesInput);
+    const s = Number(secondsInput);
+    const timerTime = m * 60 + s;
+    if (timerTime !== durationTime) {
+      // クライアントからのAPIの呼び出し例
+      fetch("/api/timer", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ duration: timerTime }),
+      });
+      setDurationTime(timerTime);
+    }
+    restart(getExpiryTimestamp(timerTime));
+    setStatus("開始");
+  };
+
+  const stopClick = () => {
+    pause();
+    setStatus("停止");
+  };
 
   return (
-    <Box display="flex" alignItems="center">
-      <Button
-        color="primary"
-        disabled={isTimerDisabled}
-        sx={{ width: "6rem", height: "2rem", marginRight: "0.7rem" }}
-        onClick={handleButtonClick}
-        variant="contained"
-      >
-        {buttonTimer}
-      </Button>
-      {timerText}
-    </Box>
+    <>
+      {status === "停止" && (
+        <Box display="flex" alignItems="center">
+          <Button
+            color="primary"
+            disabled={isTimerDisabled}
+            sx={{ width: "6rem", height: "2rem", marginRight: "0.7rem" }}
+            onClick={startClick}
+            variant="contained"
+          >
+            開始
+          </Button>
+          <input
+            data-testid="timer-input-minutes"
+            size={1}
+            style={{ fontSize: "1.5rem", padding: "0.5rem" }}
+            value={minutesInput}
+            onChange={(e) => setMinutesInput(e.target.value)}
+          />
+          <span style={{ fontSize: "1.5rem", padding: "0.5rem" }}>:</span>
+          <input
+            data-testid="timer-input-seconds"
+            size={1}
+            style={{ fontSize: "1.5rem", padding: "0.5rem" }}
+            value={secondsInput}
+            onChange={(e) => setSecondsInput(e.target.value)}
+          />
+        </Box>
+      )}
+      {status === "開始" && (
+        <Box display="flex" alignItems="center">
+          <Button
+            color="primary"
+            disabled={isTimerDisabled}
+            sx={{ width: "6rem", height: "2rem", marginRight: "0.7rem" }}
+            onClick={stopClick}
+            variant="contained"
+          >
+            停止
+          </Button>
+          <span
+            data-testid="timer-text"
+            style={{ fontSize: "1.5rem", padding: "0.5rem" }}
+          >
+            {minutesText}:{secondsText}
+          </span>
+        </Box>
+      )}
+      {status === "ロード中" && (
+        <span style={{ fontSize: "1.5rem", padding: "0.5rem" }}>
+          タイマーの時間をロード中...
+        </span>
+      )}
+      {status === "エラー" && (
+        <span style={{ fontSize: "1.5rem", padding: "0.5rem" }}>
+          {errorMessage}
+        </span>
+      )}
+    </>
   );
 };

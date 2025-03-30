@@ -5,12 +5,12 @@ const DB_PATH = "./timer.sqlite";
 
 // DBの初期化関数
 async function initializeDb() {
-  const db = await open({
-    filename: DB_PATH,
-    driver: sqlite3.Database,
-  });
-
   try {
+    const db = await open({
+      filename: DB_PATH,
+      driver: sqlite3.Database,
+    });
+
     await db.exec(`
     CREATE TABLE IF NOT EXISTS timer_logs (
       id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -18,11 +18,11 @@ async function initializeDb() {
       timestamp DATETIME DEFAULT CURRENT_TIMESTAMP
     )
   `);
+    return db;
   } catch (error) {
     console.error("Failed to initialize database:", error);
     throw error; // Re-throw the error to prevent the application from continuing with a broken database connection
   }
-  return db;
 }
 
 export async function GET() {

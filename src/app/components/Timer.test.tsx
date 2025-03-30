@@ -88,9 +88,6 @@ describe("Timer コンポーネント", () => {
       // 停止ボタンは表示されていない
       expect(screen.queryByText("停止")).not.toBeInTheDocument();
       // アラームタイムが02:50と表示されている
-      // expect(screen.getByTestId("timer-text")).toHaveTextContent(
-      //   formatFromSecond(durationTime)
-      // );
       expect(screen.getByTestId("timer-input-minutes")).toHaveValue("02");
       expect(screen.getByTestId("timer-input-seconds")).toHaveValue("50");
     });
@@ -152,6 +149,10 @@ describe("Timer コンポーネント", () => {
 });
 
 describe("Timer API", () => {
+  beforeEach(() => {
+    fetchMock.resetMocks();
+  });
+
   it("Timer APIへのGetでのアクセス", async () => {
     await act(async () => {
       fetchMock.mockResponseOnce("100");
@@ -160,11 +161,9 @@ describe("Timer API", () => {
 
     const { getByRole, getByTestId } = screen;
     const startButton = getByRole("button", { name: "開始" });
-    // const timerText = getByTestId("timer-text");
 
     await waitFor(() => {
       expect(startButton).toBeInTheDocument();
-      // expect(timerText).toHaveTextContent("01:40");
       expect(getByTestId("timer-input-minutes")).toHaveValue("01");
       expect(getByTestId("timer-input-seconds")).toHaveValue("40");
       expect(fetchMock.call.length).toEqual(1);
@@ -182,11 +181,45 @@ describe("Timer API", () => {
       render(<Timer />);
     });
 
-    const { getByRole } = screen;
-    const startButton = getByRole("button", { name: "開始" });
+    const { getByText } = screen;
+    const errorText = getByText("Internal Server Error");
 
     await waitFor(() => {
-      expect(startButton).toBeDisabled();
+      expect(errorText).toBeInTheDocument();
+    });
+  });
+  it("Timer APIへのPostでのアクセス", async () => {
+    //Timerコンポーネントを表示します。
+    // Timer APIにGetアクセスで、タイマーの時間を取得します。初期値の180を返します。
+    // タイマーの時間として、01:25を入力します。
+    // 開始ボタンをクリックします。
+    // Postにアクセスするときのパラメータを確認します。
+    fetchMock.mockResponseOnce("180");
+
+    await act(async () => {
+      render(<Timer />);
+    });
+    const { getByRole, getByTestId } = screen;
+    const startButton = getByRole("button", { name: "開始" });
+    const inputMinutes = getByTestId("timer-input-minutes");
+    const inputSeconds = getByTestId("timer-input-seconds");
+
+    await act(async () => {
+      fireEvent.change(inputMinutes, { target: { value: "01" } });
+      fireEvent.change(inputSeconds, { target: { value: "25" } });
+      fireEvent.click(startButton);
+    });
+
+    await waitFor(() => {
+      expect(fetchMock.mock.calls.length).toEqual(2);
+      expect(fetchMock.mock.calls[1][0]).toEqual("/api/timer");
+      expect(fetchMock.mock.calls[1][1]).toEqual({
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ duration: 85 }),
+      });
     });
   });
 });
