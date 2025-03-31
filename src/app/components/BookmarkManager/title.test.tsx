@@ -5,8 +5,6 @@ import React, { act } from "react";
 
 import { fireEvent, render, screen, waitFor } from "@testing-library/react";
 
-import { MessageProvider } from "../../contexts/MessageContext";
-import BmMessage from "../bmMessage";
 import { Bookmark, BookmarkManager } from "../BookmarkManager";
 
 const mockBookmarks: Bookmark[] = [
@@ -44,12 +42,7 @@ describe("BookmarkManagerのURLとタイトルのテキストとボタンのテ�
     fetchMock.mockResponseOnce(JSON.stringify(mockBookmarks));
 
     await act(async () => {
-      render(
-        <MessageProvider>
-          <BmMessage />
-          <BookmarkManager />
-        </MessageProvider>
-      );
+      render(<BookmarkManager />);
     });
 
     fetchMock.resetMocks();
@@ -88,12 +81,7 @@ describe("BookmarkManagerのURLとタイトルのテキストとボタンのテ�
     fetchMock.mockResponseOnce(JSON.stringify(mockBookmarks));
 
     await act(async () => {
-      render(
-        <MessageProvider>
-          <BmMessage />
-          <BookmarkManager />
-        </MessageProvider>
-      );
+      render(<BookmarkManager />);
     });
 
     fetchMock.resetMocks();
@@ -117,7 +105,6 @@ describe("BookmarkManagerのURLとタイトルのテキストとボタンのテ�
       expect(fetchMock).toHaveBeenCalledTimes(1);
       expect(fetchMock.mock.calls[0][0]).toEqual("/api/title?url=" + url);
 
-      expect(screen.getByRole("button", { name: "確認" })).toBeInTheDocument();
       expect(titleInput).toHaveValue("Can't find title: [500] " + url);
     });
   });
@@ -131,12 +118,7 @@ describe("BookmarkManagerのURLとタイトルのテキストとボタンのテ�
     fetchMock.mockResponseOnce(JSON.stringify(mockBookmarks));
 
     await act(async () => {
-      render(
-        <MessageProvider>
-          <BmMessage />
-          <BookmarkManager />
-        </MessageProvider>
-      );
+      render(<BookmarkManager />);
     });
 
     fetchMock.resetMocks();
@@ -171,12 +153,7 @@ describe("BookmarkManagerのURLとタイトルのテキストとボタンのテ�
     fetchMock.mockResponseOnce(JSON.stringify(mockBookmarks));
 
     await act(async () => {
-      render(
-        <MessageProvider>
-          <BmMessage />
-          <BookmarkManager />
-        </MessageProvider>
-      );
+      render(<BookmarkManager />);
     });
 
     fetchMock.resetMocks();
@@ -196,7 +173,6 @@ describe("BookmarkManagerのURLとタイトルのテキストとボタンのテ�
       expect(fetchMock).toHaveBeenCalledTimes(1);
       expect(fetchMock.mock.calls[0][0]).toEqual("/api/title?url=" + url);
 
-      expect(screen.getByRole("button", { name: "確認" })).toBeInTheDocument();
       expect(titleInput).toHaveValue("Can't find title: " + url);
     });
   });

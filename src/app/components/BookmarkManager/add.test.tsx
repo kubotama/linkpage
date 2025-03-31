@@ -5,8 +5,8 @@ import React, { act } from "react";
 
 import { fireEvent, render, screen, waitFor } from "@testing-library/react";
 
-import { MessageProvider } from "../../contexts/MessageContext";
-import BmMessage from "../bmMessage";
+// import { MessageProvider } from "../../contexts/MessageContext";
+// import BmMessage from "../bmMessage";
 import { Bookmark, BookmarkManager } from "../BookmarkManager";
 
 const mockBookmarks: Bookmark[] = [
@@ -38,12 +38,7 @@ describe("更新されたブックマークが、APIにPOSTで送られる。", 
     fetchMock.mockResponseOnce(JSON.stringify(mockBookmarks));
 
     await act(async () => {
-      render(
-        <MessageProvider>
-          <BmMessage />
-          <BookmarkManager />
-        </MessageProvider>
-      );
+      render(<BookmarkManager />);
     });
 
     await waitFor(() => {
@@ -75,12 +70,7 @@ describe("更新されたブックマークが、APIにPOSTで送られる。", 
     fetchMock.mockResponseOnce(JSON.stringify(mockBookmarks));
 
     await act(async () => {
-      render(
-        <MessageProvider>
-          <BmMessage />
-          <BookmarkManager />
-        </MessageProvider>
-      );
+      render(<BookmarkManager />);
     });
 
     await waitFor(() => {
@@ -129,12 +119,7 @@ describe("更新されたブックマークが、APIにPOSTで送られる。", 
     fetchMock.mockResponseOnce(JSON.stringify(mockBookmarks));
 
     await act(async () => {
-      render(
-        <MessageProvider>
-          <BmMessage />
-          <BookmarkManager />
-        </MessageProvider>
-      );
+      render(<BookmarkManager />);
     });
     await waitFor(() => {
       // Verify initial fetch was called
@@ -161,7 +146,7 @@ describe("更新されたブックマークが、APIにPOSTで送られる。", 
 
     await waitFor(() => {
       expect(fetchMock.mock.calls.length).toEqual(2);
-      expect(screen.getByTestId("bm-message")).toHaveTextContent(
+      expect(screen.getByTestId("bookmark-message")).toHaveTextContent(
         /BookmarkManager: \[500\] Internal Server Error$/
       );
     });
@@ -171,12 +156,7 @@ describe("更新されたブックマークが、APIにPOSTで送られる。", 
     fetchMock.mockResponseOnce(JSON.stringify(mockBookmarks));
 
     await act(async () => {
-      render(
-        <MessageProvider>
-          <BmMessage />
-          <BookmarkManager />
-        </MessageProvider>
-      );
+      render(<BookmarkManager />);
     });
 
     await waitFor(() => {
@@ -201,7 +181,7 @@ describe("更新されたブックマークが、APIにPOSTで送られる。", 
 
     await waitFor(() => {
       expect(fetchMock.mock.calls.length).toEqual(2);
-      expect(screen.getByTestId("bm-message")).toHaveTextContent(
+      expect(screen.getByTestId("bookmark-message")).toHaveTextContent(
         "BookmarkManager: Error: API Error"
       );
     });

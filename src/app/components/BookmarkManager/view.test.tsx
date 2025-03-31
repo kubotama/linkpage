@@ -5,8 +5,6 @@ import React, { act } from "react";
 
 import { render, screen, waitFor } from "@testing-library/react";
 
-import { MessageProvider } from "../../contexts/MessageContext";
-import BmMessage from "../bmMessage";
 import { Bookmark, BookmarkManager } from "../BookmarkManager";
 
 const mockBookmarks: Bookmark[] = [
@@ -37,12 +35,7 @@ describe("BookmarkManagerの表示を確認", () => {
     fetchMock.mockResponseOnce(JSON.stringify(mockBookmarks));
 
     await act(async () => {
-      render(
-        <MessageProvider>
-          <BmMessage />
-          <BookmarkManager />
-        </MessageProvider>
-      );
+      render(<BookmarkManager />);
     });
 
     await waitFor(() => {
@@ -55,14 +48,11 @@ describe("BookmarkManagerの表示を確認", () => {
 
   it("ローディング中にローディングメッセージが表示されること", () => {
     fetchMock.mockResponseOnce(() => new Promise(() => [])); // リクエストがresolveしないようにする
-    render(
-      <MessageProvider>
-        <BmMessage />
-        <BookmarkManager />
-      </MessageProvider>
-    );
+    render(<BookmarkManager />);
 
-    expect(screen.getByTestId("bm-message")).toHaveTextContent(/^Loading...$/);
+    expect(screen.getByTestId("bookmark-message")).toHaveTextContent(
+      /^ブックマークをロード中...$/
+    );
   });
 
   it("HTTPステータス500でfetchした場合、エラーメッセージが表示される", async () => {
@@ -72,16 +62,11 @@ describe("BookmarkManagerの表示を確認", () => {
     });
 
     await act(async () => {
-      render(
-        <MessageProvider>
-          <BmMessage />
-          <BookmarkManager />
-        </MessageProvider>
-      );
+      render(<BookmarkManager />);
     });
 
     await waitFor(() => {
-      expect(screen.getByTestId("bm-message")).toHaveTextContent(
+      expect(screen.getByTestId("bookmark-message")).toHaveTextContent(
         /Failed to fetch: \[500\] Internal Server Error$/
       );
     });

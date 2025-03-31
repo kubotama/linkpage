@@ -5,8 +5,6 @@ import React, { act } from "react";
 
 import { fireEvent, render, screen, waitFor } from "@testing-library/react";
 
-import { MessageProvider } from "../../contexts/MessageContext";
-import BmMessage from "../bmMessage";
 import { Bookmark, BookmarkManager } from "../BookmarkManager";
 
 const mockBookmarks: Bookmark[] = [
@@ -34,12 +32,7 @@ describe("「←」ボタン: URLから、/の階層を一段、削除する", (
     fetchMock.mockResponseOnce(JSON.stringify(mockBookmarks));
 
     await act(async () => {
-      render(
-        <MessageProvider>
-          <BmMessage />
-          <BookmarkManager />
-        </MessageProvider>
-      );
+      render(<BookmarkManager />);
     });
 
     const urlInput = screen.getByRole("textbox", { name: "url" });
@@ -60,12 +53,7 @@ describe("「←」ボタン: URLから、/の階層を一段、削除する", (
     fetchMock.mockResponseOnce(JSON.stringify(mockBookmarks));
 
     await act(async () => {
-      render(
-        <MessageProvider>
-          <BmMessage />
-          <BookmarkManager />
-        </MessageProvider>
-      );
+      render(<BookmarkManager />);
     });
 
     const urlInput = screen.getByRole("textbox", { name: "url" });
@@ -88,12 +76,7 @@ describe("「←」ボタン: URLから、/の階層を一段、削除する", (
     fetchMock.mockResponseOnce(JSON.stringify(mockBookmarks));
 
     await act(async () => {
-      render(
-        <MessageProvider>
-          <BmMessage />
-          <BookmarkManager />
-        </MessageProvider>
-      );
+      render(<BookmarkManager />);
     });
 
     const urlInput = screen.getByRole("textbox", { name: "url" });
@@ -116,12 +99,7 @@ describe("「←」ボタン: URLから、/の階層を一段、削除する", (
     fetchMock.mockResponseOnce(JSON.stringify(mockBookmarks));
 
     await act(async () => {
-      render(
-        <MessageProvider>
-          <BmMessage />
-          <BookmarkManager />
-        </MessageProvider>
-      );
+      render(<BookmarkManager />);
     });
     const urlInput = screen.getByRole("textbox", { name: "url" });
     const pathButton = screen.getByRole("button", { name: "←" });
@@ -142,12 +120,7 @@ describe("「←」ボタン: URLから、/の階層を一段、削除する", (
     fetchMock.mockResponseOnce(JSON.stringify(mockBookmarks));
 
     await act(async () => {
-      render(
-        <MessageProvider>
-          <BmMessage />
-          <BookmarkManager />
-        </MessageProvider>
-      );
+      render(<BookmarkManager />);
     });
 
     const urlInput = screen.getByRole("textbox", { name: "url" });
