@@ -123,11 +123,11 @@ describe("BookmarkManagerのURLとタイトルのテキストとボタンのテ�
       expect(fetchMock).toHaveBeenCalledTimes(1);
       expect(fetchMock.mock.calls[0][0]).toEqual("/api/title?url=" + url);
 
-      expect(screen.getByTestId("bm-message")).toHaveTextContent(
-        "Can't find title: [500] " + url
-      );
+      // expect(screen.getByTestId("bm-message")).toHaveTextContent(
+      //   "Can't find title: [500] " + url
+      // );
       expect(screen.getByRole("button", { name: "確認" })).toBeInTheDocument();
-      expect(titleInput).toHaveValue("");
+      expect(titleInput).toHaveValue("Can't find title: [500] " + url);
     });
   });
 
@@ -205,11 +205,11 @@ describe("BookmarkManagerのURLとタイトルのテキストとボタンのテ�
       expect(fetchMock).toHaveBeenCalledTimes(1);
       expect(fetchMock.mock.calls[0][0]).toEqual("/api/title?url=" + url);
 
-      expect(screen.getByTestId("bm-message")).toHaveTextContent(
-        "Can't find title: " + url
-      );
+      // expect(screen.getByTestId("bm-message")).toHaveTextContent(
+      //   "Can't find title: " + url
+      // );
       expect(screen.getByRole("button", { name: "確認" })).toBeInTheDocument();
-      expect(titleInput).toHaveValue("");
+      expect(titleInput).toHaveValue("Can't find title: " + url);
     });
   });
 });

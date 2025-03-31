@@ -82,6 +82,7 @@ export const BookmarkManager = ({}) => {
 
   // titleClick fetches the title of the URL
   const titleClick = async () => {
+    setTextTitle("タイトルを取得中...");
     fetch("/api/title?url=" + textUrl)
       .then((response) => {
         if (!response.ok) {
@@ -95,12 +96,12 @@ export const BookmarkManager = ({}) => {
           throw new Error(`Can't find title: `);
         } else {
           setTextTitle(text);
-          setMessage({ text: "" });
+          // setMessage({ text: "" });
         }
       })
       .catch((error) => {
-        setTextTitle("");
-        setMessage({ text: error.message + textUrl });
+        setTextTitle(error.message + textUrl);
+        // setMessage({ text: error.message + textUrl });
       });
   };
 
