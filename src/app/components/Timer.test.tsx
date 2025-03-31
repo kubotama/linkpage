@@ -188,6 +188,7 @@ describe("Timer API", () => {
       expect(errorText).toBeInTheDocument();
     });
   });
+
   it("Timer APIへのPostでのアクセス", async () => {
     //Timerコンポーネントを表示します。
     // Timer APIにGetアクセスで、タイマーの時間を取得します。初期値の180を返します。
@@ -220,6 +221,50 @@ describe("Timer API", () => {
         },
         body: JSON.stringify({ duration: 85 }),
       });
+    });
+  });
+
+  it("不正なタイマーの時間の入力: 分が数字以外", async () => {
+    fetchMock.mockResponseOnce("180");
+
+    await act(async () => {
+      render(<Timer />);
+    });
+    const { getByRole, getByTestId } = screen;
+    const startButton = getByRole("button", { name: "開始" });
+    const inputMinutes = getByTestId("timer-input-minutes");
+    const inputSeconds = getByTestId("timer-input-seconds");
+
+    await act(async () => {
+      fireEvent.change(inputMinutes, { target: { value: "AB" } });
+      fireEvent.change(inputSeconds, { target: { value: "25" } });
+      fireEvent.click(startButton);
+    });
+
+    await waitFor(() => {
+      expect(fetchMock.mock.calls.length).toEqual(1);
+    });
+  });
+
+  it("不正なタイマーの時間の入力: 秒が60以上", async () => {
+    fetchMock.mockResponseOnce("180");
+
+    await act(async () => {
+      render(<Timer />);
+    });
+    const { getByRole, getByTestId } = screen;
+    const startButton = getByRole("button", { name: "開始" });
+    const inputMinutes = getByTestId("timer-input-minutes");
+    const inputSeconds = getByTestId("timer-input-seconds");
+
+    await act(async () => {
+      fireEvent.change(inputMinutes, { target: { value: "01" } });
+      fireEvent.change(inputSeconds, { target: { value: "99" } });
+      fireEvent.click(startButton);
+    });
+
+    await waitFor(() => {
+      expect(fetchMock.mock.calls.length).toEqual(1);
     });
   });
 });
