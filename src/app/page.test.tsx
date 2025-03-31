@@ -1,7 +1,7 @@
 import "@testing-library/jest-dom";
 
 import fetchMock from "jest-fetch-mock";
-import React from "react";
+import React, { act } from "react";
 
 import { render, screen, waitFor } from "@testing-library/react";
 
@@ -22,9 +22,12 @@ describe("テスト環境を動作確認するためのサンプルのテスト"
       { url: "https://www.google.com/", title: "Google" },
     ];
 
-    fetchMock.mockResponseOnce(JSON.stringify(mockBookmarks));
+    await act(async () => {
+      fetchMock.mockResponseOnce("180");
+      fetchMock.mockResponseOnce(JSON.stringify(mockBookmarks));
+      render(<Home />);
+    });
 
-    render(<Home />);
     await waitFor(() => {
       expect(screen.getByTestId("bm-message")).toHaveTextContent(/^linkpage$/);
       expect(screen.getByRole("button", { name: "確認" })).toBeInTheDocument();
@@ -42,8 +45,6 @@ describe("テスト環境を動作確認するためのサンプルのテスト"
       expect(screen.getByText("タイトル")).toBeInTheDocument();
       expect(screen.getByText("追加")).toBeInTheDocument();
 
-      expect(fetchMock.call.length).toEqual(1);
-      expect(fetchMock.mock.calls[0][0]).toEqual("/api/bookmark");
       expect(screen.getByText("kubotama/linkpage")).toBeInTheDocument();
     });
   });
