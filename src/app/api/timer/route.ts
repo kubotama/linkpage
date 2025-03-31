@@ -22,7 +22,7 @@ async function initializeDb() {
   `);
     return db;
   } catch (error) {
-    console.error("Failed to initialize database:", error);
+    // console.error("Failed to initialize database:", error);
     throw error; // Re-throw the error to prevent the application from continuing with a broken database connection
   }
 }
