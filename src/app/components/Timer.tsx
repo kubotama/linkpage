@@ -3,18 +3,18 @@ import { useTimer } from "react-timer-hook";
 
 import { Box, Button } from "@mui/material";
 
-// type ButtonLabel = "開始" | "停止";
-type Status = "ロード中" | "開始" | "停止" | "エラー";
+type Status = "開始" | "停止";
 
 export const Timer: React.FC = () => {
-  const [durationTime, setDurationTime] = useState<number>(0);
+  const [durationTime, setDurationTime] = useState<number>(180);
   const [isTimerDisabled, setIsTimerDisabled] = useState(true);
-  const [status, setStatus] = useState<Status>("ロード中");
+  const [status, setStatus] = useState<Status>("停止");
   const [minutesInput, setMinutesInput] = useState<string>("");
   const [secondsInput, setSecondsInput] = useState<string>("");
   const [minutesText, setMinutesText] = useState<string>("");
   const [secondsText, setSecondsText] = useState<string>("");
-  const [errorMessage, setErrorMessage] = useState<string>("");
+  const [timerMessage, setTimerMessage] =
+    useState<string>("タイマーの時間をロード中...");
 
   useEffect(() => {
     fetch("/api/timer")
@@ -28,12 +28,13 @@ export const Timer: React.FC = () => {
         const timerTime = Number(text);
         setDurationTime(timerTime);
         setIsTimerDisabled(false);
+        setTimerMessage("");
         setStatus("停止");
       })
       .catch((error) => {
-        setIsTimerDisabled(true);
-        setErrorMessage(error.message);
-        setStatus("エラー");
+        setIsTimerDisabled(false);
+        setTimerMessage(error.message);
+        setStatus("停止");
       });
   }, []);
 
@@ -80,6 +81,7 @@ export const Timer: React.FC = () => {
   }, [durationTime, isRunning, minutes, restart, seconds, status]);
 
   const startClick = () => {
+    setTimerMessage("");
     const m = Number(minutesInput);
     const s = Number(secondsInput);
     if (isNaN(m) || isNaN(s) || m < 0 || s < 0 || s > 59) {
@@ -134,6 +136,9 @@ export const Timer: React.FC = () => {
             value={secondsInput}
             onChange={(e) => setSecondsInput(e.target.value)}
           />
+          <span style={{ fontSize: "1.5rem", padding: "0.5rem" }}>
+            {timerMessage}
+          </span>
         </Box>
       )}
       {status === "開始" && (
@@ -155,16 +160,11 @@ export const Timer: React.FC = () => {
           </span>
         </Box>
       )}
-      {status === "ロード中" && (
+      {/* {status === "ロード中" && (
         <span style={{ fontSize: "1.5rem", padding: "0.5rem" }}>
           タイマーの時間をロード中...
         </span>
-      )}
-      {status === "エラー" && (
-        <span style={{ fontSize: "1.5rem", padding: "0.5rem" }}>
-          {errorMessage}
-        </span>
-      )}
+      )} */}
     </>
   );
 };
