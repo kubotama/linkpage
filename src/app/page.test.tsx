@@ -29,8 +29,8 @@ describe("テスト環境を動作確認するためのサンプルのテスト"
     });
 
     await waitFor(() => {
-      expect(screen.getByTestId("bm-message")).toHaveTextContent(/^linkpage$/);
-      expect(screen.getByRole("button", { name: "確認" })).toBeInTheDocument();
+      // expect(screen.getByTestId("bm-message")).toHaveTextContent(/^linkpage$/);
+      // expect(screen.getByRole("button", { name: "確認" })).toBeInTheDocument();
 
       expect(screen.getByText("kubotama/linkpage")).toBeInTheDocument();
       expect(screen.getByText("Google")).toBeInTheDocument();

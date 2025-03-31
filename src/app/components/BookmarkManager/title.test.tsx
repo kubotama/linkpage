@@ -5,8 +5,6 @@ import React, { act } from "react";
 
 import { fireEvent, render, screen, waitFor } from "@testing-library/react";
 
-import { MessageProvider } from "../../contexts/MessageContext";
-import BmMessage from "../bmMessage";
 import { Bookmark, BookmarkManager } from "../BookmarkManager";
 
 const mockBookmarks: Bookmark[] = [
@@ -44,12 +42,7 @@ describe("BookmarkManagerのURLとタイトルのテキストとボタンのテ�
     fetchMock.mockResponseOnce(JSON.stringify(mockBookmarks));
 
     await act(async () => {
-      render(
-        <MessageProvider>
-          <BmMessage />
-          <BookmarkManager />
-        </MessageProvider>
-      );
+      render(<BookmarkManager />);
     });
 
     fetchMock.resetMocks();
@@ -81,25 +74,14 @@ describe("BookmarkManagerのURLとタイトルのテキストとボタンのテ�
     });
   });
 
-  it("パラメータとして渡されたURLにアクセスできない場合、メッセージ領域にエラーメッセージを表示する。", async () => {
-    // タイトルを取得するボタンをクリックして、エラーコード500の場合、タイトルのテキストボックスに、なにも表示しない。
+  it("パラメータとして渡されたURLにアクセスできない場合、タイトルのテキストボックスにエラーメッセージを表示する。", async () => {
+    // タイトルを取得するボタンをクリックして、エラーコード500の場合、タイトルのテキストボックスに、エラーメッセージを表示する。
     const url = "https://mail.google.com/mail/";
 
     fetchMock.mockResponseOnce(JSON.stringify(mockBookmarks));
 
-    // render(
-    //   <MessageProvider>
-    //     <BmMessage />
-    //     <BookmarkManager />
-    //   </MessageProvider>
-    // );
     await act(async () => {
-      render(
-        <MessageProvider>
-          <BmMessage />
-          <BookmarkManager />
-        </MessageProvider>
-      );
+      render(<BookmarkManager />);
     });
 
     fetchMock.resetMocks();
@@ -123,11 +105,7 @@ describe("BookmarkManagerのURLとタイトルのテキストとボタンのテ�
       expect(fetchMock).toHaveBeenCalledTimes(1);
       expect(fetchMock.mock.calls[0][0]).toEqual("/api/title?url=" + url);
 
-      expect(screen.getByTestId("bm-message")).toHaveTextContent(
-        "Can't find title: [500] " + url
-      );
-      expect(screen.getByRole("button", { name: "確認" })).toBeInTheDocument();
-      expect(titleInput).toHaveValue("");
+      expect(titleInput).toHaveValue("Can't find title: [500] " + url);
     });
   });
 
@@ -140,12 +118,7 @@ describe("BookmarkManagerのURLとタイトルのテキストとボタンのテ�
     fetchMock.mockResponseOnce(JSON.stringify(mockBookmarks));
 
     await act(async () => {
-      render(
-        <MessageProvider>
-          <BmMessage />
-          <BookmarkManager />
-        </MessageProvider>
-      );
+      render(<BookmarkManager />);
     });
 
     fetchMock.resetMocks();
@@ -173,19 +146,14 @@ describe("BookmarkManagerのURLとタイトルのテキストとボタンのテ�
     });
   });
 
-  it("APIからタイトルが返ってこない場合、メッセージ領域にエラーメッセージを表示する。", async () => {
-    // タイトルを取得するボタンをクリックして、エラーコード500の場合、タイトルのテキストボックスに、なにも表示しない。
+  it("APIからタイトルが返ってこない場合、タイトルのテキストボックスにエラーメッセージを表示する。", async () => {
+    // タイトルを取得するボタンをクリックして、エラーコード500の場合、タイトルのテキストボックスに、エラーメッセージを表示する。
     const url = "https://mail.google.com/mail/";
 
     fetchMock.mockResponseOnce(JSON.stringify(mockBookmarks));
 
     await act(async () => {
-      render(
-        <MessageProvider>
-          <BmMessage />
-          <BookmarkManager />
-        </MessageProvider>
-      );
+      render(<BookmarkManager />);
     });
 
     fetchMock.resetMocks();
@@ -205,11 +173,7 @@ describe("BookmarkManagerのURLとタイトルのテキストとボタンのテ�
       expect(fetchMock).toHaveBeenCalledTimes(1);
       expect(fetchMock.mock.calls[0][0]).toEqual("/api/title?url=" + url);
 
-      expect(screen.getByTestId("bm-message")).toHaveTextContent(
-        "Can't find title: " + url
-      );
-      expect(screen.getByRole("button", { name: "確認" })).toBeInTheDocument();
-      expect(titleInput).toHaveValue("");
+      expect(titleInput).toHaveValue("Can't find title: " + url);
     });
   });
 });

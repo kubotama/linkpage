@@ -4,7 +4,7 @@ import Box from "@mui/material/Box";
 
 import Button from "@mui/material/Button";
 
-import { useMessage } from "../contexts/MessageContext";
+// import { useMessage } from "../contexts/MessageContext";
 import { BookmarkTable } from "./BookmarkTable";
 
 export type Bookmark = {
@@ -18,19 +18,25 @@ export const BookmarkManager = ({}) => {
   const [error, setError] = useState("");
   const [textUrl, setTextUrl] = useState("");
   const [textTitle, setTextTitle] = useState("");
-  const { setMessage } = useMessage();
+  // const { setMessage } = useMessage();
+  const [bookmarkMessage, setBookmarkMessage] =
+    useState("ブックマークをロード中...");
 
   useEffect(() => {
     if (loading) {
-      setMessage({ text: "Loading..." });
+      setBookmarkMessage("ブックマークをロード中...");
+      // setMessage({ text: "Loading..." });
     } else if (error) {
-      setMessage({ text: error });
+      setBookmarkMessage(error);
+      // setMessage({ text: error });
     } else {
-      setMessage({ text: "" });
+      setBookmarkMessage("");
+      // setMessage({ text: "" });
     }
-  }, [loading, error, setMessage]);
+  }, [loading, error]);
 
   useEffect(() => {
+    setBookmarkMessage("ブックマークをロード中...");
     fetch("/api/bookmark")
       .then((response) => {
         if (!response.ok) {
@@ -42,6 +48,7 @@ export const BookmarkManager = ({}) => {
       })
       .then((data) => {
         setBookmarks(data);
+        setBookmarkMessage("");
       })
       .catch((error) => {
         const errorMessage = (error as Error).message;
@@ -82,6 +89,7 @@ export const BookmarkManager = ({}) => {
 
   // titleClick fetches the title of the URL
   const titleClick = async () => {
+    setTextTitle("タイトルを取得中...");
     fetch("/api/title?url=" + textUrl)
       .then((response) => {
         if (!response.ok) {
@@ -95,12 +103,12 @@ export const BookmarkManager = ({}) => {
           throw new Error(`Can't find title: `);
         } else {
           setTextTitle(text);
-          setMessage({ text: "" });
+          // setMessage({ text: "" });
         }
       })
       .catch((error) => {
-        setTextTitle("");
-        setMessage({ text: error.message + textUrl });
+        setTextTitle(error.message + textUrl);
+        // setMessage({ text: error.message + textUrl });
       });
   };
 
@@ -139,7 +147,8 @@ export const BookmarkManager = ({}) => {
       // 新しいウィンドウでURLを開く
       window.open(textUrl, "_blank", "noopener,noreferrer");
     } catch (error: unknown) {
-      setMessage({ text: (error as Error).message });
+      // setMessage({ text: (error as Error).message });
+      setBookmarkMessage((error as Error).message);
     }
   };
 
@@ -243,7 +252,15 @@ export const BookmarkManager = ({}) => {
           />
         </Box>
       </div>
-      <BookmarkTable bookmarks={bookmarks} />
+      {bookmarkMessage !== "" && (
+        <span
+          data-testid="bookmark-message"
+          style={{ width: "8rem", height: "2rem", marginRight: "0.7rem" }}
+        >
+          {bookmarkMessage}
+        </span>
+      )}
+      {bookmarkMessage == "" && <BookmarkTable bookmarks={bookmarks} />}
     </>
   );
 };

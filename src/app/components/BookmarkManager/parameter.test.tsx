@@ -5,8 +5,6 @@ import React, { act } from "react";
 
 import { fireEvent, render, screen, waitFor } from "@testing-library/react";
 
-import { MessageProvider } from "../../contexts/MessageContext";
-import BmMessage from "../bmMessage";
 import { Bookmark, BookmarkManager } from "../BookmarkManager";
 
 const mockBookmarks: Bookmark[] = [
@@ -36,12 +34,7 @@ describe("「パラメータ」ボタン: URLから無駄な文字列を削除�
       fetchMock.mockResponseOnce(JSON.stringify(mockBookmarks));
 
       await act(async () => {
-        render(
-          <MessageProvider>
-            <BmMessage />
-            <BookmarkManager />
-          </MessageProvider>
-        );
+        render(<BookmarkManager />);
       });
       const urlInput = screen.getByRole("textbox", { name: "url" });
       const urlButton = screen.getByRole("button", { name: "パラメータ" });
@@ -63,12 +56,7 @@ describe("「パラメータ」ボタン: URLから無駄な文字列を削除�
       fetchMock.mockResponseOnce(JSON.stringify(mockBookmarks));
 
       await act(async () => {
-        render(
-          <MessageProvider>
-            <BmMessage />
-            <BookmarkManager />
-          </MessageProvider>
-        );
+        render(<BookmarkManager />);
       });
 
       const urlInput = screen.getByRole("textbox", { name: "url" });
@@ -90,12 +78,7 @@ describe("「パラメータ」ボタン: URLから無駄な文字列を削除�
       const url = "https://mail.google.com/mail/u/0/";
 
       await act(async () => {
-        render(
-          <MessageProvider>
-            <BmMessage />
-            <BookmarkManager />
-          </MessageProvider>
-        );
+        render(<BookmarkManager />);
       });
 
       const urlInput = screen.getByRole("textbox", { name: "url" });

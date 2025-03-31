@@ -181,10 +181,9 @@ describe("Timer API", () => {
       render(<Timer />);
     });
 
-    const { getByText } = screen;
-    const errorText = getByText("Internal Server Error");
-
     await waitFor(() => {
+      const { getByText } = screen;
+      const errorText = getByText("Internal Server Error");
       expect(errorText).toBeInTheDocument();
     });
   });

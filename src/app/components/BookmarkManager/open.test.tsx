@@ -5,8 +5,6 @@ import React, { act } from "react";
 
 import { fireEvent, render, screen, waitFor } from "@testing-library/react";
 
-import { MessageProvider } from "../../contexts/MessageContext";
-import BmMessage from "../bmMessage";
 import { Bookmark, BookmarkManager } from "../BookmarkManager";
 
 const mockBookmarks: Bookmark[] = [
@@ -83,12 +81,7 @@ describe("「開く」ボタン: 入力されたURLを新しいタブで開く",
     fetchMock.mockResponseOnce(JSON.stringify(mockBookmarks));
 
     await act(async () => {
-      render(
-        <MessageProvider>
-          <BmMessage />
-          <BookmarkManager />
-        </MessageProvider>
-      );
+      render(<BookmarkManager />);
     });
 
     const urlInput = screen.getByRole("textbox", { name: "url" });
@@ -111,12 +104,7 @@ describe("「開く」ボタン: 入力されたURLを新しいタブで開く",
   it("不正なURLを入力した場合", async () => {
     fetchMock.mockResponseOnce(JSON.stringify(mockBookmarks));
     await act(async () => {
-      render(
-        <MessageProvider>
-          <BmMessage />
-          <BookmarkManager />
-        </MessageProvider>
-      );
+      render(<BookmarkManager />);
     });
 
     const urlInput = screen.getByRole("textbox", { name: "url" });
@@ -128,7 +116,7 @@ describe("「開く」ボタン: 入力されたURLを新しいタブで開く",
     });
 
     await waitFor(() => {
-      expect(screen.getByTestId("bm-message")).toHaveTextContent(
+      expect(screen.getByTestId("bookmark-message")).toHaveTextContent(
         "Invalid URL: invalid-url"
       );
       expect(mockOpen).not.toHaveBeenCalled();
