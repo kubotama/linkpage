@@ -82,6 +82,9 @@ export const Timer: React.FC = () => {
   const startClick = () => {
     const m = Number(minutesInput);
     const s = Number(secondsInput);
+    if (isNaN(m) || isNaN(s) || m < 0 || s < 0 || s > 59) {
+      return;
+    }
     const timerTime = m * 60 + s;
     if (timerTime !== durationTime) {
       // クライアントからのAPIの呼び出し例
