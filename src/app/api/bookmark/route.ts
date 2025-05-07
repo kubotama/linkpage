@@ -50,12 +50,12 @@ export async function POST(request: Request) {
 
     // トランザクションで既存データを削除し、新しいデータを挿入
     const transaction = db.transaction((items: Bookmark[]) => {
-      db!.prepare("DELETE FROM bookmarks").run(); // 既存データを全削除
-      const insert = db!.prepare(
+      db?.prepare("DELETE FROM bookmarks").run(); // 既存データを全削除
+      const insert = db?.prepare(
         "INSERT INTO bookmarks (url, title) VALUES (?, ?)"
       );
       for (const bookmark of items) {
-        insert.run(bookmark.url, bookmark.title);
+        insert?.run(bookmark.url, bookmark.title);
       }
     });
 
