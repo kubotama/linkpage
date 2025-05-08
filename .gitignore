@@ -43,3 +43,4 @@ next-env.d.ts
 # add by me
 bookmark.json
 timer.sqlite
+bookmarks.sqlite
