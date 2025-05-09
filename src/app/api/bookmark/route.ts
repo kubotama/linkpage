@@ -3,22 +3,7 @@
 import Database from "better-sqlite3";
 
 import { Bookmark } from "../../components/BookmarkManager"; // Bookmark型をインポート
-
-const dbFile = "./bookmarks.sqlite";
-
-// データベース接続とテーブル初期化
-const initializeDb = () => {
-  const db = new Database(dbFile);
-  // テーブルが存在しない場合のみ作成
-  db.exec(`
-    CREATE TABLE IF NOT EXISTS bookmarks (
-      id INTEGER PRIMARY KEY AUTOINCREMENT,
-      url TEXT NOT NULL UNIQUE,
-      title TEXT NOT NULL
-    )
-  `);
-  return db;
-};
+import { initializeDb } from "./database";
 
 export async function GET() {
   let db: Database.Database | null = null;
