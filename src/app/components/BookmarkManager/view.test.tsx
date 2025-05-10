@@ -5,9 +5,13 @@ import React, { act } from "react";
 
 import { render, screen, waitFor } from "@testing-library/react";
 
-import { Bookmark, BookmarkManager } from "../BookmarkManager";
+import {
+  Bookmark,
+  BookmarkManager,
+  createBookmarkList,
+} from "../BookmarkManager";
 
-const mockBookmarks: Bookmark[] = [
+const mockBookmarks: Bookmark[] = createBookmarkList([
   {
     url: "https://github.com/kubotama/linkpage",
     title: "kubotama/linkpage",
@@ -24,7 +28,7 @@ const mockBookmarks: Bookmark[] = [
     url: "https://www.amazon.co.jp/",
     title: "Amazon",
   },
-];
+]);
 
 describe("BookmarkManagerの表示を確認", () => {
   beforeEach(() => {

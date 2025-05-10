@@ -5,9 +5,13 @@ import React, { act } from "react";
 
 import { fireEvent, render, screen, waitFor } from "@testing-library/react";
 
-import { Bookmark, BookmarkManager } from "../BookmarkManager";
+import {
+  Bookmark,
+  BookmarkManager,
+  createBookmarkList,
+} from "../BookmarkManager";
 
-const mockBookmarks: Bookmark[] = [
+const mockBookmarks: Bookmark[] = createBookmarkList([
   {
     url: "https://github.com/kubotama/linkpage",
     title: "kubotama/linkpage",
@@ -24,7 +28,7 @@ const mockBookmarks: Bookmark[] = [
     url: "https://www.amazon.co.jp/",
     title: "Amazon",
   },
-];
+]);
 
 describe("「パラメータ」ボタン: URLから無駄な文字列を削除する#61", () => {
   describe("#や?の後ろを削除する", () => {

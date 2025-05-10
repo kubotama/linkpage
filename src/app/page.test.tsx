@@ -5,7 +5,7 @@ import React, { act } from "react";
 
 import { render, screen, waitFor } from "@testing-library/react";
 
-import { Bookmark } from "./components/BookmarkManager";
+import { Bookmark, createBookmarkList } from "./components/BookmarkManager";
 import Home from "./page";
 
 describe("テスト環境を動作確認するためのサンプルのテスト", () => {
@@ -14,13 +14,13 @@ describe("テスト環境を動作確認するためのサンプルのテスト"
   });
 
   it("すべてのエレメントが表示されることを確認", async () => {
-    const mockBookmarks: Bookmark[] = [
+    const mockBookmarks: Bookmark[] = createBookmarkList([
       {
         url: "https://github.com/kubotama/linkpage",
         title: "kubotama/linkpage",
       },
       { url: "https://www.google.com/", title: "Google" },
-    ];
+    ]);
 
     await act(async () => {
       fetchMock.mockResponseOnce("180");

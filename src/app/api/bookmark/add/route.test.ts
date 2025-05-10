@@ -1,11 +1,14 @@
 import "@testing-library/jest-dom";
 
 // We no longer need fs/promises
-// import * as fs from "fs/promises";
 import Database from "better-sqlite3"; // Import the actual library
 
-import { Bookmark, createBookmarkList } from "../../components/BookmarkManager";
-import { GET, POST } from "./route";
+import {
+  Bookmark,
+  createBookmark,
+  createBookmarkList,
+} from "../../../components/BookmarkManager";
+import { POST } from "./route";
 
 // Mock the better-sqlite3 library
 jest.mock("better-sqlite3");
@@ -82,107 +85,46 @@ describe("ブックマークのAPIのテスト", () => {
     });
   });
 
-  it("GET: ブックマークのデータが取得できる", async () => {
-    // Mocks are set up in beforeEach
-    const bookmarksFromJson = mockAll(); // Get the data the mock returns
-
-    const response = await GET();
-    expect(response.status).toBe(200);
-    const json = await response.json();
-    expect(json).toEqual(bookmarksFromJson);
-    expect(Database).toHaveBeenCalledWith("./bookmarks.sqlite");
-    expect(mockExec).toHaveBeenCalledWith(
-      expect.stringContaining("CREATE TABLE IF NOT EXISTS bookmarks")
-    );
-    expect(mockPrepare).toHaveBeenCalledWith(
-      "SELECT url, title FROM bookmarks"
-    );
-    expect(mockAll).toHaveBeenCalledTimes(2);
-    expect(mockClose).toHaveBeenCalledTimes(1);
-  });
-
-  it("GET: データベースエラー時に500エラーを返す", async () => {
-    const dbError = new Error("Database connection failed");
-    (Database as unknown as jest.Mock).mockImplementation(() => {
-      throw dbError;
-    });
-
-    const response = await GET();
-    expect(response.status).toBe(500);
-    const text = await response.text();
-    expect(text).toEqual(dbError.message);
-    expect(mockClose).not.toHaveBeenCalled(); // Should not be called if constructor fails
-  });
-
-  it("GET: クエリエラー時に500エラーを返す", async () => {
-    const queryError = new Error("Failed to execute query");
-    mockPrepare.mockImplementation(() => {
-      throw queryError;
-    });
-
-    const response = await GET();
-    expect(response.status).toBe(500);
-    const text = await response.text();
-    expect(text).toEqual(queryError.message);
-    expect(mockClose).toHaveBeenCalledTimes(1); // Close should still be called in finally
-  });
-
   // --- POST Tests ---
 
   it("POST: ブックマークのデータが更新できる", async () => {
-    transaction: mockTransaction.mockImplementation((fn) => {
-      // Mock transaction: it should return a function that, when called, executes the original function
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      return (...args: any) => fn(...args);
+    mockRun.mockReturnValue({ lastInsertRowid: 1 });
+
+    const bookmark: Bookmark = createBookmark({
+      url: "https://github.com/kubotama/linkpage",
+      title: "kubotama/linkpage",
     });
-
-    const bookmarks: Bookmark[] = createBookmarkList([
-      {
-        url: "https://github.com/kubotama/linkpage",
-        title: "kubotama/linkpage",
-      },
-      {
-        url: "https://www.google.com/",
-        title: "Google",
-      },
-    ]);
-
     const response = await POST(
       new Request("http://localhost:3000/api/bookmark", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
         },
-        body: JSON.stringify(bookmarks),
+        body: JSON.stringify(bookmark),
       })
     );
 
     expect(response.status).toBe(200);
+    const json = await response.json();
+    expect(json).toEqual({
+      id: expect.any(Number),
+      url: "https://github.com/kubotama/linkpage",
+      title: "kubotama/linkpage",
+    });
     expect(Database).toHaveBeenCalledWith("./bookmarks.sqlite");
     expect(mockExec).toHaveBeenCalledWith(
       expect.stringContaining("CREATE TABLE IF NOT EXISTS bookmarks")
     );
-    expect(mockTransaction).toHaveBeenCalledTimes(1);
+    expect(mockRun).toHaveBeenCalledTimes(1);
 
     // Check prepare calls within the transaction mock execution
-    expect(mockPrepare).toHaveBeenCalledWith("DELETE FROM bookmarks");
     expect(mockPrepare).toHaveBeenCalledWith(
       "INSERT INTO bookmarks (url, title) VALUES (?, ?)"
     );
 
-    // Check run calls: 1 for DELETE, N for INSERT
-    expect(mockRun).toHaveBeenCalledTimes(1 + bookmarks.length);
-    expect(mockRun).toHaveBeenNthCalledWith(1); // DELETE call
-    expect(mockRun).toHaveBeenNthCalledWith(
-      2,
-      bookmarks[0].url,
-      bookmarks[0].title
-    ); // First INSERT
-    expect(mockRun).toHaveBeenNthCalledWith(
-      3,
-      bookmarks[1].url,
-      bookmarks[1].title
-    ); // Second INSERT
+    // Check run calls: 1 for INSERT
+    expect(mockRun).toHaveBeenCalledTimes(1);
+    expect(mockRun).toHaveBeenNthCalledWith(1, bookmark.url, bookmark.title); // First INSERT
     expect(mockClose).toHaveBeenCalledTimes(1);
   });
 
@@ -205,11 +147,15 @@ describe("ブックマークのAPIのテスト", () => {
   });
 
   it("POST: データベース書き込み(トランザクション)失敗時にエラーを返す", async () => {
-    const bookmarks: Bookmark[] = createBookmarkList([
-      { url: "https://example.com", title: "Example" },
-    ]);
+    const bookmark: Bookmark = createBookmark({
+      url: "https://example.com",
+      title: "Example",
+    });
     const dbWriteError = new Error("Transaction failed");
-    mockTransaction.mockImplementation(() => () => {
+    // mockTransaction.mockImplementation(() => () => {
+    //   throw dbWriteError;
+    // }); // Make the function returned by transaction throw
+    mockRun.mockImplementation(() => {
       throw dbWriteError;
     }); // Make the function returned by transaction throw
 
@@ -219,7 +165,7 @@ describe("ブックマークのAPIのテスト", () => {
         headers: {
           "Content-Type": "application/json",
         },
-        body: JSON.stringify(bookmarks),
+        body: JSON.stringify(bookmark),
       })
     );
 

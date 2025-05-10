@@ -8,9 +8,22 @@ import Button from "@mui/material/Button";
 import { BookmarkTable } from "./BookmarkTable";
 
 export type Bookmark = {
+  id: number;
   url: string;
   title: string;
 };
+
+export function createBookmark({
+  id = 0,
+  url = "",
+  title = "",
+}: Partial<Bookmark> = {}): Bookmark {
+  return { id, url, title };
+}
+
+export function createBookmarkList(bookmarkList: Partial<Bookmark>[] = []) {
+  return bookmarkList.map(createBookmark);
+}
 
 export const BookmarkManager = ({}) => {
   const [bookmarks, setBookmarks] = useState<Bookmark[]>([]);
@@ -59,24 +72,34 @@ export const BookmarkManager = ({}) => {
       });
   }, []);
 
-  const handleAddBookmark = (textUrl: string, textTitle: string) => {
-    const newBookmark = { url: textUrl, title: textTitle };
-    const newBookmarks = [...bookmarks, newBookmark];
-    setBookmarks(newBookmarks);
+  const handleAddBookmark = async (textUrl: string, textTitle: string) => {
+    // const newBookmark: Bookmark = { url: textUrl, title: textTitle, id: 0 };
+    const newBookmark = createBookmark({ url: textUrl, title: textTitle });
 
-    fetch("/api/bookmark", {
+    // const newBookmarks = [...bookmarks, newBookmark];
+    // setBookmarks(newBookmarks);
+
+    fetch("/api/bookmark/add", {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
       },
-      body: JSON.stringify(newBookmarks),
+      body: JSON.stringify(newBookmark),
     })
       .then((response) => {
         if (!response.ok) {
           setError(
             `BookmarkManager: [${response.status}] ${response.statusText}`
           );
+          return;
         }
+        response.json().then((data) => {
+          newBookmark.id = data.id;
+          newBookmark.title = data.title;
+          newBookmark.url = data.url;
+          const newBookmarks = [...bookmarks, newBookmark];
+          setBookmarks(newBookmarks);
+        });
       })
       .catch((error) => {
         setError(`BookmarkManager: ${error}`);
