@@ -1,19 +1,16 @@
 import "@testing-library/jest-dom";
 
 import fetchMock from "jest-fetch-mock";
-import React, { act } from "react";
+import { act } from "react";
 
 import { fireEvent, render, screen, waitFor } from "@testing-library/react";
 
-// import { MessageProvider } from "../../contexts/MessageContext";
-// import BmMessage from "../bmMessage";
 import {
   Bookmark,
-  BookmarkManager,
   createBookmark,
   createBookmarkList,
-} from "../BookmarkManager";
-import { url } from "inspector";
+} from "../../types/Bookmark";
+import { BookmarkManager } from "../BookmarkManager";
 
 const mockBookmarks: Bookmark[] = createBookmarkList([
   {

@@ -1,11 +1,9 @@
 import "@testing-library/jest-dom";
 
-import React from "react";
-
 import { render, screen, within } from "@testing-library/react";
 
+import { Bookmark, createBookmarkList } from "../types/Bookmark";
 import { BookmarkTable } from "./BookmarkTable";
-import { Bookmark, createBookmarkList } from "./BookmarkManager";
 
 const mockBookmarks: Bookmark[] = createBookmarkList([
   {

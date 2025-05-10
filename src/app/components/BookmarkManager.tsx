@@ -1,29 +1,10 @@
 import React, { useEffect, useState } from "react";
 
 import Box from "@mui/material/Box";
-
 import Button from "@mui/material/Button";
 
-// import { useMessage } from "../contexts/MessageContext";
+import { Bookmark, createBookmark } from "../types/Bookmark";
 import { BookmarkTable } from "./BookmarkTable";
-
-export type Bookmark = {
-  id: number;
-  url: string;
-  title: string;
-};
-
-export function createBookmark({
-  id = 0,
-  url = "",
-  title = "",
-}: Partial<Bookmark> = {}): Bookmark {
-  return { id, url, title };
-}
-
-export function createBookmarkList(bookmarkList: Partial<Bookmark>[] = []) {
-  return bookmarkList.map(createBookmark);
-}
 
 export const BookmarkManager = ({}) => {
   const [bookmarks, setBookmarks] = useState<Bookmark[]>([]);

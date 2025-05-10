@@ -2,7 +2,8 @@
 
 import Database from "better-sqlite3";
 
-import { Bookmark } from "../../../components/BookmarkManager"; // Bookmark型をインポート
+import { Bookmark } from "@/app/types/Bookmark";
+
 import { initializeDb } from "../database";
 
 export async function POST(request: Request) {

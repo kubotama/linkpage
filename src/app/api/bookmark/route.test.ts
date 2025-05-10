@@ -1,10 +1,8 @@
 import "@testing-library/jest-dom";
 
-// We no longer need fs/promises
-// import * as fs from "fs/promises";
 import Database from "better-sqlite3"; // Import the actual library
 
-import { Bookmark, createBookmarkList } from "../../components/BookmarkManager";
+import { Bookmark, createBookmarkList } from "../../types/Bookmark";
 import { GET, POST } from "./route";
 
 // Mock the better-sqlite3 library
