@@ -13,7 +13,7 @@ export async function POST(request: Request) {
 
     db = getDb();
 
-    const insert = db?.prepare(
+    const insert = db.prepare(
       "INSERT INTO bookmarks (url, title) VALUES (?, ?)"
     );
     const info = insert.run(bookmark.url, bookmark.title);
@@ -33,6 +33,7 @@ export async function POST(request: Request) {
       status: 500,
       headers: { "Content-Type": "text/plain" },
     });
+    console.error("Error adding bookmark:", error); // エラーログを出力
   } finally {
     db?.close();
   }
