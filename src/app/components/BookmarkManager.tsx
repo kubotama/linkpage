@@ -12,20 +12,16 @@ export const BookmarkManager = ({}) => {
   const [error, setError] = useState("");
   const [textUrl, setTextUrl] = useState("");
   const [textTitle, setTextTitle] = useState("");
-  // const { setMessage } = useMessage();
   const [bookmarkMessage, setBookmarkMessage] =
     useState("ブックマークをロード中...");
 
   useEffect(() => {
     if (loading) {
       setBookmarkMessage("ブックマークをロード中...");
-      // setMessage({ text: "Loading..." });
     } else if (error) {
       setBookmarkMessage(error);
-      // setMessage({ text: error });
     } else {
       setBookmarkMessage("");
-      // setMessage({ text: "" });
     }
   }, [loading, error]);
 
@@ -70,19 +66,13 @@ export const BookmarkManager = ({}) => {
           );
           return;
         }
-        // response.json().then( (data) => {
-        // const newBookmarks = [...bookmarks, createBookmark(data)];
-        // setBookmarks(newBookmarks);
-        // TODO: コメントアウトを削除する
         try {
-          // try-catch追加
           const data = await response.json();
           const newBookmarks = [...bookmarks, createBookmark(data)];
           setBookmarks(newBookmarks);
         } catch (jsonError) {
           setError(`BookmarkManager: ${jsonError}`);
         }
-        // });
       })
       .catch((error) => {
         setError(`BookmarkManager: ${error}`);
