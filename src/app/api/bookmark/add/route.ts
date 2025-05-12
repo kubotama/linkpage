@@ -4,14 +4,14 @@ import Database from "better-sqlite3";
 
 import { Bookmark } from "@/app/types/Bookmark";
 
-import { initializeDb } from "../database";
+import { getDb } from "../database";
 
 export async function POST(request: Request) {
   let db: Database.Database | null = null;
   try {
     const bookmark: Bookmark = await request.json(); // 型アサーションを追加
 
-    db = initializeDb();
+    db = getDb();
 
     const insert = db?.prepare(
       "INSERT INTO bookmarks (url, title) VALUES (?, ?)"

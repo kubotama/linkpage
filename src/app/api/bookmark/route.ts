@@ -4,12 +4,12 @@ import Database from "better-sqlite3";
 
 import { Bookmark } from "@/app/types/Bookmark";
 
-import { initializeDb } from "./database";
+import { getDb } from "./database";
 
 export async function GET() {
   let db: Database.Database | null = null;
   try {
-    db = initializeDb();
+    db = getDb();
     const stmt = db.prepare("SELECT url, title FROM bookmarks");
     const bookmarks = stmt.all();
     return new Response(JSON.stringify(bookmarks), {
@@ -32,7 +32,7 @@ export async function POST(request: Request) {
   try {
     const bookmarks: Bookmark[] = await request.json(); // 型アサーションを追加
 
-    db = initializeDb();
+    db = getDb();
 
     // トランザクションで既存データを削除し、新しいデータを挿入
     const transaction = db.transaction((items: Bookmark[]) => {

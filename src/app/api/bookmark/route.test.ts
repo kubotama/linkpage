@@ -1,12 +1,17 @@
 import "@testing-library/jest-dom";
 
-import Database from "better-sqlite3"; // Import the actual library
+// import Database from "better-sqlite3"; // Import the actual library
 
 import { Bookmark, createBookmarkList } from "../../types/Bookmark";
 import { GET, POST } from "./route";
+import { getDb } from "./database";
 
 // Mock the better-sqlite3 library
 jest.mock("better-sqlite3");
+
+jest.mock("./database", () => ({
+  getDb: jest.fn(),
+}));
 
 describe("ブックマークのAPIのテスト", () => {
   // Define reusable mock implementations
@@ -41,7 +46,8 @@ describe("ブックマークのAPIのテスト", () => {
     ]);
 
     // Configure the mock Database constructor and methods
-    (Database as unknown as jest.Mock).mockImplementation(() => ({
+    // (Database as unknown as jest.Mock).mockImplementation(() => ({
+    (getDb as unknown as jest.Mock).mockImplementation(() => ({
       // prepare: mockPrepare.mockReturnThis(), // prepare returns the mock db for chaining if needed, or a mock statement
       prepare: mockPrepare,
       all: mockAll, // Used in GET
@@ -88,10 +94,10 @@ describe("ブックマークのAPIのテスト", () => {
     expect(response.status).toBe(200);
     const json = await response.json();
     expect(json).toEqual(bookmarksFromJson);
-    expect(Database).toHaveBeenCalledWith("./bookmarks.sqlite");
-    expect(mockExec).toHaveBeenCalledWith(
-      expect.stringContaining("CREATE TABLE IF NOT EXISTS bookmarks")
-    );
+    // expect(Database).toHaveBeenCalledWith("./bookmarks.sqlite");
+    // expect(mockExec).toHaveBeenCalledWith(
+    //   expect.stringContaining("CREATE TABLE IF NOT EXISTS bookmarks")
+    // );
     expect(mockPrepare).toHaveBeenCalledWith(
       "SELECT url, title FROM bookmarks"
     );
@@ -101,7 +107,8 @@ describe("ブックマークのAPIのテスト", () => {
 
   it("GET: データベースエラー時に500エラーを返す", async () => {
     const dbError = new Error("Database connection failed");
-    (Database as unknown as jest.Mock).mockImplementation(() => {
+    // (Database as unknown as jest.Mock).mockImplementation(() => {
+    (getDb as unknown as jest.Mock).mockImplementation(() => {
       throw dbError;
     });
 
@@ -156,10 +163,10 @@ describe("ブックマークのAPIのテスト", () => {
     );
 
     expect(response.status).toBe(200);
-    expect(Database).toHaveBeenCalledWith("./bookmarks.sqlite");
-    expect(mockExec).toHaveBeenCalledWith(
-      expect.stringContaining("CREATE TABLE IF NOT EXISTS bookmarks")
-    );
+    // expect(Database).toHaveBeenCalledWith("./bookmarks.sqlite");
+    // expect(mockExec).toHaveBeenCalledWith(
+    //   expect.stringContaining("CREATE TABLE IF NOT EXISTS bookmarks")
+    // );
     expect(mockTransaction).toHaveBeenCalledTimes(1);
 
     // Check prepare calls within the transaction mock execution

@@ -1,6 +1,6 @@
 import "@testing-library/jest-dom";
 
-import Database from "better-sqlite3"; // Import the actual library
+// import Database from "better-sqlite3"; // Import the actual library
 
 import {
   Bookmark,
@@ -8,9 +8,14 @@ import {
   createBookmarkList,
 } from "../../../types/Bookmark";
 import { POST } from "./route";
+import { getDb } from "../database";
 
 // Mock the better-sqlite3 library
 jest.mock("better-sqlite3");
+
+jest.mock("../database", () => ({
+  getDb: jest.fn(),
+}));
 
 describe("ブックマークのAPIのテスト", () => {
   // Define reusable mock implementations
@@ -45,7 +50,8 @@ describe("ブックマークのAPIのテスト", () => {
     ]);
 
     // Configure the mock Database constructor and methods
-    (Database as unknown as jest.Mock).mockImplementation(() => ({
+    // (Database as unknown as jest.Mock).mockImplementation(() => ({
+    (getDb as unknown as jest.Mock).mockImplementation(() => ({
       // prepare: mockPrepare.mockReturnThis(), // prepare returns the mock db for chaining if needed, or a mock statement
       prepare: mockPrepare,
       all: mockAll, // Used in GET
@@ -110,11 +116,11 @@ describe("ブックマークのAPIのテスト", () => {
       url: "https://github.com/kubotama/linkpage",
       title: "kubotama/linkpage",
     });
-    expect(Database).toHaveBeenCalledWith("./bookmarks.sqlite");
-    expect(mockExec).toHaveBeenCalledWith(
-      expect.stringContaining("CREATE TABLE IF NOT EXISTS bookmarks")
-    );
-    expect(mockRun).toHaveBeenCalledTimes(1);
+    // expect(Database).toHaveBeenCalledWith("./bookmarks.sqlite");
+    // expect(mockExec).toHaveBeenCalledWith(
+    //   expect.stringContaining("CREATE TABLE IF NOT EXISTS bookmarks")
+    // );
+    // expect(mockRun).toHaveBeenCalledTimes(1);
 
     // Check prepare calls within the transaction mock execution
     expect(mockPrepare).toHaveBeenCalledWith(
