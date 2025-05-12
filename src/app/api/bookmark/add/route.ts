@@ -33,7 +33,6 @@ export async function POST(request: Request) {
       status: 500,
       headers: { "Content-Type": "text/plain" },
     });
-    console.error("Error adding bookmark:", error); // エラーログを出力
   } finally {
     db?.close();
   }
