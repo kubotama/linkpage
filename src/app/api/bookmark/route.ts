@@ -22,8 +22,8 @@ export async function GET() {
       status: 500,
       headers: { "Content-Type": "text/plain" },
     });
-  } finally {
-    db?.close();
+    // } finally {
+    //   db?.close();
   }
 }
 
@@ -53,7 +53,7 @@ export async function POST(request: Request) {
       status: 500,
       headers: { "Content-Type": "text/plain" },
     });
-  } finally {
-    db?.close();
+    // } finally {
+    //   db?.close();
   }
 }
