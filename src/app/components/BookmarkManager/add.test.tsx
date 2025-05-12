@@ -72,7 +72,11 @@ describe("更新されたブックマークが、APIにPOSTで送られる。", 
     // Trigger bookmark update
     await waitFor(() => {
       expect(fetchMock).toHaveBeenCalledWith("/api/bookmark/add", {
-        body: '{"id":0,"url":"https://www.example.com","title":"Example Site"}',
+        body: JSON.stringify({
+          id: 0,
+          url: "https://www.example.com",
+          title: "Example Site",
+        }),
         headers: { "Content-Type": "application/json" },
         method: "POST",
       });
