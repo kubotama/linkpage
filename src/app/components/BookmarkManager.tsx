@@ -63,17 +63,26 @@ export const BookmarkManager = ({}) => {
       },
       body: JSON.stringify(newBookmark),
     })
-      .then((response) => {
+      .then(async (response) => {
         if (!response.ok) {
           setError(
             `BookmarkManager: [${response.status}] ${response.statusText}`
           );
           return;
         }
-        response.json().then((data) => {
+        // response.json().then( (data) => {
+        // const newBookmarks = [...bookmarks, createBookmark(data)];
+        // setBookmarks(newBookmarks);
+        // TODO: コメントアウトを削除する
+        try {
+          // try-catch追加
+          const data = await response.json();
           const newBookmarks = [...bookmarks, createBookmark(data)];
           setBookmarks(newBookmarks);
-        });
+        } catch (jsonError) {
+          setError(`BookmarkManager: ${jsonError}`);
+        }
+        // });
       })
       .catch((error) => {
         setError(`BookmarkManager: ${error}`);

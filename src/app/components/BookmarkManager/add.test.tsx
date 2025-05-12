@@ -156,4 +156,38 @@ describe("更新されたブックマークが、APIにPOSTで送られる。", 
       );
     });
   });
+
+  it("fetchの返り値が正しいjson形式でない場合にエラーを返す", async () => {
+    fetchMock.mockResponseOnce(JSON.stringify(mockBookmarks));
+
+    await act(async () => {
+      render(<BookmarkManager />);
+    });
+    await waitFor(() => {
+      // Verify initial fetch was called
+      expect(fetchMock).toHaveBeenCalledWith("/api/bookmark");
+      expect(fetchMock.mock.calls.length).toEqual(1);
+    });
+
+    const urlInput = screen.getByRole("textbox", { name: "url" });
+    const titleInput = screen.getByRole("textbox", { name: "title" });
+    const updateButton = screen.getByRole("button", { name: "追加" });
+
+    fetchMock.mockResponseOnce("");
+
+    await act(async () => {
+      fireEvent.change(urlInput, {
+        target: { value: "https://www.example.com" },
+      });
+      fireEvent.change(titleInput, { target: { value: "Example Site" } });
+      fireEvent.click(updateButton);
+    });
+
+    await waitFor(() => {
+      expect(fetchMock.mock.calls.length).toEqual(2);
+      expect(screen.getByTestId("bookmark-message")).toHaveTextContent(
+        "BookmarkManager: FetchError: invalid json response body at reason: Unexpected end of JSON input"
+      );
+    });
+  });
 });
