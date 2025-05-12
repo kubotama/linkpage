@@ -8,10 +8,10 @@ export function createBookmark({
   id = 0,
   url = "",
   title = "",
-}: Partial<Bookmark> = {}): Bookmark {
+}: Partial<Bookmark>): Bookmark {
   return { id, url, title };
 }
 
-export function createBookmarkList(bookmarkList: Partial<Bookmark>[] = []) {
+export function createBookmarkList(bookmarkList: Partial<Bookmark>[]) {
   return bookmarkList.map(createBookmark);
 }
