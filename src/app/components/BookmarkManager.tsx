@@ -54,11 +54,7 @@ export const BookmarkManager = ({}) => {
   }, []);
 
   const handleAddBookmark = async (textUrl: string, textTitle: string) => {
-    // const newBookmark: Bookmark = { url: textUrl, title: textTitle, id: 0 };
     const newBookmark = createBookmark({ url: textUrl, title: textTitle });
-
-    // const newBookmarks = [...bookmarks, newBookmark];
-    // setBookmarks(newBookmarks);
 
     fetch("/api/bookmark/add", {
       method: "POST",
@@ -104,12 +100,10 @@ export const BookmarkManager = ({}) => {
           throw new Error(`Can't find title: `);
         } else {
           setTextTitle(text);
-          // setMessage({ text: "" });
         }
       })
       .catch((error) => {
         setTextTitle(error.message + textUrl);
-        // setMessage({ text: error.message + textUrl });
       });
   };
 
@@ -148,7 +142,6 @@ export const BookmarkManager = ({}) => {
       // 新しいウィンドウでURLを開く
       window.open(textUrl, "_blank", "noopener,noreferrer");
     } catch (error: unknown) {
-      // setMessage({ text: (error as Error).message });
       setBookmarkMessage((error as Error).message);
     }
   };

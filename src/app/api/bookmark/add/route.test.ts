@@ -1,14 +1,12 @@
 import "@testing-library/jest-dom";
 
-// import Database from "better-sqlite3"; // Import the actual library
-
 import {
   Bookmark,
   createBookmark,
   createBookmarkList,
 } from "../../../types/Bookmark";
-import { POST } from "./route";
 import { getDb } from "../database";
+import { POST } from "./route";
 
 // Mock the better-sqlite3 library
 jest.mock("better-sqlite3");
@@ -50,18 +48,11 @@ describe("ブックマークのAPIのテスト", () => {
     ]);
 
     // Configure the mock Database constructor and methods
-    // (Database as unknown as jest.Mock).mockImplementation(() => ({
     (getDb as unknown as jest.Mock).mockImplementation(() => ({
-      // prepare: mockPrepare.mockReturnThis(), // prepare returns the mock db for chaining if needed, or a mock statement
       prepare: mockPrepare,
       all: mockAll, // Used in GET
       run: mockRun, // Used in POST (inside transaction)
       exec: mockExec, // Used in initializeDb
-      // transaction: mockTransaction.mockImplementation((fn) => {
-      //   // Mock transaction: it should return a function that, when called, executes the original function
-      //   // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      //   return (...args: any) => fn(...args);
-      // }),
       transaction: mockTransaction,
       close: mockClose,
     }));
@@ -116,11 +107,6 @@ describe("ブックマークのAPIのテスト", () => {
       url: "https://github.com/kubotama/linkpage",
       title: "kubotama/linkpage",
     });
-    // expect(Database).toHaveBeenCalledWith("./bookmarks.sqlite");
-    // expect(mockExec).toHaveBeenCalledWith(
-    //   expect.stringContaining("CREATE TABLE IF NOT EXISTS bookmarks")
-    // );
-    // expect(mockRun).toHaveBeenCalledTimes(1);
 
     // Check prepare calls within the transaction mock execution
     expect(mockPrepare).toHaveBeenCalledWith(
@@ -157,9 +143,6 @@ describe("ブックマークのAPIのテスト", () => {
       title: "Example",
     });
     const dbWriteError = new Error("Transaction failed");
-    // mockTransaction.mockImplementation(() => () => {
-    //   throw dbWriteError;
-    // }); // Make the function returned by transaction throw
     mockRun.mockImplementation(() => {
       throw dbWriteError;
     }); // Make the function returned by transaction throw

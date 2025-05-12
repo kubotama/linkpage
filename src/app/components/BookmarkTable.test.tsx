@@ -51,7 +51,6 @@ describe("BookmarkTableのテスト", () => {
       expect(link).toHaveAttribute("target", "_blank");
       expect(link).toHaveAttribute("rel", "noopener noreferrer");
       expect(link).toHaveTextContent(bookmark.title);
-      // expect(cells[1]).toHaveTextContent(bookmark.url);
     });
   });
 
