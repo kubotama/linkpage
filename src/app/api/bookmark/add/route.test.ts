@@ -162,4 +162,44 @@ describe("ブックマークのAPIのテスト", () => {
     expect(text).toBe(dbWriteError.message);
     // expect(mockClose).toHaveBeenCalledTimes(1); // Close should still be called in finally
   });
+
+  it("POST: URLが空文字の場合にエラーを返す", async () => {
+    const bookmark: Bookmark = createBookmark({
+      title: "Example",
+    });
+
+    const response = await POST(
+      new Request("http://localhost:3000/api/bookmark/add", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(bookmark),
+      })
+    );
+
+    expect(response.status).toBe(400);
+    const text = await response.text();
+    expect(text).toBe("URL cannot be empty");
+  });
+
+  it("POST: タイトルが空文字の場合にエラーを返す", async () => {
+    const bookmark: Bookmark = createBookmark({
+      url: "https://example.com",
+    });
+
+    const response = await POST(
+      new Request("http://localhost:3000/api/bookmark/add", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(bookmark),
+      })
+    );
+
+    expect(response.status).toBe(400);
+    const text = await response.text();
+    expect(text).toBe("Title cannot be empty");
+  });
 });

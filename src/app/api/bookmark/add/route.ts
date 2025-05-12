@@ -1,18 +1,20 @@
 "use server";
 
-import Database from "better-sqlite3";
-
 import { Bookmark } from "@/app/types/Bookmark";
 
 import { getDb } from "../database";
 
 export async function POST(request: Request) {
-  let db: Database.Database | null = null;
   try {
     const bookmark: Bookmark = await request.json(); // 型アサーションを追加
+    if (!bookmark.url || bookmark.url.trim() === "") {
+      return new Response("URL cannot be empty", { status: 400 });
+    }
+    if (!bookmark.title || bookmark.title.trim() === "") {
+      return new Response("Title cannot be empty", { status: 400 });
+    }
 
-    db = getDb();
-
+    const db = getDb();
     const insert = db.prepare(
       "INSERT INTO bookmarks (url, title) VALUES (?, ?)"
     );
