@@ -5,11 +5,7 @@ import { act } from "react";
 
 import { fireEvent, render, screen, waitFor } from "@testing-library/react";
 
-import {
-  Bookmark,
-  createBookmark,
-  createBookmarkList,
-} from "../../types/Bookmark";
+import { Bookmark, createBookmarkList } from "../../types/Bookmark";
 import { BookmarkManager } from "../BookmarkManager";
 
 const mockBookmarks: Bookmark[] = createBookmarkList([
@@ -53,13 +49,11 @@ describe("更新されたブックマークが、APIにPOSTで送られる。", 
     fetchMock.resetMocks();
 
     fetchMock.mockResponseOnce(
-      JSON.stringify(
-        createBookmark({
-          url: "https://www.example.com",
-          title: "Example Site",
-          id: 1,
-        })
-      )
+      JSON.stringify({
+        url: "https://www.example.com",
+        title: "Example Site",
+        id: 1,
+      })
     );
 
     // POST request mock
