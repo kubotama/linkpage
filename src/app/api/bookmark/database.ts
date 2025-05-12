@@ -23,7 +23,7 @@ const dbFile = "./bookmarks.sqlite";
 //     title TEXT NOT NULL
 //   )
 // `);
-let db: InstanceType<typeof Database> | null = null;
+let db: Database.Database | null = null;
 
 export const getDb = () => {
   if (db === null) {
