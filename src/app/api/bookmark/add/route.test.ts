@@ -91,7 +91,7 @@ describe("ブックマークのAPIのテスト", () => {
       title: "kubotama/linkpage",
     });
     const response = await POST(
-      new Request("http://localhost:3000/api/bookmark", {
+      new Request("http://localhost:3000/api/bookmark/add", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -121,7 +121,7 @@ describe("ブックマークのAPIのテスト", () => {
 
   it("POST: 不正なJSONデータの場合はエラーを返す", async () => {
     const response = await POST(
-      new Request("http://localhost:3000/api/bookmark", {
+      new Request("http://localhost:3000/api/bookmark/add", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -148,7 +148,7 @@ describe("ブックマークのAPIのテスト", () => {
     }); // Make the function returned by transaction throw
 
     const response = await POST(
-      new Request("http://localhost:3000/api/bookmark", {
+      new Request("http://localhost:3000/api/bookmark/add", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
