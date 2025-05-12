@@ -75,10 +75,7 @@ export const BookmarkManager = ({}) => {
           return;
         }
         response.json().then((data) => {
-          newBookmark.id = data.id;
-          newBookmark.title = data.title;
-          newBookmark.url = data.url;
-          const newBookmarks = [...bookmarks, newBookmark];
+          const newBookmarks = [...bookmarks, createBookmark(data)];
           setBookmarks(newBookmarks);
         });
       })
