@@ -11,6 +11,17 @@ jest.mock("../database");
 
 let inMemoryDbInstance: ActualDatabase.Database;
 
+const API_URL = "http://localhost:3000/api/bookmark/add";
+
+function createPostRequest(body: string): Request {
+  return new Request(API_URL, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: body,
+  });
+}
 describe("ブックマーク追加APIのテスト (オンメモリDB)", () => {
   beforeEach(() => {
     // Reset mocks before each test
@@ -41,15 +52,7 @@ describe("ブックマーク追加APIのテスト (オンメモリDB)", () => {
 
   // Utility function to add a bookmark and verify the response
   async function addBookmarkAndVerify(bookmark: Bookmark) {
-    const response = await POST(
-      new Request("http://localhost:3000/api/bookmark/add", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(bookmark),
-      })
-    );
+    const response = await POST(createPostRequest(JSON.stringify(bookmark)));
 
     expect(response.status).toBe(200);
     const json = await response.json();
@@ -96,15 +99,7 @@ describe("ブックマーク追加APIのテスト (オンメモリDB)", () => {
   });
 
   it("POST: 不正なJSONデータの場合はエラーを返す", async () => {
-    const response = await POST(
-      new Request("http://localhost:3000/api/bookmark/add", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: "invalid json",
-      })
-    );
+    const response = await POST(createPostRequest("invalid json"));
 
     expect(response.status).toBe(500);
     const text = await response.text();
@@ -127,15 +122,7 @@ describe("ブックマーク追加APIのテスト (オンメモリDB)", () => {
       title: "Another Title For Same URL",
     });
 
-    const response = await POST(
-      new Request("http://localhost:3000/api/bookmark/add", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(bookmark),
-      })
-    );
+    const response = await POST(createPostRequest(JSON.stringify(bookmark)));
 
     expect(response.status).toBe(500);
     const text = await response.text();
@@ -147,15 +134,7 @@ describe("ブックマーク追加APIのテスト (オンメモリDB)", () => {
       title: "Example",
     });
 
-    const response = await POST(
-      new Request("http://localhost:3000/api/bookmark/add", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(bookmark),
-      })
-    );
+    const response = await POST(createPostRequest(JSON.stringify(bookmark)));
 
     expect(response.status).toBe(400);
     const text = await response.text();
@@ -167,15 +146,7 @@ describe("ブックマーク追加APIのテスト (オンメモリDB)", () => {
       url: "https://example.com",
     });
 
-    const response = await POST(
-      new Request("http://localhost:3000/api/bookmark/add", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(bookmark),
-      })
-    );
+    const response = await POST(createPostRequest(JSON.stringify(bookmark)));
 
     expect(response.status).toBe(400);
     const text = await response.text();
