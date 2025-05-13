@@ -49,7 +49,7 @@ export const BookmarkManager = ({}) => {
       });
   }, []);
 
-  const handleAddBookmark = async (textUrl: string, textTitle: string) => {
+  const handleAddBookmark = (textUrl: string, textTitle: string) => {
     const newBookmark = createBookmark({ url: textUrl, title: textTitle });
 
     fetch("/api/bookmark/add", {
@@ -84,7 +84,7 @@ export const BookmarkManager = ({}) => {
   };
 
   // titleClick fetches the title of the URL
-  const titleClick = async () => {
+  const titleClick = () => {
     setTextTitle("タイトルを取得中...");
     fetch("/api/title?url=" + textUrl)
       .then((response) => {
