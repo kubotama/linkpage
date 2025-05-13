@@ -126,7 +126,8 @@ describe("ブックマーク追加APIのテスト (オンメモリDB)", () => {
 
     expect(response.status).toBe(500);
     const text = await response.text();
-    expect(text).toMatch(/UNIQUE constraint failed: bookmarks.url/i);
+    // expect(text).toMatch(/UNIQUE constraint failed: bookmarks.url/i);
+    expect(text).toEqual("UNIQUE constraint failed: bookmarks.url");
   });
 
   it("POST: URLが空文字の場合にエラーを返す", async () => {
