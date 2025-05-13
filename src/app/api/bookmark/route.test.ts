@@ -89,6 +89,7 @@ describe("ブックマークのAPIのテスト", () => {
       "SELECT url, title FROM bookmarks"
     );
     expect(mockAll).toHaveBeenCalledTimes(2);
+    expect(mockClose).not.toHaveBeenCalled(); // Should not be called
   });
 
   it("GET: データベースエラー時に500エラーを返す", async () => {
@@ -114,6 +115,7 @@ describe("ブックマークのAPIのテスト", () => {
     expect(response.status).toBe(500);
     const text = await response.text();
     expect(text).toEqual(queryError.message);
+    expect(mockClose).not.toHaveBeenCalled(); // Should not be called
   });
 
   // --- POST Tests ---
@@ -168,6 +170,7 @@ describe("ブックマークのAPIのテスト", () => {
       bookmarks[1].url,
       bookmarks[1].title
     ); // Second INSERT
+    expect(mockClose).not.toHaveBeenCalled(); // Should not be called
   });
 
   it("POST: 不正なJSONデータの場合はエラーを返す", async () => {
@@ -210,5 +213,6 @@ describe("ブックマークのAPIのテスト", () => {
     expect(response.status).toBe(500);
     const text = await response.text();
     expect(text).toBe(dbWriteError.message);
+    expect(mockClose).not.toHaveBeenCalled(); // Should not be called
   });
 });
