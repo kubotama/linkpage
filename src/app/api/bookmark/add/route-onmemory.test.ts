@@ -39,11 +39,8 @@ describe("ブックマーク追加APIのテスト (オンメモリDB)", () => {
 
   // --- POST Tests ---
 
-  it("POST: ブックマークのデータが追加できる", async () => {
-    const bookmark: Bookmark = createBookmark({
-      url: "https://github.com/kubotama/linkpage",
-      title: "kubotama/linkpage",
-    });
+  // Utility function to add a bookmark and verify the response
+  async function addBookmarkAndVerify(bookmark: Bookmark) {
     const response = await POST(
       new Request("http://localhost:3000/api/bookmark/add", {
         method: "POST",
@@ -58,8 +55,8 @@ describe("ブックマーク追加APIのテスト (オンメモリDB)", () => {
     const json = await response.json();
     expect(json).toEqual({
       id: expect.any(Number),
-      url: "https://github.com/kubotama/linkpage",
-      title: "kubotama/linkpage",
+      url: bookmark.url,
+      title: bookmark.title,
     });
 
     // Verify data in the in-memory database
@@ -71,74 +68,31 @@ describe("ブックマーク追加APIのテスト (オンメモリDB)", () => {
       url: bookmark.url,
       title: bookmark.title,
     });
+  }
+
+  it("POST: ブックマークのデータが追加できる", async () => {
+    await addBookmarkAndVerify(
+      createBookmark({
+        url: "https://github.com/kubotama/linkpage",
+        title: "kubotama/linkpage",
+      })
+    );
   });
 
   it("POST: ブックマークのデータを2回、追加できる", async () => {
-    // 1回めの追加
-    const bookmark1: Bookmark = createBookmark({
-      url: "https://github.com/kubotama/linkpage",
-      title: "kubotama/linkpage",
-    });
-    const response1 = await POST(
-      new Request("http://localhost:3000/api/bookmark/add", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(bookmark1),
+    await addBookmarkAndVerify(
+      createBookmark({
+        url: "https://github.com/kubotama/linkpage",
+        title: "kubotama/linkpage",
       })
     );
 
-    expect(response1.status).toBe(200);
-    const json1 = await response1.json();
-    expect(json1).toEqual({
-      id: expect.any(Number),
-      url: "https://github.com/kubotama/linkpage",
-      title: "kubotama/linkpage",
-    });
-
-    // Verify data in the in-memory database
-    const stmt1 = inMemoryDbInstance.prepare(
-      "SELECT url, title FROM bookmarks WHERE id = ?"
-    );
-    const dbData1 = stmt1.get(json1.id); // json.id comes from the response (lastInsertRowid)
-    expect(dbData1).toEqual({
-      url: bookmark1.url,
-      title: bookmark1.title,
-    });
-
-    // 2回めの追加
-    const bookmark2: Bookmark = createBookmark({
-      url: "https://www.google.com/",
-      title: "Google",
-    });
-    const response2 = await POST(
-      new Request("http://localhost:3000/api/bookmark/add", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(bookmark2),
+    await addBookmarkAndVerify(
+      createBookmark({
+        url: "https://www.google.com/",
+        title: "Google",
       })
     );
-
-    expect(response2.status).toBe(200);
-    const json2 = await response2.json();
-    expect(json2).toEqual({
-      id: expect.any(Number),
-      url: "https://www.google.com/",
-      title: "Google",
-    });
-
-    // Verify data in the in-memory database
-    const stmt2 = inMemoryDbInstance.prepare(
-      "SELECT url, title FROM bookmarks WHERE id = ?"
-    );
-    const dbData2 = stmt2.get(json2.id); // json.id comes from the response (lastInsertRowid)
-    expect(dbData2).toEqual({
-      url: bookmark2.url,
-      title: bookmark2.title,
-    });
   });
 
   it("POST: 不正なJSONデータの場合はエラーを返す", async () => {
@@ -205,7 +159,7 @@ describe("ブックマーク追加APIのテスト (オンメモリDB)", () => {
 
     expect(response.status).toBe(400);
     const text = await response.text();
-    expect(text).toBe("URL cannot be empty");
+    expect(text).toEqual("URL cannot be empty");
   });
 
   it("POST: タイトルが空文字の場合にエラーを返す", async () => {
@@ -225,6 +179,6 @@ describe("ブックマーク追加APIのテスト (オンメモリDB)", () => {
 
     expect(response.status).toBe(400);
     const text = await response.text();
-    expect(text).toBe("Title cannot be empty");
+    expect(text).toEqual("Title cannot be empty");
   });
 });
