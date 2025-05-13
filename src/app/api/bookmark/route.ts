@@ -17,7 +17,6 @@ export async function GET() {
       headers: { "Content-Type": "application/json" },
     });
   } catch (error: unknown) {
-    // console.error("Error fetching bookmarks:", error);
     return new Response((error as Error).message, {
       status: 500,
       headers: { "Content-Type": "text/plain" },
