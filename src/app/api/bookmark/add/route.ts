@@ -1,12 +1,10 @@
 "use server";
 
-import { Bookmark } from "@/app/types/Bookmark";
-
 import { getDb } from "../database";
 
 export async function POST(request: Request) {
   try {
-    const bookmark: Bookmark = await request.json(); // 型アサーションを追加
+    const bookmark = await request.json();
     if (!bookmark.url || bookmark.url.trim() === "") {
       return new Response("URL cannot be empty", { status: 400 });
     }
