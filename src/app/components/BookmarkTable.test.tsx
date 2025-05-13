@@ -1,13 +1,11 @@
 import "@testing-library/jest-dom";
 
-import React from "react";
-
 import { render, screen, within } from "@testing-library/react";
 
+import { Bookmark, createBookmarkList } from "../types/Bookmark";
 import { BookmarkTable } from "./BookmarkTable";
-import { Bookmark } from "./BookmarkManager";
 
-const mockBookmarks: Bookmark[] = [
+const mockBookmarks: Bookmark[] = createBookmarkList([
   {
     url: "https://github.com/kubotama/linkpage",
     title: "kubotama/linkpage",
@@ -24,7 +22,7 @@ const mockBookmarks: Bookmark[] = [
     url: "https://www.amazon.co.jp/",
     title: "Amazon",
   },
-];
+]);
 
 describe("BookmarkTableのテスト", () => {
   it("テーブルとヘッダーが正しく表示される", () => {
@@ -53,7 +51,6 @@ describe("BookmarkTableのテスト", () => {
       expect(link).toHaveAttribute("target", "_blank");
       expect(link).toHaveAttribute("rel", "noopener noreferrer");
       expect(link).toHaveTextContent(bookmark.title);
-      // expect(cells[1]).toHaveTextContent(bookmark.url);
     });
   });
 

@@ -1,16 +1,10 @@
 import React, { useEffect, useState } from "react";
 
 import Box from "@mui/material/Box";
-
 import Button from "@mui/material/Button";
 
-// import { useMessage } from "../contexts/MessageContext";
+import { Bookmark, createBookmark } from "../types/Bookmark";
 import { BookmarkTable } from "./BookmarkTable";
-
-export type Bookmark = {
-  url: string;
-  title: string;
-};
 
 export const BookmarkManager = ({}) => {
   const [bookmarks, setBookmarks] = useState<Bookmark[]>([]);
@@ -18,20 +12,16 @@ export const BookmarkManager = ({}) => {
   const [error, setError] = useState("");
   const [textUrl, setTextUrl] = useState("");
   const [textTitle, setTextTitle] = useState("");
-  // const { setMessage } = useMessage();
   const [bookmarkMessage, setBookmarkMessage] =
     useState("ブックマークをロード中...");
 
   useEffect(() => {
     if (loading) {
       setBookmarkMessage("ブックマークをロード中...");
-      // setMessage({ text: "Loading..." });
     } else if (error) {
       setBookmarkMessage(error);
-      // setMessage({ text: error });
     } else {
       setBookmarkMessage("");
-      // setMessage({ text: "" });
     }
   }, [loading, error]);
 
@@ -60,22 +50,28 @@ export const BookmarkManager = ({}) => {
   }, []);
 
   const handleAddBookmark = (textUrl: string, textTitle: string) => {
-    const newBookmark = { url: textUrl, title: textTitle };
-    const newBookmarks = [...bookmarks, newBookmark];
-    setBookmarks(newBookmarks);
+    const newBookmark = createBookmark({ url: textUrl, title: textTitle });
 
-    fetch("/api/bookmark", {
+    fetch("/api/bookmark/add", {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
       },
-      body: JSON.stringify(newBookmarks),
+      body: JSON.stringify(newBookmark),
     })
-      .then((response) => {
+      .then(async (response) => {
         if (!response.ok) {
           setError(
             `BookmarkManager: [${response.status}] ${response.statusText}`
           );
+          return;
+        }
+        try {
+          const data = await response.json();
+          const newBookmarks = [...bookmarks, createBookmark(data)];
+          setBookmarks(newBookmarks);
+        } catch (jsonError) {
+          setError(`BookmarkManager: ${jsonError}`);
         }
       })
       .catch((error) => {
@@ -88,7 +84,7 @@ export const BookmarkManager = ({}) => {
   };
 
   // titleClick fetches the title of the URL
-  const titleClick = async () => {
+  const titleClick = () => {
     setTextTitle("タイトルを取得中...");
     fetch("/api/title?url=" + textUrl)
       .then((response) => {
@@ -103,12 +99,10 @@ export const BookmarkManager = ({}) => {
           throw new Error(`Can't find title: `);
         } else {
           setTextTitle(text);
-          // setMessage({ text: "" });
         }
       })
       .catch((error) => {
         setTextTitle(error.message + textUrl);
-        // setMessage({ text: error.message + textUrl });
       });
   };
 
@@ -147,7 +141,6 @@ export const BookmarkManager = ({}) => {
       // 新しいウィンドウでURLを開く
       window.open(textUrl, "_blank", "noopener,noreferrer");
     } catch (error: unknown) {
-      // setMessage({ text: (error as Error).message });
       setBookmarkMessage((error as Error).message);
     }
   };

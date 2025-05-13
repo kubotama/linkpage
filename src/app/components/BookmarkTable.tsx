@@ -10,7 +10,7 @@ import {
   TableRow,
 } from "@mui/material";
 
-import { Bookmark } from "./BookmarkManager";
+import { Bookmark } from "../types/Bookmark";
 
 export const BookmarkTable: React.FC<{ bookmarks: Bookmark[] }> = ({
   bookmarks,

@@ -1,13 +1,18 @@
 import "@testing-library/jest-dom";
 
 import fetchMock from "jest-fetch-mock";
-import React, { act } from "react";
+import { act } from "react";
 
 import { fireEvent, render, screen, waitFor } from "@testing-library/react";
 
-import { Bookmark, BookmarkManager } from "../BookmarkManager";
+import {
+  Bookmark,
+  createBookmark,
+  createBookmarkList,
+} from "../../types/Bookmark";
+import { BookmarkManager } from "../BookmarkManager";
 
-const mockBookmarks: Bookmark[] = [
+const mockBookmarks: Bookmark[] = createBookmarkList([
   {
     url: "https://github.com/kubotama/linkpage",
     title: "kubotama/linkpage",
@@ -24,7 +29,7 @@ const mockBookmarks: Bookmark[] = [
     url: "https://www.amazon.co.jp/",
     title: "Amazon",
   },
-];
+]);
 
 describe("BookmarkManagerのURLとタイトルのテキストとボタンのテスト", () => {
   beforeEach(() => {
@@ -134,6 +139,16 @@ describe("BookmarkManagerのURLとタイトルのテキストとボタンのテ�
     fireEvent.change(urlInput, { target: { value: url } });
     fireEvent.click(titleButton);
 
+    fetchMock.mockResponseOnce(
+      JSON.stringify(
+        createBookmark({
+          url: "https://www.example.com",
+          title: "Example Site",
+          id: 1,
+        })
+      )
+    );
+
     fireEvent.change(titleInput, { target: { value: "" } });
     fireEvent.change(titleInput, { target: { value: title_edited } });
     fireEvent.click(updateButton);
@@ -142,7 +157,7 @@ describe("BookmarkManagerのURLとタイトルのテキストとボタンのテ�
       expect(titleInput).toHaveValue(title_edited);
       expect(fetchMock).toHaveBeenCalledTimes(2);
       expect(fetchMock.mock.calls[0][0]).toEqual("/api/title?url=" + url);
-      expect(fetchMock.mock.calls[1][0]).toEqual("/api/bookmark");
+      expect(fetchMock.mock.calls[1][0]).toEqual("/api/bookmark/add");
     });
   });
 

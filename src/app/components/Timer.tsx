@@ -160,11 +160,6 @@ export const Timer: React.FC = () => {
           </span>
         </Box>
       )}
-      {/* {status === "ロード中" && (
-        <span style={{ fontSize: "1.5rem", padding: "0.5rem" }}>
-          タイマーの時間をロード中...
-        </span>
-      )} */}
     </>
   );
 };

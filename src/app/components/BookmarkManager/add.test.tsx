@@ -1,15 +1,14 @@
 import "@testing-library/jest-dom";
 
 import fetchMock from "jest-fetch-mock";
-import React, { act } from "react";
+import { act } from "react";
 
 import { fireEvent, render, screen, waitFor } from "@testing-library/react";
 
-// import { MessageProvider } from "../../contexts/MessageContext";
-// import BmMessage from "../bmMessage";
-import { Bookmark, BookmarkManager } from "../BookmarkManager";
+import { Bookmark, createBookmarkList } from "../../types/Bookmark";
+import { BookmarkManager } from "../BookmarkManager";
 
-const mockBookmarks: Bookmark[] = [
+const mockBookmarks: Bookmark[] = createBookmarkList([
   {
     url: "https://github.com/kubotama/linkpage",
     title: "kubotama/linkpage",
@@ -26,7 +25,7 @@ const mockBookmarks: Bookmark[] = [
     url: "https://www.amazon.co.jp/",
     title: "Amazon",
   },
-];
+]);
 
 describe("更新されたブックマークが、APIにPOSTで送られる。", () => {
   beforeEach(() => {
@@ -47,52 +46,20 @@ describe("更新されたブックマークが、APIにPOSTで送られる。", 
       expect(screen.queryByText("Example Site")).toBeNull();
     });
 
-    const urlInput = screen.getByRole("textbox", { name: "url" });
-    const titleInput = screen.getByRole("textbox", { name: "title" });
-    const updateButton = screen.getByRole("button", { name: "追加" });
+    fetchMock.resetMocks();
 
-    await act(async () => {
-      fireEvent.change(urlInput, {
-        target: { value: "https://www.example.com" },
-      });
-      fireEvent.change(titleInput, { target: { value: "Example Site" } });
-      fireEvent.click(updateButton);
-    });
-
-    // Trigger bookmark update
-    await waitFor(() => {
-      expect(screen.getByText("Example Site")).toBeInTheDocument();
-    });
-  });
-
-  it("更新されたブックマークが、APIにPOSTで送られる", async () => {
-    // Initial GET request mock
-    fetchMock.mockResponseOnce(JSON.stringify(mockBookmarks));
-
-    await act(async () => {
-      render(<BookmarkManager />);
-    });
-
-    await waitFor(() => {
-      // Verify initial fetch was called
-      expect(fetchMock).toHaveBeenCalledWith("/api/bookmark");
-      expect(fetchMock.mock.calls.length).toEqual(1);
-      expect(screen.queryByText("Example Site")).toBeNull();
-    });
-
-    const urlInput = screen.getByRole("textbox", { name: "url" });
-    const titleInput = screen.getByRole("textbox", { name: "title" });
-    const updateButton = screen.getByRole("button", { name: "追加" });
-
-    const updatedBookmark = {
-      url: "https://www.example.com",
-      title: "Example Site",
-    };
+    fetchMock.mockResponseOnce(
+      JSON.stringify({
+        url: "https://www.example.com",
+        title: "Example Site",
+        id: 1,
+      })
+    );
 
     // POST request mock
-    fetchMock.mockResponse(JSON.stringify(updatedBookmark), {
-      status: 200,
-    });
+    const urlInput = screen.getByRole("textbox", { name: "url" });
+    const titleInput = screen.getByRole("textbox", { name: "title" });
+    const updateButton = screen.getByRole("button", { name: "追加" });
 
     await act(async () => {
       fireEvent.change(urlInput, {
@@ -104,14 +71,17 @@ describe("更新されたブックマークが、APIにPOSTで送られる。", 
 
     // Trigger bookmark update
     await waitFor(() => {
-      expect(fetchMock.mock.calls.length).toEqual(2);
-      expect(fetchMock).toHaveBeenCalledWith("/api/bookmark", {
+      expect(fetchMock).toHaveBeenCalledWith("/api/bookmark/add", {
+        body: JSON.stringify({
+          id: 0,
+          url: "https://www.example.com",
+          title: "Example Site",
+        }),
+        headers: { "Content-Type": "application/json" },
         method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify([...mockBookmarks, updatedBookmark]),
       });
+      expect(fetchMock.mock.calls.length).toEqual(1);
+      expect(screen.getByText("Example Site")).toBeInTheDocument();
     });
   });
 
@@ -183,6 +153,40 @@ describe("更新されたブックマークが、APIにPOSTで送られる。", 
       expect(fetchMock.mock.calls.length).toEqual(2);
       expect(screen.getByTestId("bookmark-message")).toHaveTextContent(
         "BookmarkManager: Error: API Error"
+      );
+    });
+  });
+
+  it("fetchの返り値が正しいjson形式でない場合にエラーを返す", async () => {
+    fetchMock.mockResponseOnce(JSON.stringify(mockBookmarks));
+
+    await act(async () => {
+      render(<BookmarkManager />);
+    });
+    await waitFor(() => {
+      // Verify initial fetch was called
+      expect(fetchMock).toHaveBeenCalledWith("/api/bookmark");
+      expect(fetchMock.mock.calls.length).toEqual(1);
+    });
+
+    const urlInput = screen.getByRole("textbox", { name: "url" });
+    const titleInput = screen.getByRole("textbox", { name: "title" });
+    const updateButton = screen.getByRole("button", { name: "追加" });
+
+    fetchMock.mockResponseOnce("");
+
+    await act(async () => {
+      fireEvent.change(urlInput, {
+        target: { value: "https://www.example.com" },
+      });
+      fireEvent.change(titleInput, { target: { value: "Example Site" } });
+      fireEvent.click(updateButton);
+    });
+
+    await waitFor(() => {
+      expect(fetchMock.mock.calls.length).toEqual(2);
+      expect(screen.getByTestId("bookmark-message")).toHaveTextContent(
+        "BookmarkManager: FetchError: invalid json response body at reason: Unexpected end of JSON input"
       );
     });
   });

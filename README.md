@@ -91,6 +91,14 @@ npm run start
 
 linkpage はリンクデータを SQLite のデータベースで管理します。基本的な構造は以下の通りです：
 
+```SQL
+    CREATE TABLE IF NOT EXISTS bookmarks (
+      id INTEGER PRIMARY KEY AUTOINCREMENT,
+      url TEXT NOT NULL UNIQUE,
+      title TEXT NOT NULL
+    )
+```
+
 ## ブックマーク機能
 
 ブックマークを登録するときの参考にするために、入力した URL のページの title タグを取得できます。取得したタイトルを編集してブックマークを登録できます。
