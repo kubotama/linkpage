@@ -13,7 +13,7 @@ export const getDb = () => {
         url TEXT NOT NULL UNIQUE,
         title TEXT NOT NULL
       )
-    }`);
+    `);
   }
   return db;
 };
