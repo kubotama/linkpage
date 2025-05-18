@@ -106,8 +106,6 @@ describe("ブックマーク追加APIのテスト (オンメモリDB)", () => {
     expect(text).toMatch(/Unexpected token|JSON.parse/i); // Check for JSON parsing error message
   });
 
-  // TODO: コメントアウトを削除する
-  // it("POST: 重複したURLのブックマーク追加時にデータベースエラーを返す", async () => {
   it("POST: 重複したURLのブックマーク追加時に409 Conflictを返す", async () => {
     const initialBookmark = {
       url: "https://example.com",
@@ -136,15 +134,13 @@ describe("ブックマーク追加APIのテスト (オンメモリDB)", () => {
 
     const response = await POST(createPostRequest(JSON.stringify(bookmark)));
 
-    // TODO: コメントアウトを削除する
-    // expect(response.status).toBe(500);
-    // const text = await response.text();
-    // expect(text).toMatch(/UNIQUE constraint failed: bookmarks.url/i);
     expect(response.status).toBe(409);
     const json = await response.json();
     expect(json).toEqual({
       error: "Bookmark with this URL already exists.",
       message: "指定されたURLのブックマークは既に登録されています。",
+      url: initialBookmark.url,
+      title: "Another Title For Same URL",
     });
   });
 

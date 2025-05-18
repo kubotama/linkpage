@@ -60,16 +60,21 @@ export const BookmarkManager = ({}) => {
       body: JSON.stringify(newBookmark),
     })
       .then(async (response) => {
-        if (!response.ok) {
-          setError(
-            `BookmarkManager: [${response.status}] ${response.statusText}`
-          );
-          return;
-        }
         try {
-          const data = await response.json();
-          const newBookmarks = [...bookmarks, createBookmark(data)];
-          setBookmarks(newBookmarks);
+          if (response.status === 409) {
+            const data = await response.json();
+            setError(
+              `BookmarkManager: [${response.status}] 既に登録されています。 ${data.url}`
+            );
+          } else if (!response.ok) {
+            setError(
+              `BookmarkManager: [${response.status}] ${response.statusText}`
+            );
+          } else {
+            const data = await response.json();
+            const newBookmarks = [...bookmarks, createBookmark(data)];
+            setBookmarks(newBookmarks);
+          }
         } catch (jsonError) {
           setError(`BookmarkManager: ${jsonError}`);
         }

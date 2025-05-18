@@ -190,4 +190,49 @@ describe("更新されたブックマークが、APIにPOSTで送られる。", 
       );
     });
   });
+
+  it("既に登録されているブックマークと同じURLを追加しようとした場合、エラーメッセージが表示される", async () => {
+    fetchMock.mockResponseOnce(JSON.stringify(mockBookmarks));
+
+    await act(async () => {
+      render(<BookmarkManager />);
+    });
+    await waitFor(() => {
+      // Verify initial fetch was called
+      expect(fetchMock).toHaveBeenCalledWith("/api/bookmark");
+      expect(fetchMock.mock.calls.length).toEqual(1);
+    });
+
+    const urlInput = screen.getByRole("textbox", { name: "url" });
+    const titleInput = screen.getByRole("textbox", { name: "title" });
+    const updateButton = screen.getByRole("button", { name: "追加" });
+
+    fetchMock.mockResponseOnce(
+      JSON.stringify({
+        error: "Bookmark with this URL already exists.",
+        message: "指定されたURLのブックマークは既に登録されています。",
+        url: "https://www.google.com/",
+        title: "Google",
+      }),
+      {
+        status: 409,
+        headers: { "Content-Type": "application/json" },
+      }
+    );
+
+    await act(async () => {
+      fireEvent.change(urlInput, {
+        target: { value: "https://www.google.com" },
+      });
+      fireEvent.change(titleInput, { target: { value: "Google" } });
+      fireEvent.click(updateButton);
+    });
+
+    await waitFor(() => {
+      expect(fetchMock.mock.calls.length).toEqual(2);
+      expect(screen.getByTestId("bookmark-message")).toHaveTextContent(
+        "BookmarkManager: [409] 既に登録されています。 https://www.google.com"
+      );
+    });
+  });
 });
