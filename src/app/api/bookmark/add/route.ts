@@ -1,5 +1,7 @@
 "use server";
 
+import { SqliteError } from "better-sqlite3";
+
 import { getDb } from "../database";
 
 export async function POST(request: Request) {
@@ -29,9 +31,31 @@ export async function POST(request: Request) {
       }
     );
   } catch (error: unknown) {
-    return new Response((error as Error).message, {
-      status: 500,
-      headers: { "Content-Type": "text/plain" },
-    });
+    // TODO: コメントアウトを削除する
+    // return new Response((error as Error).message, {
+    //   status: 500,
+    //   headers: { "Content-Type": "text/plain" },
+    // });
+    if (
+      error instanceof SqliteError &&
+      error.code === "SQLITE_CONSTRAINT_UNIQUE"
+    ) {
+      return new Response(
+        JSON.stringify({
+          error: "Bookmark with this URL already exists.",
+          message: "指定されたURLのブックマークは既に登録されています。",
+        }),
+        {
+          status: 409,
+          headers: { "Content-Type": "application/json" },
+        }
+      );
+    }
+    // その他のエラーは500として返す
+    console.error("Error adding bookmark:", error); // サーバーログに詳細なエラーを出力
+    return new Response(
+      (error as Error).message || "An unexpected error occurred.",
+      { status: 500, headers: { "Content-Type": "text/plain" } }
+    );
   }
 }

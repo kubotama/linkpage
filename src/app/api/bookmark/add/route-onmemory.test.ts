@@ -106,12 +106,24 @@ describe("ブックマーク追加APIのテスト (オンメモリDB)", () => {
     expect(text).toMatch(/Unexpected token|JSON.parse/i); // Check for JSON parsing error message
   });
 
-  it("POST: 重複したURLのブックマーク追加時にデータベースエラーを返す", async () => {
+  // TODO: コメントアウトを削除する
+  // it("POST: 重複したURLのブックマーク追加時にデータベースエラーを返す", async () => {
+  it("POST: 重複したURLのブックマーク追加時に409 Conflictを返す", async () => {
     const initialBookmark = {
       url: "https://example.com",
       title: "Example",
     };
     // Pre-populate the database with one entry
+    // Ensure the in-memory DB schema includes the UNIQUE constraint
+    inMemoryDbInstance.exec(`
+      DROP TABLE IF EXISTS bookmarks;
+      CREATE TABLE bookmarks (
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        url TEXT NOT NULL UNIQUE,
+        title TEXT NOT NULL
+      )
+    `);
+
     const insertStmt = inMemoryDbInstance.prepare(
       "INSERT INTO bookmarks (url, title) VALUES (?, ?)"
     );
@@ -124,9 +136,16 @@ describe("ブックマーク追加APIのテスト (オンメモリDB)", () => {
 
     const response = await POST(createPostRequest(JSON.stringify(bookmark)));
 
-    expect(response.status).toBe(500);
-    const text = await response.text();
-    expect(text).toMatch(/UNIQUE constraint failed: bookmarks.url/i);
+    // TODO: コメントアウトを削除する
+    // expect(response.status).toBe(500);
+    // const text = await response.text();
+    // expect(text).toMatch(/UNIQUE constraint failed: bookmarks.url/i);
+    expect(response.status).toBe(409);
+    const json = await response.json();
+    expect(json).toEqual({
+      error: "Bookmark with this URL already exists.",
+      message: "指定されたURLのブックマークは既に登録されています。",
+    });
   });
 
   it("POST: URLが空文字の場合にエラーを返す", async () => {
