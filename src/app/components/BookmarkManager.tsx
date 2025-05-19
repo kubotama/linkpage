@@ -156,6 +156,11 @@ export const BookmarkManager = ({}) => {
     setTextTitle("");
   };
 
+  // handleErrorClose clears the error message
+  const handleErrorClose = () => {
+    setError("");
+  };
+
   return (
     <>
       <div style={{ marginTop: "20px", marginBottom: "20px" }}>
@@ -251,12 +256,26 @@ export const BookmarkManager = ({}) => {
         </Box>
       </div>
       {bookmarkMessage !== "" && (
-        <span
-          data-testid="bookmark-message"
-          style={{ width: "8rem", height: "2rem", marginRight: "0.7rem" }}
-        >
-          {bookmarkMessage}
-        </span>
+        <Box display="flex" alignItems="center" sx={{ marginBottom: "10px" }}>
+          {error && ( // エラーメッセージがある場合のみ「閉じる」ボタンを表示
+            <Button
+              variant="contained"
+              onClick={handleErrorClose}
+              sx={{ height: "2rem" }}
+            >
+              閉じる
+            </Button>
+          )}
+          <span
+            data-testid="bookmark-message"
+            style={{
+              marginLeft: "0.7rem",
+              color: error ? "red" : "inherit", // エラーの場合は文字色を赤に
+            }}
+          >
+            {bookmarkMessage}
+          </span>
+        </Box>
       )}
       {bookmarkMessage == "" && <BookmarkTable bookmarks={bookmarks} />}
     </>
