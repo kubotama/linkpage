@@ -289,7 +289,7 @@ export const BookmarkManager = ({}) => {
           />
         </Box>
       </div>
-      <BookmarkTable bookmarks={bookmarks} />
+      {bookmarks.length > 0 && <BookmarkTable bookmarks={bookmarks} />}
     </>
   );
 };
