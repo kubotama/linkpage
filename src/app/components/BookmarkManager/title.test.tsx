@@ -216,4 +216,62 @@ describe("BookmarkManagerのURLとタイトルのテキストとボタンのテ�
       expect(messageText).toHaveTextContent("Can't find title: " + url);
     });
   });
+
+  it("タイトル取得APIでエラーが発生した場合、エラーメッセージと閉じるボタンが表示され、閉じるボタンで消去される", async () => {
+    const url = "https://error.example.com/";
+
+    // 1. Initial load of bookmarks
+    fetchMock.mockResponseOnce(JSON.stringify(mockBookmarks));
+    await act(async () => {
+      render(<BookmarkManager />);
+    });
+    // Wait for initial load to complete and loading message to disappear
+    await waitFor(() => {
+      expect(
+        screen.queryByText("ブックマークをロード中...")
+      ).not.toBeInTheDocument();
+      expect(
+        screen.getByRole("button", { name: "タイトル" })
+      ).toBeInTheDocument();
+    });
+
+    // Reset mocks for the next specific fetch operations
+    fetchMock.resetMocks();
+
+    const urlInput = screen.getByRole("textbox", { name: "url" });
+    const titleButton = screen.getByRole("button", { name: "タイトル" });
+
+    // 2. Mock the title fetch API to return an error
+    fetchMock.mockResponseOnce("Simulated Server Error", {
+      status: 500,
+      headers: { "Content-Type": "text/plain" },
+    });
+
+    // 3. User inputs URL and clicks "Get Title"
+    await act(async () => {
+      fireEvent.change(urlInput, { target: { value: url } });
+      fireEvent.click(titleButton);
+    });
+
+    // 4. Verify error message and close button appear
+    const errorSpan = await screen.findByTestId("bookmark-message");
+    expect(errorSpan).toHaveTextContent(`Can't find title: [500] ${url}`);
+    const closeButton = await screen.findByRole("button", { name: "閉じる" });
+    expect(closeButton).toBeInTheDocument();
+
+    // 5. Click the close button and verify message and button disappear
+    await act(async () => {
+      fireEvent.click(closeButton);
+    });
+    await waitFor(() => {
+      expect(
+        screen.queryByRole("button", { name: "閉じる" })
+      ).not.toBeInTheDocument();
+      expect(
+        screen.queryByText(`Can't find title: [500] ${url}`)
+      ).not.toBeInTheDocument();
+      // Check that the message span is still there but empty or hidden
+      expect(screen.queryAllByTestId("bookmark-message")).toHaveLength(0);
+    });
+  });
 });
