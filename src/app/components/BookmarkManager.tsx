@@ -194,69 +194,61 @@ export const BookmarkManager = ({}) => {
           )}
 
           {bookmarkMessage === "" && ( // エラーメッセージがない場合に「タイトル」ボタンを表示
-            <Button
-              variant="contained"
-              color="primary"
-              sx={{ width: "8rem", height: "2rem", marginRight: "0.7rem" }}
-              onClick={titleClick}
-            >
-              タイトル
-            </Button>
-          )}
+            <>
+              <Button
+                variant="contained"
+                color="primary"
+                sx={{ width: "8rem", height: "2rem", marginRight: "0.7rem" }}
+                onClick={titleClick}
+              >
+                タイトル
+              </Button>
 
-          {bookmarkMessage === "" && ( // エラーメッセージがない場合に「追加」ボタンを表示
-            <Button
-              variant="contained"
-              color="primary"
-              sx={{ width: "8rem", height: "2rem", marginRight: "0.7rem" }}
-              onClick={updateClick}
-            >
-              追加
-            </Button>
-          )}
+              <Button
+                variant="contained"
+                color="primary"
+                sx={{ width: "8rem", height: "2rem", marginRight: "0.7rem" }}
+                onClick={updateClick}
+              >
+                追加
+              </Button>
 
-          {bookmarkMessage === "" && ( // エラーメッセージがない場合に「クリア」ボタンを表示
-            <Button
-              variant="contained"
-              color="primary"
-              sx={{ width: "8rem", height: "2rem", marginRight: "0.7rem" }}
-              onClick={clearClick}
-            >
-              クリア
-            </Button>
-          )}
+              <Button
+                variant="contained"
+                color="primary"
+                sx={{ width: "8rem", height: "2rem", marginRight: "0.7rem" }}
+                onClick={clearClick}
+              >
+                クリア
+              </Button>
 
-          {bookmarkMessage === "" && ( // エラーメッセージがない場合に「パラメータ」ボタンを表示
-            <Button
-              variant="contained"
-              color="primary"
-              sx={{ width: "7rem", height: "2rem", marginRight: "0.7rem" }}
-              onClick={urlClick}
-            >
-              パラメータ
-            </Button>
-          )}
+              <Button
+                variant="contained"
+                color="primary"
+                sx={{ width: "7rem", height: "2rem", marginRight: "0.7rem" }}
+                onClick={urlClick}
+              >
+                パラメータ
+              </Button>
 
-          {bookmarkMessage === "" && ( // エラーメッセージがない場合に「←」ボタンを表示
-            <Button
-              variant="contained"
-              color="primary"
-              sx={{ width: "7rem", height: "2rem", marginRight: "0.7rem" }}
-              onClick={pathClick}
-            >
-              ←
-            </Button>
-          )}
+              <Button
+                variant="contained"
+                color="primary"
+                sx={{ width: "7rem", height: "2rem", marginRight: "0.7rem" }}
+                onClick={pathClick}
+              >
+                ←
+              </Button>
 
-          {bookmarkMessage === "" && ( // エラーメッセージがない場合に「開く」ボタンを表示
-            <Button
-              variant="contained"
-              color="primary"
-              sx={{ width: "7rem", height: "2rem", marginRight: "0.7rem" }}
-              onClick={openClick}
-            >
-              開く
-            </Button>
+              <Button
+                variant="contained"
+                color="primary"
+                sx={{ width: "7rem", height: "2rem", marginRight: "0.7rem" }}
+                onClick={openClick}
+              >
+                開く
+              </Button>
+            </>
           )}
         </Box>
 
