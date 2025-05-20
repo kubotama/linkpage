@@ -108,7 +108,7 @@ export const BookmarkManager = ({}) => {
         }
       })
       .catch((error) => {
-        setTextTitle(error.message + textUrl);
+        setError(error.message + textUrl);
       });
   };
 

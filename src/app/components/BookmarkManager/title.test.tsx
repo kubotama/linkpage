@@ -93,8 +93,6 @@ describe("BookmarkManagerのURLとタイトルのテキストとボタンのテ�
     });
 
     const urlInput = screen.getByRole("textbox", { name: "url" });
-    const titleInput = screen.getByRole("textbox", { name: "title" });
-
     const titleButton = screen.getByRole("button", { name: "タイトル" });
 
     await act(async () => {
@@ -106,7 +104,8 @@ describe("BookmarkManagerのURLとタイトルのテキストとボタンのテ�
       expect(fetchMock).toHaveBeenCalledTimes(1);
       expect(fetchMock.mock.calls[0][0]).toEqual("/api/title?url=" + url);
 
-      expect(titleInput).toHaveValue("Can't find title: [500] " + url);
+      const messageText = screen.getByTestId("bookmark-message");
+      expect(messageText).toHaveTextContent("Can't find title: [500] " + url);
     });
   });
 
@@ -180,7 +179,6 @@ describe("BookmarkManagerのURLとタイトルのテキストとボタンのテ�
     fetchMock.mockResponseOnce("");
 
     const urlInput = screen.getByRole("textbox", { name: "url" });
-    const titleInput = screen.getByRole("textbox", { name: "title" });
 
     const titleButton = screen.getByRole("button", { name: "タイトル" });
 
@@ -193,7 +191,8 @@ describe("BookmarkManagerのURLとタイトルのテキストとボタンのテ�
       expect(fetchMock).toHaveBeenCalledTimes(1);
       expect(fetchMock.mock.calls[0][0]).toEqual("/api/title?url=" + url);
 
-      expect(titleInput).toHaveValue("Can't find title: " + url);
+      const messageText = screen.getByTestId("bookmark-message");
+      expect(messageText).toHaveTextContent("Can't find title: " + url);
     });
   });
 });
