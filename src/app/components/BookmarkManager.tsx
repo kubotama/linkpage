@@ -90,7 +90,7 @@ export const BookmarkManager = ({}) => {
 
   // titleClick fetches the title of the URL
   const titleClick = () => {
-    setTextTitle("タイトルを取得中...");
+    setBookmarkMessage("タイトルを取得中...");
     fetch("/api/title?url=" + textUrl)
       .then((response) => {
         if (!response.ok) {
@@ -104,6 +104,7 @@ export const BookmarkManager = ({}) => {
           throw new Error(`Can't find title: `);
         } else {
           setTextTitle(text);
+          setBookmarkMessage("");
         }
       })
       .catch((error) => {
@@ -165,59 +166,100 @@ export const BookmarkManager = ({}) => {
     <>
       <div style={{ marginTop: "20px", marginBottom: "20px" }}>
         <Box display="flex" alignItems="center" sx={{ marginBottom: "10px" }}>
-          <Button
-            variant="contained"
-            color="primary"
-            sx={{ width: "8rem", height: "2rem", marginRight: "0.7rem" }}
-            onClick={titleClick}
-          >
-            タイトル
-          </Button>
+          {bookmarkMessage !== "" && (
+            <Box
+              display="flex"
+              alignItems="center"
+              sx={{ marginBottom: "10px" }}
+            >
+              {error && ( // エラーメッセージがある場合のみ「閉じる」ボタンを表示
+                <Button
+                  variant="contained"
+                  onClick={handleErrorClose}
+                  sx={{ height: "2rem" }}
+                >
+                  閉じる
+                </Button>
+              )}
+              <span
+                data-testid="bookmark-message"
+                style={{
+                  marginLeft: "0.7rem",
+                  color: error ? "red" : "inherit", // エラーの場合は文字色を赤に
+                }}
+              >
+                {bookmarkMessage}
+              </span>
+            </Box>
+          )}
 
-          <Button
-            variant="contained"
-            color="primary"
-            sx={{ width: "8rem", height: "2rem", marginRight: "0.7rem" }}
-            onClick={updateClick}
-          >
-            追加
-          </Button>
+          {bookmarkMessage === "" && ( // エラーメッセージがない場合に「タイトル」ボタンを表示
+            <Button
+              variant="contained"
+              color="primary"
+              sx={{ width: "8rem", height: "2rem", marginRight: "0.7rem" }}
+              onClick={titleClick}
+            >
+              タイトル
+            </Button>
+          )}
 
-          <Button
-            variant="contained"
-            color="primary"
-            sx={{ width: "8rem", height: "2rem", marginRight: "0.7rem" }}
-            onClick={clearClick}
-          >
-            クリア
-          </Button>
+          {bookmarkMessage === "" && ( // エラーメッセージがない場合に「追加」ボタンを表示
+            <Button
+              variant="contained"
+              color="primary"
+              sx={{ width: "8rem", height: "2rem", marginRight: "0.7rem" }}
+              onClick={updateClick}
+            >
+              追加
+            </Button>
+          )}
 
-          <Button
-            variant="contained"
-            color="primary"
-            sx={{ width: "7rem", height: "2rem", marginRight: "0.7rem" }}
-            onClick={urlClick}
-          >
-            パラメータ
-          </Button>
+          {bookmarkMessage === "" && ( // エラーメッセージがない場合に「クリア」ボタンを表示
+            <Button
+              variant="contained"
+              color="primary"
+              sx={{ width: "8rem", height: "2rem", marginRight: "0.7rem" }}
+              onClick={clearClick}
+            >
+              クリア
+            </Button>
+          )}
 
-          <Button
-            variant="contained"
-            color="primary"
-            sx={{ width: "7rem", height: "2rem", marginRight: "0.7rem" }}
-            onClick={pathClick}
-          >
-            ←
-          </Button>
-          <Button
-            variant="contained"
-            color="primary"
-            sx={{ width: "7rem", height: "2rem", marginRight: "0.7rem" }}
-            onClick={openClick}
-          >
-            開く
-          </Button>
+          {bookmarkMessage === "" && ( // エラーメッセージがない場合に「パラメータ」ボタンを表示
+            <Button
+              variant="contained"
+              color="primary"
+              sx={{ width: "7rem", height: "2rem", marginRight: "0.7rem" }}
+              onClick={urlClick}
+            >
+              パラメータ
+            </Button>
+          )}
+
+          {bookmarkMessage === "" && ( // エラーメッセージがない場合に「←」ボタンを表示
+            <Button
+              variant="contained"
+              color="primary"
+              sx={{ width: "7rem", height: "2rem", marginRight: "0.7rem" }}
+              onClick={pathClick}
+            >
+              ←
+            </Button>
+          )}
+
+          {bookmarkMessage === "" && ( // エラーメッセージがない場合に「開く」ボタンを表示
+            <Button
+              variant="contained"
+              color="primary"
+              sx={{ width: "7rem", height: "2rem", marginRight: "0.7rem" }}
+              onClick={openClick}
+            >
+              開く
+            </Button>
+          )}
         </Box>
+
         <Box display="flex" alignItems="center" sx={{ marginBottom: "10px" }}>
           <input
             style={{
@@ -255,29 +297,7 @@ export const BookmarkManager = ({}) => {
           />
         </Box>
       </div>
-      {bookmarkMessage !== "" && (
-        <Box display="flex" alignItems="center" sx={{ marginBottom: "10px" }}>
-          {error && ( // エラーメッセージがある場合のみ「閉じる」ボタンを表示
-            <Button
-              variant="contained"
-              onClick={handleErrorClose}
-              sx={{ height: "2rem" }}
-            >
-              閉じる
-            </Button>
-          )}
-          <span
-            data-testid="bookmark-message"
-            style={{
-              marginLeft: "0.7rem",
-              color: error ? "red" : "inherit", // エラーの場合は文字色を赤に
-            }}
-          >
-            {bookmarkMessage}
-          </span>
-        </Box>
-      )}
-      {bookmarkMessage == "" && <BookmarkTable bookmarks={bookmarks} />}
+      <BookmarkTable bookmarks={bookmarks} />
     </>
   );
 };
