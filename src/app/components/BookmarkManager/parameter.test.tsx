@@ -78,10 +78,11 @@ describe("「パラメータ」ボタン: URLから無駄な文字列を削除�
     it("https://mail.google.com/mail/u/0/", async () => {
       const url = "https://mail.google.com/mail/u/0/";
 
+      fetchMock.mockResponseOnce(JSON.stringify(mockBookmarks));
+
       await act(async () => {
         render(<BookmarkManager />);
       });
-
       const urlInput = screen.getByRole("textbox", { name: "url" });
       const urlButton = screen.getByRole("button", { name: "パラメータ" });
 
