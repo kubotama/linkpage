@@ -2,7 +2,11 @@ import "@testing-library/jest-dom";
 
 import { render, screen, within } from "@testing-library/react";
 
-import { Bookmark, createBookmarkList } from "../types/Bookmark";
+import {
+  Bookmark,
+  createBookmarkList,
+  SelectedBookmark,
+} from "../types/Bookmark";
 import { BookmarkTable } from "./BookmarkTable";
 
 const mockBookmarks: Bookmark[] = createBookmarkList([
@@ -26,7 +30,15 @@ const mockBookmarks: Bookmark[] = createBookmarkList([
 
 describe("BookmarkTableのテスト", () => {
   it("テーブルとヘッダーが正しく表示される", () => {
-    render(<BookmarkTable bookmarks={mockBookmarks} />);
+    const mockOnSelectBookmark: React.Dispatch<
+      React.SetStateAction<SelectedBookmark>
+    > = jest.fn();
+    render(
+      <BookmarkTable
+        bookmarks={mockBookmarks}
+        onSelectBookmark={mockOnSelectBookmark}
+      />
+    );
 
     const table = screen.getByRole("table");
     expect(table).toBeInTheDocument();
@@ -34,10 +46,20 @@ describe("BookmarkTableのテスト", () => {
     const headers = within(table).getAllByRole("columnheader");
     expect(headers).toHaveLength(1);
     expect(headers[0]).toHaveTextContent("Title");
+
+    expect(mockOnSelectBookmark).not.toHaveBeenCalled();
   });
 
   it("ブックマークデータが正しく表示される", () => {
-    render(<BookmarkTable bookmarks={mockBookmarks} />);
+    const mockOnSelectBookmark: React.Dispatch<
+      React.SetStateAction<SelectedBookmark>
+    > = jest.fn();
+    render(
+      <BookmarkTable
+        bookmarks={mockBookmarks}
+        onSelectBookmark={mockOnSelectBookmark}
+      />
+    );
 
     const rows = screen.getAllByRole("row");
     // ヘッダー行を含むため、mockBookmarks.length + 1
@@ -51,16 +73,25 @@ describe("BookmarkTableのテスト", () => {
       expect(link).toHaveAttribute("target", "_blank");
       expect(link).toHaveAttribute("rel", "noopener noreferrer");
       expect(link).toHaveTextContent(bookmark.title);
+
+      expect(mockOnSelectBookmark).not.toHaveBeenCalled();
     });
   });
 
   it("空のブックマークリストでテーブルが表示される", () => {
-    render(<BookmarkTable bookmarks={[]} />);
+    const mockOnSelectBookmark: React.Dispatch<
+      React.SetStateAction<SelectedBookmark>
+    > = jest.fn();
+    render(
+      <BookmarkTable bookmarks={[]} onSelectBookmark={mockOnSelectBookmark} />
+    );
 
     const table = screen.getByRole("table");
     expect(table).toBeInTheDocument();
 
     const rows = screen.getAllByRole("row");
     expect(rows).toHaveLength(1); // ヘッダー行のみ
+
+    expect(mockOnSelectBookmark).not.toHaveBeenCalled();
   });
 });

@@ -10,11 +10,14 @@ import {
   TableRow,
 } from "@mui/material";
 
-import { Bookmark } from "../types/Bookmark";
+import { Bookmark, SelectedBookmark } from "../types/Bookmark";
 
-export const BookmarkTable: React.FC<{ bookmarks: Bookmark[] }> = ({
-  bookmarks,
-}) => {
+export const BookmarkTable: React.FC<{
+  bookmarks: Bookmark[];
+  onSelectBookmark: (bookmark: SelectedBookmark) => void;
+}> = ({ bookmarks, onSelectBookmark }) => {
+  // const [, selectBookmark] = useSelectBookmark();
+
   return (
     <TableContainer component={Paper}>
       <Table aria-label="bookmarks table">
@@ -25,7 +28,7 @@ export const BookmarkTable: React.FC<{ bookmarks: Bookmark[] }> = ({
         </TableHead>
         <TableBody>
           {bookmarks.map((bookmark, index) => (
-            <TableRow key={index}>
+            <TableRow key={index} onClick={() => onSelectBookmark(bookmark)}>
               <TableCell size="small">
                 <a
                   href={bookmark.url}

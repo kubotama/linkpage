@@ -3,10 +3,12 @@ import React, { useEffect, useState } from "react";
 import Box from "@mui/material/Box";
 import Button from "@mui/material/Button";
 
-import { Bookmark, createBookmark } from "../types/Bookmark";
+import { Bookmark, createBookmark, SelectedBookmark } from "../types/Bookmark";
 import { BookmarkTable } from "./BookmarkTable";
 
 export const BookmarkManager = ({}) => {
+  const [selectedBookmark, setSelectedBookmark] =
+    useState<SelectedBookmark>(null);
   const [bookmarks, setBookmarks] = useState<Bookmark[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
@@ -14,6 +16,16 @@ export const BookmarkManager = ({}) => {
   const [textTitle, setTextTitle] = useState("");
   const [bookmarkMessage, setBookmarkMessage] =
     useState("ブックマークをロード中...");
+
+  useEffect(() => {
+    if (selectedBookmark === null) {
+      setTextUrl("");
+      setTextTitle("");
+    } else {
+      setTextUrl(selectedBookmark.url);
+      setTextTitle(selectedBookmark.title);
+    }
+  }, [selectedBookmark]);
 
   useEffect(() => {
     if (loading) {
@@ -195,6 +207,16 @@ export const BookmarkManager = ({}) => {
 
           {bookmarkMessage === "" && ( // エラーメッセージがない場合に「タイトル」ボタンを表示
             <>
+              {selectedBookmark !== null && (
+                <Button
+                  variant="contained"
+                  color="primary"
+                  sx={{ width: "8rem", height: "2rem", marginRight: "0.7rem" }}
+                  onClick={() => setSelectedBookmark(null)}
+                >
+                  選択解除
+                </Button>
+              )}
               <Button
                 variant="contained"
                 color="primary"
@@ -289,7 +311,12 @@ export const BookmarkManager = ({}) => {
           />
         </Box>
       </div>
-      {bookmarks.length > 0 && <BookmarkTable bookmarks={bookmarks} />}
+      {bookmarks.length > 0 && (
+        <BookmarkTable
+          bookmarks={bookmarks}
+          onSelectBookmark={setSelectedBookmark}
+        />
+      )}
     </>
   );
 };
