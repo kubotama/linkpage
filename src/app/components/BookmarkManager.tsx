@@ -50,7 +50,6 @@ export const BookmarkManager = ({}) => {
       })
       .then((data) => {
         setBookmarks(data);
-        // setBookmarkMessage("");
         setError("");
       })
       .catch((error) => {
