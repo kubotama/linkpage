@@ -106,7 +106,6 @@ describe("ブックマークの選択", () => {
     });
   });
 
-  // TODO: 選択解除のボタンをクリックすると、URLとタイトルのテキストボックスがクリアされる。選択解除のボタンが表示されていない。
   it("選択解除のボタンをクリックすると、URLとタイトルのテキストボックスがクリアされる。選択解除のボタンが表示されていない。", async () => {
     // fetchMockはbeforeEachでmockBookmarksを返すように設定されています
 
@@ -126,10 +125,6 @@ describe("ブックマークの選択", () => {
 
     const urlInput = screen.getByRole("textbox", { name: "url" });
     const titleInput = screen.getByRole("textbox", { name: "title" });
-
-    // 入力フィールドの初期状態を確認（空であるべき）
-    // expect(urlInput).toHaveValue("");
-    // expect(titleInput).toHaveValue("");
 
     // クリックするブックマークを選択（例：2番目のブックマーク）
     const bookmarkToSelect = mockBookmarks[1]; // Google
@@ -152,14 +147,17 @@ describe("ブックマークの選択", () => {
       fireEvent.click(tableRow);
     });
 
-    // BookmarkManager内のuseEffectによって入力フィールドが更新されるのを待つ
-    // await waitFor(() => {
-    // expect(urlInput).toHaveValue(bookmarkToSelect.url);
-    // expect(titleInput).toHaveValue(bookmarkToSelect.title);
+    // BookmarkManager内のuseEffectによって入力フィールドが更新されるのを待つ;
+    await waitFor(() => {
+      expect(urlInput).toHaveValue(bookmarkToSelect.url);
+      expect(titleInput).toHaveValue(bookmarkToSelect.title);
+
+      expect(
+        screen.getByRole("button", { name: "選択解除" })
+      ).toBeInTheDocument();
+    });
 
     const unselectButton = screen.getByRole("button", { name: "選択解除" });
-    // expect(unselectButton).toBeInTheDocument();
-    // });
     await act(async () => {
       fireEvent.click(unselectButton);
     });
