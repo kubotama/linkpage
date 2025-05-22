@@ -12,9 +12,14 @@ import {
 
 import { Bookmark } from "../types/Bookmark";
 
-export const BookmarkTable: React.FC<{ bookmarks: Bookmark[] }> = ({
-  bookmarks,
-}) => {
+// import { useSelectBookmark } from "./BookmarkManager";
+
+export const BookmarkTable: React.FC<{
+  bookmarks: Bookmark[];
+  onSelectBookmark: (bookmark: Bookmark | null) => void;
+}> = ({ bookmarks, onSelectBookmark }) => {
+  // const [, selectBookmark] = useSelectBookmark();
+
   return (
     <TableContainer component={Paper}>
       <Table aria-label="bookmarks table">
@@ -25,7 +30,7 @@ export const BookmarkTable: React.FC<{ bookmarks: Bookmark[] }> = ({
         </TableHead>
         <TableBody>
           {bookmarks.map((bookmark, index) => (
-            <TableRow key={index}>
+            <TableRow key={index} onClick={() => onSelectBookmark(bookmark)}>
               <TableCell size="small">
                 <a
                   href={bookmark.url}

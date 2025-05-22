@@ -7,6 +7,9 @@ import { Bookmark, createBookmark } from "../types/Bookmark";
 import { BookmarkTable } from "./BookmarkTable";
 
 export const BookmarkManager = ({}) => {
+  const [selectedBookmark, setSelectedBookmark] = useState<Bookmark | null>(
+    null
+  );
   const [bookmarks, setBookmarks] = useState<Bookmark[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
@@ -14,6 +17,16 @@ export const BookmarkManager = ({}) => {
   const [textTitle, setTextTitle] = useState("");
   const [bookmarkMessage, setBookmarkMessage] =
     useState("ブックマークをロード中...");
+
+  useEffect(() => {
+    if (selectedBookmark === null) {
+      setTextUrl("");
+      setTextTitle("");
+    } else {
+      setTextUrl(selectedBookmark.url);
+      setTextTitle(selectedBookmark.title);
+    }
+  }, [selectedBookmark]);
 
   useEffect(() => {
     if (loading) {
@@ -195,6 +208,15 @@ export const BookmarkManager = ({}) => {
 
           {bookmarkMessage === "" && ( // エラーメッセージがない場合に「タイトル」ボタンを表示
             <>
+              {selectedBookmark !== null && (
+                <Button
+                  variant="contained"
+                  color="primary"
+                  sx={{ width: "8rem", height: "2rem", marginRight: "0.7rem" }}
+                >
+                  選択解除
+                </Button>
+              )}
               <Button
                 variant="contained"
                 color="primary"
@@ -289,7 +311,12 @@ export const BookmarkManager = ({}) => {
           />
         </Box>
       </div>
-      {bookmarks.length > 0 && <BookmarkTable bookmarks={bookmarks} />}
+      {bookmarks.length > 0 && (
+        <BookmarkTable
+          bookmarks={bookmarks}
+          onSelectBookmark={setSelectedBookmark}
+        />
+      )}
     </>
   );
 };
