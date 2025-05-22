@@ -10,13 +10,11 @@ import {
   TableRow,
 } from "@mui/material";
 
-import { Bookmark } from "../types/Bookmark";
-
-// import { useSelectBookmark } from "./BookmarkManager";
+import { Bookmark, SelectedBookmark } from "../types/Bookmark";
 
 export const BookmarkTable: React.FC<{
   bookmarks: Bookmark[];
-  onSelectBookmark: (bookmark: Bookmark | null) => void;
+  onSelectBookmark: (bookmark: SelectedBookmark) => void;
 }> = ({ bookmarks, onSelectBookmark }) => {
   // const [, selectBookmark] = useSelectBookmark();
 

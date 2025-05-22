@@ -3,13 +3,12 @@ import React, { useEffect, useState } from "react";
 import Box from "@mui/material/Box";
 import Button from "@mui/material/Button";
 
-import { Bookmark, createBookmark } from "../types/Bookmark";
+import { Bookmark, createBookmark, SelectedBookmark } from "../types/Bookmark";
 import { BookmarkTable } from "./BookmarkTable";
 
 export const BookmarkManager = ({}) => {
-  const [selectedBookmark, setSelectedBookmark] = useState<Bookmark | null>(
-    null
-  );
+  const [selectedBookmark, setSelectedBookmark] =
+    useState<SelectedBookmark>(null);
   const [bookmarks, setBookmarks] = useState<Bookmark[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");

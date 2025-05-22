@@ -15,3 +15,5 @@ export function createBookmark({
 export function createBookmarkList(bookmarkList: Partial<Bookmark>[]) {
   return bookmarkList.map(createBookmark);
 }
+
+export type SelectedBookmark = Bookmark | null;
