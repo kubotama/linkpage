@@ -213,6 +213,7 @@ export const BookmarkManager = ({}) => {
                   variant="contained"
                   color="primary"
                   sx={{ width: "8rem", height: "2rem", marginRight: "0.7rem" }}
+                  onClick={() => setSelectedBookmark(null)}
                 >
                   選択解除
                 </Button>
