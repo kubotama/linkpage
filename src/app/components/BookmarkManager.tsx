@@ -10,7 +10,7 @@ export const BookmarkManager = ({}) => {
   const [selectedBookmark, setSelectedBookmark] =
     useState<SelectedBookmark>(null);
   const [bookmarks, setBookmarks] = useState<Bookmark[]>([]);
-  const [loading, setLoading] = useState(true);
+  const [loading, setLoading] = useState("");
   const [error, setError] = useState("");
   const [textUrl, setTextUrl] = useState("");
   const [textTitle, setTextTitle] = useState("");
@@ -28,17 +28,17 @@ export const BookmarkManager = ({}) => {
   }, [selectedBookmark]);
 
   useEffect(() => {
-    if (loading) {
-      setBookmarkMessage("ブックマークをロード中...");
-    } else if (error) {
+    if (error) {
       setBookmarkMessage(error);
+    } else if (loading) {
+      setBookmarkMessage(loading);
     } else {
       setBookmarkMessage("");
     }
   }, [loading, error]);
 
   useEffect(() => {
-    setBookmarkMessage("ブックマークをロード中...");
+    setLoading("ブックマークをロード中...");
     fetch("/api/bookmark")
       .then((response) => {
         if (!response.ok) {
@@ -50,19 +50,20 @@ export const BookmarkManager = ({}) => {
       })
       .then((data) => {
         setBookmarks(data);
-        setBookmarkMessage("");
+        setError("");
       })
       .catch((error) => {
         const errorMessage = (error as Error).message;
         setError(errorMessage);
       })
       .finally(() => {
-        setLoading(false);
+        setLoading("");
       });
   }, []);
 
   const handleAddBookmark = (textUrl: string, textTitle: string) => {
     const newBookmark = createBookmark({ url: textUrl, title: textTitle });
+    setLoading("ブックマークの追加処理中...");
 
     fetch("/api/bookmark/add", {
       method: "POST",
@@ -86,6 +87,8 @@ export const BookmarkManager = ({}) => {
             const data = await response.json();
             const newBookmarks = [...bookmarks, createBookmark(data)];
             setBookmarks(newBookmarks);
+            setSelectedBookmark(null);
+            setError("");
           }
         } catch (jsonError) {
           setError(`BookmarkManager: ${jsonError}`);
@@ -93,6 +96,9 @@ export const BookmarkManager = ({}) => {
       })
       .catch((error) => {
         setError(`BookmarkManager: ${error}`);
+      })
+      .finally(() => {
+        setLoading("");
       });
   };
 
