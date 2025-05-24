@@ -85,6 +85,10 @@ export const BookmarkManager = ({}) => {
           setError(
             `BookmarkManager: [${response.status}] 指定したIDのブックマークが見つかりませんでした。 ${selectedBookmark.url}`
           );
+        } else if (response.status === 400) {
+          setError(
+            `BookmarkManager: [${response.status}] リクエストにIDがありませんでした。 ${selectedBookmark.url}`
+          );
         } else {
           throw new Error(
             `Failed to delete: [${response.status}] ${response.statusText}`
