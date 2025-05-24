@@ -61,6 +61,40 @@ export const BookmarkManager = ({}) => {
       });
   }, []);
 
+  const deleteClick = () => {
+    if (selectedBookmark === null) {
+      return;
+    }
+    setLoading("ブックマークの削除処理中...");
+    fetch("/api/bookmark/delete", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(selectedBookmark),
+    })
+      .then((response) => {
+        if (!response.ok) {
+          throw new Error(
+            `Failed to delete: [${response.status}] ${response.statusText}`
+          );
+        } else if (response.status === 204) {
+          const newBookmarks = bookmarks.filter(
+            (bookmark) => bookmark.url !== selectedBookmark.url
+          );
+          setBookmarks(newBookmarks);
+          setSelectedBookmark(null);
+          setError("");
+        }
+      })
+      .catch((error) => {
+        setError(`BookmarkManager: ${error}`);
+      })
+      .finally(() => {
+        setLoading("");
+      });
+  };
+
   const handleAddBookmark = (textUrl: string, textTitle: string) => {
     const newBookmark = createBookmark({ url: textUrl, title: textTitle });
     setLoading("ブックマークの追加処理中...");
@@ -191,13 +225,15 @@ export const BookmarkManager = ({}) => {
               sx={{ marginBottom: "10px" }}
             >
               {error && ( // エラーメッセージがある場合のみ「閉じる」ボタンを表示
-                <Button
-                  variant="contained"
-                  onClick={handleErrorClose}
-                  sx={{ height: "2rem" }}
-                >
-                  閉じる
-                </Button>
+                <>
+                  <Button
+                    variant="contained"
+                    onClick={handleErrorClose}
+                    sx={{ height: "2rem" }}
+                  >
+                    閉じる
+                  </Button>
+                </>
               )}
               <span
                 data-testid="bookmark-message"
@@ -235,6 +271,7 @@ export const BookmarkManager = ({}) => {
                       height: "2rem",
                       marginRight: "0.7rem",
                     }}
+                    onClick={deleteClick}
                   >
                     削除
                   </Button>

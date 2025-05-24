@@ -86,7 +86,7 @@ describe("ブックマークのAPIのテスト", () => {
     const json = await response.json();
     expect(json).toEqual(bookmarksFromJson);
     expect(mockPrepare).toHaveBeenCalledWith(
-      "SELECT url, title FROM bookmarks"
+      "SELECT id, url, title FROM bookmarks"
     );
     expect(mockAll).toHaveBeenCalledTimes(2);
     expect(mockClose).not.toHaveBeenCalled(); // Should not be called

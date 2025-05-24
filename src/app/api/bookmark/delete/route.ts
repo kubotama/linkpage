@@ -7,15 +7,21 @@ export async function POST(request: Request) {
     const bookmark = await request.json();
 
     if (bookmark.id === undefined) {
-      return new Response("ID is required", { status: 400 });
+      return new Response("ID is required", {
+        status: 400,
+        headers: { "Content-Type": "text/plain" },
+      });
     }
     const db = getDb();
     const prepare = db.prepare("DELETE FROM bookmarks WHERE id = ?");
     const info = prepare.run(bookmark.id);
     if (info.changes === 0) {
-      return new Response("Bookmark not found", { status: 404 });
+      return new Response("Bookmark not found", {
+        status: 404,
+        headers: { "Content-Type": "text/plain" },
+      });
     }
-    return new Response("", {
+    return new Response(null, {
       status: 204,
     });
   } catch (error: unknown) {
