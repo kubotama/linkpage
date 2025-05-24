@@ -167,7 +167,67 @@ describe("削除ボタン", () => {
     });
   });
 
-  it("存在しないブックマークの削除しようとした場合のエラーハンドリング(404)", () => {});
+  it("存在しないブックマークの削除しようとした場合のエラーハンドリング(404)", async () => {
+    // fetchMockはbeforeEachでmockBookmarksを返すように設定されています
+
+    await act(async () => {
+      render(<BookmarkManager />);
+    });
+
+    // 初期データがロードされ、UIが安定するのを待つ
+    // テーブル内に既知のブックマークのタイトルが表示されることを確認
+    // また、アクションボタンが表示されていることで、メインUIの準備ができていることを確認
+    await waitFor(() => {
+      expect(screen.getByText(mockBookmarks[0].title)).toBeInTheDocument();
+      expect(
+        screen.getByRole("button", { name: "タイトル" })
+      ).toBeInTheDocument();
+    });
+
+    // クリックするブックマークを選択（例：2番目のブックマーク）
+    const bookmarkToSelect = mockBookmarks[1]; // Google
+
+    // 選択したブックマークに対応するテーブル行を見つける
+    // 行にはブックマークのタイトルを持つリンクが含まれている
+    const bookmarkLinkInRow = screen.getByRole("link", {
+      name: bookmarkToSelect.title,
+    });
+    const tableRow = bookmarkLinkInRow.closest("tr");
+
+    if (!tableRow) {
+      throw new Error(
+        `ブックマーク "${bookmarkToSelect.title}" のテーブル行が見つかりませんでした。`
+      );
+    }
+
+    fetchMock.resetMocks();
+    fetchMock.mockResponseOnce(JSON.stringify(bookmarkToSelect), {
+      status: 404,
+      headers: { "Content-Type": "application/json" },
+    });
+
+    // テーブル行のクリックをシミュレート
+    await act(async () => {
+      fireEvent.click(tableRow);
+    });
+
+    const deleteButton = screen.getByRole("button", { name: "削除" });
+
+    await act(async () => {
+      fireEvent.click(deleteButton);
+    });
+
+    await waitFor(() => {
+      // 画面の更新の確認
+      expect(screen.getByText(bookmarkToSelect.title)).toBeInTheDocument();
+      expect(
+        screen.queryByRole("button", { name: "削除" })
+      ).not.toBeInTheDocument();
+      expect(screen.getByTestId("bookmark-message")).toHaveTextContent(
+        "指定したIDのブックマークが見つかりませんでした。"
+      );
+    });
+  });
 
   it("不正なJSONデータの場合のエラーハンドリング(500)", () => {});
 

@@ -74,17 +74,21 @@ export const BookmarkManager = ({}) => {
       body: JSON.stringify(selectedBookmark),
     })
       .then((response) => {
-        if (!response.ok) {
-          throw new Error(
-            `Failed to delete: [${response.status}] ${response.statusText}`
-          );
-        } else if (response.status === 204) {
+        if (response.status === 204) {
           const newBookmarks = bookmarks.filter(
             (bookmark) => bookmark.url !== selectedBookmark.url
           );
           setBookmarks(newBookmarks);
           setSelectedBookmark(null);
           setError("");
+        } else if (response.status === 404) {
+          setError(
+            `BookmarkManager: [${response.status}] 指定したIDのブックマークが見つかりませんでした。 ${selectedBookmark.url}`
+          );
+        } else {
+          throw new Error(
+            `Failed to delete: [${response.status}] ${response.statusText}`
+          );
         }
       })
       .catch((error) => {
