@@ -214,14 +214,31 @@ export const BookmarkManager = ({}) => {
           {bookmarkMessage === "" && ( // エラーメッセージがない場合に「タイトル」ボタンを表示
             <>
               {selectedBookmark !== null && (
-                <Button
-                  variant="contained"
-                  color="primary"
-                  sx={{ width: "8rem", height: "2rem", marginRight: "0.7rem" }}
-                  onClick={() => setSelectedBookmark(null)}
-                >
-                  選択解除
-                </Button>
+                <>
+                  <Button
+                    variant="contained"
+                    color="primary"
+                    sx={{
+                      width: "8rem",
+                      height: "2rem",
+                      marginRight: "0.7rem",
+                    }}
+                    onClick={() => setSelectedBookmark(null)}
+                  >
+                    選択解除
+                  </Button>
+                  <Button
+                    variant="contained"
+                    color="primary"
+                    sx={{
+                      width: "8rem",
+                      height: "2rem",
+                      marginRight: "0.7rem",
+                    }}
+                  >
+                    削除
+                  </Button>
+                </>
               )}
               <Button
                 variant="contained"
