@@ -81,10 +81,7 @@ export const BookmarkManager = ({}) => {
           setBookmarks(newBookmarks);
           setSelectedBookmark(null);
           setError("");
-        } else if (response.status === 404) {
-          const errorText = await response.text();
-          setError(errorText);
-        } else if (response.status === 400) {
+        } else if (response.status === 404 || response.status === 400) {
           const errorText = await response.text();
           setError(errorText);
         } else {
