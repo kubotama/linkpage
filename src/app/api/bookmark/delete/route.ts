@@ -4,7 +4,7 @@ import { getDb } from "../database";
 
 export async function POST(request: Request) {
   try {
-    const bookmark = await request.json();
+    const bookmark = (await request.json()) as { id?: number };
 
     if (typeof bookmark.id !== "number" || bookmark.id <= 0) {
       return new Response("ID is required", {
