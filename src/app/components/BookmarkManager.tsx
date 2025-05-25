@@ -88,13 +88,17 @@ export const BookmarkManager = ({}) => {
           const errorText = await response.text();
           setError(errorText);
         } else {
-          // Attempt to get a more specific error message from the server response body
-          let errorDetail = response.statusText;
+          let errorDetail = response.statusText; // デフォルトは statusText
           try {
             const serverMessage = await response.text();
-            if (serverMessage) errorDetail = serverMessage;
-          } catch (error) {
-            errorDetail = (error as Error).message;
+            if (serverMessage) {
+              // サーバーがボディにメッセージを含めていればそれを使用
+              errorDetail = serverMessage;
+            }
+          } catch (e) {
+            // response.text() の読み取りに失敗した場合の処理 (例: ログ出力)
+            console.error("Failed to read error response body:", e);
+            // errorDetail は response.statusText のまま
           }
           throw new Error(
             `Failed to delete: [${response.status}] ${errorDetail}`
