@@ -59,7 +59,6 @@ describe("ブックマーク削除APIのテスト (オンメモリDB)", () => {
       )
     `);
 
-    // mockBookmarks.map((bookmark) => {
     mockBookmarks.forEach((bookmark) => {
       const insert = inMemoryDbInstance.prepare(`
                 INSERT INTO bookmarks (url, title) VALUES (?, ?)
