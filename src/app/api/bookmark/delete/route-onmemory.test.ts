@@ -79,7 +79,7 @@ describe("ブックマーク削除APIのテスト (オンメモリDB)", () => {
 
   it("POST: ブックマークを削除できる", async () => {
     // 削除対象のブックマーク (例: Google, IDは2になるはず)
-    const bookmarkToDelete = mockBookmarks[1]; // Google    const request = createPostRequest(JSON.stringify(bookmark));
+    const bookmarkToDelete = mockBookmarks[1]; // Google
 
     // データベースからIDを取得して確認
     const selectStmt = inMemoryDbInstance.prepare(
