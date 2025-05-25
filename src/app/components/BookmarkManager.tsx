@@ -73,7 +73,7 @@ export const BookmarkManager = ({}) => {
       },
       body: JSON.stringify({ id: selectedBookmark.id }),
     })
-      .then((response) => {
+      .then(async (response) => {
         if (response.status === 204) {
           const newBookmarks = bookmarks.filter(
             (bookmark) => bookmark.id !== selectedBookmark.id
@@ -82,13 +82,11 @@ export const BookmarkManager = ({}) => {
           setSelectedBookmark(null);
           setError("");
         } else if (response.status === 404) {
-          setError(
-            `BookmarkManager: [${response.status}] 指定したIDのブックマークが見つかりませんでした。 ${selectedBookmark.url}`
-          );
+          const errorText = await response.text();
+          setError(errorText);
         } else if (response.status === 400) {
-          setError(
-            `BookmarkManager: [${response.status}] リクエストにIDがありませんでした。 ${selectedBookmark.url}`
-          );
+          const errorText = await response.text();
+          setError(errorText);
         } else {
           throw new Error(
             `Failed to delete: [${response.status}] ${response.statusText}`

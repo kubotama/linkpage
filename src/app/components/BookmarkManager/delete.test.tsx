@@ -201,10 +201,13 @@ describe("削除ボタン", () => {
     }
 
     fetchMock.resetMocks();
-    fetchMock.mockResponseOnce(JSON.stringify(bookmarkToSelect), {
-      status: 404,
-      headers: { "Content-Type": "application/json" },
-    });
+    fetchMock.mockResponseOnce(
+      "指定したIDのブックマークが見つかりませんでした。",
+      {
+        status: 404,
+        headers: { "Content-Type": "text/plain" },
+      }
+    );
 
     // テーブル行のクリックをシミュレート
     await act(async () => {
@@ -263,9 +266,9 @@ describe("削除ボタン", () => {
     }
 
     fetchMock.resetMocks();
-    fetchMock.mockResponseOnce(JSON.stringify(bookmarkToSelect), {
+    fetchMock.mockResponseOnce("リクエストにIDがありませんでした。", {
       status: 400,
-      headers: { "Content-Type": "application/json" },
+      headers: { "Content-Type": "text/plain" },
     });
 
     // テーブル行のクリックをシミュレート
