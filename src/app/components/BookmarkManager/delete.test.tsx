@@ -129,10 +129,7 @@ describe("削除ボタン", () => {
     }
 
     fetchMock.resetMocks();
-    fetchMock.mockResponseOnce(JSON.stringify(bookmarkToSelect), {
-      status: 204,
-      headers: { "Content-Type": "application/json" },
-    });
+    fetchMock.mockResponseOnce("", { status: 204 });
 
     // テーブル行のクリックをシミュレート
     await act(async () => {
