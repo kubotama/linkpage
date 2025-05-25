@@ -87,11 +87,6 @@ export const BookmarkManager = ({}) => {
         } else if (response.status === 400) {
           const errorText = await response.text();
           setError(errorText);
-          // } else {
-          //   throw new Error(
-          //     `Failed to delete: [${response.status}] ${response.statusText}`
-          //   );
-          // }
         } else {
           // Attempt to get a more specific error message from the server response body
           let errorDetail = response.statusText;
