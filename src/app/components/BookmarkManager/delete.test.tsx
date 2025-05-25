@@ -328,9 +328,9 @@ describe("削除ボタン", () => {
     }
 
     fetchMock.resetMocks();
-    fetchMock.mockResponseOnce(JSON.stringify(bookmarkToSelect), {
+    fetchMock.mockResponseOnce("サーバーで予期せぬエラーが発生しました。", {
       status: 500,
-      headers: { "Content-Type": "application/json" },
+      headers: { "Content-Type": "text/plain" },
     });
 
     // テーブル行のクリックをシミュレート
@@ -351,7 +351,7 @@ describe("削除ボタン", () => {
         screen.queryByRole("button", { name: "削除" })
       ).not.toBeInTheDocument();
       expect(screen.getByTestId("bookmark-message")).toHaveTextContent(
-        "BookmarkManager: Error: Failed to delete: [500] Internal Server Error"
+        "BookmarkManager: Error: Failed to delete: [500] サーバーで予期せぬエラーが発生しました。"
       );
     });
   });
