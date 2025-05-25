@@ -244,15 +244,13 @@ export const BookmarkManager = ({}) => {
               sx={{ marginBottom: "10px" }}
             >
               {error && ( // エラーメッセージがある場合のみ「閉じる」ボタンを表示
-                <>
-                  <Button
-                    variant="contained"
-                    onClick={handleErrorClose}
-                    sx={{ height: "2rem" }}
-                  >
-                    閉じる
-                  </Button>
-                </>
+                <Button
+                  variant="contained"
+                  onClick={handleErrorClose}
+                  sx={{ height: "2rem" }}
+                >
+                  閉じる
+                </Button>
               )}
               <span
                 data-testid="bookmark-message"
