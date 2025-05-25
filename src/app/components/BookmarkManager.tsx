@@ -71,12 +71,12 @@ export const BookmarkManager = ({}) => {
       headers: {
         "Content-Type": "application/json",
       },
-      body: JSON.stringify(selectedBookmark),
+      body: JSON.stringify({ id: selectedBookmark.id }),
     })
       .then((response) => {
         if (response.status === 204) {
           const newBookmarks = bookmarks.filter(
-            (bookmark) => bookmark.url !== selectedBookmark.url
+            (bookmark) => bookmark.id !== selectedBookmark.id
           );
           setBookmarks(newBookmarks);
           setSelectedBookmark(null);

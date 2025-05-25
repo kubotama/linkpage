@@ -154,7 +154,7 @@ describe("削除ボタン", () => {
         headers: {
           "Content-Type": "application/json",
         },
-        body: JSON.stringify(bookmarkToSelect),
+        body: JSON.stringify({ id: bookmarkToSelect.id }),
       });
 
       // 画面の更新の確認
