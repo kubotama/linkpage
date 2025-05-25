@@ -231,7 +231,7 @@ export const BookmarkManager = ({}) => {
   return (
     <>
       <div style={{ marginTop: "20px", marginBottom: "20px" }}>
-        <Box display="flex" alignItems="center" sx={{ marginBottom: "10px" }}>
+        <div>
           {bookmarkMessage !== "" && (
             <Box
               display="flex"
@@ -258,92 +258,91 @@ export const BookmarkManager = ({}) => {
               </span>
             </Box>
           )}
+        </div>
+        <Box display="flex" alignItems="center" sx={{ marginBottom: "10px" }}>
+          <>
+            {selectedBookmark !== null && (
+              <>
+                <Button
+                  variant="contained"
+                  color="primary"
+                  sx={{
+                    width: "8rem",
+                    height: "2rem",
+                    marginRight: "0.7rem",
+                  }}
+                  onClick={() => setSelectedBookmark(null)}
+                >
+                  選択解除
+                </Button>
+                <Button
+                  variant="contained"
+                  color="primary"
+                  sx={{
+                    width: "8rem",
+                    height: "2rem",
+                    marginRight: "0.7rem",
+                  }}
+                  onClick={deleteClick}
+                >
+                  削除
+                </Button>
+              </>
+            )}
+            <Button
+              variant="contained"
+              color="primary"
+              sx={{ width: "8rem", height: "2rem", marginRight: "0.7rem" }}
+              onClick={titleClick}
+            >
+              タイトル
+            </Button>
 
-          {bookmarkMessage === "" && ( // エラーメッセージがない場合に「タイトル」ボタンを表示
-            <>
-              {selectedBookmark !== null && (
-                <>
-                  <Button
-                    variant="contained"
-                    color="primary"
-                    sx={{
-                      width: "8rem",
-                      height: "2rem",
-                      marginRight: "0.7rem",
-                    }}
-                    onClick={() => setSelectedBookmark(null)}
-                  >
-                    選択解除
-                  </Button>
-                  <Button
-                    variant="contained"
-                    color="primary"
-                    sx={{
-                      width: "8rem",
-                      height: "2rem",
-                      marginRight: "0.7rem",
-                    }}
-                    onClick={deleteClick}
-                  >
-                    削除
-                  </Button>
-                </>
-              )}
-              <Button
-                variant="contained"
-                color="primary"
-                sx={{ width: "8rem", height: "2rem", marginRight: "0.7rem" }}
-                onClick={titleClick}
-              >
-                タイトル
-              </Button>
+            <Button
+              variant="contained"
+              color="primary"
+              sx={{ width: "8rem", height: "2rem", marginRight: "0.7rem" }}
+              onClick={updateClick}
+            >
+              追加
+            </Button>
 
-              <Button
-                variant="contained"
-                color="primary"
-                sx={{ width: "8rem", height: "2rem", marginRight: "0.7rem" }}
-                onClick={updateClick}
-              >
-                追加
-              </Button>
+            <Button
+              variant="contained"
+              color="primary"
+              sx={{ width: "8rem", height: "2rem", marginRight: "0.7rem" }}
+              onClick={clearClick}
+            >
+              クリア
+            </Button>
 
-              <Button
-                variant="contained"
-                color="primary"
-                sx={{ width: "8rem", height: "2rem", marginRight: "0.7rem" }}
-                onClick={clearClick}
-              >
-                クリア
-              </Button>
+            <Button
+              variant="contained"
+              color="primary"
+              sx={{ width: "7rem", height: "2rem", marginRight: "0.7rem" }}
+              onClick={urlClick}
+            >
+              パラメータ
+            </Button>
 
-              <Button
-                variant="contained"
-                color="primary"
-                sx={{ width: "7rem", height: "2rem", marginRight: "0.7rem" }}
-                onClick={urlClick}
-              >
-                パラメータ
-              </Button>
+            <Button
+              variant="contained"
+              color="primary"
+              sx={{ width: "7rem", height: "2rem", marginRight: "0.7rem" }}
+              onClick={pathClick}
+            >
+              ←
+            </Button>
 
-              <Button
-                variant="contained"
-                color="primary"
-                sx={{ width: "7rem", height: "2rem", marginRight: "0.7rem" }}
-                onClick={pathClick}
-              >
-                ←
-              </Button>
-
-              <Button
-                variant="contained"
-                color="primary"
-                sx={{ width: "7rem", height: "2rem", marginRight: "0.7rem" }}
-                onClick={openClick}
-              >
-                開く
-              </Button>
-            </>
-          )}
+            <Button
+              variant="contained"
+              color="primary"
+              sx={{ width: "7rem", height: "2rem", marginRight: "0.7rem" }}
+              onClick={openClick}
+            >
+              開く
+            </Button>
+          </>
         </Box>
 
         <Box display="flex" alignItems="center" sx={{ marginBottom: "10px" }}>

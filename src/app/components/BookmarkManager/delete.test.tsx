@@ -220,9 +220,7 @@ describe("削除ボタン", () => {
     await waitFor(() => {
       // 画面の更新の確認
       expect(screen.getByText(bookmarkToSelect.title)).toBeInTheDocument();
-      expect(
-        screen.queryByRole("button", { name: "削除" })
-      ).not.toBeInTheDocument();
+      expect(screen.getByRole("button", { name: "削除" })).toBeInTheDocument();
       expect(screen.getByTestId("bookmark-message")).toHaveTextContent(
         "指定したIDのブックマークが見つかりませんでした。"
       );
@@ -282,9 +280,7 @@ describe("削除ボタン", () => {
     await waitFor(() => {
       // 画面の更新の確認
       expect(screen.getByText(bookmarkToSelect.title)).toBeInTheDocument();
-      expect(
-        screen.queryByRole("button", { name: "削除" })
-      ).not.toBeInTheDocument();
+      expect(screen.getByRole("button", { name: "削除" })).toBeInTheDocument();
       expect(screen.getByTestId("bookmark-message")).toHaveTextContent(
         "リクエストにIDがありませんでした。"
       );
@@ -344,9 +340,7 @@ describe("削除ボタン", () => {
     await waitFor(() => {
       // 画面の更新の確認
       expect(screen.getByText(bookmarkToSelect.title)).toBeInTheDocument();
-      expect(
-        screen.queryByRole("button", { name: "削除" })
-      ).not.toBeInTheDocument();
+      expect(screen.getByRole("button", { name: "削除" })).toBeInTheDocument();
       expect(screen.getByTestId("bookmark-message")).toHaveTextContent(
         "BookmarkManager: Error: Failed to delete: [500] サーバーで予期せぬエラーが発生しました。"
       );
