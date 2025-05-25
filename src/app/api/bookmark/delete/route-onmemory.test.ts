@@ -143,7 +143,7 @@ describe("ブックマーク削除APIのテスト (オンメモリDB)", () => {
 
     expect(response.status).toBe(500);
     const text = await response.text();
-    expect(text).toMatch(/Unexpected token|JSON.parse|not valid JSON/i);
+    expect(text).toMatch(/サーバーで予期せぬエラーが発生しました。/i);
   });
 
   it("POST: IDがリクエストボディに含まれていない場合は400エラーを返す", async () => {

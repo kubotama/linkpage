@@ -25,7 +25,8 @@ export async function POST(request: Request) {
       status: 204,
     });
   } catch (error: unknown) {
-    return new Response((error as Error).message, {
+    console.error("Error in POST /api/bookmark/delete:", error); // サーバー側でエラーを記録
+    return new Response("サーバーで予期せぬエラーが発生しました。", {
       status: 500,
       headers: { "Content-Type": "text/plain" },
     });
