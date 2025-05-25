@@ -6,7 +6,7 @@ export async function POST(request: Request) {
   try {
     const bookmark = await request.json();
 
-    if (bookmark.id === undefined) {
+    if (typeof bookmark.id !== "number" || bookmark.id <= 0) {
       return new Response("ID is required", {
         status: 400,
         headers: { "Content-Type": "text/plain" },
