@@ -348,7 +348,7 @@ describe("削除ボタン", () => {
         screen.queryByRole("button", { name: "削除" })
       ).not.toBeInTheDocument();
       expect(screen.getByTestId("bookmark-message")).toHaveTextContent(
-        "Error: Failed to delete: [500] Internal Server Error"
+        "BookmarkManager: Error: Failed to delete: [500] Internal Server Error"
       );
     });
   });
