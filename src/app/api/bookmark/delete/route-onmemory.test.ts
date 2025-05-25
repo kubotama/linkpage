@@ -126,7 +126,7 @@ describe("ブックマーク削除APIのテスト (オンメモリDB)", () => {
 
     expect(response.status).toBe(404);
     const text = await response.text();
-    expect(text).toBe("Bookmark not found");
+    expect(text).toBe("指定されたブックマークがありません。");
 
     // ブックマーク数が変わっていないことを確認
     const count = (
@@ -152,6 +152,6 @@ describe("ブックマーク削除APIのテスト (オンメモリDB)", () => {
 
     expect(response.status).toBe(400);
     const text = await response.text();
-    expect(text).toBe("ID is required");
+    expect(text).toBe("IDは正の整数である必要があります。");
   });
 });

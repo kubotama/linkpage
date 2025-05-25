@@ -6,8 +6,14 @@ export async function POST(request: Request) {
   try {
     const bookmark = (await request.json()) as { id?: number };
 
-    if (typeof bookmark.id !== "number" || bookmark.id <= 0) {
-      return new Response("ID is required", {
+    // if (typeof bookmark.id !== "number" || bookmark.id <= 0) {
+    //   return new Response("ID is required", {
+    if (
+      typeof bookmark.id !== "number" ||
+      !Number.isInteger(bookmark.id) ||
+      bookmark.id <= 0
+    ) {
+      return new Response("IDは正の整数である必要があります。", {
         status: 400,
         headers: { "Content-Type": "text/plain" },
       });
@@ -16,7 +22,7 @@ export async function POST(request: Request) {
     const prepare = db.prepare("DELETE FROM bookmarks WHERE id = ?");
     const info = prepare.run(bookmark.id);
     if (info.changes === 0) {
-      return new Response("Bookmark not found", {
+      return new Response("指定されたブックマークがありません。", {
         status: 404,
         headers: { "Content-Type": "text/plain" },
       });
