@@ -10,7 +10,7 @@ export async function GET() {
   let db: Database.Database | null = null;
   try {
     db = getDb();
-    const stmt = db.prepare("SELECT url, title FROM bookmarks");
+    const stmt = db.prepare("SELECT id, url, title FROM bookmarks");
     const bookmarks = stmt.all();
     return new Response(JSON.stringify(bookmarks), {
       status: 200,

@@ -61,6 +61,55 @@ export const BookmarkManager = ({}) => {
       });
   }, []);
 
+  const deleteClick = () => {
+    if (selectedBookmark === null) {
+      return;
+    }
+    setLoading("ブックマークの削除処理中...");
+    fetch("/api/bookmark/delete", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({ id: selectedBookmark.id }),
+    })
+      .then(async (response) => {
+        if (response.status === 204) {
+          const newBookmarks = bookmarks.filter(
+            (bookmark) => bookmark.id !== selectedBookmark.id
+          );
+          setBookmarks(newBookmarks);
+          setSelectedBookmark(null);
+          setError("");
+        } else if (response.status === 404 || response.status === 400) {
+          const errorText = await response.text();
+          setError(errorText);
+        } else {
+          let errorDetail = response.statusText; // デフォルトは statusText
+          try {
+            const serverMessage = await response.text();
+            if (serverMessage) {
+              // サーバーがボディにメッセージを含めていればそれを使用
+              errorDetail = serverMessage;
+            }
+          } catch (e) {
+            // response.text() の読み取りに失敗した場合の処理 (例: ログ出力)
+            console.error("Failed to read error response body:", e);
+            // errorDetail は response.statusText のまま
+          }
+          throw new Error(
+            `Failed to delete: [${response.status}] ${errorDetail}`
+          );
+        }
+      })
+      .catch((error) => {
+        setError(`BookmarkManager: ${error}`);
+      })
+      .finally(() => {
+        setLoading("");
+      });
+  };
+
   const handleAddBookmark = (textUrl: string, textTitle: string) => {
     const newBookmark = createBookmark({ url: textUrl, title: textTitle });
     setLoading("ブックマークの追加処理中...");
@@ -183,7 +232,7 @@ export const BookmarkManager = ({}) => {
   return (
     <>
       <div style={{ marginTop: "20px", marginBottom: "20px" }}>
-        <Box display="flex" alignItems="center" sx={{ marginBottom: "10px" }}>
+        <div>
           {bookmarkMessage !== "" && (
             <Box
               display="flex"
@@ -210,74 +259,91 @@ export const BookmarkManager = ({}) => {
               </span>
             </Box>
           )}
-
-          {bookmarkMessage === "" && ( // エラーメッセージがない場合に「タイトル」ボタンを表示
-            <>
-              {selectedBookmark !== null && (
+        </div>
+        <Box display="flex" alignItems="center" sx={{ marginBottom: "10px" }}>
+          <>
+            {selectedBookmark !== null && (
+              <>
                 <Button
                   variant="contained"
                   color="primary"
-                  sx={{ width: "8rem", height: "2rem", marginRight: "0.7rem" }}
+                  sx={{
+                    width: "8rem",
+                    height: "2rem",
+                    marginRight: "0.7rem",
+                  }}
                   onClick={() => setSelectedBookmark(null)}
                 >
                   選択解除
                 </Button>
-              )}
-              <Button
-                variant="contained"
-                color="primary"
-                sx={{ width: "8rem", height: "2rem", marginRight: "0.7rem" }}
-                onClick={titleClick}
-              >
-                タイトル
-              </Button>
+                <Button
+                  variant="contained"
+                  color="primary"
+                  sx={{
+                    width: "8rem",
+                    height: "2rem",
+                    marginRight: "0.7rem",
+                  }}
+                  onClick={deleteClick}
+                >
+                  削除
+                </Button>
+              </>
+            )}
+            <Button
+              variant="contained"
+              color="primary"
+              sx={{ width: "8rem", height: "2rem", marginRight: "0.7rem" }}
+              onClick={titleClick}
+            >
+              タイトル
+            </Button>
 
-              <Button
-                variant="contained"
-                color="primary"
-                sx={{ width: "8rem", height: "2rem", marginRight: "0.7rem" }}
-                onClick={updateClick}
-              >
-                追加
-              </Button>
+            <Button
+              variant="contained"
+              color="primary"
+              sx={{ width: "8rem", height: "2rem", marginRight: "0.7rem" }}
+              onClick={updateClick}
+            >
+              追加
+            </Button>
 
-              <Button
-                variant="contained"
-                color="primary"
-                sx={{ width: "8rem", height: "2rem", marginRight: "0.7rem" }}
-                onClick={clearClick}
-              >
-                クリア
-              </Button>
+            <Button
+              variant="contained"
+              color="primary"
+              sx={{ width: "8rem", height: "2rem", marginRight: "0.7rem" }}
+              onClick={clearClick}
+            >
+              クリア
+            </Button>
 
-              <Button
-                variant="contained"
-                color="primary"
-                sx={{ width: "7rem", height: "2rem", marginRight: "0.7rem" }}
-                onClick={urlClick}
-              >
-                パラメータ
-              </Button>
+            <Button
+              variant="contained"
+              color="primary"
+              sx={{ width: "7rem", height: "2rem", marginRight: "0.7rem" }}
+              onClick={urlClick}
+            >
+              パラメータ
+            </Button>
 
-              <Button
-                variant="contained"
-                color="primary"
-                sx={{ width: "7rem", height: "2rem", marginRight: "0.7rem" }}
-                onClick={pathClick}
-              >
-                ←
-              </Button>
+            <Button
+              variant="contained"
+              color="primary"
+              sx={{ width: "7rem", height: "2rem", marginRight: "0.7rem" }}
+              onClick={pathClick}
+            >
+              ←
+            </Button>
 
-              <Button
-                variant="contained"
-                color="primary"
-                sx={{ width: "7rem", height: "2rem", marginRight: "0.7rem" }}
-                onClick={openClick}
-              >
-                開く
-              </Button>
-            </>
-          )}
+            <Button
+              variant="contained"
+              color="primary"
+              sx={{ width: "7rem", height: "2rem", marginRight: "0.7rem" }}
+              onClick={openClick}
+            >
+              開く
+            </Button>
+          </>
         </Box>
 
         <Box display="flex" alignItems="center" sx={{ marginBottom: "10px" }}>
