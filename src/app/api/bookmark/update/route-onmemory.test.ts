@@ -163,7 +163,18 @@ describe("ブックマーク更新APIのテスト (オンメモリDB)", () => {
     expect(errorText).toBe("タイトルが指定されていません。");
   });
 
-  it("POST: IDが指定されていない場合には400を返す。", async () => {});
+  it("POST: IDが指定されていない場合には400を返す。", async () => {
+    // 更新リクエストを作成
+    const request = createPostRequest(
+      JSON.stringify({ title: "Updated Title" })
+    );
+    const response = await POST(request);
+
+    // レスポンスステータスを確認 (400: Bad Request)
+    expect(response?.status).toBe(400);
+    const errorText = await response?.text();
+    expect(errorText).toBe("IDが指定されていません。");
+  });
 
   it("POST: 不正なJSONデータの場合は500を返す。", async () => {});
 });

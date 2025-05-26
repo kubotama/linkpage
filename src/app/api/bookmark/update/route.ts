@@ -10,6 +10,11 @@ export async function POST(request: Request) {
         status: 400,
         headers: { "Content-Type": "text/plain" },
       });
+    } else if (!bookmark.hasOwnProperty("id")) {
+      return new Response("IDが指定されていません。", {
+        status: 400,
+        headers: { "Content-Type": "text/plain" },
+      });
     } else if (
       !bookmark.hasOwnProperty("title") ||
       bookmark.title === null ||
