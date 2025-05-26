@@ -123,7 +123,18 @@ describe("ブックマーク更新APIのテスト (オンメモリDB)", () => {
     expect(countAfter).toBe(mockBookmarks.length);
   });
 
-  it("POST: 登録されていないブックマークIDを指定された場合は404を返す。", async () => {});
+  it("POST: 登録されていないブックマークIDを指定された場合は404を返す。", async () => {
+    // 更新リクエストを作成
+    const request = createPostRequest(
+      JSON.stringify({ id: 9999, title: "unregistered bookmark" })
+    );
+    const response = await POST(request);
+
+    // レスポンスステータスを確認 (404 Not Found)
+    expect(response?.status).toBe(404);
+    const errorText = await response?.text();
+    expect(errorText).toBe("指定されたブックマークがありません。");
+  });
 
   it("POST: タイトルが指定されていない場合には400を返す。", async () => {});
 
