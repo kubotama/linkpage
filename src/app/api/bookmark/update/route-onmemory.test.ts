@@ -176,5 +176,14 @@ describe("ブックマーク更新APIのテスト (オンメモリDB)", () => {
     expect(errorText).toBe("IDが指定されていません。");
   });
 
-  it("POST: 不正なJSONデータの場合は500を返す。", async () => {});
+  it("POST: 不正なJSONデータの場合は500を返す。", async () => {
+    // 更新リクエストを作成
+    const request = createPostRequest("invalid json data");
+    const response = await POST(request);
+
+    // レスポンスステータスを確認 (500: Internal Server Error)
+    expect(response?.status).toBe(500);
+    const errorText = await response?.text();
+    expect(errorText).toBe("サーバーで予期せぬエラーが発生しました。");
+  });
 });

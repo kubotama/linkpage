@@ -4,7 +4,7 @@ import { getDb } from "../database";
 
 export async function POST(request: Request) {
   try {
-    const bookmark = (await request.json()) as { id?: number; title: string };
+    const bookmark = (await request.json()) as { id: number; title: string };
     if (bookmark.id === null) {
       return new Response("IDは正の整数である必要があります。", {
         status: 400,
