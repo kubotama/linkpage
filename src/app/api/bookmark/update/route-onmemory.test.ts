@@ -43,6 +43,18 @@ function createPostRequest(body: string): Request {
   });
 }
 
+const getBookmarkIdFromUrl = (url: string) => {
+  // データベースからIDを取得して確認
+  const selectStmt = inMemoryDbInstance.prepare(
+    "SELECT id, title FROM bookmarks WHERE url = ?"
+  );
+  const dbEntry = selectStmt.get(url) as { id: number };
+  expect(dbEntry).toBeDefined();
+  const bookmarkIdToUpdate = dbEntry.id;
+
+  return bookmarkIdToUpdate;
+};
+
 describe("ブックマーク更新APIのテスト (オンメモリDB)", () => {
   beforeEach(() => {
     // Reset mocks before each test
@@ -137,24 +149,7 @@ describe("ブックマーク更新APIのテスト (オンメモリDB)", () => {
   });
 
   it("POST: タイトルが指定されていない場合には400を返す。", async () => {
-    // 更新対象のブックマーク (例: Google, IDは2になるはず)
-    const bookmarkToUpdate = mockBookmarks[1]; // Google
-
-    // データベースからIDを取得して確認
-    const selectStmt = inMemoryDbInstance.prepare(
-      "SELECT id, title FROM bookmarks WHERE url = ?"
-    );
-    const dbEntry = selectStmt.get(bookmarkToUpdate.url) as { id: number };
-    expect(dbEntry).toBeDefined();
-    const bookmarkIdToUpdate = dbEntry.id;
-
-    // 更新前の件数を確認
-    const countBefore = (
-      inMemoryDbInstance
-        .prepare("SELECT COUNT(*) as count FROM bookmarks")
-        .get() as { count: number }
-    ).count;
-    expect(countBefore).toBe(mockBookmarks.length);
+    const bookmarkIdToUpdate = getBookmarkIdFromUrl(mockBookmarks[1].url);
 
     // 更新リクエストを作成
     const request = createPostRequest(
@@ -162,7 +157,7 @@ describe("ブックマーク更新APIのテスト (オンメモリDB)", () => {
     );
     const response = await POST(request);
 
-    // レスポンスステータスを確認 (200 OK)
+    // レスポンスステータスを確認 (400: Bad Request)
     expect(response?.status).toBe(400);
     const errorText = await response?.text();
     expect(errorText).toBe("タイトルが指定されていません。");
