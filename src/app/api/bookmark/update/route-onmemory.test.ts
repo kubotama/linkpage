@@ -93,12 +93,7 @@ describe("ブックマーク更新APIのテスト (オンメモリDB)", () => {
     const bookmarkToUpdate = mockBookmarks[1]; // Google
 
     // データベースからIDを取得して確認
-    const selectStmt = inMemoryDbInstance.prepare(
-      "SELECT id, title FROM bookmarks WHERE url = ?"
-    );
-    const dbEntry = selectStmt.get(bookmarkToUpdate.url) as { id: number };
-    expect(dbEntry).toBeDefined();
-    const bookmarkIdToUpdate = dbEntry.id;
+    const bookmarkIdToUpdate = getBookmarkIdFromUrl(bookmarkToUpdate.url);
 
     // 更新前の件数を確認
     const countBefore = (
@@ -118,6 +113,9 @@ describe("ブックマーク更新APIのテスト (オンメモリDB)", () => {
     expect(response?.status).toBe(200);
 
     // データベースが更新されたことを確認
+    const selectStmt = inMemoryDbInstance.prepare(
+      "SELECT id, title FROM bookmarks WHERE url = ?"
+    );
     const updatedEntry = selectStmt.get(bookmarkToUpdate.url);
     expect((updatedEntry as { id: number; title: string }).id).toEqual(
       bookmarkIdToUpdate
