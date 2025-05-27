@@ -2,10 +2,14 @@
 
 import { getDb } from "../database";
 
+interface UpdateBookmarkPayload {
+  id: string; // 型チェックは後続のバリデーションで行う
+  title: string; // 型チェックは後続のバリデーションで行う
+}
+
 export async function POST(request: Request) {
   try {
-    const bookmark = (await request.json()) as { id: number; title: string };
-    // if (bookmark.id === null) {
+    const bookmark = (await request.json()) as UpdateBookmarkPayload;
     if (!bookmark.hasOwnProperty("id")) {
       return new Response("IDが指定されていません。", {
         status: 400,
