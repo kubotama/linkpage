@@ -22,8 +22,8 @@ export async function POST(request: Request) {
       });
     } else if (
       !bookmark.hasOwnProperty("title") ||
-      bookmark.title === null ||
-      bookmark.title.length === 0
+      typeof bookmark.title !== "string" ||
+      bookmark.title.trim().length === 0
     ) {
       return new Response("タイトルが指定されていません。", {
         status: 400,
