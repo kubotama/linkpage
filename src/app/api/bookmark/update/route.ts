@@ -5,13 +5,18 @@ import { getDb } from "../database";
 export async function POST(request: Request) {
   try {
     const bookmark = (await request.json()) as { id: number; title: string };
-    if (bookmark.id === null) {
-      return new Response("IDは正の整数である必要があります。", {
+    // if (bookmark.id === null) {
+    if (!bookmark.hasOwnProperty("id")) {
+      return new Response("IDが指定されていません。", {
         status: 400,
         headers: { "Content-Type": "text/plain" },
       });
-    } else if (!bookmark.hasOwnProperty("id")) {
-      return new Response("IDが指定されていません。", {
+    } else if (
+      typeof bookmark.id !== "number" ||
+      !Number.isInteger(bookmark.id) ||
+      bookmark.id <= 0
+    ) {
+      return new Response("IDは正の整数である必要があります。", {
         status: 400,
         headers: { "Content-Type": "text/plain" },
       });
