@@ -288,6 +288,17 @@ export const BookmarkManager = ({}) => {
                 >
                   削除
                 </Button>
+                <Button
+                  variant="contained"
+                  color="primary"
+                  sx={{
+                    width: "8rem",
+                    height: "2rem",
+                    marginRight: "0.7rem",
+                  }}
+                >
+                  タイトル更新
+                </Button>
               </>
             )}
             <Button
