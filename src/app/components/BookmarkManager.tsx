@@ -229,6 +229,48 @@ export const BookmarkManager = ({}) => {
     setError("");
   };
 
+  const updateClick = () => {
+    if (selectedBookmark === null) {
+      return;
+    }
+    setLoading("ブックマークのタイトル更新処理中...");
+    fetch("/api/bookmark/update", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({ id: selectedBookmark.id, title: textTitle }),
+    })
+      .then(async (response) => {
+        if (response.ok) {
+          // APIが成功のレスポンス（例: 更新されたブックマークオブジェクト）を返すと仮定
+          // もしAPIが更新後のオブジェクトを返さない場合は、ローカルでタイトルを更新
+          const updatedBookmarks = bookmarks.map((bookmark) =>
+            bookmark.id === selectedBookmark.id
+              ? { ...bookmark, title: textTitle }
+              : bookmark
+          );
+          setBookmarks(updatedBookmarks);
+          setSelectedBookmark(null); // 選択を解除
+          setError("");
+        } else {
+          // エラーレスポンスの処理
+          const errorText = await response.text();
+          throw new Error(
+            `Failed to update title: [${response.status}] ${
+              errorText || response.statusText
+            }`
+          );
+        }
+      })
+      .catch((error) => {
+        setError(`BookmarkManager: ${error.message}`);
+      })
+      .finally(() => {
+        setLoading("");
+      });
+  };
+
   return (
     <>
       <div style={{ marginTop: "20px", marginBottom: "20px" }}>
@@ -296,6 +338,7 @@ export const BookmarkManager = ({}) => {
                     height: "2rem",
                     marginRight: "0.7rem",
                   }}
+                  onClick={updateClick}
                 >
                   タイトル更新
                 </Button>
