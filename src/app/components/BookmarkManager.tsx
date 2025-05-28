@@ -151,7 +151,7 @@ export const BookmarkManager = ({}) => {
       });
   };
 
-  const updateClick = () => {
+  const addClick = () => {
     handleAddBookmark(textUrl, textTitle);
   };
 
@@ -314,7 +314,7 @@ export const BookmarkManager = ({}) => {
               variant="contained"
               color="primary"
               sx={{ width: "8rem", height: "2rem", marginRight: "0.7rem" }}
-              onClick={updateClick}
+              onClick={addClick}
             >
               追加
             </Button>
