@@ -4,7 +4,10 @@ import { SqliteError } from "better-sqlite3";
 
 import { getDb } from "../database";
 
-export async function POST(request: Request) {
+// export async function POST(request: Request) {
+export const POST: (request: Request) => Promise<Response> = async (
+  request: Request
+) => {
   try {
     const bookmark = await request.json();
     if (!bookmark.url || bookmark.url.trim() === "") {
@@ -14,27 +17,28 @@ export async function POST(request: Request) {
       return new Response("Title cannot be empty", { status: 400 });
     }
 
-    const db = getDb();
-    const insert = db.prepare(
-      "INSERT INTO bookmarks (url, title) VALUES (?, ?)"
-    );
     try {
-      const info = insert.run(bookmark.url, bookmark.title);
+      const db = getDb();
+      const insertStmt = db.prepare(
+        "INSERT INTO bookmarks (url, title) VALUES (?, ?)"
+      );
+      const result = insertStmt.run(bookmark.url, bookmark.title);
 
       return new Response(
         JSON.stringify({
           url: bookmark.url,
           title: bookmark.title,
-          id: info.lastInsertRowid,
+          id: result.lastInsertRowid,
         }),
         {
           status: 200,
+          headers: { "Content-Type": "application/json" },
         }
       );
-    } catch (error: unknown) {
+    } catch (dbError: unknown) {
       if (
-        error instanceof SqliteError &&
-        error.code === "SQLITE_CONSTRAINT_UNIQUE"
+        dbError instanceof SqliteError &&
+        dbError.code === "SQLITE_CONSTRAINT_UNIQUE"
       ) {
         return new Response(
           JSON.stringify({
@@ -48,9 +52,8 @@ export async function POST(request: Request) {
             headers: { "Content-Type": "application/json" },
           }
         );
-      } else {
-        throw error;
       }
+      throw dbError;
     }
   } catch (error: unknown) {
     return new Response((error as Error).message, {
@@ -58,4 +61,4 @@ export async function POST(request: Request) {
       headers: { "Content-Type": "text/plain" },
     });
   }
-}
+};
