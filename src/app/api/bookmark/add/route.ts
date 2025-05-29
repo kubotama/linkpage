@@ -23,7 +23,7 @@ export const POST: (request: Request) => Promise<Response> = async (
       if (existingBookmark) {
         return new Response(
           JSON.stringify({
-            error: "Bookmark with this URL already exists.",
+            error: "指定されたURLのブックマークは既に登録されています。",
             message: "指定されたURLのブックマークは既に登録されています。",
             url: bookmark.url,
             title: bookmark.title,
