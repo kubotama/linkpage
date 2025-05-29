@@ -3,7 +3,7 @@
 import { getDb } from "../database";
 
 interface UpdateBookmarkPayload {
-  id: string; // 型チェックは後続のバリデーションで行う
+  id: number; // 型チェックは後続のバリデーションで行う
   title: string; // 型チェックは後続のバリデーションで行う
 }
 
