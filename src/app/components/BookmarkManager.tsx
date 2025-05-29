@@ -257,7 +257,7 @@ export const BookmarkManager = ({}) => {
           // エラーレスポンスの処理
           const errorText = await response.text();
           throw new Error(
-            `Failed to update title: [${response.status}] ${
+            `タイトルの更新エラー: [${response.status}] ${
               errorText || response.statusText
             }`
           );
