@@ -266,10 +266,10 @@ describe("タイトルの更新ボタン", () => {
       fireEvent.click(tableRow);
     });
 
-    const deleteButton = screen.getByRole("button", { name: updateLabel });
+    const updateButton = screen.getByRole("button", { name: updateLabel });
 
     await act(async () => {
-      fireEvent.click(deleteButton);
+      fireEvent.click(updateButton);
     });
 
     await waitFor(() => {
@@ -386,10 +386,10 @@ describe("タイトルの更新ボタン", () => {
       fireEvent.click(tableRow);
     });
 
-    const deleteButton = screen.getByRole("button", { name: updateLabel });
+    const updaeteButton = screen.getByRole("button", { name: updateLabel });
 
     await act(async () => {
-      fireEvent.click(deleteButton);
+      fireEvent.click(updaeteButton);
     });
 
     await waitFor(() => {
@@ -446,10 +446,10 @@ describe("タイトルの更新ボタン", () => {
       fireEvent.click(tableRow);
     });
 
-    const deleteButton = screen.getByRole("button", { name: updateLabel });
+    const updateButton = screen.getByRole("button", { name: updateLabel });
 
     await act(async () => {
-      fireEvent.click(deleteButton);
+      fireEvent.click(updateButton);
     });
 
     await waitFor(() => {
