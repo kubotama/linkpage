@@ -1,10 +1,7 @@
 "use server";
 
-// import { SqliteError } from "better-sqlite3";
-
 import { getDb } from "../database";
 
-// export async function POST(request: Request) {
 export const POST: (request: Request) => Promise<Response> = async (
   request: Request
 ) => {
@@ -37,7 +34,6 @@ export const POST: (request: Request) => Promise<Response> = async (
           }
         );
       }
-      // const db = getDb();
       const insertStmt = db.prepare(
         "INSERT INTO bookmarks (url, title) VALUES (?, ?)"
       );
@@ -55,23 +51,6 @@ export const POST: (request: Request) => Promise<Response> = async (
         }
       );
     } catch (dbError: unknown) {
-      //   if (
-      //     dbError instanceof SqliteError &&
-      //     dbError.code === "SQLITE_CONSTRAINT_UNIQUE"
-      //   ) {
-      //     return new Response(
-      //       JSON.stringify({
-      //         error: "Bookmark with this URL already exists.",
-      //         message: "指定されたURLのブックマークは既に登録されています。",
-      //         url: bookmark.url,
-      //         title: bookmark.title,
-      //       }),
-      //       {
-      //         status: 409,
-      //         headers: { "Content-Type": "application/json" },
-      //       }
-      //     );
-      // }
       throw dbError;
     }
   } catch (error: unknown) {
