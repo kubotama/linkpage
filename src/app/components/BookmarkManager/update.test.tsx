@@ -136,7 +136,6 @@ describe("タイトルの更新ボタン", () => {
 
     const updateButton = screen.getByRole("button", { name: updateLabel });
     const titleInput = screen.getByRole("textbox", { name: "title" });
-    // const titleInput = screen.getByLabelText("タイトル");
 
     const updateTitle = "更新されたタイトル";
 
