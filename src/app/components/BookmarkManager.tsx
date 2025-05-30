@@ -8,12 +8,12 @@ import { BookmarkTable } from "./BookmarkTable";
 
 export const BookmarkManager = ({}) => {
   const {
-    selectedBookmark,
     bookmarks,
-    error,
+    isError,
     textUrl,
     textTitle,
     bookmarkMessage,
+    isBookmarkSelected,
     setSelectedBookmark,
     setTextUrl,
     setTextTitle,
@@ -38,7 +38,7 @@ export const BookmarkManager = ({}) => {
               alignItems="center"
               sx={{ marginBottom: "10px" }}
             >
-              {error && ( // エラーメッセージがある場合のみ「閉じる」ボタンを表示
+              {isError() && ( // エラーメッセージがある場合のみ「閉じる」ボタンを表示
                 <Button
                   variant="contained"
                   onClick={handleErrorClose}
@@ -51,7 +51,7 @@ export const BookmarkManager = ({}) => {
                 data-testid="bookmark-message"
                 style={{
                   marginLeft: "0.7rem",
-                  color: error ? "red" : "inherit", // エラーの場合は文字色を赤に
+                  color: isError() ? "red" : "inherit", // エラーの場合は文字色を赤に
                 }}
               >
                 {bookmarkMessage}
@@ -61,7 +61,7 @@ export const BookmarkManager = ({}) => {
         </div>
         <Box display="flex" alignItems="center" sx={{ marginBottom: "10px" }}>
           <>
-            {selectedBookmark !== null && (
+            {isBookmarkSelected() && (
               <>
                 <Button
                   variant="contained"

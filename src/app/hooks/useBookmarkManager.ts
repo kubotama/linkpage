@@ -263,21 +263,25 @@ export const useBookmarkManager = () => {
       });
   };
 
+  const isBookmarkSelected = () => {
+    return selectedBookmark !== null;
+  };
+
+  const isError = () => {
+    return error !== "";
+  };
+
   return {
-    selectedBookmark,
+    // selectedBookmark,
     bookmarks,
-    loading,
-    error,
     textUrl,
     textTitle,
     bookmarkMessage,
+    isError,
+    isBookmarkSelected,
     setSelectedBookmark,
-    setBookmarks,
-    setLoading,
-    setError,
     setTextUrl,
     setTextTitle,
-    setBookmarkMessage,
     deleteClick,
     addClick,
     titleClick,
