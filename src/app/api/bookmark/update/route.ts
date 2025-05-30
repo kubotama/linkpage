@@ -45,8 +45,7 @@ export async function POST(request: Request) {
       });
     }
     return new Response(null, {
-      status: 200,
-      headers: { "Content-Type": "application/json" },
+      status: 204,
     });
   } catch (error: unknown) {
     console.error("Error in POST /api/bookmark/update:", error); // サーバー側でエラーを記録
