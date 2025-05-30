@@ -34,28 +34,22 @@ export const POST: (request: Request) => Promise<Response> = async (
           }
         );
       }
-      try {
-        const insertStmt = db.prepare(
-          "INSERT INTO bookmarks (url, title) VALUES (?, ?)"
-        );
-        const result = insertStmt.run(bookmark.url, bookmark.title);
-        return new Response(
-          JSON.stringify({
-            url: bookmark.url,
-            title: bookmark.title,
-            id: result.lastInsertRowid,
-          }),
-          {
-            status: 200,
-            headers: { "Content-Type": "application/json" },
-          }
-        );
-      } catch (dbError) {
-        console.error("Database error:", dbError);
-        return new Response("データベース処理でエラーが発生しました。", {
-          status: 500,
-        });
-      }
+      // try {
+      const insertStmt = db.prepare(
+        "INSERT INTO bookmarks (url, title) VALUES (?, ?)"
+      );
+      const result = insertStmt.run(bookmark.url, bookmark.title);
+      return new Response(
+        JSON.stringify({
+          url: bookmark.url,
+          title: bookmark.title,
+          id: result.lastInsertRowid,
+        }),
+        {
+          status: 200,
+          headers: { "Content-Type": "application/json" },
+        }
+      );
     } catch (dbError: unknown) {
       throw dbError;
     }
