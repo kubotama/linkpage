@@ -49,8 +49,10 @@ export const useBookmarkManager = () => {
         setError("");
       })
       .catch((error) => {
-        const errorMessage = (error as Error).message;
-        setError(errorMessage);
+        // const errorMessage = (error as Error).message;
+        // setError(errorMessage);
+        console.error("ブックマーク追加エラー:", error); // 詳細なエラーはコンソールへ
+        setError("ブックマークの追加中にエラーが発生しました。"); // ユーザーフレンドリーなメッセージ
       })
       .finally(() => {
         setLoading("");
@@ -79,7 +81,8 @@ export const useBookmarkManager = () => {
           setError("");
         } else if (response.status === 404 || response.status === 400) {
           const errorText = await response.text();
-          setError(errorText);
+          console.error("ブックマーク削除エラー:", errorText); // 詳細なエラーはコンソールへ
+          setError("ブックマークの削除中にエラーが発生しました。"); // ユーザーフレンドリーなメッセージ
         } else {
           let errorDetail = response.statusText; // デフォルトは statusText
           try {
@@ -126,7 +129,8 @@ export const useBookmarkManager = () => {
             const data = await response.json();
             setError(`既に登録されています。 ${data.url}`);
           } else if (!response.ok) {
-            setError(`${response.statusText}`);
+            console.error("ブックマーク追加エラー:", response.statusText); // 詳細なエラーはコンソールへ
+            setError("ブックマークの追加中にエラーが発生しました。"); // ユーザーフレンドリーなメッセージ
           } else {
             const data = await response.json();
             const newBookmarks = [...bookmarks, createBookmark(data)];
@@ -135,11 +139,13 @@ export const useBookmarkManager = () => {
             setError("");
           }
         } catch (jsonError) {
-          setError(`${jsonError}`);
+          console.error("ブックマーク追加エラー:", jsonError); // 詳細なエラーはコンソールへ
+          setError("ブックマークの追加中にエラーが発生しました。"); // ユーザーフレンドリーなメッセージ
         }
       })
       .catch((error) => {
-        setError(`${error}`);
+        console.error("ブックマーク追加エラー:", error); // 詳細なエラーはコンソールへ
+        setError("ブックマークの追加中にエラーが発生しました。"); // ユーザーフレンドリーなメッセージ
       })
       .finally(() => {
         setLoading("");
@@ -152,21 +158,22 @@ export const useBookmarkManager = () => {
     fetch("/api/title?url=" + textUrl)
       .then((response) => {
         if (!response.ok) {
-          throw new Error(`Can't find title: [${response.status}] `);
+          throw new Error(`タイトルが見つかりません: [${response.status}] `);
         } else {
           return response.text();
         }
       })
       .then((text) => {
         if (!text) {
-          throw new Error(`Can't find title: `);
+          throw new Error(`タイトルが見つかりません: [${textUrl}] `);
         } else {
           setTextTitle(text);
           setBookmarkMessage("");
         }
       })
       .catch((error) => {
-        setError(error.message + textUrl);
+        console.error("タイトルの取得エラー:", error); // 詳細なエラーはコンソールへ
+        setError("タイトルの取得中にエラーが発生しました。"); // ユーザーフレンドリーなメッセージ
       });
   };
 
@@ -255,7 +262,8 @@ export const useBookmarkManager = () => {
         }
       })
       .catch((error) => {
-        setError(`${error.message}`);
+        console.error("ブックマークのタイトル更新エラー:", error); // 詳細なエラーはコンソールへ
+        setError("ブックマークのタイトル更新中にエラーが発生しました。"); // ユーザーフレンドリーなメッセージ
       })
       .finally(() => {
         setLoading("");
