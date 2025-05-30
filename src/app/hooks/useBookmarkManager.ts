@@ -49,10 +49,8 @@ export const useBookmarkManager = () => {
         setError("");
       })
       .catch((error) => {
-        // const errorMessage = (error as Error).message;
-        // setError(errorMessage);
-        console.error("ブックマーク追加エラー:", error); // 詳細なエラーはコンソールへ
-        setError("ブックマークの追加中にエラーが発生しました。"); // ユーザーフレンドリーなメッセージ
+        console.error("ブックマークのロードエラー:", error); // 詳細なエラーはコンソールへ
+        setError("ブックマークのロード中にエラーが発生しました。"); // ユーザーフレンドリーなメッセージ
       })
       .finally(() => {
         setLoading("");

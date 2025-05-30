@@ -68,7 +68,7 @@ describe("BookmarkManagerの表示を確認", () => {
 
     await waitFor(() => {
       expect(screen.getByTestId("bookmark-message")).toHaveTextContent(
-        /ブックマークの追加中にエラーが発生しました。$/
+        /ブックマークのロード中にエラーが発生しました。$/
       );
     });
   });
