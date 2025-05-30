@@ -129,7 +129,7 @@ describe("ブックマーク追加APIのテスト (オンメモリDB)", () => {
 
     const bookmark: Bookmark = createBookmark({
       url: initialBookmark.url, // Same URL
-      title: "Another Title For Same URL",
+      title: "同じURLで別のタイトル",
     });
 
     const response = await POST(createPostRequest(JSON.stringify(bookmark)));
@@ -137,10 +137,10 @@ describe("ブックマーク追加APIのテスト (オンメモリDB)", () => {
     expect(response.status).toBe(409);
     const json = await response.json();
     expect(json).toEqual({
-      error: "Bookmark with this URL already exists.",
+      error: "指定されたURLのブックマークは既に登録されています。",
       message: "指定されたURLのブックマークは既に登録されています。",
       url: initialBookmark.url,
-      title: "Another Title For Same URL",
+      title: "同じURLで別のタイトル",
     });
   });
 
