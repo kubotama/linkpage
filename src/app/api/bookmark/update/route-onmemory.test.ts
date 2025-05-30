@@ -110,7 +110,7 @@ describe("ブックマーク更新APIのテスト (オンメモリDB)", () => {
     const response = await POST(request);
 
     // レスポンスステータスを確認 (200 OK)
-    expect(response?.status).toBe(204);
+    expect(response.status).toBe(204);
 
     // データベースが更新されたことを確認
     const selectStmt = inMemoryDbInstance.prepare(
