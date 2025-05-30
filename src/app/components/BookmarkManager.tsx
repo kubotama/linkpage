@@ -3,7 +3,7 @@ import React from "react";
 import Box from "@mui/material/Box";
 import Button from "@mui/material/Button";
 
-import { useBookmarkManager } from "../hooks/useBookmarkManager"; // または適切なパス
+import { useBookmarkManager } from "../hooks/useBookmarkManager";
 import { BookmarkTable } from "./BookmarkTable";
 
 export const BookmarkManager = ({}) => {
