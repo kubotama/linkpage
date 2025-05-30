@@ -30,8 +30,7 @@ export const POST: (request: Request) => Promise<Response> = async (
           }),
           {
             status: 409,
-            // headers: { "Content-Type": "application/json" },
-            headers: { "Content-Type": "text/plain" },
+            headers: { "Content-Type": "application/json" },
           }
         );
       }
@@ -48,8 +47,7 @@ export const POST: (request: Request) => Promise<Response> = async (
           }),
           {
             status: 200,
-            // headers: { "Content-Type": "application/json" },
-            headers: { "Content-Type": "text/plain" },
+            headers: { "Content-Type": "application/json" },
           }
         );
       } catch (dbError) {
