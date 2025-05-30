@@ -30,26 +30,34 @@ export const POST: (request: Request) => Promise<Response> = async (
           }),
           {
             status: 409,
-            headers: { "Content-Type": "application/json" },
+            // headers: { "Content-Type": "application/json" },
+            headers: { "Content-Type": "text/plain" },
           }
         );
       }
-      const insertStmt = db.prepare(
-        "INSERT INTO bookmarks (url, title) VALUES (?, ?)"
-      );
-      const result = insertStmt.run(bookmark.url, bookmark.title);
-
-      return new Response(
-        JSON.stringify({
-          url: bookmark.url,
-          title: bookmark.title,
-          id: result.lastInsertRowid,
-        }),
-        {
-          status: 200,
-          headers: { "Content-Type": "application/json" },
-        }
-      );
+      try {
+        const insertStmt = db.prepare(
+          "INSERT INTO bookmarks (url, title) VALUES (?, ?)"
+        );
+        const result = insertStmt.run(bookmark.url, bookmark.title);
+        return new Response(
+          JSON.stringify({
+            url: bookmark.url,
+            title: bookmark.title,
+            id: result.lastInsertRowid,
+          }),
+          {
+            status: 200,
+            // headers: { "Content-Type": "application/json" },
+            headers: { "Content-Type": "text/plain" },
+          }
+        );
+      } catch (dbError) {
+        console.error("Database error:", dbError);
+        return new Response("データベース処理でエラーが発生しました。", {
+          status: 500,
+        });
+      }
     } catch (dbError: unknown) {
       throw dbError;
     }
