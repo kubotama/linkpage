@@ -342,7 +342,7 @@ describe("削除ボタン", () => {
       expect(screen.getByText(bookmarkToSelect.title)).toBeInTheDocument();
       expect(screen.getByRole("button", { name: "削除" })).toBeInTheDocument();
       expect(screen.getByTestId("bookmark-message")).toHaveTextContent(
-        "BookmarkManager: Error: Failed to delete: [500] サーバーで予期せぬエラーが発生しました。"
+        "ブックマークの削除中にサーバーで予期せぬエラーが発生しました。"
       );
     });
   });

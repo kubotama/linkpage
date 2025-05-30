@@ -99,7 +99,10 @@ export const useBookmarkManager = () => {
         }
       })
       .catch((error) => {
-        setError(`BookmarkManager: ${error}`);
+        console.error("ブックマーク削除エラー:", error); // 詳細なエラーはコンソールへ
+        setError(
+          "ブックマークの削除中にサーバーで予期せぬエラーが発生しました。"
+        ); // ユーザーフレンドリーなメッセージ
       })
       .finally(() => {
         setLoading("");
@@ -123,9 +126,7 @@ export const useBookmarkManager = () => {
             const data = await response.json();
             setError(`既に登録されています。 ${data.url}`);
           } else if (!response.ok) {
-            setError(
-              `BookmarkManager: [${response.status}] ${response.statusText}`
-            );
+            setError(`${response.statusText}`);
           } else {
             const data = await response.json();
             const newBookmarks = [...bookmarks, createBookmark(data)];
@@ -134,11 +135,11 @@ export const useBookmarkManager = () => {
             setError("");
           }
         } catch (jsonError) {
-          setError(`BookmarkManager: ${jsonError}`);
+          setError(`${jsonError}`);
         }
       })
       .catch((error) => {
-        setError(`BookmarkManager: ${error}`);
+        setError(`${error}`);
       })
       .finally(() => {
         setLoading("");
@@ -254,7 +255,7 @@ export const useBookmarkManager = () => {
         }
       })
       .catch((error) => {
-        setError(`BookmarkManager: ${error.message}`);
+        setError(`${error.message}`);
       })
       .finally(() => {
         setLoading("");

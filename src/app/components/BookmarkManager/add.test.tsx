@@ -117,7 +117,7 @@ describe("更新されたブックマークが、APIにPOSTで送られる。", 
     await waitFor(() => {
       expect(fetchMock.mock.calls.length).toEqual(2);
       expect(screen.getByTestId("bookmark-message")).toHaveTextContent(
-        /BookmarkManager: \[500\] Internal Server Error$/
+        /Internal Server Error$/
       );
     });
   });
@@ -152,7 +152,7 @@ describe("更新されたブックマークが、APIにPOSTで送られる。", 
     await waitFor(() => {
       expect(fetchMock.mock.calls.length).toEqual(2);
       expect(screen.getByTestId("bookmark-message")).toHaveTextContent(
-        "BookmarkManager: Error: API Error"
+        "API Error"
       );
     });
   });
@@ -186,7 +186,7 @@ describe("更新されたブックマークが、APIにPOSTで送られる。", 
     await waitFor(() => {
       expect(fetchMock.mock.calls.length).toEqual(2);
       expect(screen.getByTestId("bookmark-message")).toHaveTextContent(
-        "BookmarkManager: FetchError: invalid json response body at reason: Unexpected end of JSON input"
+        "invalid json response body at reason: Unexpected end of JSON input"
       );
     });
   });
