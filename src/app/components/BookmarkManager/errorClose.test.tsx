@@ -72,7 +72,7 @@ describe("BookmarkManager", () => {
     // Wait for the error message to appear
     const errorSpan = await screen.findByTestId("bookmark-message");
     expect(errorSpan).toHaveTextContent(
-      "BookmarkManager: [409] 既に登録されています。 https://www.google.com"
+      "既に登録されています。 https://www.google.com"
     );
     expect(errorSpan).toHaveStyle("color: red");
 
@@ -100,9 +100,7 @@ describe("BookmarkManager", () => {
         screen.queryByRole("button", { name: "閉じる" })
       ).not.toBeInTheDocument();
       expect(
-        screen.queryAllByText(
-          "BookmarkManager: [409] 既に登録されています。 https://www.google.com"
-        )
+        screen.queryAllByText("既に登録されています。 https://www.google.com")
       ).toHaveLength(0);
     });
   });

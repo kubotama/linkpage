@@ -121,7 +121,7 @@ export const useBookmarkManager = () => {
         try {
           if (response.status === 409) {
             const data = await response.json();
-            setError(`[${response.status}] 既に登録されています。 ${data.url}`);
+            setError(`既に登録されています。 ${data.url}`);
           } else if (!response.ok) {
             setError(
               `BookmarkManager: [${response.status}] ${response.statusText}`
