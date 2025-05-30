@@ -23,15 +23,11 @@ describe("テスト環境を動作確認するためのサンプルのテスト"
     ]);
 
     await act(async () => {
-      fetchMock.mockResponseOnce("180");
       fetchMock.mockResponseOnce(JSON.stringify(mockBookmarks));
       render(<Home />);
     });
 
     await waitFor(() => {
-      expect(screen.getByText("kubotama/linkpage")).toBeInTheDocument();
-      expect(screen.getByText("Google")).toBeInTheDocument();
-
       expect(screen.getByRole("textbox", { name: "url" })).toBeInTheDocument();
       expect(
         screen.getByRole("textbox", { name: "title" })
@@ -40,6 +36,7 @@ describe("テスト環境を動作確認するためのサンプルのテスト"
       expect(screen.getByText("追加")).toBeInTheDocument();
 
       expect(screen.getByText("kubotama/linkpage")).toBeInTheDocument();
+      expect(screen.getByText("Google")).toBeInTheDocument();
     });
   });
 });
