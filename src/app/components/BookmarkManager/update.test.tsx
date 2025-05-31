@@ -219,7 +219,7 @@ describe("タイトルの更新ボタン", () => {
         screen.getByRole("button", { name: updateLabel })
       ).toBeInTheDocument();
       expect(screen.getByTestId("bookmark-message")).toHaveTextContent(
-        "指定されたブックマークがありません。"
+        "ブックマークのタイトル更新中にエラーが発生しました。"
       );
     });
   });
@@ -279,7 +279,7 @@ describe("タイトルの更新ボタン", () => {
         screen.getByRole("button", { name: updateLabel })
       ).toBeInTheDocument();
       expect(screen.getByTestId("bookmark-message")).toHaveTextContent(
-        "タイトルが指定されていません。"
+        "ブックマークのタイトル更新中にエラーが発生しました。"
       );
     });
   });
@@ -339,7 +339,7 @@ describe("タイトルの更新ボタン", () => {
         screen.getByRole("button", { name: updateLabel })
       ).toBeInTheDocument();
       expect(screen.getByTestId("bookmark-message")).toHaveTextContent(
-        "リクエストにIDがありませんでした。"
+        "ブックマークのタイトル更新中にエラーが発生しました。"
       );
     });
   });
@@ -399,7 +399,7 @@ describe("タイトルの更新ボタン", () => {
         screen.getByRole("button", { name: updateLabel })
       ).toBeInTheDocument();
       expect(screen.getByTestId("bookmark-message")).toHaveTextContent(
-        "IDは正の整数である必要があります。"
+        "ブックマークのタイトル更新中にエラーが発生しました。"
       );
     });
   });
@@ -459,7 +459,7 @@ describe("タイトルの更新ボタン", () => {
         screen.getByRole("button", { name: updateLabel })
       ).toBeInTheDocument();
       expect(screen.getByTestId("bookmark-message")).toHaveTextContent(
-        "サーバーで予期せぬエラーが発生しました。"
+        "ブックマークのタイトル更新中にエラーが発生しました。"
       );
     });
   });

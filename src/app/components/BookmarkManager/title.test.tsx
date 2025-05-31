@@ -109,7 +109,9 @@ describe("BookmarkManagerのURLとタイトルのテキストとボタンのテ�
       expect(fetchMock.mock.calls[0][0]).toEqual("/api/title?url=" + url);
 
       const messageText = screen.getByTestId("bookmark-message");
-      expect(messageText).toHaveTextContent("Can't find title: [500] " + url);
+      expect(messageText).toHaveTextContent(
+        "タイトルの取得中にエラーが発生しました。"
+      );
     });
   });
 
@@ -213,7 +215,9 @@ describe("BookmarkManagerのURLとタイトルのテキストとボタンのテ�
       expect(fetchMock.mock.calls[0][0]).toEqual("/api/title?url=" + url);
 
       const messageText = screen.getByTestId("bookmark-message");
-      expect(messageText).toHaveTextContent("Can't find title: " + url);
+      expect(messageText).toHaveTextContent(
+        "タイトルの取得中にエラーが発生しました。"
+      );
     });
   });
 
@@ -255,7 +259,9 @@ describe("BookmarkManagerのURLとタイトルのテキストとボタンのテ�
 
     // 4. Verify error message and close button appear
     const errorSpan = await screen.findByTestId("bookmark-message");
-    expect(errorSpan).toHaveTextContent(`Can't find title: [500] ${url}`);
+    expect(errorSpan).toHaveTextContent(
+      "タイトルの取得中にエラーが発生しました。"
+    );
     const closeButton = await screen.findByRole("button", { name: "閉じる" });
     expect(closeButton).toBeInTheDocument();
 
@@ -268,7 +274,7 @@ describe("BookmarkManagerのURLとタイトルのテキストとボタンのテ�
         screen.queryByRole("button", { name: "閉じる" })
       ).not.toBeInTheDocument();
       expect(
-        screen.queryByText(`Can't find title: [500] ${url}`)
+        screen.queryByText("タイトルの取得中にエラーが発生しました。")
       ).not.toBeInTheDocument();
       // Check that the message span is still there but empty or hidden
       expect(screen.queryAllByTestId("bookmark-message")).toHaveLength(0);

@@ -68,7 +68,7 @@ describe("BookmarkManagerの表示を確認", () => {
 
     await waitFor(() => {
       expect(screen.getByTestId("bookmark-message")).toHaveTextContent(
-        /Failed to fetch: \[500\] Internal Server Error$/
+        /ブックマークのロード中にエラーが発生しました。$/
       );
     });
   });
