@@ -2,13 +2,15 @@
 
 import { getDb } from "../database";
 
-const ALLOWED_ORIGIN = "chrome-extension://jonckoigjppkhajocdbgfbgjdgffhebf";
+const ALLOWED_CORS_ORIGIN =
+  process.env.ALLOWED_CORS_ORIGIN ||
+  "chrome-extension://jonckoigjppkhajocdbgfbgjdgffhebf";
 
 export const OPTIONS = async () => {
   return new Response(null, {
     status: 204, // No Content
     headers: {
-      "Access-Control-Allow-Origin": ALLOWED_ORIGIN,
+      "Access-Control-Allow-Origin": ALLOWED_CORS_ORIGIN,
       "Access-Control-Allow-Methods": "POST, OPTIONS",
       "Access-Control-Allow-Headers": "Content-Type",
     },
@@ -19,7 +21,7 @@ export const POST: (request: Request) => Promise<Response> = async (
   request: Request
 ) => {
   const commonHeaders = {
-    "Access-Control-Allow-Origin": ALLOWED_ORIGIN,
+    "Access-Control-Allow-Origin": ALLOWED_CORS_ORIGIN,
   };
 
   try {
