@@ -2,15 +2,17 @@
 
 import { getDb } from "../database";
 
+const ALLOWED_ORIGIN = "chrome-extension://jonckoigjppkhajocdbgfbgjdgffhebf";
+
 export const POST: (request: Request) => Promise<Response> = async (
   request: Request
 ) => {
-  try {
-    const commonHeaders = {
-      "Access-Control-Allow-Origin":
-        "'chrome-extension://jonckoigjppkhajocdbgfbgjdgffhebf",
-    };
+  const commonHeaders = {
+    "Access-Control-Allow-Origin": ALLOWED_ORIGIN,
+    "Access-Control-Allow-Methods": "POST",
+  };
 
+  try {
     const bookmark = await request.json();
     if (!bookmark.url || bookmark.url.trim() === "") {
       return new Response("URL cannot be empty", {
@@ -64,7 +66,7 @@ export const POST: (request: Request) => Promise<Response> = async (
       status: 500,
       headers: {
         "Content-Type": "text/plain",
-        "Access-Control-Allow-Origin": "*",
+        ...commonHeaders,
       },
     });
   }
