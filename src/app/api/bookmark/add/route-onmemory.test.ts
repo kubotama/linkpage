@@ -2,8 +2,8 @@ import "@testing-library/jest-dom";
 import ActualDatabase from "better-sqlite3"; // Import the actual library
 
 import { Bookmark, createBookmark } from "../../../types/Bookmark";
-import { getDb } from "../database"; // Assuming this is the correct path
-import { POST } from "./route";
+import { getDb } from "../database";
+import { POST, OPTIONS } from "./route";
 
 // We will mock getDb to return our in-memory instance.
 // The actual getDb function is simple, but mocking allows us to inject the in-memory DB.
@@ -171,11 +171,6 @@ describe("ブックマーク追加APIのテスト (オンメモリDB)", () => {
 
   // --- OPTIONS Tests ---
   it("OPTIONS: 適切なCORSヘッダーを返す", async () => {
-    // Dynamically import OPTIONS from the route module for testing
-    const { OPTIONS } = await import("./route");
-    if (!OPTIONS) {
-      throw new Error("OPTIONS handler is not exported from the route module.");
-    }
     const response = await OPTIONS(); // OPTIONS handler might not take a request argument
 
     expect(response.status).toBe(204);
