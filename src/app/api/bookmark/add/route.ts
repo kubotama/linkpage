@@ -6,12 +6,23 @@ export const POST: (request: Request) => Promise<Response> = async (
   request: Request
 ) => {
   try {
+    const commonHeaders = {
+      "Access-Control-Allow-Origin":
+        "'chrome-extension://jonckoigjppkhajocdbgfbgjdgffhebf",
+    };
+
     const bookmark = await request.json();
     if (!bookmark.url || bookmark.url.trim() === "") {
-      return new Response("URL cannot be empty", { status: 400 });
+      return new Response("URL cannot be empty", {
+        status: 400,
+        headers: commonHeaders,
+      });
     }
     if (!bookmark.title || bookmark.title.trim() === "") {
-      return new Response("Title cannot be empty", { status: 400 });
+      return new Response("Title cannot be empty", {
+        status: 400,
+        headers: commonHeaders,
+      });
     }
 
     const db = getDb();
@@ -29,7 +40,7 @@ export const POST: (request: Request) => Promise<Response> = async (
         }),
         {
           status: 409,
-          headers: { "Content-Type": "application/json" },
+          headers: { "Content-Type": "application/json", ...commonHeaders },
         }
       );
     }
@@ -45,13 +56,16 @@ export const POST: (request: Request) => Promise<Response> = async (
       }),
       {
         status: 200,
-        headers: { "Content-Type": "application/json" },
+        headers: { "Content-Type": "application/json", ...commonHeaders },
       }
     );
   } catch (error: unknown) {
     return new Response((error as Error).message, {
       status: 500,
-      headers: { "Content-Type": "text/plain" },
+      headers: {
+        "Content-Type": "text/plain",
+        "Access-Control-Allow-Origin": "*",
+      },
     });
   }
 };
