@@ -2,16 +2,42 @@
 
 import { getDb } from "../database";
 
+const ALLOWED_CORS_ORIGIN =
+  process.env.ALLOWED_CORS_ORIGIN ||
+  // 開発環境用のデフォルト値。本番環境では必ず環境変数 ALLOWED_CORS_ORIGIN で指定する。
+  "chrome-extension://jonckoigjppkhajocdbgfbgjdgffhebf";
+
+export const OPTIONS = async () => {
+  return new Response(null, {
+    status: 204, // No Content
+    headers: {
+      "Access-Control-Allow-Origin": ALLOWED_CORS_ORIGIN,
+      "Access-Control-Allow-Methods": "POST, OPTIONS",
+      "Access-Control-Allow-Headers": "Content-Type",
+    },
+  });
+};
+
 export const POST: (request: Request) => Promise<Response> = async (
   request: Request
 ) => {
+  const commonHeaders = {
+    "Access-Control-Allow-Origin": ALLOWED_CORS_ORIGIN,
+  };
+
   try {
     const bookmark = await request.json();
     if (!bookmark.url || bookmark.url.trim() === "") {
-      return new Response("URL cannot be empty", { status: 400 });
+      return new Response("URL cannot be empty", {
+        status: 400,
+        headers: commonHeaders,
+      });
     }
     if (!bookmark.title || bookmark.title.trim() === "") {
-      return new Response("Title cannot be empty", { status: 400 });
+      return new Response("Title cannot be empty", {
+        status: 400,
+        headers: commonHeaders,
+      });
     }
 
     const db = getDb();
@@ -29,7 +55,7 @@ export const POST: (request: Request) => Promise<Response> = async (
         }),
         {
           status: 409,
-          headers: { "Content-Type": "application/json" },
+          headers: { "Content-Type": "application/json", ...commonHeaders },
         }
       );
     }
@@ -45,13 +71,16 @@ export const POST: (request: Request) => Promise<Response> = async (
       }),
       {
         status: 200,
-        headers: { "Content-Type": "application/json" },
+        headers: { "Content-Type": "application/json", ...commonHeaders },
       }
     );
   } catch (error: unknown) {
     return new Response((error as Error).message, {
       status: 500,
-      headers: { "Content-Type": "text/plain" },
+      headers: {
+        "Content-Type": "text/plain",
+        ...commonHeaders,
+      },
     });
   }
 };

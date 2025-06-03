@@ -129,6 +129,10 @@ linkpage はリンクデータを SQLite のデータベースで管理します
 
 - 入力された URL を開きます。(「開く」ボタン)
 
+## 関連アプリケーション
+
+[ブックマークを登録する拡張機能](https://github.com/kubotama/bookmark-extension)を使うと、アクティブなタブをブックマークに登録できます。
+
 ## 技術スタック
 
 - [Next.js](https://nextjs.org/)

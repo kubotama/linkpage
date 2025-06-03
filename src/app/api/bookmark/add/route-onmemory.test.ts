@@ -3,7 +3,7 @@ import ActualDatabase from "better-sqlite3"; // Import the actual library
 
 import { Bookmark, createBookmark } from "../../../types/Bookmark";
 import { getDb } from "../database";
-import { POST } from "./route";
+import { POST, OPTIONS } from "./route";
 
 // We will mock getDb to return our in-memory instance.
 // The actual getDb function is simple, but mocking allows us to inject the in-memory DB.
@@ -22,6 +22,7 @@ function createPostRequest(body: string): Request {
     body: body,
   });
 }
+
 describe("ブックマーク追加APIのテスト (オンメモリDB)", () => {
   beforeEach(() => {
     // Reset mocks before each test
@@ -166,5 +167,21 @@ describe("ブックマーク追加APIのテスト (オンメモリDB)", () => {
     expect(response.status).toBe(400);
     const text = await response.text();
     expect(text).toEqual("Title cannot be empty");
+  });
+
+  // --- OPTIONS Tests ---
+  it("OPTIONS: 適切なCORSヘッダーを返す", async () => {
+    const response = await OPTIONS(); // OPTIONS handler might not take a request argument
+
+    expect(response.status).toBe(204);
+    expect(response.headers.get("Access-Control-Allow-Origin")).toBe(
+      "chrome-extension://jonckoigjppkhajocdbgfbgjdgffhebf"
+    );
+    expect(response.headers.get("Access-Control-Allow-Methods")).toBe(
+      "POST, OPTIONS"
+    );
+    expect(response.headers.get("Access-Control-Allow-Headers")).toBe(
+      "Content-Type"
+    );
   });
 });
