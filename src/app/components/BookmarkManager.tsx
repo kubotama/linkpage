@@ -18,7 +18,6 @@ export const BookmarkManager = ({}) => {
     setTextUrl,
     setTextTitle,
     deleteClick,
-    addClick,
     titleClick,
     urlClick,
     pathClick,
@@ -108,15 +107,6 @@ export const BookmarkManager = ({}) => {
               onClick={titleClick}
             >
               タイトル
-            </Button>
-
-            <Button
-              variant="contained"
-              color="primary"
-              sx={{ width: "8rem", height: "2rem", marginRight: "0.7rem" }}
-              onClick={addClick}
-            >
-              追加
             </Button>
 
             <Button

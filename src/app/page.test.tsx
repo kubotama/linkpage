@@ -32,8 +32,8 @@ describe("テスト環境を動作確認するためのサンプルのテスト"
       expect(
         screen.getByRole("textbox", { name: "title" })
       ).toBeInTheDocument();
+
       expect(screen.getByText("タイトル")).toBeInTheDocument();
-      expect(screen.getByText("追加")).toBeInTheDocument();
 
       expect(screen.getByText("kubotama/linkpage")).toBeInTheDocument();
       expect(screen.getByText("Google")).toBeInTheDocument();

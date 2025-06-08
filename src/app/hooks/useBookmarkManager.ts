@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 
-import { Bookmark, createBookmark, SelectedBookmark } from "../types/Bookmark";
+import { Bookmark, SelectedBookmark } from "../types/Bookmark";
 
 export const useBookmarkManager = () => {
   const [selectedBookmark, setSelectedBookmark] =
@@ -104,46 +104,6 @@ export const useBookmarkManager = () => {
         setError(
           "ブックマークの削除中にサーバーで予期せぬエラーが発生しました。"
         ); // ユーザーフレンドリーなメッセージ
-      })
-      .finally(() => {
-        setLoading("");
-      });
-  };
-
-  const addClick = () => {
-    const newBookmark = createBookmark({ url: textUrl, title: textTitle });
-    setLoading("ブックマークの追加処理中...");
-
-    fetch("/api/bookmark/add", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify(newBookmark),
-    })
-      .then(async (response) => {
-        try {
-          if (response.status === 409) {
-            const data = await response.json();
-            setError(`既に登録されています。 ${data.url}`);
-          } else if (!response.ok) {
-            console.error("ブックマーク追加エラー:", response.statusText); // 詳細なエラーはコンソールへ
-            setError("ブックマークの追加中にエラーが発生しました。"); // ユーザーフレンドリーなメッセージ
-          } else {
-            const data = await response.json();
-            const newBookmarks = [...bookmarks, createBookmark(data)];
-            setBookmarks(newBookmarks);
-            setSelectedBookmark(null);
-            setError("");
-          }
-        } catch (jsonError) {
-          console.error("ブックマーク追加エラー:", jsonError); // 詳細なエラーはコンソールへ
-          setError("ブックマークの追加中にエラーが発生しました。"); // ユーザーフレンドリーなメッセージ
-        }
-      })
-      .catch((error) => {
-        console.error("ブックマーク追加エラー:", error); // 詳細なエラーはコンソールへ
-        setError("ブックマークの追加中にエラーが発生しました。"); // ユーザーフレンドリーなメッセージ
       })
       .finally(() => {
         setLoading("");
@@ -288,7 +248,6 @@ export const useBookmarkManager = () => {
     setTextUrl,
     setTextTitle,
     deleteClick,
-    addClick,
     titleClick,
     urlClick,
     pathClick,
