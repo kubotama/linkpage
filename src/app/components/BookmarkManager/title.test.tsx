@@ -7,6 +7,7 @@ import { fireEvent, render, screen, waitFor } from "@testing-library/react";
 
 import { Bookmark, createBookmarkList } from "../../types/Bookmark";
 import { BookmarkManager } from "../BookmarkManager";
+import { clickBookmark } from "./select.test";
 
 const mockBookmarks: Bookmark[] = createBookmarkList([
   {
@@ -47,6 +48,10 @@ describe("BookmarkManagerのURLとタイトルのテキストとボタンのテ�
     });
 
     fetchMock.resetMocks();
+
+    // クリックするブックマークを選択（例：2番目のブックマーク）
+    const bookmarkToSelect = mockBookmarks[1]; // Google
+    await clickBookmark(bookmarkToSelect);
 
     const urlInput = screen.getByRole("textbox", { name: "url" });
     const titleInput = screen.getByRole("textbox", { name: "title" });
@@ -92,6 +97,10 @@ describe("BookmarkManagerのURLとタイトルのテキストとボタンのテ�
       headers: { "Content-Type": "text/plain" },
     });
 
+    // クリックするブックマークを選択（例：2番目のブックマーク）
+    const bookmarkToSelect = mockBookmarks[1]; // Google
+    await clickBookmark(bookmarkToSelect);
+
     const urlInput = screen.getByRole("textbox", { name: "url" });
     const titleButton = screen.getByRole("button", { name: "タイトル" });
 
@@ -124,8 +133,11 @@ describe("BookmarkManagerのURLとタイトルのテキストとボタンのテ�
     fetchMock.resetMocks();
     fetchMock.mockResponseOnce("");
 
-    const urlInput = screen.getByRole("textbox", { name: "url" });
+    // クリックするブックマークを選択（例：2番目のブックマーク）
+    const bookmarkToSelect = mockBookmarks[1]; // Google
+    await clickBookmark(bookmarkToSelect);
 
+    const urlInput = screen.getByRole("textbox", { name: "url" });
     const titleButton = screen.getByRole("button", { name: "タイトル" });
 
     await act(async () => {
@@ -157,13 +169,14 @@ describe("BookmarkManagerのURLとタイトルのテキストとボタンのテ�
       expect(
         screen.queryByText("ブックマークをロード中...")
       ).not.toBeInTheDocument();
-      expect(
-        screen.getByRole("button", { name: "タイトル" })
-      ).toBeInTheDocument();
     });
 
     // Reset mocks for the next specific fetch operations
     fetchMock.resetMocks();
+
+    // クリックするブックマークを選択（例：2番目のブックマーク）
+    const bookmarkToSelect = mockBookmarks[1]; // Google
+    await clickBookmark(bookmarkToSelect);
 
     const urlInput = screen.getByRole("textbox", { name: "url" });
     const titleButton = screen.getByRole("button", { name: "タイトル" });

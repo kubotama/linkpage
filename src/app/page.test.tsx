@@ -7,6 +7,7 @@ import { render, screen, waitFor } from "@testing-library/react";
 
 import { Bookmark, createBookmarkList } from "./types/Bookmark";
 import Home from "./page";
+import { clickBookmark } from "./components/BookmarkManager/select.test";
 
 describe("テスト環境を動作確認するためのサンプルのテスト", () => {
   beforeEach(() => {
@@ -27,16 +28,17 @@ describe("テスト環境を動作確認するためのサンプルのテスト"
       render(<Home />);
     });
 
-    await waitFor(() => {
-      expect(screen.getByRole("textbox", { name: "url" })).toBeInTheDocument();
-      expect(
-        screen.getByRole("textbox", { name: "title" })
-      ).toBeInTheDocument();
+    // クリックするブックマークを選択（例：2番目のブックマーク）
+    const bookmarkToSelect = mockBookmarks[1]; // Google
+    await clickBookmark(bookmarkToSelect);
 
+    await waitFor(() => {
       expect(screen.getByText("タイトル")).toBeInTheDocument();
 
-      expect(screen.getByText("kubotama/linkpage")).toBeInTheDocument();
-      expect(screen.getByText("Google")).toBeInTheDocument();
+      const urlInput = screen.getByRole("textbox", { name: "url" });
+      const titleInput = screen.getByRole("textbox", { name: "title" });
+      expect(urlInput).toHaveValue(bookmarkToSelect.url);
+      expect(titleInput).toHaveValue(bookmarkToSelect.title);
     });
   });
 });
