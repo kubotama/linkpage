@@ -66,50 +66,34 @@ export const BookmarkManager = ({}) => {
               sx={{ marginBottom: "10px" }}
             >
               <>
-                <Button
-                  variant="contained"
+                <button
                   color="primary"
-                  sx={{
-                    width: "8rem",
-                    height: "2rem",
-                    marginRight: "0.7rem",
-                  }}
+                  className="button-bookmark-manager"
                   onClick={() => setSelectedBookmark(null)}
                 >
                   選択解除
-                </Button>
-                <Button
-                  variant="contained"
+                </button>
+                <button
                   color="primary"
-                  sx={{ width: "7rem", height: "2rem", marginRight: "0.7rem" }}
+                  className="button-bookmark-manager"
                   onClick={openClick}
                 >
                   開く
-                </Button>
-                <Button
-                  variant="contained"
+                </button>
+                <button
                   color="primary"
-                  sx={{
-                    width: "8rem",
-                    height: "2rem",
-                    marginRight: "0.7rem",
-                  }}
+                  className="button-bookmark-manager"
                   onClick={deleteClick}
                 >
                   削除
-                </Button>
-                <Button
-                  variant="contained"
+                </button>
+                <button
                   color="primary"
-                  sx={{
-                    width: "8rem",
-                    height: "2rem",
-                    marginRight: "0.7rem",
-                  }}
+                  className="button-bookmark-manager"
                   onClick={updateClick}
                 >
                   タイトル更新
-                </Button>
+                </button>
               </>
             </Box>
             <Box
@@ -118,41 +102,37 @@ export const BookmarkManager = ({}) => {
               sx={{ marginBottom: "10px" }}
             >
               <>
-                <Button
-                  variant="contained"
+                <button
                   color="primary"
-                  sx={{ width: "8rem", height: "2rem", marginRight: "0.7rem" }}
+                  className="button-bookmark-manager"
                   onClick={titleClick}
                 >
                   タイトル
-                </Button>
+                </button>
 
-                <Button
-                  variant="contained"
+                <button
                   color="primary"
-                  sx={{ width: "8rem", height: "2rem", marginRight: "0.7rem" }}
+                  className="button-bookmark-manager"
                   onClick={clearClick}
                 >
                   クリア
-                </Button>
+                </button>
 
-                <Button
-                  variant="contained"
+                <button
                   color="primary"
-                  sx={{ width: "7rem", height: "2rem", marginRight: "0.7rem" }}
+                  className="button-bookmark-manager"
                   onClick={urlClick}
                 >
                   パラメータ
-                </Button>
+                </button>
 
-                <Button
-                  variant="contained"
+                <button
                   color="primary"
-                  sx={{ width: "7rem", height: "2rem", marginRight: "0.7rem" }}
+                  className="button-bookmark-manager"
                   onClick={pathClick}
                 >
                   ←
-                </Button>
+                </button>
               </>
             </Box>
 
@@ -162,12 +142,7 @@ export const BookmarkManager = ({}) => {
               sx={{ marginBottom: "10px" }}
             >
               <input
-                style={{
-                  padding: "0.5rem",
-                  height: "1.2rem",
-                  maxWidth: "1200px",
-                  minWidth: "800px",
-                }}
+                className="text-bookmark-manager"
                 id="url"
                 placeholder="URL"
                 type="text"
@@ -180,12 +155,7 @@ export const BookmarkManager = ({}) => {
             </Box>
             <Box display="flex" alignItems="center">
               <input
-                style={{
-                  padding: "0.5rem",
-                  height: "1.2rem",
-                  maxWidth: "1200px",
-                  minWidth: "800px",
-                }}
+                className="text-bookmark-manager"
                 id="title"
                 placeholder="タイトル"
                 type="text"
