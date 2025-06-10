@@ -67,28 +67,21 @@ export const BookmarkManager = ({}) => {
             >
               <>
                 <button
-                  color="primary"
                   className="button-bookmark-manager"
                   onClick={() => setSelectedBookmark(null)}
                 >
                   選択解除
                 </button>
-                <button
-                  color="primary"
-                  className="button-bookmark-manager"
-                  onClick={openClick}
-                >
+                <button className="button-bookmark-manager" onClick={openClick}>
                   開く
                 </button>
                 <button
-                  color="primary"
                   className="button-bookmark-manager"
                   onClick={deleteClick}
                 >
                   削除
                 </button>
                 <button
-                  color="primary"
                   className="button-bookmark-manager"
                   onClick={updateClick}
                 >
@@ -103,7 +96,6 @@ export const BookmarkManager = ({}) => {
             >
               <>
                 <button
-                  color="primary"
                   className="button-bookmark-manager"
                   onClick={titleClick}
                 >
@@ -111,26 +103,17 @@ export const BookmarkManager = ({}) => {
                 </button>
 
                 <button
-                  color="primary"
                   className="button-bookmark-manager"
                   onClick={clearClick}
                 >
                   クリア
                 </button>
 
-                <button
-                  color="primary"
-                  className="button-bookmark-manager"
-                  onClick={urlClick}
-                >
+                <button className="button-bookmark-manager" onClick={urlClick}>
                   パラメータ
                 </button>
 
-                <button
-                  color="primary"
-                  className="button-bookmark-manager"
-                  onClick={pathClick}
-                >
+                <button className="button-bookmark-manager" onClick={pathClick}>
                   ←
                 </button>
               </>
@@ -170,7 +153,7 @@ export const BookmarkManager = ({}) => {
         )}
       </div>
 
-      {bookmarks.length > 0 && !isBookmarkSelected() && (
+      {bookmarks.length > 0 && (
         <BookmarkTable
           bookmarks={bookmarks}
           onSelectBookmark={setSelectedBookmark}
