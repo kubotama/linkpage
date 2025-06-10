@@ -1,1 +1,11 @@
+@import "tailwindcss/base";
+@import "tailwindcss/components";
+@import "tailwindcss/utilities";
 
+.button-bookmark-manager {
+  @apply w-28 mx-auto bg-blue-500 text-white p-1 rounded-md text-sm;
+}
+
+.text-bookmark-manager {
+  @apply min-w-[600px] max-w-none border-2 p-2 m-1 bg-gray-700 text-gray-100;
+}

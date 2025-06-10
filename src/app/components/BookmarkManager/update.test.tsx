@@ -7,6 +7,7 @@ import { fireEvent, render, screen, waitFor } from "@testing-library/react";
 
 import { Bookmark, createBookmarkList } from "../../types/Bookmark";
 import { BookmarkManager } from "../BookmarkManager";
+import { clickBookmark } from "./select.test";
 
 const updateLabel = "タイトル更新";
 
@@ -63,31 +64,11 @@ describe("タイトルの更新ボタン", () => {
     // また、アクションボタンが表示されていることで、メインUIの準備ができていることを確認
     await waitFor(() => {
       expect(screen.getByText(mockBookmarks[0].title)).toBeInTheDocument();
-      expect(
-        screen.getByRole("button", { name: "タイトル" })
-      ).toBeInTheDocument();
     });
 
     // クリックするブックマークを選択（例：2番目のブックマーク）
     const bookmarkToSelect = mockBookmarks[1]; // Google
-
-    // 選択したブックマークに対応するテーブル行を見つける
-    // 行にはブックマークのタイトルを持つリンクが含まれている
-    const bookmarkLinkInRow = screen.getByRole("link", {
-      name: bookmarkToSelect.title,
-    });
-    const tableRow = bookmarkLinkInRow.closest("tr");
-
-    if (!tableRow) {
-      throw new Error(
-        `ブックマーク "${bookmarkToSelect.title}" のテーブル行が見つかりませんでした。`
-      );
-    }
-
-    // テーブル行のクリックをシミュレート
-    await act(async () => {
-      fireEvent.click(tableRow);
-    });
+    await clickBookmark(bookmarkToSelect);
 
     await waitFor(() => {
       const updateButton = screen.getByRole("button", { name: updateLabel });
@@ -105,34 +86,13 @@ describe("タイトルの更新ボタン", () => {
     // また、アクションボタンが表示されていることで、メインUIの準備ができていることを確認
     await waitFor(() => {
       expect(screen.getByText(mockBookmarks[0].title)).toBeInTheDocument();
-      expect(
-        screen.getByRole("button", { name: "タイトル" })
-      ).toBeInTheDocument();
     });
 
     // クリックするブックマークを選択（例：2番目のブックマーク）
     const bookmarkToSelect = mockBookmarks[1]; // Google
-
-    // 選択したブックマークに対応するテーブル行を見つける
-    // 行にはブックマークのタイトルを持つリンクが含まれている
-    const bookmarkLinkInRow = screen.getByRole("link", {
-      name: bookmarkToSelect.title,
-    });
-    const tableRow = bookmarkLinkInRow.closest("tr");
-
-    if (!tableRow) {
-      throw new Error(
-        `ブックマーク "${bookmarkToSelect.title}" のテーブル行が見つかりませんでした。`
-      );
-    }
+    await clickBookmark(bookmarkToSelect);
 
     fetchMock.resetMocks();
-    fetchMock.mockResponseOnce("", { status: 200 });
-
-    // テーブル行のクリックをシミュレート
-    await act(async () => {
-      fireEvent.click(tableRow);
-    });
 
     const updateButton = screen.getByRole("button", { name: updateLabel });
     const titleInput = screen.getByRole("textbox", { name: "title" });
@@ -174,36 +134,15 @@ describe("タイトルの更新ボタン", () => {
     // また、アクションボタンが表示されていることで、メインUIの準備ができていることを確認
     await waitFor(() => {
       expect(screen.getByText(mockBookmarks[0].title)).toBeInTheDocument();
-      expect(
-        screen.getByRole("button", { name: "タイトル" })
-      ).toBeInTheDocument();
     });
 
     // クリックするブックマークを選択（例：2番目のブックマーク）
     const bookmarkToSelect = mockBookmarks[1]; // Google
+    await clickBookmark(bookmarkToSelect);
 
-    // 選択したブックマークに対応するテーブル行を見つける
-    // 行にはブックマークのタイトルを持つリンクが含まれている
-    const bookmarkLinkInRow = screen.getByRole("link", {
-      name: bookmarkToSelect.title,
-    });
-    const tableRow = bookmarkLinkInRow.closest("tr");
-
-    if (!tableRow) {
-      throw new Error(
-        `ブックマーク "${bookmarkToSelect.title}" のテーブル行が見つかりませんでした。`
-      );
-    }
-
-    fetchMock.resetMocks();
     fetchMock.mockResponseOnce("指定されたブックマークがありません。", {
       status: 404,
       headers: { "Content-Type": "text/plain" },
-    });
-
-    // テーブル行のクリックをシミュレート
-    await act(async () => {
-      fireEvent.click(tableRow);
     });
 
     const updateButton = screen.getByRole("button", { name: updateLabel });
@@ -213,14 +152,14 @@ describe("タイトルの更新ボタン", () => {
     });
 
     await waitFor(() => {
-      // 画面の更新の確認
+      expect(screen.getByTestId("bookmark-message")).toHaveTextContent(
+        "ブックマークのタイトル更新中にエラーが発生しました。"
+      );
+      // 更新操作のコンテキストが依然として表示されていることを確認
       expect(screen.getByText(bookmarkToSelect.title)).toBeInTheDocument();
       expect(
         screen.getByRole("button", { name: updateLabel })
       ).toBeInTheDocument();
-      expect(screen.getByTestId("bookmark-message")).toHaveTextContent(
-        "ブックマークのタイトル更新中にエラーが発生しました。"
-      );
     });
   });
 
@@ -234,36 +173,16 @@ describe("タイトルの更新ボタン", () => {
     // また、アクションボタンが表示されていることで、メインUIの準備ができていることを確認
     await waitFor(() => {
       expect(screen.getByText(mockBookmarks[0].title)).toBeInTheDocument();
-      expect(
-        screen.getByRole("button", { name: "タイトル" })
-      ).toBeInTheDocument();
     });
 
     // クリックするブックマークを選択（例：2番目のブックマーク）
     const bookmarkToSelect = mockBookmarks[1]; // Google
-
-    // 選択したブックマークに対応するテーブル行を見つける
-    // 行にはブックマークのタイトルを持つリンクが含まれている
-    const bookmarkLinkInRow = screen.getByRole("link", {
-      name: bookmarkToSelect.title,
-    });
-    const tableRow = bookmarkLinkInRow.closest("tr");
-
-    if (!tableRow) {
-      throw new Error(
-        `ブックマーク "${bookmarkToSelect.title}" のテーブル行が見つかりませんでした。`
-      );
-    }
+    await clickBookmark(bookmarkToSelect);
 
     fetchMock.resetMocks();
     fetchMock.mockResponseOnce("タイトルが指定されていません。", {
       status: 400,
       headers: { "Content-Type": "text/plain" },
-    });
-
-    // テーブル行のクリックをシミュレート
-    await act(async () => {
-      fireEvent.click(tableRow);
     });
 
     const updateButton = screen.getByRole("button", { name: updateLabel });
@@ -273,14 +192,14 @@ describe("タイトルの更新ボタン", () => {
     });
 
     await waitFor(() => {
-      // 画面の更新の確認
+      expect(screen.getByTestId("bookmark-message")).toHaveTextContent(
+        "ブックマークのタイトル更新中にエラーが発生しました。"
+      );
+      // 更新操作のコンテキストが依然として表示されていることを確認
       expect(screen.getByText(bookmarkToSelect.title)).toBeInTheDocument();
       expect(
         screen.getByRole("button", { name: updateLabel })
       ).toBeInTheDocument();
-      expect(screen.getByTestId("bookmark-message")).toHaveTextContent(
-        "ブックマークのタイトル更新中にエラーが発生しました。"
-      );
     });
   });
 
@@ -294,36 +213,15 @@ describe("タイトルの更新ボタン", () => {
     // また、アクションボタンが表示されていることで、メインUIの準備ができていることを確認
     await waitFor(() => {
       expect(screen.getByText(mockBookmarks[0].title)).toBeInTheDocument();
-      expect(
-        screen.getByRole("button", { name: "タイトル" })
-      ).toBeInTheDocument();
     });
 
     // クリックするブックマークを選択（例：2番目のブックマーク）
     const bookmarkToSelect = mockBookmarks[1]; // Google
+    await clickBookmark(bookmarkToSelect);
 
-    // 選択したブックマークに対応するテーブル行を見つける
-    // 行にはブックマークのタイトルを持つリンクが含まれている
-    const bookmarkLinkInRow = screen.getByRole("link", {
-      name: bookmarkToSelect.title,
-    });
-    const tableRow = bookmarkLinkInRow.closest("tr");
-
-    if (!tableRow) {
-      throw new Error(
-        `ブックマーク "${bookmarkToSelect.title}" のテーブル行が見つかりませんでした。`
-      );
-    }
-
-    fetchMock.resetMocks();
     fetchMock.mockResponseOnce("リクエストにIDがありませんでした。", {
       status: 400,
       headers: { "Content-Type": "text/plain" },
-    });
-
-    // テーブル行のクリックをシミュレート
-    await act(async () => {
-      fireEvent.click(tableRow);
     });
 
     const updeteButton = screen.getByRole("button", { name: updateLabel });
@@ -333,14 +231,14 @@ describe("タイトルの更新ボタン", () => {
     });
 
     await waitFor(() => {
-      // 画面の更新の確認
+      expect(screen.getByTestId("bookmark-message")).toHaveTextContent(
+        "ブックマークのタイトル更新中にエラーが発生しました。"
+      );
+      // 更新操作のコンテキストが依然として表示されていることを確認
       expect(screen.getByText(bookmarkToSelect.title)).toBeInTheDocument();
       expect(
         screen.getByRole("button", { name: updateLabel })
       ).toBeInTheDocument();
-      expect(screen.getByTestId("bookmark-message")).toHaveTextContent(
-        "ブックマークのタイトル更新中にエラーが発生しました。"
-      );
     });
   });
 
@@ -354,36 +252,15 @@ describe("タイトルの更新ボタン", () => {
     // また、アクションボタンが表示されていることで、メインUIの準備ができていることを確認
     await waitFor(() => {
       expect(screen.getByText(mockBookmarks[0].title)).toBeInTheDocument();
-      expect(
-        screen.getByRole("button", { name: "タイトル" })
-      ).toBeInTheDocument();
     });
 
     // クリックするブックマークを選択（例：2番目のブックマーク）
     const bookmarkToSelect = mockBookmarks[1]; // Google
+    await clickBookmark(bookmarkToSelect);
 
-    // 選択したブックマークに対応するテーブル行を見つける
-    // 行にはブックマークのタイトルを持つリンクが含まれている
-    const bookmarkLinkInRow = screen.getByRole("link", {
-      name: bookmarkToSelect.title,
-    });
-    const tableRow = bookmarkLinkInRow.closest("tr");
-
-    if (!tableRow) {
-      throw new Error(
-        `ブックマーク "${bookmarkToSelect.title}" のテーブル行が見つかりませんでした。`
-      );
-    }
-
-    fetchMock.resetMocks();
     fetchMock.mockResponseOnce("IDは正の整数である必要があります。", {
       status: 400,
       headers: { "Content-Type": "text/plain" },
-    });
-
-    // テーブル行のクリックをシミュレート
-    await act(async () => {
-      fireEvent.click(tableRow);
     });
 
     const updaeteButton = screen.getByRole("button", { name: updateLabel });
@@ -393,14 +270,14 @@ describe("タイトルの更新ボタン", () => {
     });
 
     await waitFor(() => {
-      // 画面の更新の確認
+      expect(screen.getByTestId("bookmark-message")).toHaveTextContent(
+        "ブックマークのタイトル更新中にエラーが発生しました。"
+      );
+      // 更新操作のコンテキストが依然として表示されていることを確認
       expect(screen.getByText(bookmarkToSelect.title)).toBeInTheDocument();
       expect(
         screen.getByRole("button", { name: updateLabel })
       ).toBeInTheDocument();
-      expect(screen.getByTestId("bookmark-message")).toHaveTextContent(
-        "ブックマークのタイトル更新中にエラーが発生しました。"
-      );
     });
   });
 
@@ -414,36 +291,15 @@ describe("タイトルの更新ボタン", () => {
     // また、アクションボタンが表示されていることで、メインUIの準備ができていることを確認
     await waitFor(() => {
       expect(screen.getByText(mockBookmarks[0].title)).toBeInTheDocument();
-      expect(
-        screen.getByRole("button", { name: "タイトル" })
-      ).toBeInTheDocument();
     });
 
     // クリックするブックマークを選択（例：2番目のブックマーク）
     const bookmarkToSelect = mockBookmarks[1]; // Google
+    await clickBookmark(bookmarkToSelect);
 
-    // 選択したブックマークに対応するテーブル行を見つける
-    // 行にはブックマークのタイトルを持つリンクが含まれている
-    const bookmarkLinkInRow = screen.getByRole("link", {
-      name: bookmarkToSelect.title,
-    });
-    const tableRow = bookmarkLinkInRow.closest("tr");
-
-    if (!tableRow) {
-      throw new Error(
-        `ブックマーク "${bookmarkToSelect.title}" のテーブル行が見つかりませんでした。`
-      );
-    }
-
-    fetchMock.resetMocks();
     fetchMock.mockResponseOnce("サーバーで予期せぬエラーが発生しました。", {
       status: 500,
       headers: { "Content-Type": "text/plain" },
-    });
-
-    // テーブル行のクリックをシミュレート
-    await act(async () => {
-      fireEvent.click(tableRow);
     });
 
     const updateButton = screen.getByRole("button", { name: updateLabel });
@@ -453,14 +309,14 @@ describe("タイトルの更新ボタン", () => {
     });
 
     await waitFor(() => {
-      // 画面の更新の確認
+      expect(screen.getByTestId("bookmark-message")).toHaveTextContent(
+        "ブックマークのタイトル更新中にエラーが発生しました。"
+      );
+      // 更新操作のコンテキストが依然として表示されていることを確認
       expect(screen.getByText(bookmarkToSelect.title)).toBeInTheDocument();
       expect(
         screen.getByRole("button", { name: updateLabel })
       ).toBeInTheDocument();
-      expect(screen.getByTestId("bookmark-message")).toHaveTextContent(
-        "ブックマークのタイトル更新中にエラーが発生しました。"
-      );
     });
   });
 });

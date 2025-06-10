@@ -63,9 +63,6 @@ describe("削除ボタン", () => {
     // また、アクションボタンが表示されていることで、メインUIの準備ができていることを確認
     await waitFor(() => {
       expect(screen.getByText(mockBookmarks[0].title)).toBeInTheDocument();
-      expect(
-        screen.getByRole("button", { name: "タイトル" })
-      ).toBeInTheDocument();
     });
 
     // クリックするブックマークを選択（例：2番目のブックマーク）
@@ -107,9 +104,6 @@ describe("削除ボタン", () => {
     // また、アクションボタンが表示されていることで、メインUIの準備ができていることを確認
     await waitFor(() => {
       expect(screen.getByText(mockBookmarks[0].title)).toBeInTheDocument();
-      expect(
-        screen.getByRole("button", { name: "タイトル" })
-      ).toBeInTheDocument();
     });
 
     // クリックするブックマークを選択（例：2番目のブックマーク）
@@ -176,9 +170,6 @@ describe("削除ボタン", () => {
     // また、アクションボタンが表示されていることで、メインUIの準備ができていることを確認
     await waitFor(() => {
       expect(screen.getByText(mockBookmarks[0].title)).toBeInTheDocument();
-      expect(
-        screen.getByRole("button", { name: "タイトル" })
-      ).toBeInTheDocument();
     });
 
     // クリックするブックマークを選択（例：2番目のブックマーク）
@@ -219,11 +210,12 @@ describe("削除ボタン", () => {
 
     await waitFor(() => {
       // 画面の更新の確認
-      expect(screen.getByText(bookmarkToSelect.title)).toBeInTheDocument();
-      expect(screen.getByRole("button", { name: "削除" })).toBeInTheDocument();
       expect(screen.getByTestId("bookmark-message")).toHaveTextContent(
         "ブックマークの削除中にエラーが発生しました。"
       );
+      // 削除操作のコンテキスト（選択されたブックマークのタイトルや削除ボタン）が依然として表示されていることを確認
+      expect(screen.getByText(bookmarkToSelect.title)).toBeInTheDocument();
+      expect(screen.getByRole("button", { name: "削除" })).toBeInTheDocument();
     });
   });
 
@@ -239,9 +231,6 @@ describe("削除ボタン", () => {
     // また、アクションボタンが表示されていることで、メインUIの準備ができていることを確認
     await waitFor(() => {
       expect(screen.getByText(mockBookmarks[0].title)).toBeInTheDocument();
-      expect(
-        screen.getByRole("button", { name: "タイトル" })
-      ).toBeInTheDocument();
     });
 
     // クリックするブックマークを選択（例：2番目のブックマーク）
@@ -279,11 +268,12 @@ describe("削除ボタン", () => {
 
     await waitFor(() => {
       // 画面の更新の確認
-      expect(screen.getByText(bookmarkToSelect.title)).toBeInTheDocument();
-      expect(screen.getByRole("button", { name: "削除" })).toBeInTheDocument();
       expect(screen.getByTestId("bookmark-message")).toHaveTextContent(
         "ブックマークの削除中にエラーが発生しました。"
       );
+      // 削除操作のコンテキスト（選択されたブックマークのタイトルや削除ボタン）が依然として表示されていることを確認
+      expect(screen.getByText(bookmarkToSelect.title)).toBeInTheDocument();
+      expect(screen.getByRole("button", { name: "削除" })).toBeInTheDocument();
     });
   });
 
@@ -299,9 +289,6 @@ describe("削除ボタン", () => {
     // また、アクションボタンが表示されていることで、メインUIの準備ができていることを確認
     await waitFor(() => {
       expect(screen.getByText(mockBookmarks[0].title)).toBeInTheDocument();
-      expect(
-        screen.getByRole("button", { name: "タイトル" })
-      ).toBeInTheDocument();
     });
 
     // クリックするブックマークを選択（例：2番目のブックマーク）
@@ -339,11 +326,12 @@ describe("削除ボタン", () => {
 
     await waitFor(() => {
       // 画面の更新の確認
-      expect(screen.getByText(bookmarkToSelect.title)).toBeInTheDocument();
-      expect(screen.getByRole("button", { name: "削除" })).toBeInTheDocument();
       expect(screen.getByTestId("bookmark-message")).toHaveTextContent(
         "ブックマークの削除中にサーバーで予期せぬエラーが発生しました。"
       );
+      // 削除操作のコンテキスト（選択されたブックマークのタイトルや削除ボタン）が依然として表示されていることを確認
+      expect(screen.getByText(bookmarkToSelect.title)).toBeInTheDocument();
+      expect(screen.getByRole("button", { name: "削除" })).toBeInTheDocument();
     });
   });
 });
