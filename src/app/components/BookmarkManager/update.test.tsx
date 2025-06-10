@@ -155,6 +155,11 @@ describe("タイトルの更新ボタン", () => {
       expect(screen.getByTestId("bookmark-message")).toHaveTextContent(
         "ブックマークのタイトル更新中にエラーが発生しました。"
       );
+      // 更新操作のコンテキストが依然として表示されていることを確認
+      expect(screen.getByText(bookmarkToSelect.title)).toBeInTheDocument();
+      expect(
+        screen.getByRole("button", { name: updateLabel })
+      ).toBeInTheDocument();
     });
   });
 
@@ -190,6 +195,11 @@ describe("タイトルの更新ボタン", () => {
       expect(screen.getByTestId("bookmark-message")).toHaveTextContent(
         "ブックマークのタイトル更新中にエラーが発生しました。"
       );
+      // 更新操作のコンテキストが依然として表示されていることを確認
+      expect(screen.getByText(bookmarkToSelect.title)).toBeInTheDocument();
+      expect(
+        screen.getByRole("button", { name: updateLabel })
+      ).toBeInTheDocument();
     });
   });
 
@@ -224,6 +234,11 @@ describe("タイトルの更新ボタン", () => {
       expect(screen.getByTestId("bookmark-message")).toHaveTextContent(
         "ブックマークのタイトル更新中にエラーが発生しました。"
       );
+      // 更新操作のコンテキストが依然として表示されていることを確認
+      expect(screen.getByText(bookmarkToSelect.title)).toBeInTheDocument();
+      expect(
+        screen.getByRole("button", { name: updateLabel })
+      ).toBeInTheDocument();
     });
   });
 
@@ -258,6 +273,11 @@ describe("タイトルの更新ボタン", () => {
       expect(screen.getByTestId("bookmark-message")).toHaveTextContent(
         "ブックマークのタイトル更新中にエラーが発生しました。"
       );
+      // 更新操作のコンテキストが依然として表示されていることを確認
+      expect(screen.getByText(bookmarkToSelect.title)).toBeInTheDocument();
+      expect(
+        screen.getByRole("button", { name: updateLabel })
+      ).toBeInTheDocument();
     });
   });
 
@@ -292,6 +312,11 @@ describe("タイトルの更新ボタン", () => {
       expect(screen.getByTestId("bookmark-message")).toHaveTextContent(
         "ブックマークのタイトル更新中にエラーが発生しました。"
       );
+      // 更新操作のコンテキストが依然として表示されていることを確認
+      expect(screen.getByText(bookmarkToSelect.title)).toBeInTheDocument();
+      expect(
+        screen.getByRole("button", { name: updateLabel })
+      ).toBeInTheDocument();
     });
   });
 });
