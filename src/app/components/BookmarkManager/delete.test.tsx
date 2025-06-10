@@ -213,6 +213,9 @@ describe("削除ボタン", () => {
       expect(screen.getByTestId("bookmark-message")).toHaveTextContent(
         "ブックマークの削除中にエラーが発生しました。"
       );
+      // 削除操作のコンテキスト（選択されたブックマークのタイトルや削除ボタン）が依然として表示されていることを確認
+      expect(screen.getByText(bookmarkToSelect.title)).toBeInTheDocument();
+      expect(screen.getByRole("button", { name: "削除" })).toBeInTheDocument();
     });
   });
 
@@ -268,6 +271,9 @@ describe("削除ボタン", () => {
       expect(screen.getByTestId("bookmark-message")).toHaveTextContent(
         "ブックマークの削除中にエラーが発生しました。"
       );
+      // 削除操作のコンテキスト（選択されたブックマークのタイトルや削除ボタン）が依然として表示されていることを確認
+      expect(screen.getByText(bookmarkToSelect.title)).toBeInTheDocument();
+      expect(screen.getByRole("button", { name: "削除" })).toBeInTheDocument();
     });
   });
 
@@ -323,6 +329,9 @@ describe("削除ボタン", () => {
       expect(screen.getByTestId("bookmark-message")).toHaveTextContent(
         "ブックマークの削除中にサーバーで予期せぬエラーが発生しました。"
       );
+      // 削除操作のコンテキスト（選択されたブックマークのタイトルや削除ボタン）が依然として表示されていることを確認
+      expect(screen.getByText(bookmarkToSelect.title)).toBeInTheDocument();
+      expect(screen.getByRole("button", { name: "削除" })).toBeInTheDocument();
     });
   });
 });
