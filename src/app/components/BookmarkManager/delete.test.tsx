@@ -1,9 +1,10 @@
 import "@testing-library/jest-dom";
 
-import fetchMock from "jest-fetch-mock";
+// import fetchMock from "jest-fetch-mock";
 import { act } from "react";
 
 import { fireEvent, render, screen, waitFor } from "@testing-library/react";
+import { describe, it, expect, vi, beforeEach } from "vitest";
 
 import { Bookmark, createBookmarkList } from "../../types/Bookmark";
 import { BookmarkManager } from "../BookmarkManager";
@@ -31,10 +32,23 @@ const mockBookmarks: Bookmark[] = createBookmarkList([
   },
 ]);
 
+const mockFetch = vi.fn();
+
 describe("削除ボタン", () => {
+  // beforeEach(() => {
+  //   fetchMock.resetMocks();
+  //   fetchMock.mockResponseOnce(JSON.stringify(mockBookmarks));
+  // });
   beforeEach(() => {
-    fetchMock.resetMocks();
-    fetchMock.mockResponseOnce(JSON.stringify(mockBookmarks));
+    // fetchMock.resetMocks();
+    // fetchMock.mockResponseOnce(JSON.stringify(mockBookmarks));
+    global.fetch = mockFetch;
+    mockFetch.mockReset();
+    mockFetch.mockResolvedValueOnce({
+      ok: true,
+      status: 200,
+      json: async () => mockBookmarks,
+    });
   });
 
   it("ブックマークが選択されていない場合には削除ボタンは表示されない", async () => {
@@ -122,8 +136,13 @@ describe("削除ボタン", () => {
       );
     }
 
-    fetchMock.resetMocks();
-    fetchMock.mockResponseOnce("", { status: 204 });
+    // fetchMock.resetMocks();
+    // fetchMock.mockResponseOnce("", { status: 204 });
+    mockFetch.mockReset();
+    mockFetch.mockResolvedValueOnce({
+      ok: true,
+      status: 204,
+    });
 
     // テーブル行のクリックをシミュレート
     await act(async () => {
@@ -138,9 +157,9 @@ describe("削除ボタン", () => {
 
     await waitFor(() => {
       // APIの呼び出しの確認
-      expect(fetchMock).toHaveBeenCalledTimes(1);
-      expect(fetchMock.mock.calls[0][0]).toEqual("/api/bookmark/delete");
-      expect(fetchMock.mock.calls[0][1]).toEqual({
+      expect(mockFetch).toHaveBeenCalledTimes(1);
+      expect(mockFetch.mock.calls[0][0]).toEqual("/api/bookmark/delete");
+      expect(mockFetch.mock.calls[0][1]).toEqual({
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -188,14 +207,20 @@ describe("削除ボタン", () => {
       );
     }
 
-    fetchMock.resetMocks();
-    fetchMock.mockResponseOnce(
-      "指定したIDのブックマークが見つかりませんでした。",
-      {
-        status: 404,
-        headers: { "Content-Type": "text/plain" },
-      }
-    );
+    // fetchMock.resetMocks();
+    // fetchMock.mockResponseOnce(
+    //   "指定したIDのブックマークが見つかりませんでした。",
+    //   {
+    //     status: 404,
+    //     headers: { "Content-Type": "text/plain" },
+    //   }
+    // );
+    mockFetch.mockReset();
+    mockFetch.mockResolvedValueOnce({
+      ok: true,
+      status: 404,
+      headers: { "Content-Type": "text/plain" },
+    });
 
     // テーブル行のクリックをシミュレート
     await act(async () => {
@@ -211,7 +236,7 @@ describe("削除ボタン", () => {
     await waitFor(() => {
       // 画面の更新の確認
       expect(screen.getByTestId("bookmark-message")).toHaveTextContent(
-        "ブックマークの削除中にエラーが発生しました。"
+        "ブックマークの削除中にサーバーで予期せぬエラーが発生しました。"
       );
       // 削除操作のコンテキスト（選択されたブックマークのタイトルや削除ボタン）が依然として表示されていることを確認
       expect(screen.getByText(bookmarkToSelect.title)).toBeInTheDocument();
@@ -249,8 +274,14 @@ describe("削除ボタン", () => {
       );
     }
 
-    fetchMock.resetMocks();
-    fetchMock.mockResponseOnce("リクエストにIDがありませんでした。", {
+    // fetchMock.resetMocks();
+    // fetchMock.mockResponseOnce("リクエストにIDがありませんでした。", {
+    //   status: 400,
+    //   headers: { "Content-Type": "text/plain" },
+    // });
+    mockFetch.mockReset();
+    mockFetch.mockResolvedValueOnce({
+      ok: true,
       status: 400,
       headers: { "Content-Type": "text/plain" },
     });
@@ -269,7 +300,7 @@ describe("削除ボタン", () => {
     await waitFor(() => {
       // 画面の更新の確認
       expect(screen.getByTestId("bookmark-message")).toHaveTextContent(
-        "ブックマークの削除中にエラーが発生しました。"
+        "ブックマークの削除中にサーバーで予期せぬエラーが発生しました。"
       );
       // 削除操作のコンテキスト（選択されたブックマークのタイトルや削除ボタン）が依然として表示されていることを確認
       expect(screen.getByText(bookmarkToSelect.title)).toBeInTheDocument();
@@ -307,8 +338,15 @@ describe("削除ボタン", () => {
       );
     }
 
-    fetchMock.resetMocks();
-    fetchMock.mockResponseOnce("サーバーで予期せぬエラーが発生しました。", {
+    // fetchMock.resetMocks();
+    // fetchMock.mockResponseOnce("サーバーで予期せぬエラーが発生しました。", {
+    //   status: 500,
+    //   headers: { "Content-Type": "text/plain" },
+    // });
+    mockFetch.mockReset();
+    mockFetch.mockResolvedValueOnce({
+      ok: true,
+      // status: 204,
       status: 500,
       headers: { "Content-Type": "text/plain" },
     });

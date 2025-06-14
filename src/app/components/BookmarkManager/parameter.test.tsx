@@ -1,7 +1,8 @@
 import "@testing-library/jest-dom";
 
-import fetchMock from "jest-fetch-mock";
+// import fetchMock from "jest-fetch-mock";
 import { act } from "react";
+import { describe, expect, it, vi } from "vitest";
 
 import { fireEvent, render, screen, waitFor } from "@testing-library/react";
 
@@ -28,12 +29,21 @@ const mockBookmarks: Bookmark[] = createBookmarkList([
   },
 ]);
 
+const mockFetch = vi.fn();
+
 describe("「パラメータ」ボタン: URLから無駄な文字列を削除する#61", () => {
   describe("#や?の後ろを削除する", () => {
     it("https://mail.google.com/mail/u/0/#inbox", async () => {
       const url = "https://mail.google.com/mail/u/0/#inbox";
 
-      fetchMock.mockResponseOnce(JSON.stringify(mockBookmarks));
+      // fetchMock.mockResponseOnce(JSON.stringify(mockBookmarks));
+      global.fetch = mockFetch;
+      mockFetch.mockReset();
+      mockFetch.mockResolvedValueOnce({
+        ok: true,
+        status: 200,
+        json: async () => mockBookmarks,
+      });
 
       await act(async () => {
         render(<BookmarkManager />);
@@ -60,8 +70,12 @@ describe("「パラメータ」ボタン: URLから無駄な文字列を削除�
       const url =
         "https://xtech.nikkei.com/atcl/nxt/column/18/00148/030500376/?n_cid=nbpnxt_mled_itmh";
 
-      fetchMock.mockResponseOnce(JSON.stringify(mockBookmarks));
-
+      // fetchMock.mockResponseOnce(JSON.stringify(mockBookmarks));
+      mockFetch.mockResolvedValueOnce({
+        ok: true,
+        status: 200,
+        json: async () => mockBookmarks,
+      });
       await act(async () => {
         render(<BookmarkManager />);
       });
@@ -88,7 +102,12 @@ describe("「パラメータ」ボタン: URLから無駄な文字列を削除�
     it("https://mail.google.com/mail/u/0/", async () => {
       const url = "https://mail.google.com/mail/u/0/";
 
-      fetchMock.mockResponseOnce(JSON.stringify(mockBookmarks));
+      // fetchMock.mockResponseOnce(JSON.stringify(mockBookmarks));
+      mockFetch.mockResolvedValueOnce({
+        ok: true,
+        status: 200,
+        json: async () => mockBookmarks,
+      });
 
       await act(async () => {
         render(<BookmarkManager />);

@@ -23,7 +23,7 @@ export const BookmarkTable: React.FC<{
       <Table aria-label="bookmarks table">
         <TableHead>
           <TableRow>
-            <TableCell>Title</TableCell>
+            <TableCell>タイトル</TableCell>
           </TableRow>
         </TableHead>
         <TableBody>

@@ -1,13 +1,14 @@
 import "@testing-library/jest-dom";
 
-import fetchMock from "jest-fetch-mock";
+// import fetchMock from "jest-fetch-mock";
 import { act } from "react";
 
 import { fireEvent, render, screen, waitFor } from "@testing-library/react";
+import { describe, it, expect, vi, beforeEach } from "vitest";
 
 import { Bookmark, createBookmarkList } from "../../types/Bookmark";
 import { BookmarkManager } from "../BookmarkManager";
-import { clickBookmark } from "./select.test";
+import { clickBookmark } from "./click";
 
 const mockBookmarks: Bookmark[] = createBookmarkList([
   {
@@ -28,10 +29,23 @@ const mockBookmarks: Bookmark[] = createBookmarkList([
   },
 ]);
 
+const mockFetch = vi.fn();
+
 describe("「←」ボタン: URLから、/の階層を一段、削除する", () => {
+  beforeEach(() => {
+    // fetchMock.resetMocks();
+    // fetchMock.mockResponseOnce(JSON.stringify(mockBookmarks));
+    mockFetch.mockReset();
+    global.fetch = mockFetch;
+    mockFetch.mockResolvedValueOnce({
+      ok: true,
+      status: 200,
+      json: async () => mockBookmarks,
+    });
+  });
   it("https://mail.google.com/mail/u/0/", async () => {
     const url = "https://mail.google.com/mail/u/0/#inbox";
-    fetchMock.mockResponseOnce(JSON.stringify(mockBookmarks));
+    // fetchMock.mockResponseOnce(JSON.stringify(mockBookmarks));
 
     await act(async () => {
       render(<BookmarkManager />);
@@ -56,7 +70,7 @@ describe("「←」ボタン: URLから、/の階層を一段、削除する", (
 
   it("https://xtech.nikkei.com/atcl/nxt/column/18/00148/030500376", async () => {
     const url = "https://xtech.nikkei.com/atcl/nxt/column/18/00148/030500376";
-    fetchMock.mockResponseOnce(JSON.stringify(mockBookmarks));
+    // fetchMock.mockResponseOnce(JSON.stringify(mockBookmarks));
 
     await act(async () => {
       render(<BookmarkManager />);
@@ -83,7 +97,7 @@ describe("「←」ボタン: URLから、/の階層を一段、削除する", (
 
   it("https://xtech.nikkei.com/atcl/nxt/column/18/00148/030500376/", async () => {
     const url = "https://xtech.nikkei.com/atcl/nxt/column/18/00148/030500376/";
-    fetchMock.mockResponseOnce(JSON.stringify(mockBookmarks));
+    // fetchMock.mockResponseOnce(JSON.stringify(mockBookmarks));
 
     await act(async () => {
       render(<BookmarkManager />);
@@ -110,7 +124,7 @@ describe("「←」ボタン: URLから、/の階層を一段、削除する", (
 
   it("https://xtech.nikkei.com", async () => {
     const url = "https://xtech.nikkei.com";
-    fetchMock.mockResponseOnce(JSON.stringify(mockBookmarks));
+    // fetchMock.mockResponseOnce(JSON.stringify(mockBookmarks));
 
     await act(async () => {
       render(<BookmarkManager />);
@@ -136,7 +150,7 @@ describe("「←」ボタン: URLから、/の階層を一段、削除する", (
   it("https://xtech.nikkei.com/", async () => {
     const url = "https://xtech.nikkei.com/";
 
-    fetchMock.mockResponseOnce(JSON.stringify(mockBookmarks));
+    // fetchMock.mockResponseOnce(JSON.stringify(mockBookmarks));
 
     await act(async () => {
       render(<BookmarkManager />);

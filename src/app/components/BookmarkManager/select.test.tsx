@@ -1,9 +1,10 @@
 import "@testing-library/jest-dom";
 
-import fetchMock from "jest-fetch-mock";
+// import fetchMock from "jest-fetch-mock";
 import { act } from "react";
 
 import { fireEvent, render, screen, waitFor } from "@testing-library/react";
+import { describe, it, expect, vi, beforeEach } from "vitest";
 
 import { Bookmark, createBookmarkList } from "../../types/Bookmark";
 import { BookmarkManager } from "../BookmarkManager";
@@ -50,10 +51,19 @@ const mockBookmarks: Bookmark[] = createBookmarkList([
   },
 ]);
 
+const mockFetch = vi.fn();
+
 describe("ブックマークの選択", () => {
   beforeEach(() => {
-    fetchMock.resetMocks();
-    fetchMock.mockResponseOnce(JSON.stringify(mockBookmarks));
+    // fetchMock.resetMocks();
+    // fetchMock.mockResponseOnce(JSON.stringify(mockBookmarks));
+    mockFetch.mockReset();
+    global.fetch = mockFetch;
+    mockFetch.mockResolvedValueOnce({
+      ok: true,
+      status: 200,
+      json: async () => mockBookmarks,
+    });
   });
 
   it("初期状態では、URLとタイトルのテキストボックスには、なにも表示されていない。選択解除のボタンが表示されていない。", async () => {

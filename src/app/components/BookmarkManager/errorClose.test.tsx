@@ -1,9 +1,10 @@
 import "@testing-library/jest-dom";
 
-import fetchMock from "jest-fetch-mock";
+// import fetchMock from "jest-fetch-mock";
 import { act } from "react";
 
 import { render, screen } from "@testing-library/react";
+import { describe, it, expect, vi, beforeEach } from "vitest";
 
 import { Bookmark, createBookmarkList } from "../../types/Bookmark";
 import { BookmarkManager } from "../BookmarkManager";
@@ -27,11 +28,19 @@ const mockBookmarks: Bookmark[] = createBookmarkList([
   },
 ]);
 
+const mockFetch = vi.fn();
+
 describe("BookmarkManager", () => {
   beforeEach(async () => {
-    fetchMock.resetMocks();
-
-    fetchMock.mockResponseOnce(JSON.stringify(mockBookmarks));
+    // fetchMock.resetMocks();
+    // fetchMock.mockResponseOnce(JSON.stringify(mockBookmarks));
+    global.fetch = mockFetch;
+    mockFetch.mockReset();
+    mockFetch.mockResolvedValueOnce({
+      ok: true,
+      status: 200,
+      json: async () => mockBookmarks,
+    });
 
     await act(async () => {
       render(<BookmarkManager />);

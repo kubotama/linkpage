@@ -1,13 +1,14 @@
 import "@testing-library/jest-dom";
 
-import fetchMock from "jest-fetch-mock";
+// import fetchMock from "jest-fetch-mock";
 import { act } from "react";
+import { beforeEach, describe, expect, it, vi } from "vitest";
 
 import { fireEvent, render, screen, waitFor } from "@testing-library/react";
 
 import { Bookmark, createBookmarkList } from "../../types/Bookmark";
 import { BookmarkManager } from "../BookmarkManager";
-import { clickBookmark } from "./select.test";
+import { clickBookmark } from "./click";
 
 const mockBookmarks: Bookmark[] = createBookmarkList([
   {
@@ -29,13 +30,18 @@ const mockBookmarks: Bookmark[] = createBookmarkList([
 ]);
 
 // Mock for window.open to test the 'Open' button functionality
-const mockOpen = jest.fn();
+// const mockOpen = jest.fn();
+const mockOpen = vi.fn();
+
+// Store the original window.open
 const originalOpen = window.open;
 
 // Interface to mock window.location for testing purposes
 interface MockedLocation {
   href: string;
 }
+
+const mockFetch = vi.fn();
 
 describe("「開く」ボタン: 入力されたURLを新しいタブで開く", () => {
   let originalLocation: Location;
@@ -71,7 +77,14 @@ describe("「開く」ボタン: 入力されたURLを新しいタブで開く",
 
   beforeEach(() => {
     // 各テスト前にモックをリセット
-    jest.clearAllMocks();
+    // jest.clearAllMocks();
+    vi.clearAllMocks();
+    global.fetch = mockFetch;
+    mockFetch.mockResolvedValueOnce({
+      ok: true,
+      status: 200,
+      json: async () => mockBookmarks,
+    });
 
     // hrefをリセット
     (window.location as MockedLocation).href = "";
@@ -80,7 +93,12 @@ describe("「開く」ボタン: 入力されたURLを新しいタブで開く",
   it("「開く」ボタンをクリック", async () => {
     const url = "https://xtech.nikkei.com/";
 
-    fetchMock.mockResponseOnce(JSON.stringify(mockBookmarks));
+    // fetchMock.mockResponseOnce(JSON.stringify(mockBookmarks));
+    // mockFetch.mockResolvedValueOnce({
+    //   ok: true,
+    //   status: 200,
+    //   json: async () => mockBookmarks,
+    // });
 
     await act(async () => {
       render(<BookmarkManager />);
@@ -108,7 +126,13 @@ describe("「開く」ボタン: 入力されたURLを新しいタブで開く",
   });
 
   it("不正なURLを入力した場合", async () => {
-    fetchMock.mockResponseOnce(JSON.stringify(mockBookmarks));
+    // fetchMock.mockResponseOnce(JSON.stringify(mockBookmarks));
+    // mockFetch.mockResolvedValueOnce({
+    //   ok: true,
+    //   status: 200,
+    //   json: async () => mockBookmarks,
+    // });
+
     await act(async () => {
       render(<BookmarkManager />);
     });
