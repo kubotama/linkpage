@@ -7,21 +7,13 @@ import { GET } from "./route";
 const mockFetch = vi.fn();
 
 describe("タイトルを取得するAPIのテスト", () => {
-  // beforeEach(() => {
-  //   fetchMock.resetMocks();
-  // });
   beforeEach(() => {
-    // fetchMock.resetMocks();
-    // fetchMock.mockResponseOnce(JSON.stringify(mockBookmarks));
     mockFetch.mockReset();
     global.fetch = mockFetch;
   });
 
   it("github.com/kubotama/linkpage", async () => {
     const url = "https://github.com/kubotama/linkpage";
-    // fetchMock.mockResponseOnce(
-    //   "<html><head><title>link page</title></head><body></body></html>"
-    // );
     mockFetch.mockResolvedValueOnce({
       ok: true,
       status: 200,
@@ -42,9 +34,6 @@ describe("タイトルを取得するAPIのテスト", () => {
 
   it("https://www.google.com/", async () => {
     const url = "https://www.google.com/";
-    // fetchMock.mockResponseOnce(
-    //   "<html><head><title>Google</title></head><body></body></html>"
-    // );
     mockFetch.mockResolvedValueOnce({
       ok: true,
       status: 200,
@@ -65,7 +54,6 @@ describe("タイトルを取得するAPIのテスト", () => {
 
   it("URLから返されたHTMLにタイトルがない場合、エラーを返す", async () => {
     const url = "https://www.google.com/";
-    // fetchMock.mockResponseOnce("<html><head></head><body></body></html>");
     mockFetch.mockResolvedValueOnce({
       ok: true,
       status: 200,
@@ -85,7 +73,6 @@ describe("タイトルを取得するAPIのテスト", () => {
 
   it("URLが存在しない場合、エラーを返す", async () => {
     const url = "https://www.google.com/";
-    // fetchMock.mockRejectOnce();
     mockFetch.mockRejectedValueOnce(new Error("Failed to fetch"));
 
     const request = new Request(
@@ -100,9 +87,6 @@ describe("タイトルを取得するAPIのテスト", () => {
   });
 
   it("クエリにURLが指定されていない", async () => {
-    // fetchMock.mockResponseOnce(
-    //   "<html><head><title>Google</title></head><body></body></html>"
-    // );
     mockFetch.mockResolvedValueOnce({
       ok: true,
       status: 200,

@@ -1,6 +1,5 @@
 import "@testing-library/jest-dom";
 
-// import fetchMock from "jest-fetch-mock";
 import { act } from "react";
 
 import { render, screen } from "@testing-library/react";
@@ -32,8 +31,6 @@ const mockFetch = vi.fn();
 
 describe("BookmarkManager", () => {
   beforeEach(async () => {
-    // fetchMock.resetMocks();
-    // fetchMock.mockResponseOnce(JSON.stringify(mockBookmarks));
     global.fetch = mockFetch;
     mockFetch.mockReset();
     mockFetch.mockResolvedValueOnce({

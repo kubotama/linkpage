@@ -1,6 +1,5 @@
 import "@testing-library/jest-dom";
 
-// import fetchMock from "jest-fetch-mock";
 import { act } from "react";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 
@@ -8,7 +7,7 @@ import { fireEvent, render, screen, waitFor } from "@testing-library/react";
 
 import { Bookmark, createBookmarkList } from "../../types/Bookmark";
 import { BookmarkManager } from "../BookmarkManager";
-import { clickBookmark } from "./click";
+import { clickBookmark } from "../../../test-utils/click.test";
 
 const updateLabel = "タイトル更新";
 
@@ -38,13 +37,7 @@ const mockBookmarks: Bookmark[] = createBookmarkList([
 const mockFetch = vi.fn();
 
 describe("タイトルの更新ボタン", () => {
-  // beforeEach(() => {
-  //   fetchMock.resetMocks();
-  //   fetchMock.mockResponseOnce(JSON.stringify(mockBookmarks));
-  // });
   beforeEach(() => {
-    // fetchMock.resetMocks();
-    // fetchMock.mockResponseOnce(JSON.stringify(mockBookmarks));
     mockFetch.mockReset();
     global.fetch = mockFetch;
     mockFetch.mockResolvedValueOnce({
@@ -133,12 +126,6 @@ describe("タイトルの更新ボタン", () => {
         },
         body: JSON.stringify({ id: bookmarkToSelect.id, title: updateTitle }),
       });
-
-      // // 画面の更新の確認
-      // expect(screen.getByText(updateTitle)).toBeInTheDocument();
-      // expect(
-      //   screen.queryByRole("button", { name: updateLabel })
-      // ).not.toBeInTheDocument();
     });
     const updateText = await screen.findByText(updateTitle);
     expect(updateText).toBeInTheDocument();
@@ -160,10 +147,6 @@ describe("タイトルの更新ボタン", () => {
     const bookmarkToSelect = mockBookmarks[1]; // Google
     await clickBookmark(bookmarkToSelect);
 
-    // fetchMock.mockResponseOnce("指定されたブックマークがありません。", {
-    //   status: 404,
-    //   headers: { "Content-Type": "text/plain" },
-    // });
     mockFetch.mockResolvedValueOnce({
       status: 404,
       headers: { "Content-Type": "text/plain" },
@@ -203,11 +186,6 @@ describe("タイトルの更新ボタン", () => {
     const bookmarkToSelect = mockBookmarks[1]; // Google
     await clickBookmark(bookmarkToSelect);
 
-    // fetchMock/.resetMocks();
-    // fetchMock.mockResponseOnce("タイトルが指定されていません。", {
-    //   status: 400,
-    //   headers: { "Content-Type": "text/plain" },
-    // });
     mockFetch.mockReset();
     mockFetch.mockResolvedValueOnce({
       status: 400,
@@ -249,10 +227,6 @@ describe("タイトルの更新ボタン", () => {
     const bookmarkToSelect = mockBookmarks[1]; // Google
     await clickBookmark(bookmarkToSelect);
 
-    // fetchMock.mockResponseOnce("リクエストにIDがありませんでした。", {
-    //   status: 400,
-    //   headers: { "Content-Type": "text/plain" },
-    // });
     mockFetch.mockResolvedValueOnce({
       status: 400,
       headers: { "Content-Type": "text/plain" },
@@ -292,10 +266,6 @@ describe("タイトルの更新ボタン", () => {
     const bookmarkToSelect = mockBookmarks[1]; // Google
     await clickBookmark(bookmarkToSelect);
 
-    // fetchMock.mockResponseOnce("IDは正の整数である必要があります。", {
-    //   status: 400,
-    //   headers: { "Content-Type": "text/plain" },
-    // });
     mockFetch.mockResolvedValueOnce({
       status: 400,
       headers: { "Content-Type": "text/plain" },
@@ -336,10 +306,6 @@ describe("タイトルの更新ボタン", () => {
     const bookmarkToSelect = mockBookmarks[1]; // Google
     await clickBookmark(bookmarkToSelect);
 
-    // fetchMock.mockResponseOnce("サーバーで予期せぬエラーが発生しました。", {
-    //   status: 500,
-    //   headers: { "Content-Type": "text/plain" },
-    // });
     mockFetch.mockResolvedValueOnce({
       status: 500,
       headers: { "Content-Type": "text/plain" },

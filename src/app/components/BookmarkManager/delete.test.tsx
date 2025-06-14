@@ -1,6 +1,5 @@
 import "@testing-library/jest-dom";
 
-// import fetchMock from "jest-fetch-mock";
 import { act } from "react";
 
 import { fireEvent, render, screen, waitFor } from "@testing-library/react";
@@ -8,6 +7,8 @@ import { describe, it, expect, vi, beforeEach } from "vitest";
 
 import { Bookmark, createBookmarkList } from "../../types/Bookmark";
 import { BookmarkManager } from "../BookmarkManager";
+
+import { clickBookmark } from "../../../test-utils/click.test";
 
 const mockBookmarks: Bookmark[] = createBookmarkList([
   {
@@ -35,13 +36,7 @@ const mockBookmarks: Bookmark[] = createBookmarkList([
 const mockFetch = vi.fn();
 
 describe("削除ボタン", () => {
-  // beforeEach(() => {
-  //   fetchMock.resetMocks();
-  //   fetchMock.mockResponseOnce(JSON.stringify(mockBookmarks));
-  // });
   beforeEach(() => {
-    // fetchMock.resetMocks();
-    // fetchMock.mockResponseOnce(JSON.stringify(mockBookmarks));
     global.fetch = mockFetch;
     mockFetch.mockReset();
     mockFetch.mockResolvedValueOnce({
@@ -66,8 +61,6 @@ describe("削除ボタン", () => {
   });
 
   it("ブックマークが選択されると削除ボタンが表示される", async () => {
-    // fetchMockはbeforeEachでmockBookmarksを返すように設定されています
-
     await act(async () => {
       render(<BookmarkManager />);
     });
@@ -81,24 +74,7 @@ describe("削除ボタン", () => {
 
     // クリックするブックマークを選択（例：2番目のブックマーク）
     const bookmarkToSelect = mockBookmarks[1]; // Google
-
-    // 選択したブックマークに対応するテーブル行を見つける
-    // 行にはブックマークのタイトルを持つリンクが含まれている
-    const bookmarkLinkInRow = screen.getByRole("link", {
-      name: bookmarkToSelect.title,
-    });
-    const tableRow = bookmarkLinkInRow.closest("tr");
-
-    if (!tableRow) {
-      throw new Error(
-        `ブックマーク "${bookmarkToSelect.title}" のテーブル行が見つかりませんでした。`
-      );
-    }
-
-    // テーブル行のクリックをシミュレート
-    await act(async () => {
-      fireEvent.click(tableRow);
-    });
+    await clickBookmark(bookmarkToSelect);
 
     await waitFor(() => {
       const deleteButton = screen.getByRole("button", { name: "削除" });
@@ -122,19 +98,7 @@ describe("削除ボタン", () => {
 
     // クリックするブックマークを選択（例：2番目のブックマーク）
     const bookmarkToSelect = mockBookmarks[1]; // Google
-
-    // 選択したブックマークに対応するテーブル行を見つける
-    // 行にはブックマークのタイトルを持つリンクが含まれている
-    const bookmarkLinkInRow = screen.getByRole("link", {
-      name: bookmarkToSelect.title,
-    });
-    const tableRow = bookmarkLinkInRow.closest("tr");
-
-    if (!tableRow) {
-      throw new Error(
-        `ブックマーク "${bookmarkToSelect.title}" のテーブル行が見つかりませんでした。`
-      );
-    }
+    await clickBookmark(bookmarkToSelect);
 
     // fetchMock.resetMocks();
     // fetchMock.mockResponseOnce("", { status: 204 });
@@ -142,11 +106,6 @@ describe("削除ボタン", () => {
     mockFetch.mockResolvedValueOnce({
       ok: true,
       status: 204,
-    });
-
-    // テーブル行のクリックをシミュレート
-    await act(async () => {
-      fireEvent.click(tableRow);
     });
 
     const deleteButton = screen.getByRole("button", { name: "削除" });
@@ -193,38 +152,13 @@ describe("削除ボタン", () => {
 
     // クリックするブックマークを選択（例：2番目のブックマーク）
     const bookmarkToSelect = mockBookmarks[1]; // Google
+    await clickBookmark(bookmarkToSelect);
 
-    // 選択したブックマークに対応するテーブル行を見つける
-    // 行にはブックマークのタイトルを持つリンクが含まれている
-    const bookmarkLinkInRow = screen.getByRole("link", {
-      name: bookmarkToSelect.title,
-    });
-    const tableRow = bookmarkLinkInRow.closest("tr");
-
-    if (!tableRow) {
-      throw new Error(
-        `ブックマーク "${bookmarkToSelect.title}" のテーブル行が見つかりませんでした。`
-      );
-    }
-
-    // fetchMock.resetMocks();
-    // fetchMock.mockResponseOnce(
-    //   "指定したIDのブックマークが見つかりませんでした。",
-    //   {
-    //     status: 404,
-    //     headers: { "Content-Type": "text/plain" },
-    //   }
-    // );
     mockFetch.mockReset();
     mockFetch.mockResolvedValueOnce({
       ok: true,
       status: 404,
       headers: { "Content-Type": "text/plain" },
-    });
-
-    // テーブル行のクリックをシミュレート
-    await act(async () => {
-      fireEvent.click(tableRow);
     });
 
     const deleteButton = screen.getByRole("button", { name: "削除" });
@@ -260,35 +194,13 @@ describe("削除ボタン", () => {
 
     // クリックするブックマークを選択（例：2番目のブックマーク）
     const bookmarkToSelect = mockBookmarks[1]; // Google
+    await clickBookmark(bookmarkToSelect);
 
-    // 選択したブックマークに対応するテーブル行を見つける
-    // 行にはブックマークのタイトルを持つリンクが含まれている
-    const bookmarkLinkInRow = screen.getByRole("link", {
-      name: bookmarkToSelect.title,
-    });
-    const tableRow = bookmarkLinkInRow.closest("tr");
-
-    if (!tableRow) {
-      throw new Error(
-        `ブックマーク "${bookmarkToSelect.title}" のテーブル行が見つかりませんでした。`
-      );
-    }
-
-    // fetchMock.resetMocks();
-    // fetchMock.mockResponseOnce("リクエストにIDがありませんでした。", {
-    //   status: 400,
-    //   headers: { "Content-Type": "text/plain" },
-    // });
     mockFetch.mockReset();
     mockFetch.mockResolvedValueOnce({
       ok: true,
       status: 400,
       headers: { "Content-Type": "text/plain" },
-    });
-
-    // テーブル行のクリックをシミュレート
-    await act(async () => {
-      fireEvent.click(tableRow);
     });
 
     const deleteButton = screen.getByRole("button", { name: "削除" });

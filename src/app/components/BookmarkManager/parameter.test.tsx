@@ -1,6 +1,5 @@
 import "@testing-library/jest-dom";
 
-// import fetchMock from "jest-fetch-mock";
 import { act } from "react";
 import { describe, expect, it, vi } from "vitest";
 
@@ -8,7 +7,7 @@ import { fireEvent, render, screen, waitFor } from "@testing-library/react";
 
 import { Bookmark, createBookmarkList } from "../../types/Bookmark";
 import { BookmarkManager } from "../BookmarkManager";
-import { clickBookmark } from "./select.test";
+import { clickBookmark } from "../../../test-utils/click.test";
 
 const mockBookmarks: Bookmark[] = createBookmarkList([
   {
@@ -36,7 +35,6 @@ describe("「パラメータ」ボタン: URLから無駄な文字列を削除�
     it("https://mail.google.com/mail/u/0/#inbox", async () => {
       const url = "https://mail.google.com/mail/u/0/#inbox";
 
-      // fetchMock.mockResponseOnce(JSON.stringify(mockBookmarks));
       global.fetch = mockFetch;
       mockFetch.mockReset();
       mockFetch.mockResolvedValueOnce({
@@ -70,7 +68,6 @@ describe("「パラメータ」ボタン: URLから無駄な文字列を削除�
       const url =
         "https://xtech.nikkei.com/atcl/nxt/column/18/00148/030500376/?n_cid=nbpnxt_mled_itmh";
 
-      // fetchMock.mockResponseOnce(JSON.stringify(mockBookmarks));
       mockFetch.mockResolvedValueOnce({
         ok: true,
         status: 200,
@@ -102,7 +99,6 @@ describe("「パラメータ」ボタン: URLから無駄な文字列を削除�
     it("https://mail.google.com/mail/u/0/", async () => {
       const url = "https://mail.google.com/mail/u/0/";
 
-      // fetchMock.mockResponseOnce(JSON.stringify(mockBookmarks));
       mockFetch.mockResolvedValueOnce({
         ok: true,
         status: 200,

@@ -1,6 +1,5 @@
 import "@testing-library/jest-dom";
 
-// import fetchMock from "jest-fetch-mock";
 import { act } from "react";
 
 import { fireEvent, render, screen, waitFor } from "@testing-library/react";
@@ -9,7 +8,7 @@ import { describe, it, expect, vi, beforeEach } from "vitest";
 import { Bookmark, createBookmarkList } from "../../types/Bookmark";
 import { BookmarkManager } from "../BookmarkManager";
 
-import { clickBookmark } from "./click";
+import { clickBookmark } from "../../../test-utils/click.test";
 
 const mockBookmarks: Bookmark[] = createBookmarkList([
   {
@@ -43,8 +42,6 @@ describe("「クリア」ボタン", () => {
     });
   });
   it("クリアボタンがクリックされたら、URLとタイトルテキストがクリアされる。", async () => {
-    // fetchMock.mockResponseOnce(JSON.stringify(mockBookmarks));
-
     await act(async () => {
       render(<BookmarkManager />);
     });

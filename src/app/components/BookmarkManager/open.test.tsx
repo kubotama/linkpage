@@ -1,6 +1,5 @@
 import "@testing-library/jest-dom";
 
-// import fetchMock from "jest-fetch-mock";
 import { act } from "react";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 
@@ -8,7 +7,7 @@ import { fireEvent, render, screen, waitFor } from "@testing-library/react";
 
 import { Bookmark, createBookmarkList } from "../../types/Bookmark";
 import { BookmarkManager } from "../BookmarkManager";
-import { clickBookmark } from "./click";
+import { clickBookmark } from "../../../test-utils/click.test";
 
 const mockBookmarks: Bookmark[] = createBookmarkList([
   {
@@ -93,13 +92,6 @@ describe("「開く」ボタン: 入力されたURLを新しいタブで開く",
   it("「開く」ボタンをクリック", async () => {
     const url = "https://xtech.nikkei.com/";
 
-    // fetchMock.mockResponseOnce(JSON.stringify(mockBookmarks));
-    // mockFetch.mockResolvedValueOnce({
-    //   ok: true,
-    //   status: 200,
-    //   json: async () => mockBookmarks,
-    // });
-
     await act(async () => {
       render(<BookmarkManager />);
     });
@@ -126,13 +118,6 @@ describe("「開く」ボタン: 入力されたURLを新しいタブで開く",
   });
 
   it("不正なURLを入力した場合", async () => {
-    // fetchMock.mockResponseOnce(JSON.stringify(mockBookmarks));
-    // mockFetch.mockResolvedValueOnce({
-    //   ok: true,
-    //   status: 200,
-    //   json: async () => mockBookmarks,
-    // });
-
     await act(async () => {
       render(<BookmarkManager />);
     });

@@ -1,5 +1,5 @@
 import { act } from "react";
-import { Bookmark } from "../../types/Bookmark";
+import { Bookmark } from "../app/types/Bookmark";
 import { fireEvent, screen } from "@testing-library/react";
 
 export const clickBookmark = async (bookmark: Bookmark) => {

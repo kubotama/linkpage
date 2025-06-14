@@ -1,6 +1,5 @@
 import "@testing-library/jest-dom";
 
-// import fetchMock from "jest-fetch-mock";
 import { act } from "react";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 
@@ -8,7 +7,7 @@ import { fireEvent, render, screen, waitFor } from "@testing-library/react";
 
 import { Bookmark, createBookmarkList } from "../../types/Bookmark";
 import { BookmarkManager } from "../BookmarkManager";
-import { clickBookmark } from "./click";
+import { clickBookmark } from "../../../test-utils/click.test";
 
 const mockBookmarks: Bookmark[] = createBookmarkList([
   {
@@ -32,12 +31,7 @@ const mockBookmarks: Bookmark[] = createBookmarkList([
 const mockFetch = vi.fn();
 
 describe("BookmarkManagerのURLとタイトルのテキストとボタンのテスト", () => {
-  // beforeEach(() => {
-  //   fetchMock.resetMocks();
-  // });
   beforeEach(() => {
-    // fetchMock.resetMocks();
-    // fetchMock.mockResponseOnce(JSON.stringify(mockBookmarks));
     mockFetch.mockReset();
     global.fetch = mockFetch;
     mockFetch.mockResolvedValueOnce({
@@ -51,16 +45,15 @@ describe("BookmarkManagerのURLとタイトルのテキストとボタンのテ�
     // パラメータとしてURLのテキストボックスに入力された文字列が渡される。
     // タイトルのテキストボックスに、APIから返されたタイトルが表示される。
 
+    // mockFetchはbeforeEachでmockBookmarksを返すように設定されています
+
     const url = "https://mail.google.com/mail/";
     const title = "Gmail";
-
-    // fetchMock.mockResponseOnce(JSON.stringify(mockBookmarks));
 
     await act(async () => {
       render(<BookmarkManager />);
     });
 
-    // fetchMock.resetMocks();
     mockFetch.mockReset();
 
     // クリックするブックマークを選択（例：2番目のブックマーク）
@@ -80,7 +73,6 @@ describe("BookmarkManagerのURLとタイトルのテキストとボタンのテ�
       expect(titleInput).toHaveValue("");
     });
 
-    // fetchMock.mockResponseOnce(title);
     mockFetch.mockResolvedValueOnce({
       ok: true,
       status: 200,
@@ -101,25 +93,18 @@ describe("BookmarkManagerのURLとタイトルのテキストとボタンのテ�
 
   it("パラメータとして渡されたURLにアクセスできない場合、タイトルのテキストボックスにエラーメッセージを表示する。", async () => {
     // タイトルを取得するボタンをクリックして、エラーコード500の場合、タイトルのテキストボックスに、エラーメッセージを表示する。
-    const url = "https://mail.google.com/mail/";
 
-    // fetchMock.mockResponseOnce(JSON.stringify(mockBookmarks));
+    // mockFetchはbeforeEachでmockBookmarksを返すように設定されています
+
+    const url = "https://mail.google.com/mail/";
 
     await act(async () => {
       render(<BookmarkManager />);
     });
 
-    // fetchMock.resetMocks();
     mockFetch.mockReset();
 
-    // fetchMock.mockResponseOnce("Can't find title", {
-    //   status: 500,
-    //   headers: { "Content-Type": "text/plain" },
-    // });
     mockFetch.mockResolvedValueOnce({
-      // ok: true,
-      // status: 200,
-      // json: async () => mockBookmarks,
       status: 500,
       headers: { "Content-Type": "text/plain" },
     });
@@ -148,21 +133,15 @@ describe("BookmarkManagerのURLとタイトルのテキストとボタンのテ�
 
   it("APIからタイトルが返ってこない場合、タイトルのテキストボックスにエラーメッセージを表示する。", async () => {
     // タイトルを取得するボタンをクリックして、エラーコード500の場合、タイトルのテキストボックスに、エラーメッセージを表示する。
-    const url = "https://mail.google.com/mail/";
 
-    // fetchMock.mockResponseOnce(JSON.stringify(mockBookmarks));
-    mockFetch.mockResolvedValueOnce({
-      ok: true,
-      status: 200,
-      json: async () => mockBookmarks,
-    });
+    // mockFetchはbeforeEachでmockBookmarksを返すように設定されています
+
+    const url = "https://mail.google.com/mail/";
 
     await act(async () => {
       render(<BookmarkManager />);
     });
 
-    // fetchMock.resetMocks();
-    // fetchMock.mockResponseOnce("");
     mockFetch.mockReset();
     mockFetch.mockResolvedValueOnce({
       ok: true,
@@ -197,7 +176,7 @@ describe("BookmarkManagerのURLとタイトルのテキストとボタンのテ�
     const url = "https://error.example.com/";
 
     // 1. Initial load of bookmarks
-    // fetchMock.mockResponseOnce(JSON.stringify(mockBookmarks));
+    // mockFetchはbeforeEachでmockBookmarksを返すように設定されています
 
     await act(async () => {
       render(<BookmarkManager />);
@@ -221,14 +200,7 @@ describe("BookmarkManagerのURLとタイトルのテキストとボタンのテ�
     const titleButton = screen.getByRole("button", { name: "タイトル" });
 
     // 2. Mock the title fetch API to return an error
-    // fetchMock.mockResponseOnce("Simulated Server Error", {
-    //   status: 500,
-    //   headers: { "Content-Type": "text/plain" },
-    // });
     mockFetch.mockResolvedValueOnce({
-      // ok: true,
-      // status: 200,
-      // json: async () => mockBookmarks,
       status: 500,
       headers: { "Content-Type": "text/plain" },
     });

@@ -1,6 +1,5 @@
 import "@testing-library/jest-dom";
 
-// import fetchMock from "jest-fetch-mock";
 import { act } from "react";
 
 import { fireEvent, render, screen, waitFor } from "@testing-library/react";
@@ -9,28 +8,7 @@ import { describe, it, expect, vi, beforeEach } from "vitest";
 import { Bookmark, createBookmarkList } from "../../types/Bookmark";
 import { BookmarkManager } from "../BookmarkManager";
 
-export const clickBookmark = async (bookmark: Bookmark) => {
-  // クリックするブックマークを選択（例：2番目のブックマーク）
-  // const bookmark = mockBookmarks[1]; // Google
-
-  // 選択したブックマークに対応するテーブル行を見つける
-  // 行にはブックマークのタイトルを持つリンクが含まれている
-  const bookmarkLinkInRow = screen.getByRole("link", {
-    name: bookmark.title,
-  });
-  const tableRow = bookmarkLinkInRow.closest("tr");
-
-  if (!tableRow) {
-    throw new Error(
-      `ブックマーク "${bookmark.title}" のテーブル行が見つかりませんでした。`
-    );
-  }
-
-  // テーブル行のクリックをシミュレート
-  await act(async () => {
-    fireEvent.click(tableRow);
-  });
-};
+import { clickBookmark } from "../../../test-utils/click.test";
 
 const mockBookmarks: Bookmark[] = createBookmarkList([
   {
@@ -55,8 +33,6 @@ const mockFetch = vi.fn();
 
 describe("ブックマークの選択", () => {
   beforeEach(() => {
-    // fetchMock.resetMocks();
-    // fetchMock.mockResponseOnce(JSON.stringify(mockBookmarks));
     mockFetch.mockReset();
     global.fetch = mockFetch;
     mockFetch.mockResolvedValueOnce({
@@ -85,7 +61,7 @@ describe("ブックマークの選択", () => {
   });
 
   it("テーブル内のブックマーク行をクリックすると、URLとタイトルのテキストボックスにそのブックマークの情報が表示される。「選択解除」のボタンが表示される。", async () => {
-    // fetchMockはbeforeEachでmockBookmarksを返すように設定されています
+    // mockFetchはbeforeEachでmockBookmarksを返すように設定されています
 
     await act(async () => {
       render(<BookmarkManager />);
@@ -115,7 +91,7 @@ describe("ブックマークの選択", () => {
   });
 
   it("選択解除のボタンをクリックすると、URLとタイトルのテキストボックスがクリアされる。選択解除のボタンが表示されていない。", async () => {
-    // fetchMockはbeforeEachでmockBookmarksを返すように設定されています
+    // mockFetchはbeforeEachでmockBookmarksを返すように設定されています
 
     await act(async () => {
       render(<BookmarkManager />);
