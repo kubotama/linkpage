@@ -8,7 +8,7 @@ import { describe, it, expect, vi, beforeEach } from "vitest";
 import { Bookmark, createBookmarkList } from "../../types/Bookmark";
 import { BookmarkManager } from "../BookmarkManager";
 
-import { clickBookmark } from "../../../test-utils/click.test";
+import { clickBookmark } from "../../test-utils/click.test";
 
 const mockBookmarks: Bookmark[] = createBookmarkList([
   {
@@ -135,5 +135,34 @@ describe("ブックマークの選択", () => {
       expect(titleInput).toHaveLength(0);
       expect(unselectButton).toHaveLength(0);
     });
+  });
+
+  it("表示されていないタイトルが指定された場合", async () => {
+    await act(async () => {
+      render(<BookmarkManager />);
+    });
+
+    // 初期データがロードされ、UIが安定するのを待つ
+    // テーブル内に既知のブックマークのタイトルが表示されることを確認
+    // また、アクションボタンが表示されていることで、メインUIの準備ができていることを確認
+    await waitFor(() => {
+      expect(screen.getByText(mockBookmarks[0].title)).toBeInTheDocument();
+    });
+
+    // クリックするブックマークを選択（例：2番目のブックマーク）
+    const bookmarkToSelect: Bookmark = {
+      id: 999,
+      url: "bad url",
+      title: "bad title",
+    };
+    try {
+      await clickBookmark(bookmarkToSelect);
+      expect(true).toBe(false);
+    } catch (e) {
+      expect(e).toBeInstanceOf(Error);
+      expect((e as Error).message).toBe(
+        `ブックマーク "${bookmarkToSelect.title}" のテーブル行が見つかりませんでした。`
+      );
+    }
   });
 });

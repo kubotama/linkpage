@@ -21,24 +21,37 @@ export default defineConfig({
       //   classNameStrategy: 'non-scoped', // Next.jsのCSS Modulesの挙動に合わせる
       // },
     },
-    // coverage: { // カバレッジレポートの設定
-    //   provider: 'v8', // 'v8' (デフォルト) または 'istanbul'
-    //   reporter: ['text', 'json', 'html'], // レポート形式
-    //   exclude: [ // カバレッジ対象外のファイル
-    //     'node_modules/',
-    //     './.next/',
-    //     './coverage/',
-    //     './public/',
-    //     './styles/',
-    //     './src/app/**/*.ts', // Next.js App Routerのルートファイルなど、テスト不要なもの
-    //     './src/pages/**/*.tsx', // Next.js Pages Routerのページファイルなど
-    //     './src/types/**/*.ts',
-    //     './src/lib/**/*.ts',
-    //   ],
-    //   include: [ // カバレッジ対象
-    //     './src/**/*.{ts,tsx}',
-    //   ]
-    // },
-    // testMatch: ['<rootDir>/src/**/*.test.{ts,tsx}'], // テストファイルのパターン
+    coverage: {
+      // カバレッジレポートの設定
+      provider: "v8", // 'v8' (デフォルト) または 'istanbul'
+      reporter: ["text", "json", "html"], // レポート形式
+      exclude: [
+        // カバレッジ対象外のファイル
+        "node_modules/",
+        "./.next/",
+        "./coverage/",
+        "./public/",
+        "./styles/",
+        "**/*.test.{ts,tsx}",
+        // "./src/app/**/*.text.tsx", // Next.js App Routerのルートファイルなど、テスト不要なもの
+        // "./src/pages/**/*.tsx", // Next.js Pages Routerのページファイルなど
+        "**/types/*.ts",
+        "./src/lib/**/*.ts",
+        "./src/app/layout.tsx",
+        "./eslint.config.mjs",
+        "./vitest.setup.ts",
+        "./vitest.config.ts",
+        "./tailwind.config.ts",
+        "./next.config.ts",
+        "./next-env.d.ts",
+        "./postcss.config.js",
+        "./postcss.config.mjs",
+      ],
+      // include: [ // カバレッジ対象
+      //   './src/**/*.{ts,tsx}',
+      // ]
+    },
+    include: ["./src/**/*.{test,spec}.{ts,tsx}"],
+    exclude: ["./src/app/test-utils/*.tsx"],
   },
 });

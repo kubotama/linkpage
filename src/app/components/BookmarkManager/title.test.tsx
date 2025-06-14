@@ -7,7 +7,7 @@ import { fireEvent, render, screen, waitFor } from "@testing-library/react";
 
 import { Bookmark, createBookmarkList } from "../../types/Bookmark";
 import { BookmarkManager } from "../BookmarkManager";
-import { clickBookmark } from "../../../test-utils/click.test";
+import { clickBookmark } from "../../test-utils/click.test";
 
 const mockBookmarks: Bookmark[] = createBookmarkList([
   {
@@ -146,7 +146,7 @@ describe("BookmarkManagerのURLとタイトルのテキストとボタンのテ�
     mockFetch.mockResolvedValueOnce({
       ok: true,
       status: 200,
-      json: async () => "",
+      text: async () => "",
     });
 
     // クリックするブックマークを選択（例：2番目のブックマーク）

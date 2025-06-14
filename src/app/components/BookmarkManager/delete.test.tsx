@@ -8,7 +8,7 @@ import { describe, it, expect, vi, beforeEach } from "vitest";
 import { Bookmark, createBookmarkList } from "../../types/Bookmark";
 import { BookmarkManager } from "../BookmarkManager";
 
-import { clickBookmark } from "../../../test-utils/click.test";
+import { clickBookmark } from "../../test-utils/click.test";
 
 const mockBookmarks: Bookmark[] = createBookmarkList([
   {
@@ -159,6 +159,7 @@ describe("削除ボタン", () => {
       ok: true,
       status: 404,
       headers: { "Content-Type": "text/plain" },
+      text: async () => "指定されたブックマークがありません。",
     });
 
     const deleteButton = screen.getByRole("button", { name: "削除" });
@@ -170,7 +171,7 @@ describe("削除ボタン", () => {
     await waitFor(() => {
       // 画面の更新の確認
       expect(screen.getByTestId("bookmark-message")).toHaveTextContent(
-        "ブックマークの削除中にサーバーで予期せぬエラーが発生しました。"
+        "ブックマークの削除中にエラーが発生しました。"
       );
       // 削除操作のコンテキスト（選択されたブックマークのタイトルや削除ボタン）が依然として表示されていることを確認
       expect(screen.getByText(bookmarkToSelect.title)).toBeInTheDocument();
@@ -258,9 +259,9 @@ describe("削除ボタン", () => {
     mockFetch.mockReset();
     mockFetch.mockResolvedValueOnce({
       ok: true,
-      // status: 204,
       status: 500,
       headers: { "Content-Type": "text/plain" },
+      text: async () => "サーバーで予期せぬエラーが発生しました。",
     });
 
     // テーブル行のクリックをシミュレート
