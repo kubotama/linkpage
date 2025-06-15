@@ -105,6 +105,7 @@ describe("BookmarkManagerのURLとタイトルのテキストとボタンのテ�
     mockFetch.mockReset();
 
     mockFetch.mockResolvedValueOnce({
+      ok: false, // 500の場合は false
       status: 500,
       headers: { "Content-Type": "text/plain" },
     });
@@ -201,6 +202,7 @@ describe("BookmarkManagerのURLとタイトルのテキストとボタンのテ�
 
     // 2. Mock the title fetch API to return an error
     mockFetch.mockResolvedValueOnce({
+      ok: false, // 500の場合は false
       status: 500,
       headers: { "Content-Type": "text/plain" },
     });

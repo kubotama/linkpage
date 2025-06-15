@@ -156,7 +156,7 @@ describe("削除ボタン", () => {
 
     mockFetch.mockReset();
     mockFetch.mockResolvedValueOnce({
-      ok: true,
+      ok: false, // 404の場合は false
       status: 404,
       headers: { "Content-Type": "text/plain" },
       text: async () => "指定されたブックマークがありません。",
@@ -199,7 +199,7 @@ describe("削除ボタン", () => {
 
     mockFetch.mockReset();
     mockFetch.mockResolvedValueOnce({
-      ok: true,
+      ok: false, // 400の場合は false
       status: 400,
       headers: { "Content-Type": "text/plain" },
     });
@@ -258,7 +258,7 @@ describe("削除ボタン", () => {
     // });
     mockFetch.mockReset();
     mockFetch.mockResolvedValueOnce({
-      ok: true,
+      ok: false, // 500の場合は false
       status: 500,
       headers: { "Content-Type": "text/plain" },
       text: async () => "サーバーで予期せぬエラーが発生しました。",

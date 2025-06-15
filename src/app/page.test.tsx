@@ -11,6 +11,7 @@ const mockFetch = vi.fn();
 
 describe("テスト環境を動作確認するためのサンプルのテスト", () => {
   beforeEach(() => {
+    mockFetch.mockReset();
     global.fetch = mockFetch;
   });
 

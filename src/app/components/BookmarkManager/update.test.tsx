@@ -148,6 +148,7 @@ describe("タイトルの更新ボタン", () => {
     await clickBookmark(bookmarkToSelect);
 
     mockFetch.mockResolvedValueOnce({
+      ok: false, // 404の場合は false
       status: 404,
       headers: { "Content-Type": "text/plain" },
       text: async () => "指定されたブックマークがありません。",
@@ -188,6 +189,7 @@ describe("タイトルの更新ボタン", () => {
 
     mockFetch.mockReset();
     mockFetch.mockResolvedValueOnce({
+      ok: false, // 400の場合は false
       status: 400,
       headers: { "Content-Type": "text/plain" },
       text: async () => "タイトルが指定されていません。",
@@ -228,6 +230,7 @@ describe("タイトルの更新ボタン", () => {
     await clickBookmark(bookmarkToSelect);
 
     mockFetch.mockResolvedValueOnce({
+      ok: false, // 400の場合は false
       status: 400,
       headers: { "Content-Type": "text/plain" },
       text: async () => "リクエストにIDがありませんでした。",
@@ -267,6 +270,7 @@ describe("タイトルの更新ボタン", () => {
     await clickBookmark(bookmarkToSelect);
 
     mockFetch.mockResolvedValueOnce({
+      ok: false, // 400の場合は false
       status: 400,
       headers: { "Content-Type": "text/plain" },
       text: async () => "IDは正の整数である必要があります。",
@@ -307,6 +311,7 @@ describe("タイトルの更新ボタン", () => {
     await clickBookmark(bookmarkToSelect);
 
     mockFetch.mockResolvedValueOnce({
+      ok: false, // 500の場合は false
       status: 500,
       headers: { "Content-Type": "text/plain" },
       text: async () => "サーバーで予期せぬエラーが発生しました。",
