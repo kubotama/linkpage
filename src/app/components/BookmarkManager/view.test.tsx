@@ -58,7 +58,7 @@ describe("BookmarkManagerの表示を確認", () => {
     mockFetch.mockResolvedValueOnce({
       ok: true,
       status: 200,
-      json: async () => [],
+      json: async () => new Promise(() => []),
     });
 
     render(<BookmarkManager />);

@@ -9,7 +9,6 @@ import { Bookmark, createBookmarkList } from "../../types/Bookmark";
 import { BookmarkManager } from "../BookmarkManager";
 
 import { clickBookmark } from "../../test-utils/click.test";
-import { text } from "stream/consumers";
 
 const mockBookmarks: Bookmark[] = createBookmarkList([
   {

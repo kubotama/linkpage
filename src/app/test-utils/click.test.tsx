@@ -22,8 +22,7 @@ export const clickBookmark = async (bookmark: Bookmark) => {
     await act(async () => {
       fireEvent.click(tableRow);
     });
-  } catch (e) {
-    console.error(e);
+  } catch {
     throw new Error(
       `ブックマーク "${bookmark.title}" のテーブル行が見つかりませんでした。`
     );
