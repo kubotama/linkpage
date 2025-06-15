@@ -129,6 +129,9 @@ describe("タイトルの更新ボタン", () => {
     });
     const updateText = await screen.findByText(updateTitle);
     expect(updateText).toBeInTheDocument();
+    expect(
+      screen.queryByRole("button", { name: updateLabel })
+    ).not.toBeInTheDocument();
   });
 
   it("登録されていないブックマークIDを指定された場合は404を返す。", async () => {
