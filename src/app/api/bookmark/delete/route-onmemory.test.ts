@@ -1,7 +1,7 @@
 import "@testing-library/jest-dom";
 
 import ActualDatabase from "better-sqlite3"; // Import the actual library
-import { beforeEach, describe, expect, it, vi } from "vitest";
+import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 
 import { Bookmark, createBookmarkList } from "../../../types/Bookmark";
 import { getDb } from "../database";
