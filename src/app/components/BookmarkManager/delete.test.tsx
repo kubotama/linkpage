@@ -9,6 +9,7 @@ import { Bookmark, createBookmarkList } from "../../types/Bookmark";
 import { BookmarkManager } from "../BookmarkManager";
 
 import { clickBookmark } from "../../test-utils/click.test";
+import { text } from "stream/consumers";
 
 const mockBookmarks: Bookmark[] = createBookmarkList([
   {
@@ -202,6 +203,7 @@ describe("削除ボタン", () => {
       ok: false, // 400の場合は false
       status: 400,
       headers: { "Content-Type": "text/plain" },
+      text: async () => "リクエストにIDがありませんでした。",
     });
 
     const deleteButton = screen.getByRole("button", { name: "削除" });
@@ -213,7 +215,7 @@ describe("削除ボタン", () => {
     await waitFor(() => {
       // 画面の更新の確認
       expect(screen.getByTestId("bookmark-message")).toHaveTextContent(
-        "ブックマークの削除中にサーバーで予期せぬエラーが発生しました。"
+        "ブックマークの削除中にエラーが発生しました。"
       );
       // 削除操作のコンテキスト（選択されたブックマークのタイトルや削除ボタン）が依然として表示されていることを確認
       expect(screen.getByText(bookmarkToSelect.title)).toBeInTheDocument();
@@ -251,11 +253,6 @@ describe("削除ボタン", () => {
       );
     }
 
-    // fetchMock.resetMocks();
-    // fetchMock.mockResponseOnce("サーバーで予期せぬエラーが発生しました。", {
-    //   status: 500,
-    //   headers: { "Content-Type": "text/plain" },
-    // });
     mockFetch.mockReset();
     mockFetch.mockResolvedValueOnce({
       ok: false, // 500の場合は false
@@ -278,7 +275,7 @@ describe("削除ボタン", () => {
     await waitFor(() => {
       // 画面の更新の確認
       expect(screen.getByTestId("bookmark-message")).toHaveTextContent(
-        "ブックマークの削除中にサーバーで予期せぬエラーが発生しました。"
+        "ブックマークの削除中にエラーが発生しました。"
       );
       // 削除操作のコンテキスト（選択されたブックマークのタイトルや削除ボタン）が依然として表示されていることを確認
       expect(screen.getByText(bookmarkToSelect.title)).toBeInTheDocument();
