@@ -16,14 +16,12 @@ export const BookmarkTable: React.FC<{
   bookmarks: Bookmark[];
   onSelectBookmark: (bookmark: SelectedBookmark) => void;
 }> = ({ bookmarks, onSelectBookmark }) => {
-  // const [, selectBookmark] = useSelectBookmark();
-
   return (
     <TableContainer component={Paper}>
       <Table aria-label="bookmarks table">
         <TableHead>
           <TableRow>
-            <TableCell>Title</TableCell>
+            <TableCell>タイトル</TableCell>
           </TableRow>
         </TableHead>
         <TableBody>

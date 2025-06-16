@@ -1,28 +1,30 @@
 import "@testing-library/jest-dom";
 
+import { beforeEach, describe, expect, it, vi } from "vitest";
+
 import { Bookmark, createBookmarkList } from "../../types/Bookmark";
 import { getDb } from "./database";
 import { GET, POST } from "./route";
 
 // Mock the better-sqlite3 library
-jest.mock("better-sqlite3");
+vi.mock("better-sqlite3");
 
-jest.mock("./database", () => ({
-  getDb: jest.fn(),
+vi.mock("./database", () => ({
+  getDb: vi.fn(),
 }));
 
 describe("ブックマークのAPIのテスト", () => {
   // Define reusable mock implementations
-  const mockPrepare = jest.fn();
-  const mockAll = jest.fn();
-  const mockRun = jest.fn();
-  const mockExec = jest.fn();
-  const mockTransaction = jest.fn();
-  const mockClose = jest.fn();
+  const mockPrepare = vi.fn();
+  const mockAll = vi.fn();
+  const mockRun = vi.fn();
+  const mockExec = vi.fn();
+  const mockTransaction = vi.fn();
+  const mockClose = vi.fn();
 
   beforeEach(() => {
     // Reset mocks before each test
-    jest.resetAllMocks();
+    vi.resetAllMocks();
 
     const bookmarks: Bookmark[] = createBookmarkList([
       {
@@ -44,7 +46,7 @@ describe("ブックマークのAPIのテスト", () => {
     ]);
 
     // Configure the mock Database constructor and methods
-    (getDb as unknown as jest.Mock).mockImplementation(() => ({
+    (getDb as unknown as ReturnType<typeof vi.fn>).mockImplementation(() => ({
       prepare: mockPrepare,
       all: mockAll, // Used in GET
       run: mockRun, // Used in POST (inside transaction)
@@ -94,7 +96,7 @@ describe("ブックマークのAPIのテスト", () => {
 
   it("GET: データベースエラー時に500エラーを返す", async () => {
     const dbError = new Error("Database connection failed");
-    (getDb as unknown as jest.Mock).mockImplementation(() => {
+    (getDb as unknown as ReturnType<typeof vi.fn>).mockImplementation(() => {
       throw dbError;
     });
 

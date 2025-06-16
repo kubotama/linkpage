@@ -1,35 +1,14 @@
 import "@testing-library/jest-dom";
 
-import fetchMock from "jest-fetch-mock";
 import { act } from "react";
 
 import { fireEvent, render, screen, waitFor } from "@testing-library/react";
+import { describe, it, expect, vi, beforeEach } from "vitest";
 
 import { Bookmark, createBookmarkList } from "../../types/Bookmark";
 import { BookmarkManager } from "../BookmarkManager";
 
-export const clickBookmark = async (bookmark: Bookmark) => {
-  // クリックするブックマークを選択（例：2番目のブックマーク）
-  // const bookmark = mockBookmarks[1]; // Google
-
-  // 選択したブックマークに対応するテーブル行を見つける
-  // 行にはブックマークのタイトルを持つリンクが含まれている
-  const bookmarkLinkInRow = screen.getByRole("link", {
-    name: bookmark.title,
-  });
-  const tableRow = bookmarkLinkInRow.closest("tr");
-
-  if (!tableRow) {
-    throw new Error(
-      `ブックマーク "${bookmark.title}" のテーブル行が見つかりませんでした。`
-    );
-  }
-
-  // テーブル行のクリックをシミュレート
-  await act(async () => {
-    fireEvent.click(tableRow);
-  });
-};
+import { clickBookmark } from "../../test-utils/click.test";
 
 const mockBookmarks: Bookmark[] = createBookmarkList([
   {
@@ -50,10 +29,17 @@ const mockBookmarks: Bookmark[] = createBookmarkList([
   },
 ]);
 
+const mockFetch = vi.fn();
+
 describe("ブックマークの選択", () => {
   beforeEach(() => {
-    fetchMock.resetMocks();
-    fetchMock.mockResponseOnce(JSON.stringify(mockBookmarks));
+    mockFetch.mockReset();
+    global.fetch = mockFetch;
+    mockFetch.mockResolvedValueOnce({
+      ok: true,
+      status: 200,
+      json: async () => mockBookmarks,
+    });
   });
 
   it("初期状態では、URLとタイトルのテキストボックスには、なにも表示されていない。選択解除のボタンが表示されていない。", async () => {
@@ -75,7 +61,7 @@ describe("ブックマークの選択", () => {
   });
 
   it("テーブル内のブックマーク行をクリックすると、URLとタイトルのテキストボックスにそのブックマークの情報が表示される。「選択解除」のボタンが表示される。", async () => {
-    // fetchMockはbeforeEachでmockBookmarksを返すように設定されています
+    // mockFetchはbeforeEachでmockBookmarksを返すように設定されています
 
     await act(async () => {
       render(<BookmarkManager />);
@@ -105,7 +91,7 @@ describe("ブックマークの選択", () => {
   });
 
   it("選択解除のボタンをクリックすると、URLとタイトルのテキストボックスがクリアされる。選択解除のボタンが表示されていない。", async () => {
-    // fetchMockはbeforeEachでmockBookmarksを返すように設定されています
+    // mockFetchはbeforeEachでmockBookmarksを返すように設定されています
 
     await act(async () => {
       render(<BookmarkManager />);
@@ -149,5 +135,34 @@ describe("ブックマークの選択", () => {
       expect(titleInput).toHaveLength(0);
       expect(unselectButton).toHaveLength(0);
     });
+  });
+
+  it("表示されていないタイトルが指定された場合", async () => {
+    await act(async () => {
+      render(<BookmarkManager />);
+    });
+
+    // 初期データがロードされ、UIが安定するのを待つ
+    // テーブル内に既知のブックマークのタイトルが表示されることを確認
+    // また、アクションボタンが表示されていることで、メインUIの準備ができていることを確認
+    await waitFor(() => {
+      expect(screen.getByText(mockBookmarks[0].title)).toBeInTheDocument();
+    });
+
+    // クリックするブックマークを選択（例：2番目のブックマーク）
+    const bookmarkToSelect: Bookmark = {
+      id: 999,
+      url: "bad url",
+      title: "bad title",
+    };
+    try {
+      await clickBookmark(bookmarkToSelect);
+      expect(true).toBe(false);
+    } catch (e) {
+      expect(e).toBeInstanceOf(Error);
+      expect((e as Error).message).toBe(
+        `ブックマーク "${bookmarkToSelect.title}" のテーブル行が見つかりませんでした。`
+      );
+    }
   });
 });

@@ -1,7 +1,7 @@
 import "@testing-library/jest-dom";
 
-import fetchMock from "jest-fetch-mock";
 import { act } from "react";
+import { beforeEach, describe, expect, it, vi } from "vitest";
 
 import { render, screen, waitFor } from "@testing-library/react";
 
@@ -27,13 +27,20 @@ const mockBookmarks: Bookmark[] = createBookmarkList([
   },
 ]);
 
+const mockFetch = vi.fn();
+
 describe("BookmarkManagerの表示を確認", () => {
   beforeEach(() => {
-    fetchMock.resetMocks();
+    mockFetch.mockReset();
+    global.fetch = mockFetch;
   });
 
   it("すべてのエレメントが表示されることを確認", async () => {
-    fetchMock.mockResponseOnce(JSON.stringify(mockBookmarks));
+    mockFetch.mockResolvedValueOnce({
+      ok: true,
+      status: 200,
+      json: async () => mockBookmarks,
+    });
 
     await act(async () => {
       render(<BookmarkManager />);
@@ -48,7 +55,12 @@ describe("BookmarkManagerの表示を確認", () => {
   });
 
   it("ローディング中にローディングメッセージが表示されること", () => {
-    fetchMock.mockResponseOnce(() => new Promise(() => [])); // リクエストがresolveしないようにする
+    mockFetch.mockResolvedValueOnce({
+      ok: true,
+      status: 200,
+      json: async () => new Promise(() => []),
+    });
+
     render(<BookmarkManager />);
 
     expect(screen.getByTestId("bookmark-message")).toHaveTextContent(
@@ -57,19 +69,20 @@ describe("BookmarkManagerの表示を確認", () => {
   });
 
   it("HTTPステータス500でfetchした場合、エラーメッセージが表示される", async () => {
-    fetchMock.mockResponseOnce("Internal Error", {
+    mockFetch.mockResolvedValueOnce({
+      ok: false,
       status: 500,
       headers: { "Content-Type": "text/plain" },
+      text: async () => "Internal Error",
     });
 
     await act(async () => {
       render(<BookmarkManager />);
     });
 
-    await waitFor(() => {
-      expect(screen.getByTestId("bookmark-message")).toHaveTextContent(
-        /ブックマークのロード中にエラーが発生しました。$/
-      );
-    });
+    const errorMessage = await screen.findByTestId("bookmark-message");
+    expect(errorMessage).toHaveTextContent(
+      /ブックマークのロード中にエラーが発生しました。/
+    );
   });
 });

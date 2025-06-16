@@ -1,5 +1,7 @@
 import "@testing-library/jest-dom";
 
+import { describe, expect, it, vi } from "vitest";
+
 import { render, screen, within } from "@testing-library/react";
 
 import {
@@ -32,7 +34,7 @@ describe("BookmarkTableのテスト", () => {
   it("テーブルとヘッダーが正しく表示される", () => {
     const mockOnSelectBookmark: React.Dispatch<
       React.SetStateAction<SelectedBookmark>
-    > = jest.fn();
+    > = vi.fn();
     render(
       <BookmarkTable
         bookmarks={mockBookmarks}
@@ -45,7 +47,7 @@ describe("BookmarkTableのテスト", () => {
 
     const headers = within(table).getAllByRole("columnheader");
     expect(headers).toHaveLength(1);
-    expect(headers[0]).toHaveTextContent("Title");
+    expect(headers[0]).toHaveTextContent("タイトル");
 
     expect(mockOnSelectBookmark).not.toHaveBeenCalled();
   });
@@ -53,7 +55,7 @@ describe("BookmarkTableのテスト", () => {
   it("ブックマークデータが正しく表示される", () => {
     const mockOnSelectBookmark: React.Dispatch<
       React.SetStateAction<SelectedBookmark>
-    > = jest.fn();
+    > = vi.fn();
     render(
       <BookmarkTable
         bookmarks={mockBookmarks}
@@ -81,7 +83,7 @@ describe("BookmarkTableのテスト", () => {
   it("空のブックマークリストでテーブルが表示される", () => {
     const mockOnSelectBookmark: React.Dispatch<
       React.SetStateAction<SelectedBookmark>
-    > = jest.fn();
+    > = vi.fn();
     render(
       <BookmarkTable bookmarks={[]} onSelectBookmark={mockOnSelectBookmark} />
     );

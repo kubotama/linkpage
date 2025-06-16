@@ -1,12 +1,14 @@
 import "@testing-library/jest-dom";
 
-import fetchMock from "jest-fetch-mock";
 import { act } from "react";
 
 import { fireEvent, render, screen, waitFor } from "@testing-library/react";
+import { describe, it, expect, vi, beforeEach } from "vitest";
 
 import { Bookmark, createBookmarkList } from "../../types/Bookmark";
 import { BookmarkManager } from "../BookmarkManager";
+
+import { clickBookmark } from "../../test-utils/click.test";
 
 const mockBookmarks: Bookmark[] = createBookmarkList([
   {
@@ -31,10 +33,17 @@ const mockBookmarks: Bookmark[] = createBookmarkList([
   },
 ]);
 
+const mockFetch = vi.fn();
+
 describe("削除ボタン", () => {
   beforeEach(() => {
-    fetchMock.resetMocks();
-    fetchMock.mockResponseOnce(JSON.stringify(mockBookmarks));
+    global.fetch = mockFetch;
+    mockFetch.mockReset();
+    mockFetch.mockResolvedValueOnce({
+      ok: true,
+      status: 200,
+      json: async () => mockBookmarks,
+    });
   });
 
   it("ブックマークが選択されていない場合には削除ボタンは表示されない", async () => {
@@ -52,8 +61,6 @@ describe("削除ボタン", () => {
   });
 
   it("ブックマークが選択されると削除ボタンが表示される", async () => {
-    // fetchMockはbeforeEachでmockBookmarksを返すように設定されています
-
     await act(async () => {
       render(<BookmarkManager />);
     });
@@ -67,24 +74,7 @@ describe("削除ボタン", () => {
 
     // クリックするブックマークを選択（例：2番目のブックマーク）
     const bookmarkToSelect = mockBookmarks[1]; // Google
-
-    // 選択したブックマークに対応するテーブル行を見つける
-    // 行にはブックマークのタイトルを持つリンクが含まれている
-    const bookmarkLinkInRow = screen.getByRole("link", {
-      name: bookmarkToSelect.title,
-    });
-    const tableRow = bookmarkLinkInRow.closest("tr");
-
-    if (!tableRow) {
-      throw new Error(
-        `ブックマーク "${bookmarkToSelect.title}" のテーブル行が見つかりませんでした。`
-      );
-    }
-
-    // テーブル行のクリックをシミュレート
-    await act(async () => {
-      fireEvent.click(tableRow);
-    });
+    await clickBookmark(bookmarkToSelect);
 
     await waitFor(() => {
       const deleteButton = screen.getByRole("button", { name: "削除" });
@@ -108,26 +98,14 @@ describe("削除ボタン", () => {
 
     // クリックするブックマークを選択（例：2番目のブックマーク）
     const bookmarkToSelect = mockBookmarks[1]; // Google
+    await clickBookmark(bookmarkToSelect);
 
-    // 選択したブックマークに対応するテーブル行を見つける
-    // 行にはブックマークのタイトルを持つリンクが含まれている
-    const bookmarkLinkInRow = screen.getByRole("link", {
-      name: bookmarkToSelect.title,
-    });
-    const tableRow = bookmarkLinkInRow.closest("tr");
-
-    if (!tableRow) {
-      throw new Error(
-        `ブックマーク "${bookmarkToSelect.title}" のテーブル行が見つかりませんでした。`
-      );
-    }
-
-    fetchMock.resetMocks();
-    fetchMock.mockResponseOnce("", { status: 204 });
-
-    // テーブル行のクリックをシミュレート
-    await act(async () => {
-      fireEvent.click(tableRow);
+    // fetchMock.resetMocks();
+    // fetchMock.mockResponseOnce("", { status: 204 });
+    mockFetch.mockReset();
+    mockFetch.mockResolvedValueOnce({
+      ok: true,
+      status: 204,
     });
 
     const deleteButton = screen.getByRole("button", { name: "削除" });
@@ -138,9 +116,9 @@ describe("削除ボタン", () => {
 
     await waitFor(() => {
       // APIの呼び出しの確認
-      expect(fetchMock).toHaveBeenCalledTimes(1);
-      expect(fetchMock.mock.calls[0][0]).toEqual("/api/bookmark/delete");
-      expect(fetchMock.mock.calls[0][1]).toEqual({
+      expect(mockFetch).toHaveBeenCalledTimes(1);
+      expect(mockFetch.mock.calls[0][0]).toEqual("/api/bookmark/delete");
+      expect(mockFetch.mock.calls[0][1]).toEqual({
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -174,32 +152,14 @@ describe("削除ボタン", () => {
 
     // クリックするブックマークを選択（例：2番目のブックマーク）
     const bookmarkToSelect = mockBookmarks[1]; // Google
+    await clickBookmark(bookmarkToSelect);
 
-    // 選択したブックマークに対応するテーブル行を見つける
-    // 行にはブックマークのタイトルを持つリンクが含まれている
-    const bookmarkLinkInRow = screen.getByRole("link", {
-      name: bookmarkToSelect.title,
-    });
-    const tableRow = bookmarkLinkInRow.closest("tr");
-
-    if (!tableRow) {
-      throw new Error(
-        `ブックマーク "${bookmarkToSelect.title}" のテーブル行が見つかりませんでした。`
-      );
-    }
-
-    fetchMock.resetMocks();
-    fetchMock.mockResponseOnce(
-      "指定したIDのブックマークが見つかりませんでした。",
-      {
-        status: 404,
-        headers: { "Content-Type": "text/plain" },
-      }
-    );
-
-    // テーブル行のクリックをシミュレート
-    await act(async () => {
-      fireEvent.click(tableRow);
+    mockFetch.mockReset();
+    mockFetch.mockResolvedValueOnce({
+      ok: false, // 404の場合は false
+      status: 404,
+      headers: { "Content-Type": "text/plain" },
+      text: async () => "指定されたブックマークがありません。",
     });
 
     const deleteButton = screen.getByRole("button", { name: "削除" });
@@ -235,29 +195,14 @@ describe("削除ボタン", () => {
 
     // クリックするブックマークを選択（例：2番目のブックマーク）
     const bookmarkToSelect = mockBookmarks[1]; // Google
+    await clickBookmark(bookmarkToSelect);
 
-    // 選択したブックマークに対応するテーブル行を見つける
-    // 行にはブックマークのタイトルを持つリンクが含まれている
-    const bookmarkLinkInRow = screen.getByRole("link", {
-      name: bookmarkToSelect.title,
-    });
-    const tableRow = bookmarkLinkInRow.closest("tr");
-
-    if (!tableRow) {
-      throw new Error(
-        `ブックマーク "${bookmarkToSelect.title}" のテーブル行が見つかりませんでした。`
-      );
-    }
-
-    fetchMock.resetMocks();
-    fetchMock.mockResponseOnce("リクエストにIDがありませんでした。", {
+    mockFetch.mockReset();
+    mockFetch.mockResolvedValueOnce({
+      ok: false, // 400の場合は false
       status: 400,
       headers: { "Content-Type": "text/plain" },
-    });
-
-    // テーブル行のクリックをシミュレート
-    await act(async () => {
-      fireEvent.click(tableRow);
+      text: async () => "リクエストにIDがありませんでした。",
     });
 
     const deleteButton = screen.getByRole("button", { name: "削除" });
@@ -307,10 +252,12 @@ describe("削除ボタン", () => {
       );
     }
 
-    fetchMock.resetMocks();
-    fetchMock.mockResponseOnce("サーバーで予期せぬエラーが発生しました。", {
+    mockFetch.mockReset();
+    mockFetch.mockResolvedValueOnce({
+      ok: false, // 500の場合は false
       status: 500,
       headers: { "Content-Type": "text/plain" },
+      text: async () => "サーバーで予期せぬエラーが発生しました。",
     });
 
     // テーブル行のクリックをシミュレート
@@ -327,7 +274,7 @@ describe("削除ボタン", () => {
     await waitFor(() => {
       // 画面の更新の確認
       expect(screen.getByTestId("bookmark-message")).toHaveTextContent(
-        "ブックマークの削除中にサーバーで予期せぬエラーが発生しました。"
+        "ブックマークの削除中にエラーが発生しました。"
       );
       // 削除操作のコンテキスト（選択されたブックマークのタイトルや削除ボタン）が依然として表示されていることを確認
       expect(screen.getByText(bookmarkToSelect.title)).toBeInTheDocument();

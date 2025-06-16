@@ -1,10 +1,11 @@
 import OriginalDatabase from "better-sqlite3"; // Import for type annotation
+import { beforeEach, describe, expect, it, vi } from "vitest";
 
 // Define mocks for 'better-sqlite3'
 // This mock will replace the actual 'better-sqlite3' module when 'database.ts' imports it.
 
 // mockExec will allow us to spy on calls to db.exec()
-const mockExec = jest.fn();
+const mockExec = vi.fn();
 
 // mockDbInstance is the object that our mock Database constructor will return.
 // It needs to have an 'exec' method, as that's what getDb calls.
@@ -15,11 +16,13 @@ const mockDbInstance = {
 
 // mockDatabaseConstructor is our mock for the 'new Database()' constructor.
 // It's a Jest mock function that, when called, returns our mockDbInstance.
-const mockDatabaseConstructor = jest.fn().mockReturnValue(mockDbInstance);
+const mockDatabaseConstructor = vi.fn().mockReturnValue(mockDbInstance);
 
 // Apply the mock for the 'better-sqlite3' module.
 // The factory function must return the mock constructor.
-jest.mock("better-sqlite3", () => mockDatabaseConstructor);
+vi.mock("better-sqlite3", () => ({
+  default: mockDatabaseConstructor,
+}));
 
 describe("Database Module - getDb", () => {
   // This will hold the getDb function from the module under test.
@@ -30,7 +33,7 @@ describe("Database Module - getDb", () => {
     // Reset all modules in the Jest cache. This is crucial for testing modules
     // with internal state (like the 'db' variable in database.ts) because it ensures
     // the module is re-initialized from scratch for each test.
-    jest.resetModules();
+    vi.resetModules();
 
     // Dynamically import the module under test AFTER resetting modules.
     // This ensures we get a fresh version of the module, where its internal 'db'

@@ -130,6 +130,10 @@ linkpage はリンクデータを SQLite のデータベースで管理します
 - [Next.js](https://nextjs.org/)
 - [React](https://reactjs.org/)
 - [TypeScript](https://www.typescriptlang.org/)
+- [Tailwind CSS](https://tailwindcss.com/)
+- [SQLite](https://www.sqlite.org/index.html)
+- [vitest](https://vitest.dev)
+- [MaterialUI](https://mui.com)
 
 ## ライセンス
 

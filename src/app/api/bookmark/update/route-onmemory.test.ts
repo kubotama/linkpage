@@ -1,6 +1,7 @@
 import "@testing-library/jest-dom";
 
 import ActualDatabase from "better-sqlite3"; // Import the actual library
+import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 
 import { Bookmark, createBookmarkList } from "../../../types/Bookmark";
 import { getDb } from "../database";
@@ -8,7 +9,7 @@ import { POST } from "./route";
 
 // We will mock getDb to return our in-memory instance.
 // The actual getDb function is simple, but mocking allows us to inject the in-memory DB.
-jest.mock("../database");
+vi.mock("../database");
 
 let inMemoryDbInstance: ActualDatabase.Database;
 
@@ -58,7 +59,7 @@ const getBookmarkIdFromUrl = (url: string) => {
 describe("ブックマーク更新APIのテスト (オンメモリDB)", () => {
   beforeEach(() => {
     // Reset mocks before each test
-    jest.resetAllMocks();
+    vi.resetAllMocks();
 
     // Create a new in-memory database for each test
     inMemoryDbInstance = new ActualDatabase(":memory:");
@@ -79,7 +80,12 @@ describe("ブックマーク更新APIのテスト (オンメモリDB)", () => {
     });
 
     // Configure the getDb mock to return this instance
-    (getDb as jest.Mock).mockReturnValue(inMemoryDbInstance);
+    // (getDb as jest.Mock).mockReturnValue(inMemoryDbInstance);
+    (
+      getDb as unknown as {
+        mockReturnValue: (db: ActualDatabase.Database) => void;
+      }
+    ).mockReturnValue(inMemoryDbInstance);
   });
 
   afterEach(() => {

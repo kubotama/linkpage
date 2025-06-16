@@ -101,9 +101,7 @@ export const useBookmarkManager = () => {
       })
       .catch((error) => {
         console.error("ブックマーク削除エラー:", error); // 詳細なエラーはコンソールへ
-        setError(
-          "ブックマークの削除中にサーバーで予期せぬエラーが発生しました。"
-        ); // ユーザーフレンドリーなメッセージ
+        setError("ブックマークの削除中にエラーが発生しました。"); // ユーザーフレンドリーなメッセージ
       })
       .finally(() => {
         setLoading("");
