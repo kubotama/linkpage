@@ -31,7 +31,7 @@ export const BookmarkManager = ({}) => {
     <>
       <div style={{ marginTop: "20px", marginBottom: "20px" }}>
         <div>
-          {textMessage !== "" && (
+          {textMessage && (
             <Box
               display="flex"
               alignItems="center"
