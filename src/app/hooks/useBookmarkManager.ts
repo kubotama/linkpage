@@ -1,17 +1,24 @@
 import { useEffect, useState } from "react";
 
-import { Bookmark, SelectedBookmark } from "../types/Bookmark";
+import { TITLE_ENDPOINT } from "../constants/apiEndpoints";
+import { useBookmarks } from "./useBookmark";
 
 export const useBookmarkManager = () => {
-  const [selectedBookmark, setSelectedBookmark] =
-    useState<SelectedBookmark>(null);
-  const [bookmarks, setBookmarks] = useState<Bookmark[]>([]);
-  const [loading, setLoading] = useState("");
-  const [error, setError] = useState("");
   const [textUrl, setTextUrl] = useState("");
   const [textTitle, setTextTitle] = useState("");
-  const [bookmarkMessage, setBookmarkMessage] =
-    useState("ブックマークをロード中...");
+  const [textMessage, setTextMessage] = useState("ブックマークをロード中...");
+
+  const {
+    bookmarks,
+    selectedBookmark,
+    setSelectedBookmark,
+    loadingMessage,
+    errorMessage,
+    setErrorMessage,
+    loadBookmarks,
+    deleteBookmark,
+    updateBookmark,
+  } = useBookmarks();
 
   useEffect(() => {
     if (selectedBookmark === null) {
@@ -24,94 +31,30 @@ export const useBookmarkManager = () => {
   }, [selectedBookmark]);
 
   useEffect(() => {
-    if (error) {
-      setBookmarkMessage(error);
-    } else if (loading) {
-      setBookmarkMessage(loading);
+    if (errorMessage) {
+      setTextMessage(errorMessage);
+    } else if (loadingMessage) {
+      setTextMessage(loadingMessage);
     } else {
-      setBookmarkMessage("");
+      setTextMessage("");
     }
-  }, [loading, error]);
+  }, [loadingMessage, errorMessage]);
 
   useEffect(() => {
-    setLoading("ブックマークをロード中...");
-    fetch("/api/bookmark")
-      .then((response) => {
-        if (!response.ok) {
-          throw new Error(
-            `Failed to fetch: [${response.status}] ${response.statusText}`
-          );
-        }
-        return response.json();
-      })
-      .then((data) => {
-        setBookmarks(data);
-        setError("");
-      })
-      .catch((error) => {
-        console.error("ブックマークのロードエラー:", error); // 詳細なエラーはコンソールへ
-        setError("ブックマークのロード中にエラーが発生しました。"); // ユーザーフレンドリーなメッセージ
-      })
-      .finally(() => {
-        setLoading("");
-      });
+    loadBookmarks();
   }, []);
 
-  const deleteClick = () => {
+  const deleteClick = async () => {
     if (selectedBookmark === null) {
       return;
     }
-    setLoading("ブックマークの削除処理中...");
-    fetch("/api/bookmark/delete", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({ id: selectedBookmark.id }),
-    })
-      .then(async (response) => {
-        if (response.status === 204) {
-          const newBookmarks = bookmarks.filter(
-            (bookmark) => bookmark.id !== selectedBookmark.id
-          );
-          setBookmarks(newBookmarks);
-          setSelectedBookmark(null);
-          setError("");
-        } else if (response.status === 404 || response.status === 400) {
-          const errorText = await response.text();
-          console.error("ブックマーク削除エラー:", errorText); // 詳細なエラーはコンソールへ
-          setError("ブックマークの削除中にエラーが発生しました。"); // ユーザーフレンドリーなメッセージ
-        } else {
-          let errorDetail = response.statusText; // デフォルトは statusText
-          try {
-            const serverMessage = await response.text();
-            if (serverMessage) {
-              // サーバーがボディにメッセージを含めていればそれを使用
-              errorDetail = serverMessage;
-            }
-          } catch (e) {
-            // response.text() の読み取りに失敗した場合の処理 (例: ログ出力)
-            console.error("Failed to read error response body:", e);
-            // errorDetail は response.statusText のまま
-          }
-          throw new Error(
-            `Failed to delete: [${response.status}] ${errorDetail}`
-          );
-        }
-      })
-      .catch((error) => {
-        console.error("ブックマーク削除エラー:", error); // 詳細なエラーはコンソールへ
-        setError("ブックマークの削除中にエラーが発生しました。"); // ユーザーフレンドリーなメッセージ
-      })
-      .finally(() => {
-        setLoading("");
-      });
+    deleteBookmark(selectedBookmark.id);
   };
 
   // titleClick fetches the title of the URL
   const titleClick = () => {
-    setBookmarkMessage("タイトルを取得中...");
-    fetch("/api/title?url=" + textUrl)
+    setTextMessage("タイトルを取得中...");
+    fetch(`${TITLE_ENDPOINT}?url=${encodeURIComponent(textUrl)}`)
       .then((response) => {
         if (!response.ok) {
           throw new Error(`タイトルが見つかりません: [${response.status}] `);
@@ -124,12 +67,12 @@ export const useBookmarkManager = () => {
           throw new Error(`タイトルが見つかりません: [${textUrl}] `);
         } else {
           setTextTitle(text);
-          setBookmarkMessage("");
+          setTextMessage("");
         }
       })
       .catch((error) => {
         console.error("タイトルの取得エラー:", error); // 詳細なエラーはコンソールへ
-        setError("タイトルの取得中にエラーが発生しました。"); // ユーザーフレンドリーなメッセージ
+        setErrorMessage("タイトルの取得中にエラーが発生しました。"); // ユーザーフレンドリーなメッセージ
       });
   };
 
@@ -167,8 +110,8 @@ export const useBookmarkManager = () => {
       new URL(textUrl);
       // 新しいウィンドウでURLを開く
       window.open(textUrl, "_blank", "noopener,noreferrer");
-    } catch (error: unknown) {
-      setBookmarkMessage((error as Error).message);
+    } catch {
+      setTextMessage("URLが無効です。正しいURLを入力してください。");
     }
   };
 
@@ -180,50 +123,14 @@ export const useBookmarkManager = () => {
 
   // handleErrorClose clears the error message
   const handleErrorClose = () => {
-    setError("");
+    setErrorMessage("");
   };
 
   const updateClick = () => {
     if (selectedBookmark === null) {
       return;
     }
-    setLoading("ブックマークのタイトル更新処理中...");
-    fetch("/api/bookmark/update", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({ id: selectedBookmark.id, title: textTitle }),
-    })
-      .then(async (response) => {
-        if (response.ok) {
-          // APIが成功のレスポンス（例: 更新されたブックマークオブジェクト）を返すと仮定
-          // もしAPIが更新後のオブジェクトを返さない場合は、ローカルでタイトルを更新
-          const updatedBookmarks = bookmarks.map((bookmark) =>
-            bookmark.id === selectedBookmark.id
-              ? { ...bookmark, title: textTitle }
-              : bookmark
-          );
-          setBookmarks(updatedBookmarks);
-          setSelectedBookmark(null); // 選択を解除
-          setError("");
-        } else {
-          // エラーレスポンスの処理
-          const errorText = await response.text();
-          throw new Error(
-            `タイトルの更新エラー: [${response.status}] ${
-              errorText || response.statusText
-            }`
-          );
-        }
-      })
-      .catch((error) => {
-        console.error("ブックマークのタイトル更新エラー:", error); // 詳細なエラーはコンソールへ
-        setError("ブックマークのタイトル更新中にエラーが発生しました。"); // ユーザーフレンドリーなメッセージ
-      })
-      .finally(() => {
-        setLoading("");
-      });
+    updateBookmark(selectedBookmark.id, textTitle);
   };
 
   const isBookmarkSelected = () => {
@@ -231,7 +138,7 @@ export const useBookmarkManager = () => {
   };
 
   const isError = () => {
-    return error !== "";
+    return errorMessage !== "";
   };
 
   return {
@@ -239,7 +146,7 @@ export const useBookmarkManager = () => {
     bookmarks,
     textUrl,
     textTitle,
-    bookmarkMessage,
+    textMessage,
     isError,
     isBookmarkSelected,
     setSelectedBookmark,
