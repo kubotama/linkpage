@@ -12,7 +12,7 @@ export const BookmarkManager = ({}) => {
     isError,
     textUrl,
     textTitle,
-    bookmarkMessage,
+    textMessage,
     isBookmarkSelected,
     setSelectedBookmark,
     setTextUrl,
@@ -31,7 +31,7 @@ export const BookmarkManager = ({}) => {
     <>
       <div style={{ marginTop: "20px", marginBottom: "20px" }}>
         <div>
-          {bookmarkMessage !== "" && (
+          {textMessage !== "" && (
             <Box
               display="flex"
               alignItems="center"
@@ -53,7 +53,7 @@ export const BookmarkManager = ({}) => {
                   color: isError() ? "red" : "inherit", // エラーの場合は文字色を赤に
                 }}
               >
-                {bookmarkMessage}
+                {textMessage}
               </span>
             </Box>
           )}
