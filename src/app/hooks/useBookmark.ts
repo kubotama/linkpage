@@ -1,5 +1,10 @@
 import { useState } from "react";
 
+import {
+  BOOKMARK_DELETE_ENDPOINT,
+  BOOKMARK_UPDATE_ENDPOINT,
+  BOOKMARKS_ENDPOINT,
+} from "../constants/apiEndpoints";
 import { Bookmark, SelectedBookmark } from "../types/Bookmark";
 
 export const useBookmarks = () => {
@@ -11,7 +16,7 @@ export const useBookmarks = () => {
 
   const loadBookmarks = () => {
     setLoadingMessage("ブックマークをロード中...");
-    fetch("/api/bookmark")
+    fetch(BOOKMARKS_ENDPOINT)
       .then((response) => {
         if (!response.ok) {
           throw new Error(
@@ -35,7 +40,7 @@ export const useBookmarks = () => {
 
   const deleteBookmark = async (id: number) => {
     setLoadingMessage("ブックマークの削除処理中...");
-    fetch("/api/bookmark/delete", {
+    fetch(BOOKMARK_DELETE_ENDPOINT, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
@@ -83,7 +88,7 @@ export const useBookmarks = () => {
   const updateBookmark = async (id: number, title: string) => {
     setLoadingMessage("ブックマークのタイトル更新処理中...");
     setLoadingMessage("ブックマークのタイトル更新処理中...");
-    fetch("/api/bookmark/update", {
+    fetch(BOOKMARK_UPDATE_ENDPOINT, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",

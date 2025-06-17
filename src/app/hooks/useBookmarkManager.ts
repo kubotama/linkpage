@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 
+import { TITLE_ENDPOINT } from "../constants/apiEndpoints";
 import { useBookmarks } from "./useBookmark";
 
 export const useBookmarkManager = () => {
@@ -53,7 +54,7 @@ export const useBookmarkManager = () => {
   // titleClick fetches the title of the URL
   const titleClick = () => {
     setTextMessage("タイトルを取得中...");
-    fetch("/api/title?url=" + textUrl)
+    fetch(`${TITLE_ENDPOINT}?url=${encodeURIComponent(textUrl)}`)
       .then((response) => {
         if (!response.ok) {
           throw new Error(`タイトルが見つかりません: [${response.status}] `);
