@@ -136,7 +136,7 @@ describe("「開く」ボタン: 入力されたURLを新しいタブで開く",
 
     await waitFor(() => {
       expect(screen.getByTestId("bookmark-message")).toHaveTextContent(
-        "Invalid URL: invalid-url"
+        "URLが無効です。正しいURLを入力してください。"
       );
       expect(mockOpen).not.toHaveBeenCalled();
     });

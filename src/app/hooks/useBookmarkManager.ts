@@ -110,8 +110,8 @@ export const useBookmarkManager = () => {
       new URL(textUrl);
       // 新しいウィンドウでURLを開く
       window.open(textUrl, "_blank", "noopener,noreferrer");
-    } catch (error: unknown) {
-      setTextMessage((error as Error).message);
+    } catch {
+      setTextMessage("URLが無効です。正しいURLを入力してください。: ");
     }
   };
 
