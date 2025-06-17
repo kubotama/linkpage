@@ -40,6 +40,10 @@ export const useBookmarkManager = () => {
     }
   }, [loadingMessage, errorMessage]);
 
+  const refreshClick = () => {
+    loadBookmarks();
+  };
+
   useEffect(() => {
     loadBookmarks();
   }, []);
@@ -160,5 +164,6 @@ export const useBookmarkManager = () => {
     clearClick,
     handleErrorClose,
     updateClick,
+    refreshClick,
   };
 };

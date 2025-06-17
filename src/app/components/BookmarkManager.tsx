@@ -25,6 +25,7 @@ export const BookmarkManager = ({}) => {
     clearClick,
     handleErrorClose,
     updateClick,
+    refreshClick,
   } = useBookmarkManager();
 
   return (
@@ -152,6 +153,17 @@ export const BookmarkManager = ({}) => {
           </>
         )}
       </div>
+      <>
+        <Box display="flex" alignItems="center" sx={{ marginBottom: "10px" }}>
+          <Button
+            variant="contained"
+            onClick={refreshClick}
+            sx={{ height: "2rem" }}
+          >
+            再表示
+          </Button>
+        </Box>
+      </>
 
       {bookmarks.length > 0 && (
         <BookmarkTable
