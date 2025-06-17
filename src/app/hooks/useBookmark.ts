@@ -84,41 +84,6 @@ export const useBookmarks = () => {
   };
 
   const updateBookmark = async (id: number, title: string) => {
-    // setLoadingMessage("ブックマークのタイトル更新処理中...");
-    // fetch(BOOKMARK_UPDATE_ENDPOINT, {
-    //   method: "POST",
-    //   headers: {
-    //     "Content-Type": "application/json",
-    //   },
-    //   body: JSON.stringify({ id, title }),
-    // })
-    //   .then(async (response) => {
-    //     if (response.ok) {
-    //       // APIが成功のレスポンス（例: 更新されたブックマークオブジェクト）を返すと仮定
-    //       // もしAPIが更新後のオブジェクトを返さない場合は、ローカルでタイトルを更新
-    //       const updatedBookmarks = bookmarks.map((bookmark) =>
-    //         bookmark.id === id ? { ...bookmark, title } : bookmark
-    //       );
-    //       setBookmarks(updatedBookmarks);
-    //       setSelectedBookmark(null); // 選択を解除
-    //       setErrorMessage("");
-    //     } else {
-    //       // エラーレスポンスの処理
-    //       const errorText = await response.text();
-    //       throw new Error(
-    //         `タイトルの更新エラー: [${response.status}] ${
-    //           errorText || response.statusText
-    //         }`
-    //       );
-    //     }
-    //   })
-    //   .catch((error) => {
-    //     console.error("ブックマークのタイトル更新エラー:", error); // 詳細なエラーはコンソールへ
-    //     setErrorMessage("ブックマークのタイトル更新中にエラーが発生しました。"); // ユーザーフレンドリーなメッセージ
-    //   })
-    //   .finally(() => {
-    //     setLoadingMessage("");
-    //   });
     setLoadingMessage("ブックマークのタイトル更新処理中...");
     try {
       const response = await fetch(BOOKMARK_UPDATE_ENDPOINT, {
