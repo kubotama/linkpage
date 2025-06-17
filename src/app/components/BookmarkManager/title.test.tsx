@@ -86,7 +86,7 @@ describe("BookmarkManagerのURLとタイトルのテキストとボタンのテ�
 
     await waitFor(() => {
       expect(mockFetch).toHaveBeenCalledTimes(1);
-      expect(mockFetch.mock.calls[0][0]).toEqual("/api/title?url=" + url);
+      expect(mockFetch.mock.calls[0][0]).toEqual("/api/title?url=" + encodeURIComponent(url));
       expect(titleInput).toHaveValue(title);
     });
   });
@@ -123,7 +123,7 @@ describe("BookmarkManagerのURLとタイトルのテキストとボタンのテ�
 
     await waitFor(() => {
       expect(mockFetch).toHaveBeenCalledTimes(1);
-      expect(mockFetch.mock.calls[0][0]).toEqual("/api/title?url=" + url);
+      expect(mockFetch.mock.calls[0][0]).toEqual("/api/title?url=" + encodeURIComponent(url));
 
       const messageText = screen.getByTestId("bookmark-message");
       expect(messageText).toHaveTextContent(
@@ -164,7 +164,7 @@ describe("BookmarkManagerのURLとタイトルのテキストとボタンのテ�
 
     await waitFor(() => {
       expect(mockFetch).toHaveBeenCalledTimes(1);
-      expect(mockFetch.mock.calls[0][0]).toEqual("/api/title?url=" + url);
+      expect(mockFetch.mock.calls[0][0]).toEqual("/api/title?url=" + encodeURIComponent(url));
 
       const messageText = screen.getByTestId("bookmark-message");
       expect(messageText).toHaveTextContent(

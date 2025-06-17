@@ -87,7 +87,6 @@ export const useBookmarks = () => {
 
   const updateBookmark = async (id: number, title: string) => {
     setLoadingMessage("ブックマークのタイトル更新処理中...");
-    setLoadingMessage("ブックマークのタイトル更新処理中...");
     fetch(BOOKMARK_UPDATE_ENDPOINT, {
       method: "POST",
       headers: {
