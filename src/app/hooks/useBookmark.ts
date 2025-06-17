@@ -49,12 +49,10 @@ export const useBookmarks = () => {
     })
       .then(async (response) => {
         if (response.status === 204) {
-          if (bookmarks.length >= 0) {
-            const newBookmarks = bookmarks.filter(
-              (bookmark) => bookmark.id !== id
-            );
-            setBookmarks(newBookmarks);
-          }
+          const newBookmarks = bookmarks.filter(
+            (bookmark) => bookmark.id !== id
+          );
+          setBookmarks(newBookmarks);
           setSelectedBookmark(null);
           setErrorMessage("");
         } else if (response.status === 404 || response.status === 400) {
