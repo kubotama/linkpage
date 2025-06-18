@@ -153,7 +153,7 @@ export const BookmarkManager = ({}) => {
           </>
         )}
       </div>
-      <Box alignItems="left" sx={{ marginBottom: "10px" }}>
+      <Box sx={{ marginBottom: "10px" }}>
         <button onClick={refreshClick} className="button-bookmark-manager">
           再表示
         </button>
