@@ -25,6 +25,7 @@ export const BookmarkManager = ({}) => {
     clearClick,
     handleErrorClose,
     updateClick,
+    refreshClick,
   } = useBookmarkManager();
 
   return (
@@ -151,6 +152,11 @@ export const BookmarkManager = ({}) => {
             </Box>
           </>
         )}
+      </div>
+      <div className="mb-2">
+        <button onClick={refreshClick} className="button-bookmark-manager">
+          再表示
+        </button>
       </div>
 
       {bookmarks.length > 0 && (
