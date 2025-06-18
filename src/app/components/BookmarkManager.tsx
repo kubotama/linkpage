@@ -153,7 +153,7 @@ export const BookmarkManager = ({}) => {
           </>
         )}
       </div>
-      <div style={{ marginBottom: "10px" }}>
+      <div className="mb-2">
         <button onClick={refreshClick} className="button-bookmark-manager">
           再表示
         </button>
