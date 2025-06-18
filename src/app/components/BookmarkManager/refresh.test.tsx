@@ -50,10 +50,25 @@ describe("ブックマークの再表示", () => {
     });
 
     mockFetch.mockReset();
+    const updatedMockBookmarks: Bookmark[] = createBookmarkList([
+      {
+        url: "https://www.google.co.jp/maps/",
+        title: "Google マップ",
+      },
+      {
+        url: "https://qiita.com/",
+        title: "Qiita",
+      },
+      {
+        url: "https://zenn.dev/",
+        title: "Zenn",
+      },
+    ]);
+
     mockFetch.mockResolvedValueOnce({
       ok: true,
       status: 200,
-      json: async () => mockBookmarks,
+      json: async () => updatedMockBookmarks,
     });
 
     const refreshButton = screen.getByRole("button", { name: "再表示" });
@@ -64,6 +79,13 @@ describe("ブックマークの再表示", () => {
 
     await waitFor(() => {
       expect(mockFetch).toHaveBeenCalledTimes(1);
+      expect(screen.getByText("Google マップ")).toBeInTheDocument();
+      expect(screen.getByText("Qiita")).toBeInTheDocument();
+      expect(screen.getByText("Zenn")).toBeInTheDocument();
+      expect(screen.queryAllByText("kubotama/linkpage")).toHaveLength(0);
+      expect(screen.queryAllByText("Google")).toHaveLength(0);
+      expect(screen.queryAllByText("Gmail")).toHaveLength(0);
+      expect(screen.queryAllByText("Amazon")).toHaveLength(0);
     });
   });
 });
