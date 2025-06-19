@@ -39,7 +39,8 @@ export const BookmarkManager = ({}) => {
             >
               {isError() && ( // エラーメッセージがある場合のみ「閉じる」ボタンを表示
                 <button
-                  className="button-bookmark-manager mb-2"
+                  type="button"
+                  className="button-bookmark-manager mb-2 h-8" // 2remの高さを維持する場合、h-8などを追加
                   onClick={handleErrorClose}
                 >
                   閉じる
