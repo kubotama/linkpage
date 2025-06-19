@@ -1,10 +1,11 @@
 import "@testing-library/jest-dom";
 
 import { act } from "react";
+import { beforeEach, describe, expect, it, vi } from "vitest";
 
-import { render, screen } from "@testing-library/react";
-import { describe, it, expect, vi, beforeEach } from "vitest";
+import { fireEvent, render, screen, waitFor } from "@testing-library/react";
 
+import { clickBookmark } from "../../test-utils/click.test";
 import { Bookmark, createBookmarkList } from "../../types/Bookmark";
 import { BookmarkManager } from "../BookmarkManager";
 
@@ -44,47 +45,48 @@ describe("BookmarkManager", () => {
     });
   });
 
-  // Test case 1: Error message and close button are displayed when an error occurs
-  // it("should display error message and close button when an error occurs", async () => {
-  //   await addSameBookmark();
+  it("エラーメッセージと閉じるボタンの表示を確認するテスト", async () => {
+    // クリックするブックマークを選択（例：2番目のブックマーク）
+    const bookmarkToSelect = mockBookmarks[1]; // Google
+    await clickBookmark(bookmarkToSelect);
 
-  //   // Wait for the error message to appear
-  //   const errorSpan = await screen.findByTestId("bookmark-message");
-  //   expect(errorSpan).toHaveTextContent(
-  //     "既に登録されています。 https://www.google.com"
-  //   );
-  //   expect(errorSpan).toHaveStyle("color: red");
+    const urlInput = screen.getByRole("textbox", { name: "url" });
+    const titleInput = screen.getByRole("textbox", { name: "title" });
 
-  //   // Wait for the close button to appear
-  //   const closeButton = await screen.findByRole("button", { name: "閉じる" });
-  //   expect(closeButton).toBeInTheDocument();
-  // });
+    const titleButton = screen.getByRole("button", { name: "タイトル" });
 
-  // Test case 2: Clicking the close button clears the error message
-  // it("should clear the error message when the close button is clicked", async () => {
-  //   await addSameBookmark();
+    mockFetch.mockResolvedValueOnce({
+      ok: false,
+      status: 500,
+      text: async () => "URLを入力してください。",
+    });
 
-  //   const closeButton = await screen.findByRole("button", { name: "閉じる" });
-  //   expect(closeButton).toBeInTheDocument();
+    await act(async () => {
+      fireEvent.change(urlInput, { target: { value: "" } });
+      fireEvent.change(titleInput, { target: { value: "" } });
+      fireEvent.click(titleButton);
+    });
 
-  //   // Click the close button
-  //   await act(async () => {
-  //     fireEvent.click(closeButton);
-  //   });
-  //   // Wait for the error message and button to disappear
-  //   // We check that the message span is still there but its content is empty
-  //   // and the button is no longer in the document.
-  //   await waitFor(() => {
-  //     expect(
-  //       screen.queryByRole("button", { name: "閉じる" })
-  //     ).not.toBeInTheDocument();
-  //     expect(
-  //       screen.queryAllByText("既に登録されています。 https://www.google.com")
-  //     ).toHaveLength(0);
-  //   });
-  // });
+    await waitFor(() => {
+      const errorSpan = screen.getByTestId("bookmark-message");
+      expect(errorSpan).toHaveTextContent(
+        "タイトルの取得中にエラーが発生しました。"
+      );
+      expect(errorSpan).toHaveStyle("color: rgb(255, 0, 0)");
+    });
 
-  //   // Test case 3: Close button is not displayed when there is no error
+    const closeButton = screen.getByRole("button", { name: "閉じる" });
+
+    await act(async () => {
+      fireEvent.click(closeButton);
+    });
+
+    await waitFor(() => {
+      const errorSpan = screen.queryByTestId("bookmark-message");
+      expect(errorSpan).not.toBeInTheDocument();
+    });
+  });
+
   it("should not display the close button when there is no error", async () => {
     const messageSpan = screen.queryByTestId("bookmark-message");
     expect(messageSpan).not.toBeInTheDocument();
