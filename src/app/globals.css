@@ -7,5 +7,5 @@
 }
 
 .text-bookmark-manager {
-  @apply min-w-[500px] max-w-none border-2 p-2 m-1 bg-gray-700 text-gray-100 text-xs;
+  @apply min-w-[500px] max-w-none border-2 p-2 m-1 bg-gray-100 text-gray-700 text-xs;
 }
