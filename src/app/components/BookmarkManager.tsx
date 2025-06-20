@@ -1,7 +1,6 @@
 import React from "react";
 
 import Box from "@mui/material/Box";
-import Button from "@mui/material/Button";
 
 import { useBookmarkManager } from "../hooks/useBookmarkManager";
 import { BookmarkTable } from "./BookmarkTable";
@@ -39,13 +38,13 @@ export const BookmarkManager = ({}) => {
               sx={{ marginBottom: "10px" }}
             >
               {isError() && ( // エラーメッセージがある場合のみ「閉じる」ボタンを表示
-                <Button
-                  variant="contained"
+                <button
+                  type="button"
+                  className="button-bookmark-manager mb-2 h-8" // h-8 により高さを2remに維持
                   onClick={handleErrorClose}
-                  sx={{ height: "2rem" }}
                 >
                   閉じる
-                </Button>
+                </button>
               )}
               <span
                 data-testid="bookmark-message"
