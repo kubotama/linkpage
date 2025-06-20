@@ -9,7 +9,7 @@ export const clickBookmark = async (bookmark: Bookmark) => {
   // 選択したブックマークに対応するテーブル行を見つける
   // 行にはブックマークのタイトルを持つリンクが含まれている
   try {
-    const bookmarkLinkInRow = screen.getByRole("link", {
+    const bookmarkLinkInRow = screen.getByRole("row", {
       name: bookmark.title,
     });
     const tableRow = bookmarkLinkInRow.closest("tr");
