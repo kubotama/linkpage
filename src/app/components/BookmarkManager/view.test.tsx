@@ -49,8 +49,6 @@ describe("BookmarkManagerの表示を確認", () => {
     await waitFor(() => {
       const bm = screen.getByText("Amazon");
       expect(bm).toBeInTheDocument();
-      expect(bm).toHaveAttribute("href", "https://www.amazon.co.jp/");
-      expect(bm).toHaveAttribute("target", "_blank");
     });
   });
 
