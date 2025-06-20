@@ -58,112 +58,127 @@ export const BookmarkManager = ({}) => {
             </Box>
           )}
         </div>
-        {isBookmarkSelected() && (
-          <>
-            <Box
-              display="flex"
-              alignItems="center"
-              sx={{ marginBottom: "10px" }}
-            >
+        <div className="flex space-x-4">
+          <div className="w-[800]">
+            <div className="mb-2">
+              <button
+                onClick={refreshClick}
+                className="button-bookmark-manager"
+              >
+                再表示
+              </button>
+            </div>
+
+            <BookmarkTable
+              bookmarks={bookmarks}
+              onSelectBookmark={setSelectedBookmark}
+            />
+          </div>
+          <div className="w-[500]">
+            {isBookmarkSelected() && (
               <>
-                <button
-                  className="button-bookmark-manager"
-                  onClick={() => setSelectedBookmark(null)}
+                <Box
+                  display="flex"
+                  alignItems="center"
+                  sx={{ marginBottom: "10px" }}
                 >
-                  選択解除
-                </button>
-                <button className="button-bookmark-manager" onClick={openClick}>
-                  開く
-                </button>
-                <button
-                  className="button-bookmark-manager"
-                  onClick={deleteClick}
+                  <>
+                    <button
+                      className="button-bookmark-manager"
+                      onClick={() => setSelectedBookmark(null)}
+                    >
+                      選択解除
+                    </button>
+                    <button
+                      className="button-bookmark-manager"
+                      onClick={openClick}
+                    >
+                      開く
+                    </button>
+                    <button
+                      className="button-bookmark-manager"
+                      onClick={deleteClick}
+                    >
+                      削除
+                    </button>
+                    <button
+                      className="button-bookmark-manager"
+                      onClick={updateClick}
+                    >
+                      タイトル更新
+                    </button>
+                  </>
+                </Box>
+                <Box
+                  display="flex"
+                  alignItems="center"
+                  sx={{ marginBottom: "10px" }}
                 >
-                  削除
-                </button>
-                <button
-                  className="button-bookmark-manager"
-                  onClick={updateClick}
+                  <>
+                    <button
+                      className="button-bookmark-manager"
+                      onClick={titleClick}
+                    >
+                      タイトル
+                    </button>
+
+                    <button
+                      className="button-bookmark-manager"
+                      onClick={clearClick}
+                    >
+                      クリア
+                    </button>
+
+                    <button
+                      className="button-bookmark-manager"
+                      onClick={urlClick}
+                    >
+                      パラメータ
+                    </button>
+
+                    <button
+                      className="button-bookmark-manager"
+                      onClick={pathClick}
+                    >
+                      ←
+                    </button>
+                  </>
+                </Box>
+                <Box
+                  display="flex"
+                  alignItems="center"
+                  sx={{ marginBottom: "10px" }}
                 >
-                  タイトル更新
-                </button>
+                  <input
+                    className="text-bookmark-manager"
+                    id="url"
+                    placeholder="URL"
+                    type="text"
+                    aria-label="url"
+                    value={textUrl}
+                    onChange={(e) => {
+                      setTextUrl(e.target.value);
+                    }}
+                  />
+                </Box>
+                <Box display="flex" alignItems="center">
+                  <input
+                    className="text-bookmark-manager"
+                    id="title"
+                    placeholder="タイトル"
+                    type="text"
+                    aria-label="title"
+                    value={textTitle}
+                    onChange={(e) => {
+                      setTextTitle(e.target.value);
+                    }}
+                  />
+                </Box>
               </>
-            </Box>
-            <Box
-              display="flex"
-              alignItems="center"
-              sx={{ marginBottom: "10px" }}
-            >
-              <>
-                <button
-                  className="button-bookmark-manager"
-                  onClick={titleClick}
-                >
-                  タイトル
-                </button>
-
-                <button
-                  className="button-bookmark-manager"
-                  onClick={clearClick}
-                >
-                  クリア
-                </button>
-
-                <button className="button-bookmark-manager" onClick={urlClick}>
-                  パラメータ
-                </button>
-
-                <button className="button-bookmark-manager" onClick={pathClick}>
-                  ←
-                </button>
-              </>
-            </Box>
-
-            <Box
-              display="flex"
-              alignItems="center"
-              sx={{ marginBottom: "10px" }}
-            >
-              <input
-                className="text-bookmark-manager"
-                id="url"
-                placeholder="URL"
-                type="text"
-                aria-label="url"
-                value={textUrl}
-                onChange={(e) => {
-                  setTextUrl(e.target.value);
-                }}
-              />
-            </Box>
-            <Box display="flex" alignItems="center">
-              <input
-                className="text-bookmark-manager"
-                id="title"
-                placeholder="タイトル"
-                type="text"
-                aria-label="title"
-                value={textTitle}
-                onChange={(e) => {
-                  setTextTitle(e.target.value);
-                }}
-              />
-            </Box>
-          </>
-        )}
+            )}
+          </div>
+        </div>
       </div>
-      <div className="mb-2">
-        <button onClick={refreshClick} className="button-bookmark-manager">
-          再表示
-        </button>
-      </div>
-
-      {bookmarks.length > 0 && (
-        <BookmarkTable
-          bookmarks={bookmarks}
-          onSelectBookmark={setSelectedBookmark}
-        />
-      )}
     </>
   );
 };
