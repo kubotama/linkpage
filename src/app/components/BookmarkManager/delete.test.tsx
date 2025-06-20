@@ -236,22 +236,6 @@ describe("削除ボタン", () => {
       expect(screen.getByText(mockBookmarks[0].title)).toBeInTheDocument();
     });
 
-    // クリックするブックマークを選択（例：2番目のブックマーク）
-    const bookmarkToSelect = mockBookmarks[1]; // Google
-
-    // 選択したブックマークに対応するテーブル行を見つける
-    // 行にはブックマークのタイトルを持つリンクが含まれている
-    const bookmarkLinkInRow = screen.getByRole("link", {
-      name: bookmarkToSelect.title,
-    });
-    const tableRow = bookmarkLinkInRow.closest("tr");
-
-    if (!tableRow) {
-      throw new Error(
-        `ブックマーク "${bookmarkToSelect.title}" のテーブル行が見つかりませんでした。`
-      );
-    }
-
     mockFetch.mockReset();
     mockFetch.mockResolvedValueOnce({
       ok: false, // 500の場合は false
@@ -260,10 +244,9 @@ describe("削除ボタン", () => {
       text: async () => "サーバーで予期せぬエラーが発生しました。",
     });
 
-    // テーブル行のクリックをシミュレート
-    await act(async () => {
-      fireEvent.click(tableRow);
-    });
+    // クリックするブックマークを選択（例：2番目のブックマーク）
+    const bookmarkToSelect = mockBookmarks[1]; // Google
+    await clickBookmark(bookmarkToSelect);
 
     const deleteButton = screen.getByRole("button", { name: "削除" });
 
