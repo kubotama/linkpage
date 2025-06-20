@@ -69,15 +69,10 @@ describe("BookmarkTableのテスト", () => {
 
     mockBookmarks.forEach((bookmark, index) => {
       const cells = within(rows[index + 1]).getAllByRole("cell");
-      const link = within(cells[0]).getByRole("link");
-
-      expect(link).toHaveAttribute("href", bookmark.url);
-      expect(link).toHaveAttribute("target", "_blank");
-      expect(link).toHaveAttribute("rel", "noopener noreferrer");
-      expect(link).toHaveTextContent(bookmark.title);
-
-      expect(mockOnSelectBookmark).not.toHaveBeenCalled();
+      expect(cells).toHaveLength(1);
+      expect(cells[0]).toHaveTextContent(bookmark.title);
     });
+    expect(mockOnSelectBookmark).not.toHaveBeenCalled();
   });
 
   it("空のブックマークリストでテーブルが表示される", () => {

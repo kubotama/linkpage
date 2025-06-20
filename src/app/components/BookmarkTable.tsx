@@ -27,15 +27,7 @@ export const BookmarkTable: React.FC<{
         <TableBody>
           {bookmarks.map((bookmark, index) => (
             <TableRow key={index} onClick={() => onSelectBookmark(bookmark)}>
-              <TableCell size="small">
-                <a
-                  href={bookmark.url}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                >
-                  {bookmark.title}
-                </a>
-              </TableCell>
+              <TableCell size="small">{bookmark.title}</TableCell>
             </TableRow>
           ))}
         </TableBody>
