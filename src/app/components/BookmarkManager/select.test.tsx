@@ -161,7 +161,7 @@ describe("ブックマークの選択", () => {
     } catch (e) {
       expect(e).toBeInstanceOf(Error);
       expect((e as Error).message).toBe(
-        `ブックマーク "${bookmarkToSelect.title}" のテーブル行が見つかりませんでした。`
+        `ブックマーク "${bookmarkToSelect.title}" のテーブル行のクリック処理中にエラーが発生しました。`
       );
     }
   });

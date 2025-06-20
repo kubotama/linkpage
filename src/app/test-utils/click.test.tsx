@@ -5,26 +5,25 @@ import { fireEvent, screen } from "@testing-library/react";
 export const clickBookmark = async (bookmark: Bookmark) => {
   // クリックするブックマークを選択（例：2番目のブックマーク）
   // const bookmark = mockBookmarks[1]; // Google
-
-  // 選択したブックマークに対応するテーブル行を見つける
-  // 行にはブックマークのタイトルを持つリンクが含まれている
   try {
-    const bookmarkLinkInRow = screen.getByRole("row", {
-      name: bookmark.title,
-    });
-    const tableRow = bookmarkLinkInRow.closest("tr");
+    const cellWithTitle = screen.getByText(bookmark.title);
+    const tableRow = cellWithTitle.closest("tr");
+
     if (!tableRow) {
       throw new Error(
         `ブックマーク "${bookmark.title}" のテーブル行が見つかりませんでした。`
       );
     }
+
     // テーブル行のクリックをシミュレート
     await act(async () => {
       fireEvent.click(tableRow);
     });
-  } catch {
+  } catch (error) {
+    // エラーメッセージに元のエラーを含めるとデバッグが容易になります
+    console.error(error); // 元のエラーをログに出力
     throw new Error(
-      `ブックマーク "${bookmark.title}" のテーブル行が見つかりませんでした。`
+      `ブックマーク "${bookmark.title}" のテーブル行のクリック処理中にエラーが発生しました。`
     );
   }
 };
