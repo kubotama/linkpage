@@ -27,7 +27,7 @@ export const BookmarkManager = ({}) => {
 
   return (
     <>
-      <div style={{ marginTop: "20px", marginBottom: "20px" }}>
+      <div className="mt-5 mb-5">
         {textMessage && (
           <div className="flex justify-center items-center mb-2">
             {isError() && ( // エラーメッセージがある場合のみ「閉じる」ボタンを表示
