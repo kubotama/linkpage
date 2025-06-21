@@ -3,7 +3,7 @@
 @import "tailwindcss/utilities";
 
 .button-bookmark-manager {
-  @apply w-28 mx-auto bg-blue-500 text-white p-1 rounded-md text-sm;
+  @apply w-28 bg-blue-500 text-white p-1 rounded-md text-sm;
 }
 
 .text-bookmark-manager {

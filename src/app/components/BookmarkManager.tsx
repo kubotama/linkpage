@@ -28,30 +28,28 @@ export const BookmarkManager = ({}) => {
   return (
     <>
       <div style={{ marginTop: "20px", marginBottom: "20px" }}>
-        <div>
-          {textMessage && (
-            <div className="flex justify-between mb-2">
-              {isError() && ( // エラーメッセージがある場合のみ「閉じる」ボタンを表示
-                <button
-                  type="button"
-                  className="button-bookmark-manager mb-2 h-8" // h-8 により高さを2remに維持
-                  onClick={handleErrorClose}
-                >
-                  閉じる
-                </button>
-              )}
-              <div
-                data-testid="bookmark-message"
-                style={{
-                  marginLeft: "0.7rem",
-                  color: isError() ? "red" : "inherit", // エラーの場合は文字色を赤に
-                }}
+        {textMessage && (
+          <div className="flex justify-center items-center mb-2">
+            {isError() && ( // エラーメッセージがある場合のみ「閉じる」ボタンを表示
+              <button
+                type="button"
+                className="button-bookmark-manager h-8" // h-8 により高さを2remに維持
+                onClick={handleErrorClose}
               >
-                {textMessage}
-              </div>
+                閉じる
+              </button>
+            )}
+            <div
+              data-testid="bookmark-message"
+              className="ml-2"
+              style={{
+                color: isError() ? "red" : "inherit", // エラーの場合は文字色を赤に
+              }}
+            >
+              {textMessage}
             </div>
-          )}
-        </div>
+          </div>
+        )}
         <div className="flex space-x-4">
           <div className="w-[800]">
             <div className="mb-2">
