@@ -7,17 +7,10 @@ export const clickBookmark = async (bookmark: Bookmark) => {
   // const bookmark = mockBookmarks[1]; // Google
   try {
     const cellWithTitle = screen.getByText(bookmark.title);
-    const tableRow = cellWithTitle.closest("tr");
-
-    if (!tableRow) {
-      throw new Error(
-        `ブックマーク "${bookmark.title}" のテーブル行が見つかりませんでした。`
-      );
-    }
 
     // テーブル行のクリックをシミュレート
     await act(async () => {
-      fireEvent.click(tableRow);
+      fireEvent.click(cellWithTitle);
     });
   } catch (error) {
     // エラーメッセージに元のエラーを含めるとデバッグが容易になります

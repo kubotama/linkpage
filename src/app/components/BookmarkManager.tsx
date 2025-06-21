@@ -1,7 +1,5 @@
 import React from "react";
 
-import Box from "@mui/material/Box";
-
 import { useBookmarkManager } from "../hooks/useBookmarkManager";
 import { BookmarkTable } from "./BookmarkTable";
 
@@ -29,35 +27,29 @@ export const BookmarkManager = ({}) => {
 
   return (
     <>
-      <div style={{ marginTop: "20px", marginBottom: "20px" }}>
-        <div>
-          {textMessage && (
-            <Box
-              display="flex"
-              alignItems="center"
-              sx={{ marginBottom: "10px" }}
-            >
-              {isError() && ( // エラーメッセージがある場合のみ「閉じる」ボタンを表示
-                <button
-                  type="button"
-                  className="button-bookmark-manager mb-2 h-8" // h-8 により高さを2remに維持
-                  onClick={handleErrorClose}
-                >
-                  閉じる
-                </button>
-              )}
-              <span
-                data-testid="bookmark-message"
-                style={{
-                  marginLeft: "0.7rem",
-                  color: isError() ? "red" : "inherit", // エラーの場合は文字色を赤に
-                }}
+      <div className="mt-5 mb-5">
+        {textMessage && (
+          <div className="flex justify-center items-center mb-2">
+            {isError() && ( // エラーメッセージがある場合のみ「閉じる」ボタンを表示
+              <button
+                type="button"
+                className="button-bookmark-manager h-8" // h-8 により高さを2remに維持
+                onClick={handleErrorClose}
               >
-                {textMessage}
-              </span>
-            </Box>
-          )}
-        </div>
+                閉じる
+              </button>
+            )}
+            <div
+              data-testid="bookmark-message"
+              className="ml-2"
+              style={{
+                color: isError() ? "red" : "inherit", // エラーの場合は文字色を赤に
+              }}
+            >
+              {textMessage}
+            </div>
+          </div>
+        )}
         <div className="flex space-x-4">
           <div className="w-[800]">
             <div className="mb-2">
@@ -77,78 +69,59 @@ export const BookmarkManager = ({}) => {
           <div className="w-[500]">
             {isBookmarkSelected() && (
               <>
-                <Box
-                  display="flex"
-                  alignItems="center"
-                  sx={{ marginBottom: "10px" }}
-                >
-                  <>
-                    <button
-                      className="button-bookmark-manager"
-                      onClick={() => setSelectedBookmark(null)}
-                    >
-                      選択解除
-                    </button>
-                    <button
-                      className="button-bookmark-manager"
-                      onClick={openClick}
-                    >
-                      開く
-                    </button>
-                    <button
-                      className="button-bookmark-manager"
-                      onClick={deleteClick}
-                    >
-                      削除
-                    </button>
-                    <button
-                      className="button-bookmark-manager"
-                      onClick={updateClick}
-                    >
-                      タイトル更新
-                    </button>
-                  </>
-                </Box>
-                <Box
-                  display="flex"
-                  alignItems="center"
-                  sx={{ marginBottom: "10px" }}
-                >
-                  <>
-                    <button
-                      className="button-bookmark-manager"
-                      onClick={titleClick}
-                    >
-                      タイトル
-                    </button>
-
-                    <button
-                      className="button-bookmark-manager"
-                      onClick={clearClick}
-                    >
-                      クリア
-                    </button>
-
-                    <button
-                      className="button-bookmark-manager"
-                      onClick={urlClick}
-                    >
-                      パラメータ
-                    </button>
-
-                    <button
-                      className="button-bookmark-manager"
-                      onClick={pathClick}
-                    >
-                      ←
-                    </button>
-                  </>
-                </Box>
-                <Box
-                  display="flex"
-                  alignItems="center"
-                  sx={{ marginBottom: "10px" }}
-                >
+                <div className="mb-2 flex justify-between">
+                  <button
+                    className="button-bookmark-manager"
+                    onClick={() => setSelectedBookmark(null)}
+                  >
+                    選択解除
+                  </button>
+                  <button
+                    className="button-bookmark-manager"
+                    onClick={openClick}
+                  >
+                    開く
+                  </button>
+                  <button
+                    className="button-bookmark-manager"
+                    onClick={deleteClick}
+                  >
+                    削除
+                  </button>
+                  <button
+                    className="button-bookmark-manager"
+                    onClick={updateClick}
+                  >
+                    タイトル更新
+                  </button>
+                </div>
+                <div className="mb-2 flex justify-between">
+                  <button
+                    className="button-bookmark-manager"
+                    onClick={titleClick}
+                  >
+                    タイトル
+                  </button>
+                  <button
+                    className="button-bookmark-manager"
+                    onClick={clearClick}
+                  >
+                    クリア
+                  </button>
+                  <button
+                    className="button-bookmark-manager"
+                    onClick={urlClick}
+                  >
+                    パラメータ
+                  </button>
+                  <button
+                    className="button-bookmark-manager"
+                    onClick={pathClick}
+                  >
+                    ←
+                  </button>
+                </div>
+                <div className="mb-1 flex justify-center">
                   <input
                     className="text-bookmark-manager"
                     id="url"
@@ -160,8 +133,8 @@ export const BookmarkManager = ({}) => {
                       setTextUrl(e.target.value);
                     }}
                   />
-                </Box>
-                <Box display="flex" alignItems="center">
+                </div>
+                <div className="mb-1 flex justify-center">
                   <input
                     className="text-bookmark-manager"
                     id="title"
@@ -173,7 +146,7 @@ export const BookmarkManager = ({}) => {
                       setTextTitle(e.target.value);
                     }}
                   />
-                </Box>
+                </div>
               </>
             )}
           </div>
