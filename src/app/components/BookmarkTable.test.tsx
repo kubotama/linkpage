@@ -23,7 +23,7 @@ describe("BookmarkTableのテスト", () => {
     const table = screen.getByRole("table");
     expect(table).toBeInTheDocument();
 
-    const headers = within(table).getAllByRole("rowheader");
+    const headers = within(table).getAllByRole("columnheader");
     expect(headers).toHaveLength(1);
     expect(headers[0]).toHaveTextContent("タイトル");
 
