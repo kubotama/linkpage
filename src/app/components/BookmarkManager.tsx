@@ -1,7 +1,5 @@
 import React from "react";
 
-import Box from "@mui/material/Box";
-
 import { useBookmarkManager } from "../hooks/useBookmarkManager";
 import { BookmarkTable } from "./BookmarkTable";
 
@@ -32,11 +30,7 @@ export const BookmarkManager = ({}) => {
       <div style={{ marginTop: "20px", marginBottom: "20px" }}>
         <div>
           {textMessage && (
-            <Box
-              display="flex"
-              alignItems="center"
-              sx={{ marginBottom: "10px" }}
-            >
+            <div className="flex justify-between">
               {isError() && ( // エラーメッセージがある場合のみ「閉じる」ボタンを表示
                 <button
                   type="button"
@@ -46,7 +40,7 @@ export const BookmarkManager = ({}) => {
                   閉じる
                 </button>
               )}
-              <span
+              <div
                 data-testid="bookmark-message"
                 style={{
                   marginLeft: "0.7rem",
@@ -54,8 +48,8 @@ export const BookmarkManager = ({}) => {
                 }}
               >
                 {textMessage}
-              </span>
-            </Box>
+              </div>
+            </div>
           )}
         </div>
         <div className="flex space-x-4">
@@ -77,78 +71,76 @@ export const BookmarkManager = ({}) => {
           <div className="w-[500]">
             {isBookmarkSelected() && (
               <>
-                <Box
-                  display="flex"
-                  alignItems="center"
-                  sx={{ marginBottom: "10px" }}
-                >
-                  <>
+                <div className="mb-2 flex justify-between">
+                  <div>
                     <button
                       className="button-bookmark-manager"
                       onClick={() => setSelectedBookmark(null)}
                     >
                       選択解除
                     </button>
+                  </div>
+                  <div>
                     <button
                       className="button-bookmark-manager"
                       onClick={openClick}
                     >
                       開く
                     </button>
+                  </div>
+                  <div>
                     <button
                       className="button-bookmark-manager"
                       onClick={deleteClick}
                     >
                       削除
                     </button>
+                  </div>
+                  <div>
                     <button
                       className="button-bookmark-manager"
                       onClick={updateClick}
                     >
                       タイトル更新
                     </button>
-                  </>
-                </Box>
-                <Box
-                  display="flex"
-                  alignItems="center"
-                  sx={{ marginBottom: "10px" }}
-                >
-                  <>
+                  </div>
+                </div>
+                <div className="mb-2 flex justify-between">
+                  <div>
                     <button
                       className="button-bookmark-manager"
                       onClick={titleClick}
                     >
                       タイトル
                     </button>
+                  </div>
 
+                  <div>
                     <button
                       className="button-bookmark-manager"
                       onClick={clearClick}
                     >
                       クリア
                     </button>
-
+                  </div>
+                  <div>
                     <button
                       className="button-bookmark-manager"
                       onClick={urlClick}
                     >
                       パラメータ
                     </button>
-
+                  </div>
+                  <div>
                     <button
                       className="button-bookmark-manager"
                       onClick={pathClick}
                     >
                       ←
                     </button>
-                  </>
-                </Box>
-                <Box
-                  display="flex"
-                  alignItems="center"
-                  sx={{ marginBottom: "10px" }}
-                >
+                  </div>
+                </div>
+                <div>
                   <input
                     className="text-bookmark-manager"
                     id="url"
@@ -160,8 +152,8 @@ export const BookmarkManager = ({}) => {
                       setTextUrl(e.target.value);
                     }}
                   />
-                </Box>
-                <Box display="flex" alignItems="center">
+                </div>
+                <div>
                   <input
                     className="text-bookmark-manager"
                     id="title"
@@ -173,7 +165,7 @@ export const BookmarkManager = ({}) => {
                       setTextTitle(e.target.value);
                     }}
                   />
-                </Box>
+                </div>
               </>
             )}
           </div>
