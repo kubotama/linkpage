@@ -8,15 +8,19 @@ export const BookmarkTable: React.FC<{
 }> = ({ bookmarks, onSelectBookmark }) => {
   return (
     <div role="table" className="flex flex-col " aria-label="bookmarks table">
-      <div className="p-1 text-base border">タイトル</div>
-      <div className="flex flex-col">
+      <div className="p-1 text-base border border-gray-700" role="rowheader">
+        タイトル
+      </div>
+      <div className="flex flex-col" role="rowgroup">
         {bookmarks.map((bookmark, index) => (
           <div
-            className="p-1 text-sm border"
+            role="row"
             key={index}
             onClick={() => onSelectBookmark(bookmark)}
           >
-            {bookmark.title}
+            <div className="p-1 text-sm border border-gray-700" role="cell">
+              {bookmark.title}
+            </div>
           </div>
         ))}
       </div>

@@ -45,7 +45,7 @@ describe("BookmarkTableのテスト", () => {
     const table = screen.getByRole("table");
     expect(table).toBeInTheDocument();
 
-    const headers = within(table).getAllByRole("columnheader");
+    const headers = within(table).getAllByRole("rowheader");
     expect(headers).toHaveLength(1);
     expect(headers[0]).toHaveTextContent("タイトル");
 
@@ -64,11 +64,10 @@ describe("BookmarkTableのテスト", () => {
     );
 
     const rows = screen.getAllByRole("row");
-    // ヘッダー行を含むため、mockBookmarks.length + 1
-    expect(rows).toHaveLength(mockBookmarks.length + 1);
+    expect(rows).toHaveLength(mockBookmarks.length);
 
     mockBookmarks.forEach((bookmark, index) => {
-      const cells = within(rows[index + 1]).getAllByRole("cell");
+      const cells = within(rows[index]).getAllByRole("cell");
       expect(cells).toHaveLength(1);
       expect(cells[0]).toHaveTextContent(bookmark.title);
     });
@@ -86,8 +85,8 @@ describe("BookmarkTableのテスト", () => {
     const table = screen.getByRole("table");
     expect(table).toBeInTheDocument();
 
-    const rows = screen.getAllByRole("row");
-    expect(rows).toHaveLength(1); // ヘッダー行のみ
+    const rows = screen.queryAllByRole("row");
+    expect(rows).toHaveLength(0); // ヘッダー行のみ
 
     expect(mockOnSelectBookmark).not.toHaveBeenCalled();
   });
