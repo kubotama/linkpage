@@ -12,10 +12,10 @@ export const BookmarkTable: React.FC<{
         タイトル
       </div>
       <div className="flex flex-col" role="rowgroup">
-        {bookmarks.map((bookmark, index) => (
+        {bookmarks.map((bookmark) => (
           <div
             role="row"
-            key={index}
+            key={bookmark.id}
             onClick={() => onSelectBookmark(bookmark)}
           >
             <div className="p-1 text-sm border border-gray-700" role="cell">

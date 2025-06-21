@@ -1,37 +1,13 @@
 import "@testing-library/jest-dom";
 
 import { act } from "react";
+import { beforeEach, describe, expect, it, vi } from "vitest";
 
 import { fireEvent, render, screen, waitFor } from "@testing-library/react";
-import { describe, it, expect, vi, beforeEach } from "vitest";
-
-import { Bookmark, createBookmarkList } from "../../types/Bookmark";
-import { BookmarkManager } from "../BookmarkManager";
 
 import { clickBookmark } from "../../test-utils/click.test";
-
-const mockBookmarks: Bookmark[] = createBookmarkList([
-  {
-    id: 1,
-    url: "https://github.com/kubotama/linkpage",
-    title: "kubotama/linkpage",
-  },
-  {
-    id: 2,
-    url: "https://www.google.com/",
-    title: "Google",
-  },
-  {
-    id: 3,
-    url: "https://mail.google.com",
-    title: "Gmail",
-  },
-  {
-    id: 4,
-    url: "https://www.amazon.co.jp/",
-    title: "Amazon",
-  },
-]);
+import { mockBookmarks } from "../../types/Bookmark";
+import { BookmarkManager } from "../BookmarkManager";
 
 const mockFetch = vi.fn();
 

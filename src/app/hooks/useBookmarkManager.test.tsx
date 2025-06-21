@@ -2,26 +2,7 @@ import { beforeEach, describe, expect, it, vi } from "vitest";
 import { renderHook, act, waitFor } from "@testing-library/react";
 
 import { useBookmarkManager } from "./useBookmarkManager";
-import { Bookmark, createBookmarkList } from "../types/Bookmark";
-
-const mockBookmarks: Bookmark[] = createBookmarkList([
-  {
-    url: "https://github.com/kubotama/linkpage",
-    title: "kubotama/linkpage",
-  },
-  {
-    url: "https://www.google.com/",
-    title: "Google",
-  },
-  {
-    url: "https://mail.google.com",
-    title: "Gmail",
-  },
-  {
-    url: "https://www.amazon.co.jp/",
-    title: "Amazon",
-  },
-]);
+import { mockBookmarks } from "../types/Bookmark";
 
 const mockFetch = vi.fn();
 

@@ -3,7 +3,7 @@ import "@testing-library/jest-dom";
 import ActualDatabase from "better-sqlite3"; // Import the actual library
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 
-import { Bookmark, createBookmarkList } from "../../../types/Bookmark";
+import { mockBookmarks } from "../../../types/Bookmark";
 import { getDb } from "../database";
 import { POST } from "./route";
 
@@ -14,25 +14,6 @@ vi.mock("../database");
 let inMemoryDbInstance: ActualDatabase.Database;
 
 const API_URL = "http://localhost:3000/api/bookmark/update";
-
-const mockBookmarks: Bookmark[] = createBookmarkList([
-  {
-    url: "https://github.com/kubotama/linkpage",
-    title: "kubotama/linkpage",
-  },
-  {
-    url: "https://www.google.com/",
-    title: "Google",
-  },
-  {
-    url: "https://mail.google.com",
-    title: "Gmail",
-  },
-  {
-    url: "https://www.amazon.co.jp/",
-    title: "Amazon",
-  },
-]);
 
 function createPostRequest(body: string): Request {
   return new Request(API_URL, {

@@ -2,7 +2,7 @@ import "@testing-library/jest-dom";
 
 import { beforeEach, describe, expect, it, vi } from "vitest";
 
-import { Bookmark, createBookmarkList } from "../../types/Bookmark";
+import { mockBookmarks } from "../../types/Bookmark";
 import { getDb } from "./database";
 import { GET, POST } from "./route";
 
@@ -26,25 +26,6 @@ describe("ブックマークのAPIのテスト", () => {
     // Reset mocks before each test
     vi.resetAllMocks();
 
-    const bookmarks: Bookmark[] = createBookmarkList([
-      {
-        url: "https://github.com/kubotama/linkpage",
-        title: "kubotama/linkpage",
-      },
-      {
-        url: "https://www.google.com/",
-        title: "Google",
-      },
-      {
-        url: "https://mail.google.com",
-        title: "Gmail",
-      },
-      {
-        url: "https://www.amazon.co.jp/",
-        title: "Amazon",
-      },
-    ]);
-
     // Configure the mock Database constructor and methods
     (getDb as unknown as ReturnType<typeof vi.fn>).mockImplementation(() => ({
       prepare: mockPrepare,
@@ -57,7 +38,7 @@ describe("ブックマークのAPIのテスト", () => {
 
     // Default mock behavior for prepare -> all (for GET)
     mockPrepare.mockReturnValue({ all: mockAll });
-    mockAll.mockReturnValue(bookmarks); // GET returns our sample bookmarks
+    mockAll.mockReturnValue(mockBookmarks); // GET returns our sample bookmarks
 
     // Default mock behavior for prepare -> run (for POST)
     // We need different prepare mocks for DELETE and INSERT
@@ -129,24 +110,13 @@ describe("ブックマークのAPIのテスト", () => {
       return (...args: any) => fn(...args);
     });
 
-    const bookmarks: Bookmark[] = createBookmarkList([
-      {
-        url: "https://github.com/kubotama/linkpage",
-        title: "kubotama/linkpage",
-      },
-      {
-        url: "https://www.google.com/",
-        title: "Google",
-      },
-    ]);
-
     const response = await POST(
       new Request("http://localhost:3000/api/bookmark", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
         },
-        body: JSON.stringify(bookmarks),
+        body: JSON.stringify(mockBookmarks),
       })
     );
 
@@ -160,17 +130,17 @@ describe("ブックマークのAPIのテスト", () => {
     );
 
     // Check run calls: 1 for DELETE, N for INSERT
-    expect(mockRun).toHaveBeenCalledTimes(1 + bookmarks.length);
+    expect(mockRun).toHaveBeenCalledTimes(1 + mockBookmarks.length);
     expect(mockRun).toHaveBeenNthCalledWith(1); // DELETE call
     expect(mockRun).toHaveBeenNthCalledWith(
       2,
-      bookmarks[0].url,
-      bookmarks[0].title
+      mockBookmarks[0].url,
+      mockBookmarks[0].title
     ); // First INSERT
     expect(mockRun).toHaveBeenNthCalledWith(
       3,
-      bookmarks[1].url,
-      bookmarks[1].title
+      mockBookmarks[1].url,
+      mockBookmarks[1].title
     ); // Second INSERT
     expect(mockClose).not.toHaveBeenCalled(); // Should not be called
   });
@@ -194,9 +164,6 @@ describe("ブックマークのAPIのテスト", () => {
   });
 
   it("POST: データベース書き込み(トランザクション)失敗時にエラーを返す", async () => {
-    const bookmarks: Bookmark[] = createBookmarkList([
-      { url: "https://example.com", title: "Example" },
-    ]);
     const dbWriteError = new Error("Transaction failed");
     mockTransaction.mockImplementation(() => () => {
       throw dbWriteError;
@@ -208,7 +175,7 @@ describe("ブックマークのAPIのテスト", () => {
         headers: {
           "Content-Type": "application/json",
         },
-        body: JSON.stringify(bookmarks),
+        body: JSON.stringify(mockBookmarks),
       })
     );
 
