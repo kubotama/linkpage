@@ -225,12 +225,12 @@ describe("タイトルの更新ボタン", () => {
       headers: { "Content-Type": "text/plain" },
       text: async () => "リクエストにIDがありませんでした。",
     });
-    const updeteButton = screen.getByRole("button", {
+    const updateButton = screen.getByRole("button", {
       name: UPDATE_BUTTON_ROLE_NAME,
     });
 
     await act(async () => {
-      fireEvent.click(updeteButton);
+      fireEvent.click(updateButton);
     });
 
     await waitFor(() => {
