@@ -92,12 +92,12 @@ describe("BookmarkTableのテスト", () => {
     // 選択されていない行のセルを取得
     const unselectedCell = screen.getByText(mockBookmarks[0].title);
 
-    // 選択された行がハイライト用のクラスを持つことを確認
-    expect(selectedCell).toHaveClass("row-bookmark-selected");
-    expect(selectedCell).not.toHaveClass("row-bookmark-normal");
+    // 選択された行がハイライト用の文字色のクラスを持つことを確認
+    expect(selectedCell).toHaveClass("text-gray-100");
+    expect(selectedCell).not.toHaveClass("text-gray-900");
 
-    // 選択されていない行が通常のクラスを持つことを確認
-    expect(unselectedCell).toHaveClass("row-bookmark-normal");
-    expect(unselectedCell).not.toHaveClass("row-bookmark-selected");
+    // 選択されていない行が通常の文字色のクラスを持つことを確認
+    expect(unselectedCell).toHaveClass("text-gray-900");
+    expect(unselectedCell).not.toHaveClass("text-gray-100");
   });
 });
