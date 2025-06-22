@@ -44,10 +44,6 @@ export const useBookmarkManager = () => {
     loadBookmarks();
   };
 
-  useEffect(() => {
-    loadBookmarks();
-  }, []);
-
   const deleteClick = async () => {
     if (selectedBookmark === null) {
       return;
@@ -144,6 +140,10 @@ export const useBookmarkManager = () => {
   const isError = () => {
     return errorMessage !== "";
   };
+
+  useEffect(() => {
+    loadBookmarks();
+  }, [loadBookmarks]);
 
   return {
     // selectedBookmark,
