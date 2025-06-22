@@ -10,6 +10,7 @@ export const BookmarkManager = ({}) => {
     textUrl,
     textTitle,
     textMessage,
+    selectedBookmark,
     isBookmarkSelected,
     setSelectedBookmark,
     setTextUrl,
@@ -63,6 +64,7 @@ export const BookmarkManager = ({}) => {
 
             <BookmarkTable
               bookmarks={bookmarks}
+              selectedBookmark={selectedBookmark}
               onSelectBookmark={setSelectedBookmark}
             />
           </div>

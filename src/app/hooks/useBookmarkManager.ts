@@ -152,6 +152,7 @@ export const useBookmarkManager = () => {
     textUrl,
     textTitle,
     textMessage,
+    selectedBookmark,
     isError,
     isBookmarkSelected,
     setSelectedBookmark,
