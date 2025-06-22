@@ -5,6 +5,7 @@ import { beforeEach, describe, expect, it, vi } from "vitest";
 
 import { fireEvent, render, screen, waitFor } from "@testing-library/react";
 
+import { REFRESH_BUTTON_ROLE_NAME } from "../../test-utils/constants";
 import {
   Bookmark,
   createBookmarkList,
@@ -58,7 +59,9 @@ describe("ブックマークの再表示", () => {
       json: async () => updatedMockBookmarks,
     });
 
-    const refreshButton = screen.getByRole("button", { name: "再表示" });
+    const refreshButton = screen.getByRole("button", {
+      name: REFRESH_BUTTON_ROLE_NAME,
+    });
 
     await act(async () => {
       fireEvent.click(refreshButton);

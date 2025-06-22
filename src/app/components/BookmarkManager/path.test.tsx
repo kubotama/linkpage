@@ -1,13 +1,17 @@
 import "@testing-library/jest-dom";
 
 import { act } from "react";
+import { beforeEach, describe, expect, it, vi } from "vitest";
 
 import { fireEvent, render, screen, waitFor } from "@testing-library/react";
-import { describe, it, expect, vi, beforeEach } from "vitest";
 
+import { clickBookmark } from "../../test-utils/click.test";
+import {
+  ARROW_BUTTON_ROLE_NAME,
+  URL_ROLE_NAME,
+} from "../../test-utils/constants";
 import { mockBookmarks } from "../../types/Bookmark";
 import { BookmarkManager } from "../BookmarkManager";
-import { clickBookmark } from "../../test-utils/click.test";
 
 const mockFetch = vi.fn();
 
@@ -32,8 +36,10 @@ describe("「←」ボタン: URLから、/の階層を一段、削除する", (
     const bookmarkToSelect = mockBookmarks[1]; // Google
     await clickBookmark(bookmarkToSelect);
 
-    const urlInput = screen.getByRole("textbox", { name: "url" });
-    const pathButton = screen.getByRole("button", { name: "←" });
+    const urlInput = screen.getByRole("textbox", { name: URL_ROLE_NAME });
+    const pathButton = screen.getByRole("button", {
+      name: ARROW_BUTTON_ROLE_NAME,
+    });
 
     await act(async () => {
       fireEvent.change(urlInput, { target: { value: url } });
@@ -56,7 +62,7 @@ describe("「←」ボタン: URLから、/の階層を一段、削除する", (
     const bookmarkToSelect = mockBookmarks[1]; // Google
     await clickBookmark(bookmarkToSelect);
 
-    const urlInput = screen.getByRole("textbox", { name: "url" });
+    const urlInput = screen.getByRole("textbox", { name: URL_ROLE_NAME });
     const pathButton = screen.getByRole("button", { name: "←" });
 
     await act(async () => {
@@ -82,8 +88,10 @@ describe("「←」ボタン: URLから、/の階層を一段、削除する", (
     const bookmarkToSelect = mockBookmarks[1]; // Google
     await clickBookmark(bookmarkToSelect);
 
-    const urlInput = screen.getByRole("textbox", { name: "url" });
-    const pathButton = screen.getByRole("button", { name: "←" });
+    const urlInput = screen.getByRole("textbox", { name: URL_ROLE_NAME });
+    const pathButton = screen.getByRole("button", {
+      name: ARROW_BUTTON_ROLE_NAME,
+    });
 
     await act(async () => {
       fireEvent.change(urlInput, { target: { value: url } });
@@ -108,8 +116,10 @@ describe("「←」ボタン: URLから、/の階層を一段、削除する", (
     const bookmarkToSelect = mockBookmarks[1]; // Google
     await clickBookmark(bookmarkToSelect);
 
-    const urlInput = screen.getByRole("textbox", { name: "url" });
-    const pathButton = screen.getByRole("button", { name: "←" });
+    const urlInput = screen.getByRole("textbox", { name: URL_ROLE_NAME });
+    const pathButton = screen.getByRole("button", {
+      name: ARROW_BUTTON_ROLE_NAME,
+    });
 
     await act(async () => {
       fireEvent.change(urlInput, { target: { value: url } });
@@ -132,8 +142,10 @@ describe("「←」ボタン: URLから、/の階層を一段、削除する", (
     const bookmarkToSelect = mockBookmarks[1]; // Google
     await clickBookmark(bookmarkToSelect);
 
-    const urlInput = screen.getByRole("textbox", { name: "url" });
-    const pathButton = screen.getByRole("button", { name: "←" });
+    const urlInput = screen.getByRole("textbox", { name: URL_ROLE_NAME });
+    const pathButton = screen.getByRole("button", {
+      name: ARROW_BUTTON_ROLE_NAME,
+    });
 
     await act(async () => {
       fireEvent.change(urlInput, { target: { value: url } });

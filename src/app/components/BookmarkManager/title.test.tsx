@@ -9,6 +9,13 @@ import { mockBookmarks } from "../../types/Bookmark";
 import { BookmarkManager } from "../BookmarkManager";
 import { clickBookmark } from "../../test-utils/click.test";
 
+import {
+  URL_ROLE_NAME,
+  TITLE_ROLE_NAME,
+  TITLE_BUTTON_ROLE_NAME,
+  CLOSE_BUTTON_ROLE_NAME,
+} from "../../test-utils/constants";
+
 const mockFetch = vi.fn();
 
 describe("BookmarkManagerのURLとタイトルのテキストとボタンのテスト", () => {
@@ -41,10 +48,12 @@ describe("BookmarkManagerのURLとタイトルのテキストとボタンのテ�
     const bookmarkToSelect = mockBookmarks[1]; // Google
     await clickBookmark(bookmarkToSelect);
 
-    const urlInput = screen.getByRole("textbox", { name: "url" });
-    const titleInput = screen.getByRole("textbox", { name: "title" });
+    const urlInput = screen.getByRole("textbox", { name: URL_ROLE_NAME });
+    const titleInput = screen.getByRole("textbox", { name: TITLE_ROLE_NAME });
 
-    const titleButton = screen.getByRole("button", { name: "タイトル" });
+    const titleButton = screen.getByRole("button", {
+      name: TITLE_BUTTON_ROLE_NAME,
+    });
 
     // タイトルをAPIで取得する前は、クリアされていることを確認
     await act(async () => {
@@ -96,8 +105,10 @@ describe("BookmarkManagerのURLとタイトルのテキストとボタンのテ�
     const bookmarkToSelect = mockBookmarks[1]; // Google
     await clickBookmark(bookmarkToSelect);
 
-    const urlInput = screen.getByRole("textbox", { name: "url" });
-    const titleButton = screen.getByRole("button", { name: "タイトル" });
+    const urlInput = screen.getByRole("textbox", { name: URL_ROLE_NAME });
+    const titleButton = screen.getByRole("button", {
+      name: TITLE_BUTTON_ROLE_NAME,
+    });
 
     await act(async () => {
       fireEvent.change(urlInput, { target: { value: url } });
@@ -139,8 +150,10 @@ describe("BookmarkManagerのURLとタイトルのテキストとボタンのテ�
     const bookmarkToSelect = mockBookmarks[1]; // Google
     await clickBookmark(bookmarkToSelect);
 
-    const urlInput = screen.getByRole("textbox", { name: "url" });
-    const titleButton = screen.getByRole("button", { name: "タイトル" });
+    const urlInput = screen.getByRole("textbox", { name: URL_ROLE_NAME });
+    const titleButton = screen.getByRole("button", {
+      name: TITLE_BUTTON_ROLE_NAME,
+    });
 
     await act(async () => {
       fireEvent.change(urlInput, { target: { value: url } });
@@ -184,8 +197,10 @@ describe("BookmarkManagerのURLとタイトルのテキストとボタンのテ�
     const bookmarkToSelect = mockBookmarks[1]; // Google
     await clickBookmark(bookmarkToSelect);
 
-    const urlInput = screen.getByRole("textbox", { name: "url" });
-    const titleButton = screen.getByRole("button", { name: "タイトル" });
+    const urlInput = screen.getByRole("textbox", { name: URL_ROLE_NAME });
+    const titleButton = screen.getByRole("button", {
+      name: TITLE_BUTTON_ROLE_NAME,
+    });
 
     // 2. Mock the title fetch API to return an error
     mockFetch.mockResolvedValueOnce({
@@ -204,7 +219,9 @@ describe("BookmarkManagerのURLとタイトルのテキストとボタンのテ�
     expect(errorSpan).toHaveTextContent(
       "タイトルの取得中にエラーが発生しました。"
     );
-    const closeButton = await screen.findByRole("button", { name: "閉じる" });
+    const closeButton = await screen.findByRole("button", {
+      name: CLOSE_BUTTON_ROLE_NAME,
+    });
     expect(closeButton).toBeInTheDocument();
 
     // 5. Click the close button and verify message and button disappear
@@ -213,7 +230,7 @@ describe("BookmarkManagerのURLとタイトルのテキストとボタンのテ�
     });
     await waitFor(() => {
       expect(
-        screen.queryByRole("button", { name: "閉じる" })
+        screen.queryByRole("button", { name: CLOSE_BUTTON_ROLE_NAME })
       ).not.toBeInTheDocument();
       expect(
         screen.queryByText("タイトルの取得中にエラーが発生しました。")
