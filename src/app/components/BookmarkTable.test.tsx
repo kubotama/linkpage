@@ -16,6 +16,7 @@ describe("BookmarkTableのテスト", () => {
     render(
       <BookmarkTable
         bookmarks={mockBookmarks}
+        selectedBookmark={mockBookmarks[0]}
         onSelectBookmark={mockOnSelectBookmark}
       />
     );
@@ -37,6 +38,7 @@ describe("BookmarkTableのテスト", () => {
     render(
       <BookmarkTable
         bookmarks={mockBookmarks}
+        selectedBookmark={mockBookmarks[0]}
         onSelectBookmark={mockOnSelectBookmark}
       />
     );
@@ -57,7 +59,11 @@ describe("BookmarkTableのテスト", () => {
       React.SetStateAction<SelectedBookmark>
     > = vi.fn();
     render(
-      <BookmarkTable bookmarks={[]} onSelectBookmark={mockOnSelectBookmark} />
+      <BookmarkTable
+        bookmarks={[]}
+        selectedBookmark={null}
+        onSelectBookmark={mockOnSelectBookmark}
+      />
     );
 
     const table = screen.getByRole("table");
@@ -67,5 +73,31 @@ describe("BookmarkTableのテスト", () => {
     expect(rows).toHaveLength(0); // ヘッダー行のみ
 
     expect(mockOnSelectBookmark).not.toHaveBeenCalled();
+  });
+
+  it("選択されたブックマークが正しくハイライト表示される", () => {
+    const mockOnSelectBookmark = vi.fn();
+    const selected = mockBookmarks[1]; // "Google" を選択状態にする
+
+    render(
+      <BookmarkTable
+        bookmarks={mockBookmarks}
+        selectedBookmark={selected}
+        onSelectBookmark={mockOnSelectBookmark}
+      />
+    );
+
+    // 選択された行のセルを取得
+    const selectedCell = screen.getByText(selected.title);
+    // 選択されていない行のセルを取得
+    const unselectedCell = screen.getByText(mockBookmarks[0].title);
+
+    // 選択された行がハイライト用のクラスを持つことを確認
+    expect(selectedCell).toHaveClass("row-bookmark-selected");
+    expect(selectedCell).not.toHaveClass("row-bookmark-normal");
+
+    // 選択されていない行が通常のクラスを持つことを確認
+    expect(unselectedCell).toHaveClass("row-bookmark-normal");
+    expect(unselectedCell).not.toHaveClass("row-bookmark-selected");
   });
 });
