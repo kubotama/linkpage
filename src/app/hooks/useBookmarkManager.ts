@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 
 import { TITLE_ENDPOINT } from "../constants/apiEndpoints";
 import { useBookmarks } from "./useBookmark";
@@ -40,14 +40,11 @@ export const useBookmarkManager = () => {
     }
   }, [loadingMessage, errorMessage]);
 
-  const refreshClick = () => {
+  const refreshClick = useCallback(() => {
     loadBookmarks();
-  };
+  }, [loadBookmarks]);
 
-  useEffect(() => {
-    loadBookmarks();
-  }, []);
-
+  // deleteClick deletes the selected bookmark
   const deleteClick = async () => {
     if (selectedBookmark === null) {
       return;
@@ -120,10 +117,10 @@ export const useBookmarkManager = () => {
   };
 
   // clearClick clears the URL and Title input fields
-  const clearClick = () => {
+  const clearClick = useCallback(() => {
     setTextUrl("");
     setTextTitle("");
-  };
+  }, []);
 
   // handleErrorClose clears the error message
   const handleErrorClose = () => {
@@ -144,6 +141,10 @@ export const useBookmarkManager = () => {
   const isError = () => {
     return errorMessage !== "";
   };
+
+  useEffect(() => {
+    loadBookmarks();
+  }, [loadBookmarks]);
 
   return {
     // selectedBookmark,

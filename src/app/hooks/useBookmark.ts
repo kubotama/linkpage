@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useCallback, useState } from "react";
 
 import {
   BOOKMARK_DELETE_ENDPOINT,
@@ -14,7 +14,7 @@ export const useBookmarks = () => {
   const [selectedBookmark, setSelectedBookmark] =
     useState<SelectedBookmark>(null);
 
-  const loadBookmarks = () => {
+  const loadBookmarks = useCallback(() => {
     setLoadingMessage("ブックマークをロード中...");
     fetch(BOOKMARKS_ENDPOINT)
       .then((response) => {
@@ -36,9 +36,9 @@ export const useBookmarks = () => {
       .finally(() => {
         setLoadingMessage("");
       });
-  };
+  }, []);
 
-  const deleteBookmark = async (id: number) => {
+  const deleteBookmark = useCallback(async (id: number) => {
     setLoadingMessage("ブックマークの削除処理中...");
     try {
       const response = await fetch(BOOKMARK_DELETE_ENDPOINT, {
@@ -50,8 +50,9 @@ export const useBookmarks = () => {
       });
 
       if (response.status === 204) {
-        const newBookmarks = bookmarks.filter((bookmark) => bookmark.id !== id);
-        setBookmarks(newBookmarks);
+        setBookmarks((currentBookmarks) =>
+          currentBookmarks.filter((bookmark) => bookmark.id !== id)
+        );
         setSelectedBookmark(null);
         setErrorMessage("");
       } else if (response.status === 404 || response.status === 400) {
@@ -81,9 +82,9 @@ export const useBookmarks = () => {
     } finally {
       setLoadingMessage("");
     }
-  };
+  }, []);
 
-  const updateBookmark = async (id: number, title: string) => {
+  const updateBookmark = useCallback(async (id: number, title: string) => {
     setLoadingMessage("ブックマークのタイトル更新処理中...");
     try {
       const response = await fetch(BOOKMARK_UPDATE_ENDPOINT, {
@@ -96,10 +97,11 @@ export const useBookmarks = () => {
       if (response.ok) {
         // APIが成功のレスポンス（例: 更新されたブックマークオブジェクト）を返すと仮定
         // もしAPIが更新後のオブジェクトを返さない場合は、ローカルでタイトルを更新
-        const updatedBookmarks = bookmarks.map((bookmark) =>
-          bookmark.id === id ? { ...bookmark, title } : bookmark
+        setBookmarks((currentBookmarks) =>
+          currentBookmarks.map((bookmark) =>
+            bookmark.id === id ? { ...bookmark, title } : bookmark
+          )
         );
-        setBookmarks(updatedBookmarks);
         setSelectedBookmark(null); // 選択を解除
         setErrorMessage("");
       } else {
@@ -117,7 +119,7 @@ export const useBookmarks = () => {
     } finally {
       setLoadingMessage("");
     }
-  };
+  }, []);
 
   return {
     bookmarks,
