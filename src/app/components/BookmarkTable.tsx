@@ -10,7 +10,7 @@ export const BookmarkTable: React.FC<{
   return (
     <div role="table" className="flex flex-col " aria-label="bookmarks table">
       <div
-        className="p-1 text-base font-bold border border-gray-700 bg-slate-700 text-gray-200 "
+        className="p-1 text-base font-bold border border-gray-700 bg-slate-700 text-gray-200"
         role="columnheader"
       >
         タイトル
