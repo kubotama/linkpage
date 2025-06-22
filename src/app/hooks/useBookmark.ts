@@ -51,10 +51,9 @@ export const useBookmarks = () => {
         });
 
         if (response.status === 204) {
-          const newBookmarks = bookmarks.filter(
-            (bookmark) => bookmark.id !== id
+          setBookmarks((currentBookmarks) =>
+            currentBookmarks.filter((bookmark) => bookmark.id !== id)
           );
-          setBookmarks(newBookmarks);
           setSelectedBookmark(null);
           setErrorMessage("");
         } else if (response.status === 404 || response.status === 400) {
@@ -85,13 +84,7 @@ export const useBookmarks = () => {
         setLoadingMessage("");
       }
     },
-    [
-      bookmarks,
-      setBookmarks,
-      setSelectedBookmark,
-      setLoadingMessage,
-      setErrorMessage,
-    ]
+    [setBookmarks, setSelectedBookmark, setLoadingMessage, setErrorMessage]
   );
 
   const updateBookmark = useCallback(
