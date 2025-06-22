@@ -3,8 +3,9 @@ import React from "react";
 import { useBookmarkManager } from "../hooks/useBookmarkManager";
 import { BookmarkTable } from "./BookmarkTable";
 import { ActionButton } from "./ActionButton";
+import { BookmarkInputField } from "./BookmarkInputField";
 
-export const BookmarkManager = ({}) => {
+export const BookmarkManager = () => {
   const {
     bookmarks,
     isError,
@@ -78,12 +79,10 @@ export const BookmarkManager = ({}) => {
                   <ActionButton onClick={pathClick}>←</ActionButton>
                 </div>
                 <div className="mb-1 flex justify-center">
-                  <input
-                    className="text-bookmark-manager"
+                  <BookmarkInputField
                     id="url"
                     placeholder="URL"
-                    type="text"
-                    aria-label="url"
+                    label="URL"
                     value={textUrl}
                     onChange={(e) => {
                       setTextUrl(e.target.value);
@@ -91,12 +90,10 @@ export const BookmarkManager = ({}) => {
                   />
                 </div>
                 <div className="mb-1 flex justify-center">
-                  <input
-                    className="text-bookmark-manager"
+                  <BookmarkInputField
                     id="title"
                     placeholder="タイトル"
-                    type="text"
-                    aria-label="title"
+                    label="タイトル"
                     value={textTitle}
                     onChange={(e) => {
                       setTextTitle(e.target.value);
