@@ -1,12 +1,20 @@
 import React from "react";
 
-export const BookmarkInputField: React.FC<{
+type BookmarkInputFieldProps = {
   id: string;
   placeholder: string;
   label: string;
   value: string;
   onChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
-}> = ({ id, placeholder, label, value, onChange }) => {
+};
+
+export const BookmarkInputField: React.FC<BookmarkInputFieldProps> = ({
+  id,
+  placeholder,
+  label,
+  value,
+  onChange,
+}) => {
   return (
     <label htmlFor={id} className="flex flex-col">
       <span className="text-xs font-semibold mb-1">{label}</span>

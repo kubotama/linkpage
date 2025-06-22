@@ -1,9 +1,14 @@
 import React from "react";
 
-export const ActionButton: React.FC<{
+type ActionButtonProps = {
   onClick: () => void;
   children: React.ReactNode;
-}> = ({ onClick, children }) => {
+};
+
+export const ActionButton: React.FC<ActionButtonProps> = ({
+  onClick,
+  children,
+}) => {
   return (
     <button
       type="button"
