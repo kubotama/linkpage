@@ -1,4 +1,5 @@
 "use server";
+import { SqliteError } from "better-sqlite3";
 
 import { getDb } from "../database";
 
@@ -41,24 +42,6 @@ export const POST: (request: Request) => Promise<Response> = async (
     }
 
     const db = getDb();
-    const existingBookmark = db
-      .prepare("SELECT * FROM bookmarks WHERE url = ?")
-      .get(bookmark.url);
-
-    if (existingBookmark) {
-      return new Response(
-        JSON.stringify({
-          error: "指定されたURLのブックマークは既に登録されています。",
-          message: "指定されたURLのブックマークは既に登録されています。",
-          url: bookmark.url,
-          title: bookmark.title,
-        }),
-        {
-          status: 409,
-          headers: { "Content-Type": "application/json", ...commonHeaders },
-        }
-      );
-    }
     const insertStmt = db.prepare(
       "INSERT INTO bookmarks (url, title) VALUES (?, ?)"
     );
@@ -75,6 +58,21 @@ export const POST: (request: Request) => Promise<Response> = async (
       }
     );
   } catch (error: unknown) {
+    if (
+      error instanceof SqliteError &&
+      error.code === "SQLITE_CONSTRAINT_UNIQUE"
+    ) {
+      return new Response(
+        JSON.stringify({
+          error: "指定されたURLのブックマークは既に登録されています。",
+          message: "指定されたURLのブックマークは既に登録されています。",
+        }),
+        {
+          status: 409,
+          headers: { "Content-Type": "application/json", ...commonHeaders },
+        }
+      );
+    }
     return new Response((error as Error).message, {
       status: 500,
       headers: {

@@ -146,8 +146,6 @@ describe("ブックマーク追加APIのテスト (オンメモリDB)", () => {
     expect(json).toEqual({
       error: "指定されたURLのブックマークは既に登録されています。",
       message: "指定されたURLのブックマークは既に登録されています。",
-      url: initialBookmark.url,
-      title: "同じURLで別のタイトル",
     });
   });
 
