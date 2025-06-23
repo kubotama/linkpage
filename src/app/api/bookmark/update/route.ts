@@ -1,5 +1,7 @@
 "use server";
+import { SqliteError } from "better-sqlite3";
 
+import { ALLOWED_CORS_ORIGIN } from "../../../constants/apiEndpoints";
 import { getDb } from "../database";
 
 interface UpdateBookmarkPayload {
@@ -9,6 +11,10 @@ interface UpdateBookmarkPayload {
 }
 
 export async function POST(request: Request) {
+  const commonHeaders = {
+    "Access-Control-Allow-Origin": ALLOWED_CORS_ORIGIN,
+  };
+
   try {
     const bookmark = (await request.json()) as UpdateBookmarkPayload;
     if (!bookmark.hasOwnProperty("id")) {
@@ -60,6 +66,18 @@ export async function POST(request: Request) {
       status: 204,
     });
   } catch (error: unknown) {
+    if (
+      error instanceof SqliteError &&
+      error.code === "SQLITE_CONSTRAINT_UNIQUE"
+    ) {
+      return new Response(
+        "指定されたURLのブックマークは既に登録されています。",
+        {
+          status: 409,
+          headers: { "Content-Type": "text/plain", ...commonHeaders },
+        }
+      );
+    }
     console.error("Error in POST /api/bookmark/update:", error); // サーバー側でエラーを記録
     return new Response("サーバーで予期せぬエラーが発生しました。", {
       status: 500,

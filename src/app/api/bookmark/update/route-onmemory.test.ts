@@ -242,4 +242,23 @@ describe("ブックマーク更新APIのテスト (オンメモリDB)", () => {
     const errorText = await response?.text();
     expect(errorText).toBe("サーバーで予期せぬエラーが発生しました。");
   });
+
+  it("POST: 同じURLが登録される場合には409を返す。", async () => {
+    // 更新リクエストを作成
+    const request = createPostRequest(
+      JSON.stringify({
+        id: mockBookmarks[1].id,
+        url: mockBookmarks[0].url,
+        title: "Updated Title",
+      })
+    );
+    const response = await POST(request);
+
+    // レスポンスステータスを確認 (409: Conflict
+    expect(response?.status).toBe(409);
+    const errorText = await response?.text();
+    expect(errorText).toBe(
+      "指定されたURLのブックマークは既に登録されています。"
+    );
+  });
 });
