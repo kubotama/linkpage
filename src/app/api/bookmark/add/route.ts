@@ -70,6 +70,7 @@ export const POST: (request: Request) => Promise<Response> = async (
         {
           status: 409,
           headers: { "Content-Type": "application/json", ...commonHeaders },
+        }
       );
     }
     return new Response((error as Error).message, {
