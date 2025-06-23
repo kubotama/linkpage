@@ -1,9 +1,9 @@
 import React from "react";
 
 import { useBookmarkManager } from "../hooks/useBookmarkManager";
-import { BookmarkTable } from "./BookmarkTable";
 import { ActionButton } from "./ActionButton";
 import { BookmarkInputField } from "./BookmarkInputField";
+import { BookmarkTable } from "./BookmarkTable";
 
 export const BookmarkManager = () => {
   const {
