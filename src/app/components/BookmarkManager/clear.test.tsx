@@ -6,8 +6,13 @@ import { beforeEach, describe, expect, it, vi } from "vitest";
 import { fireEvent, render, screen, waitFor } from "@testing-library/react";
 
 import { clickBookmark } from "../../test-utils/click.test";
-import { BookmarkManager } from "../BookmarkManager";
+import {
+  CLEAR_BUTTON_ROLE_NAME,
+  TITLE_ROLE_NAME,
+  URL_ROLE_NAME,
+} from "../../test-utils/constants";
 import { mockBookmarks } from "../../types/Bookmark";
+import { BookmarkManager } from "../BookmarkManager";
 
 const mockFetch = vi.fn();
 
@@ -30,9 +35,11 @@ describe("「クリア」ボタン", () => {
     const bookmarkToSelect = mockBookmarks[1]; // Google
     await clickBookmark(bookmarkToSelect);
 
-    const urlInput = screen.getByRole("textbox", { name: "url" });
-    const titleInput = screen.getByRole("textbox", { name: "title" });
-    const clearButton = screen.getByRole("button", { name: "クリア" });
+    const urlInput = screen.getByRole("textbox", { name: URL_ROLE_NAME });
+    const titleInput = screen.getByRole("textbox", { name: TITLE_ROLE_NAME });
+    const clearButton = screen.getByRole("button", {
+      name: CLEAR_BUTTON_ROLE_NAME,
+    });
 
     await act(async () => {
       fireEvent.change(urlInput, { target: { value: "https://example.com" } });

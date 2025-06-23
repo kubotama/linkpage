@@ -6,10 +6,12 @@ import { beforeEach, describe, expect, it, vi } from "vitest";
 import { fireEvent, render, screen, waitFor } from "@testing-library/react";
 
 import { clickBookmark } from "../../test-utils/click.test";
+import {
+  TITLE_ROLE_NAME,
+  UPDATE_BUTTON_ROLE_NAME,
+} from "../../test-utils/constants";
 import { mockBookmarks } from "../../types/Bookmark";
 import { BookmarkManager } from "../BookmarkManager";
-
-const updateLabel = "タイトル更新";
 
 const mockFetch = vi.fn();
 
@@ -29,7 +31,7 @@ describe("タイトルの更新ボタン", () => {
     });
 
     const updateButtons = screen.queryAllByRole("button", {
-      name: updateLabel,
+      name: UPDATE_BUTTON_ROLE_NAME,
     });
 
     await waitFor(() => {
@@ -54,7 +56,9 @@ describe("タイトルの更新ボタン", () => {
     await clickBookmark(bookmarkToSelect);
 
     await waitFor(() => {
-      const updateButton = screen.getByRole("button", { name: updateLabel });
+      const updateButton = screen.getByRole("button", {
+        name: UPDATE_BUTTON_ROLE_NAME,
+      });
       expect(updateButton).toBeInTheDocument();
     });
   });
@@ -78,8 +82,10 @@ describe("タイトルの更新ボタン", () => {
     // fetchMock.resetMocks();
     mockFetch.mockReset();
 
-    const updateButton = screen.getByRole("button", { name: updateLabel });
-    const titleInput = screen.getByRole("textbox", { name: "title" });
+    const updateButton = screen.getByRole("button", {
+      name: UPDATE_BUTTON_ROLE_NAME,
+    });
+    const titleInput = screen.getByRole("textbox", { name: TITLE_ROLE_NAME });
 
     const updateTitle = "更新されたタイトル";
     mockFetch.mockResolvedValueOnce({
@@ -107,7 +113,7 @@ describe("タイトルの更新ボタン", () => {
     const updateText = await screen.findByText(updateTitle);
     expect(updateText).toBeInTheDocument();
     expect(
-      screen.queryByRole("button", { name: updateLabel })
+      screen.queryByRole("button", { name: UPDATE_BUTTON_ROLE_NAME })
     ).not.toBeInTheDocument();
   });
 
@@ -133,7 +139,9 @@ describe("タイトルの更新ボタン", () => {
       headers: { "Content-Type": "text/plain" },
       text: async () => "指定されたブックマークがありません。",
     });
-    const updateButton = screen.getByRole("button", { name: updateLabel });
+    const updateButton = screen.getByRole("button", {
+      name: UPDATE_BUTTON_ROLE_NAME,
+    });
 
     await act(async () => {
       fireEvent.click(updateButton);
@@ -146,7 +154,7 @@ describe("タイトルの更新ボタン", () => {
       // 更新操作のコンテキストが依然として表示されていることを確認
       expect(screen.getByText(bookmarkToSelect.title)).toBeInTheDocument();
       expect(
-        screen.getByRole("button", { name: updateLabel })
+        screen.getByRole("button", { name: UPDATE_BUTTON_ROLE_NAME })
       ).toBeInTheDocument();
     });
   });
@@ -175,7 +183,9 @@ describe("タイトルの更新ボタン", () => {
       text: async () => "タイトルが指定されていません。",
     });
 
-    const updateButton = screen.getByRole("button", { name: updateLabel });
+    const updateButton = screen.getByRole("button", {
+      name: UPDATE_BUTTON_ROLE_NAME,
+    });
 
     await act(async () => {
       fireEvent.click(updateButton);
@@ -188,7 +198,7 @@ describe("タイトルの更新ボタン", () => {
       // 更新操作のコンテキストが依然として表示されていることを確認
       expect(screen.getByText(bookmarkToSelect.title)).toBeInTheDocument();
       expect(
-        screen.getByRole("button", { name: updateLabel })
+        screen.getByRole("button", { name: UPDATE_BUTTON_ROLE_NAME })
       ).toBeInTheDocument();
     });
   });
@@ -215,10 +225,12 @@ describe("タイトルの更新ボタン", () => {
       headers: { "Content-Type": "text/plain" },
       text: async () => "リクエストにIDがありませんでした。",
     });
-    const updeteButton = screen.getByRole("button", { name: updateLabel });
+    const updateButton = screen.getByRole("button", {
+      name: UPDATE_BUTTON_ROLE_NAME,
+    });
 
     await act(async () => {
-      fireEvent.click(updeteButton);
+      fireEvent.click(updateButton);
     });
 
     await waitFor(() => {
@@ -228,7 +240,7 @@ describe("タイトルの更新ボタン", () => {
       // 更新操作のコンテキストが依然として表示されていることを確認
       expect(screen.getByText(bookmarkToSelect.title)).toBeInTheDocument();
       expect(
-        screen.getByRole("button", { name: updateLabel })
+        screen.getByRole("button", { name: UPDATE_BUTTON_ROLE_NAME })
       ).toBeInTheDocument();
     });
   });
@@ -256,10 +268,12 @@ describe("タイトルの更新ボタン", () => {
       text: async () => "IDは正の整数である必要があります。",
     });
 
-    const updaeteButton = screen.getByRole("button", { name: updateLabel });
+    const updateButton = screen.getByRole("button", {
+      name: UPDATE_BUTTON_ROLE_NAME,
+    });
 
     await act(async () => {
-      fireEvent.click(updaeteButton);
+      fireEvent.click(updateButton);
     });
 
     await waitFor(() => {
@@ -269,7 +283,7 @@ describe("タイトルの更新ボタン", () => {
       // 更新操作のコンテキストが依然として表示されていることを確認
       expect(screen.getByText(bookmarkToSelect.title)).toBeInTheDocument();
       expect(
-        screen.getByRole("button", { name: updateLabel })
+        screen.getByRole("button", { name: UPDATE_BUTTON_ROLE_NAME })
       ).toBeInTheDocument();
     });
   });
@@ -297,7 +311,9 @@ describe("タイトルの更新ボタン", () => {
       text: async () => "サーバーで予期せぬエラーが発生しました。",
     });
 
-    const updateButton = screen.getByRole("button", { name: updateLabel });
+    const updateButton = screen.getByRole("button", {
+      name: UPDATE_BUTTON_ROLE_NAME,
+    });
 
     await act(async () => {
       fireEvent.click(updateButton);
@@ -310,7 +326,7 @@ describe("タイトルの更新ボタン", () => {
       // 更新操作のコンテキストが依然として表示されていることを確認
       expect(screen.getByText(bookmarkToSelect.title)).toBeInTheDocument();
       expect(
-        screen.getByRole("button", { name: updateLabel })
+        screen.getByRole("button", { name: UPDATE_BUTTON_ROLE_NAME })
       ).toBeInTheDocument();
     });
   });

@@ -8,7 +8,11 @@ import { fireEvent, render, screen, waitFor } from "@testing-library/react";
 import { clickBookmark } from "../../test-utils/click.test";
 import { Bookmark, mockBookmarks } from "../../types/Bookmark";
 import { BookmarkManager } from "../BookmarkManager";
-
+import {
+  URL_ROLE_NAME,
+  TITLE_ROLE_NAME,
+  UNSELECT_BUTTON_ROLE_NAME,
+} from "../../test-utils/constants";
 const mockFetch = vi.fn();
 
 describe("ブックマークの選択", () => {
@@ -27,10 +31,12 @@ describe("ブックマークの選択", () => {
       render(<BookmarkManager />);
     });
 
-    const urlInput = screen.queryAllByRole("textbox", { name: "url" });
-    const titleInput = screen.queryAllByRole("textbox", { name: "title" });
+    const urlInput = screen.queryAllByRole("textbox", { name: URL_ROLE_NAME });
+    const titleInput = screen.queryAllByRole("textbox", {
+      name: TITLE_ROLE_NAME,
+    });
     const unselectButton = screen.queryAllByRole("button", {
-      name: "選択解除",
+      name: UNSELECT_BUTTON_ROLE_NAME,
     });
 
     await waitFor(() => {
@@ -60,12 +66,14 @@ describe("ブックマークの選択", () => {
 
     // BookmarkManager内のuseEffectによって入力フィールドが更新されるのを待つ
     await waitFor(() => {
-      const urlInput = screen.getByRole("textbox", { name: "url" });
-      const titleInput = screen.getByRole("textbox", { name: "title" });
+      const urlInput = screen.getByRole("textbox", { name: URL_ROLE_NAME });
+      const titleInput = screen.getByRole("textbox", { name: TITLE_ROLE_NAME });
       expect(urlInput).toHaveValue(bookmarkToSelect.url);
       expect(titleInput).toHaveValue(bookmarkToSelect.title);
 
-      const unselectButton = screen.getByRole("button", { name: "選択解除" });
+      const unselectButton = screen.getByRole("button", {
+        name: UNSELECT_BUTTON_ROLE_NAME,
+      });
       expect(unselectButton).toBeInTheDocument();
     });
   });
@@ -90,25 +98,31 @@ describe("ブックマークの選択", () => {
 
     // BookmarkManager内のuseEffectによって入力フィールドが更新されるのを待つ;
     await waitFor(() => {
-      const urlInput = screen.getByRole("textbox", { name: "url" });
-      const titleInput = screen.getByRole("textbox", { name: "title" });
+      const urlInput = screen.getByRole("textbox", { name: URL_ROLE_NAME });
+      const titleInput = screen.getByRole("textbox", { name: TITLE_ROLE_NAME });
       expect(urlInput).toHaveValue(bookmarkToSelect.url);
       expect(titleInput).toHaveValue(bookmarkToSelect.title);
 
       expect(
-        screen.getByRole("button", { name: "選択解除" })
+        screen.getByRole("button", { name: UNSELECT_BUTTON_ROLE_NAME })
       ).toBeInTheDocument();
     });
 
-    const unselectButton = screen.getByRole("button", { name: "選択解除" });
+    const unselectButton = screen.getByRole("button", {
+      name: UNSELECT_BUTTON_ROLE_NAME,
+    });
     await act(async () => {
       fireEvent.click(unselectButton);
     });
     await waitFor(() => {
-      const urlInput = screen.queryAllByRole("textbox", { name: "url" });
-      const titleInput = screen.queryAllByRole("textbox", { name: "title" });
+      const urlInput = screen.queryAllByRole("textbox", {
+        name: URL_ROLE_NAME,
+      });
+      const titleInput = screen.queryAllByRole("textbox", {
+        name: TITLE_ROLE_NAME,
+      });
       const unselectButton = screen.queryAllByRole("button", {
-        name: "選択解除",
+        name: UNSELECT_BUTTON_ROLE_NAME,
       });
 
       expect(urlInput).toHaveLength(0);

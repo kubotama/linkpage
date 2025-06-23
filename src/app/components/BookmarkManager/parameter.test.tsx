@@ -1,11 +1,15 @@
 import "@testing-library/jest-dom";
 
 import { act } from "react";
-import { describe, expect, it, vi } from "vitest";
+import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 
 import { fireEvent, render, screen, waitFor } from "@testing-library/react";
 
 import { clickBookmark } from "../../test-utils/click.test";
+import {
+  PARAMETER_BUTTON_ROLE_NAME,
+  URL_ROLE_NAME,
+} from "../../test-utils/constants";
 import { mockBookmarks } from "../../types/Bookmark";
 import { BookmarkManager } from "../BookmarkManager";
 
@@ -13,16 +17,24 @@ const mockFetch = vi.fn();
 
 describe("「パラメータ」ボタン: URLから無駄な文字列を削除する#61", () => {
   describe("#や?の後ろを削除する", () => {
-    it("https://mail.google.com/mail/u/0/#inbox", async () => {
-      const url = "https://mail.google.com/mail/u/0/#inbox";
+    let originalFetch: typeof global.fetch;
 
-      global.fetch = mockFetch;
+    beforeEach(() => {
       mockFetch.mockReset();
+      originalFetch = global.fetch;
+      global.fetch = mockFetch;
       mockFetch.mockResolvedValueOnce({
         ok: true,
         status: 200,
         json: async () => mockBookmarks,
       });
+    });
+
+    afterEach(() => {
+      global.fetch = originalFetch;
+    });
+    it("https://mail.google.com/mail/u/0/#inbox", async () => {
+      const url = "https://mail.google.com/mail/u/0/#inbox";
 
       await act(async () => {
         render(<BookmarkManager />);
@@ -32,8 +44,10 @@ describe("「パラメータ」ボタン: URLから無駄な文字列を削除�
       const bookmarkToSelect = mockBookmarks[1]; // Google
       await clickBookmark(bookmarkToSelect);
 
-      const urlInput = screen.getByRole("textbox", { name: "url" });
-      const urlButton = screen.getByRole("button", { name: "パラメータ" });
+      const urlInput = screen.getByRole("textbox", { name: URL_ROLE_NAME });
+      const urlButton = screen.getByRole("button", {
+        name: PARAMETER_BUTTON_ROLE_NAME,
+      });
 
       await act(async () => {
         fireEvent.change(urlInput, { target: { value: url } });
@@ -49,11 +63,6 @@ describe("「パラメータ」ボタン: URLから無駄な文字列を削除�
       const url =
         "https://xtech.nikkei.com/atcl/nxt/column/18/00148/030500376/?n_cid=nbpnxt_mled_itmh";
 
-      mockFetch.mockResolvedValueOnce({
-        ok: true,
-        status: 200,
-        json: async () => mockBookmarks,
-      });
       await act(async () => {
         render(<BookmarkManager />);
       });
@@ -62,8 +71,10 @@ describe("「パラメータ」ボタン: URLから無駄な文字列を削除�
       const bookmarkToSelect = mockBookmarks[1]; // Google
       await clickBookmark(bookmarkToSelect);
 
-      const urlInput = screen.getByRole("textbox", { name: "url" });
-      const urlButton = screen.getByRole("button", { name: "パラメータ" });
+      const urlInput = screen.getByRole("textbox", { name: URL_ROLE_NAME });
+      const urlButton = screen.getByRole("button", {
+        name: PARAMETER_BUTTON_ROLE_NAME,
+      });
 
       await act(async () => {
         fireEvent.change(urlInput, { target: { value: url } });
@@ -80,12 +91,6 @@ describe("「パラメータ」ボタン: URLから無駄な文字列を削除�
     it("https://mail.google.com/mail/u/0/", async () => {
       const url = "https://mail.google.com/mail/u/0/";
 
-      mockFetch.mockResolvedValueOnce({
-        ok: true,
-        status: 200,
-        json: async () => mockBookmarks,
-      });
-
       await act(async () => {
         render(<BookmarkManager />);
       });
@@ -94,8 +99,10 @@ describe("「パラメータ」ボタン: URLから無駄な文字列を削除�
       const bookmarkToSelect = mockBookmarks[1]; // Google
       await clickBookmark(bookmarkToSelect);
 
-      const urlInput = screen.getByRole("textbox", { name: "url" });
-      const urlButton = screen.getByRole("button", { name: "パラメータ" });
+      const urlInput = screen.getByRole("textbox", { name: URL_ROLE_NAME });
+      const urlButton = screen.getByRole("button", {
+        name: PARAMETER_BUTTON_ROLE_NAME,
+      });
 
       await act(async () => {
         fireEvent.change(urlInput, { target: { value: url } });

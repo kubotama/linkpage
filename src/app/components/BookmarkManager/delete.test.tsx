@@ -5,7 +5,9 @@ import { beforeEach, describe, expect, it, vi } from "vitest";
 
 import { fireEvent, render, screen, waitFor } from "@testing-library/react";
 
+import { BOOKMARK_DELETE_ENDPOINT } from "../../constants/apiEndpoints";
 import { clickBookmark } from "../../test-utils/click.test";
+import { DELETE_BUTTON_ROLE_NAME } from "../../test-utils/constants";
 import { mockBookmarks } from "../../types/Bookmark";
 import { BookmarkManager } from "../BookmarkManager";
 
@@ -28,7 +30,7 @@ describe("削除ボタン", () => {
     });
 
     const deleteButtons = screen.queryAllByRole("button", {
-      name: "削除",
+      name: DELETE_BUTTON_ROLE_NAME,
     });
 
     await waitFor(() => {
@@ -53,7 +55,9 @@ describe("削除ボタン", () => {
     await clickBookmark(bookmarkToSelect);
 
     await waitFor(() => {
-      const deleteButton = screen.getByRole("button", { name: "削除" });
+      const deleteButton = screen.getByRole("button", {
+        name: DELETE_BUTTON_ROLE_NAME,
+      });
       expect(deleteButton).toBeInTheDocument();
     });
   });
@@ -84,7 +88,9 @@ describe("削除ボタン", () => {
       status: 204,
     });
 
-    const deleteButton = screen.getByRole("button", { name: "削除" });
+    const deleteButton = screen.getByRole("button", {
+      name: DELETE_BUTTON_ROLE_NAME,
+    });
 
     await act(async () => {
       fireEvent.click(deleteButton);
@@ -93,7 +99,7 @@ describe("削除ボタン", () => {
     await waitFor(() => {
       // APIの呼び出しの確認
       expect(mockFetch).toHaveBeenCalledTimes(1);
-      expect(mockFetch.mock.calls[0][0]).toEqual("/api/bookmark/delete");
+      expect(mockFetch.mock.calls[0][0]).toEqual(BOOKMARK_DELETE_ENDPOINT);
       expect(mockFetch.mock.calls[0][1]).toEqual({
         method: "POST",
         headers: {
@@ -107,7 +113,7 @@ describe("削除ボタン", () => {
         screen.queryByText(bookmarkToSelect.title)
       ).not.toBeInTheDocument();
       expect(
-        screen.queryByRole("button", { name: "削除" })
+        screen.queryByRole("button", { name: DELETE_BUTTON_ROLE_NAME })
       ).not.toBeInTheDocument();
     });
   });
@@ -138,7 +144,9 @@ describe("削除ボタン", () => {
       text: async () => "指定されたブックマークがありません。",
     });
 
-    const deleteButton = screen.getByRole("button", { name: "削除" });
+    const deleteButton = screen.getByRole("button", {
+      name: DELETE_BUTTON_ROLE_NAME,
+    });
 
     await act(async () => {
       fireEvent.click(deleteButton);
@@ -151,7 +159,9 @@ describe("削除ボタン", () => {
       );
       // 削除操作のコンテキスト（選択されたブックマークのタイトルや削除ボタン）が依然として表示されていることを確認
       expect(screen.getByText(bookmarkToSelect.title)).toBeInTheDocument();
-      expect(screen.getByRole("button", { name: "削除" })).toBeInTheDocument();
+      expect(
+        screen.getByRole("button", { name: DELETE_BUTTON_ROLE_NAME })
+      ).toBeInTheDocument();
     });
   });
 
@@ -181,7 +191,9 @@ describe("削除ボタン", () => {
       text: async () => "リクエストにIDがありませんでした。",
     });
 
-    const deleteButton = screen.getByRole("button", { name: "削除" });
+    const deleteButton = screen.getByRole("button", {
+      name: DELETE_BUTTON_ROLE_NAME,
+    });
 
     await act(async () => {
       fireEvent.click(deleteButton);
@@ -194,7 +206,9 @@ describe("削除ボタン", () => {
       );
       // 削除操作のコンテキスト（選択されたブックマークのタイトルや削除ボタン）が依然として表示されていることを確認
       expect(screen.getByText(bookmarkToSelect.title)).toBeInTheDocument();
-      expect(screen.getByRole("button", { name: "削除" })).toBeInTheDocument();
+      expect(
+        screen.getByRole("button", { name: DELETE_BUTTON_ROLE_NAME })
+      ).toBeInTheDocument();
     });
   });
 
@@ -224,7 +238,9 @@ describe("削除ボタン", () => {
     const bookmarkToSelect = mockBookmarks[1]; // Google
     await clickBookmark(bookmarkToSelect);
 
-    const deleteButton = screen.getByRole("button", { name: "削除" });
+    const deleteButton = screen.getByRole("button", {
+      name: DELETE_BUTTON_ROLE_NAME,
+    });
 
     await act(async () => {
       fireEvent.click(deleteButton);
@@ -237,7 +253,9 @@ describe("削除ボタン", () => {
       );
       // 削除操作のコンテキスト（選択されたブックマークのタイトルや削除ボタン）が依然として表示されていることを確認
       expect(screen.getByText(bookmarkToSelect.title)).toBeInTheDocument();
-      expect(screen.getByRole("button", { name: "削除" })).toBeInTheDocument();
+      expect(
+        screen.getByRole("button", { name: DELETE_BUTTON_ROLE_NAME })
+      ).toBeInTheDocument();
     });
   });
 });
