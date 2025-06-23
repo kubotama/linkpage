@@ -4,6 +4,7 @@ import { getDb } from "../database";
 
 interface UpdateBookmarkPayload {
   id: number; // 型チェックは後続のバリデーションで行う
+  url: string; // 型チェックは後続のバリデーションで行う
   title: string; // 型チェックは後続のバリデーションで行う
 }
 
@@ -33,11 +34,22 @@ export async function POST(request: Request) {
         status: 400,
         headers: { "Content-Type": "text/plain" },
       });
+    } else if (
+      !bookmark.hasOwnProperty("url") ||
+      typeof bookmark.url !== "string" ||
+      bookmark.url.trim().length === 0
+    ) {
+      return new Response("URLが指定されていません。", {
+        status: 400,
+        headers: { "Content-Type": "text/plain" },
+      });
     }
 
     const db = getDb();
-    const prepare = db.prepare("UPDATE bookmarks SET title = ? WHERE id = ?");
-    const info = prepare.run(bookmark.title, bookmark.id);
+    const prepare = db.prepare(
+      "UPDATE bookmarks SET title = ?, url = ? WHERE id = ?"
+    );
+    const info = prepare.run(bookmark.title, bookmark.url, bookmark.id);
     if (info.changes === 0) {
       return new Response("指定されたブックマークがありません。", {
         status: 404,
