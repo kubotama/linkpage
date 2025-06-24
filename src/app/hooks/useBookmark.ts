@@ -84,42 +84,43 @@ export const useBookmarks = () => {
     }
   }, []);
 
-  const updateBookmark = useCallback(async (id: number, title: string) => {
-    setLoadingMessage("ブックマークのタイトル更新処理中...");
-    try {
-      const response = await fetch(BOOKMARK_UPDATE_ENDPOINT, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({ id, title }),
-      });
-      if (response.ok) {
-        // APIが成功のレスポンス（例: 更新されたブックマークオブジェクト）を返すと仮定
-        // もしAPIが更新後のオブジェクトを返さない場合は、ローカルでタイトルを更新
-        setBookmarks((currentBookmarks) =>
-          currentBookmarks.map((bookmark) =>
-            bookmark.id === id ? { ...bookmark, title } : bookmark
-          )
-        );
-        setSelectedBookmark(null); // 選択を解除
-        setErrorMessage("");
-      } else {
-        // エラーレスポンスの処理
-        const errorText = await response.text();
-        throw new Error(
-          `タイトルの更新エラー: [${response.status}] ${
-            errorText || response.statusText
-          }`
-        );
+  const updateBookmark = useCallback(
+    async (id: number, url: string, title: string) => {
+      setLoadingMessage("ブックマークのタイトル更新処理中...");
+      try {
+        const response = await fetch(BOOKMARK_UPDATE_ENDPOINT, {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({ id, url, title }),
+        });
+        if (response.ok) {
+          // APIが更新後のオブジェクトを返さないため、ローカルでタイトルを更新
+          setBookmarks((currentBookmarks) =>
+            currentBookmarks.map((bookmark) =>
+              bookmark.id === id ? { ...bookmark, title } : bookmark
+            )
+          );
+          setErrorMessage("");
+        } else {
+          // エラーレスポンスの処理
+          const errorText = await response.text();
+          throw new Error(
+            `タイトルの更新エラー: [${response.status}] ${
+              errorText || response.statusText
+            }`
+          );
+        }
+      } catch (error: unknown) {
+        console.error("ブックマークのタイトル更新エラー:", error); // 詳細なエラーはコンソールへ
+        setErrorMessage("ブックマークのタイトル更新中にエラーが発生しました。"); // ユーザーフレンドリーなメッセージ
+      } finally {
+        setLoadingMessage("");
       }
-    } catch (error: unknown) {
-      console.error("ブックマークのタイトル更新エラー:", error); // 詳細なエラーはコンソールへ
-      setErrorMessage("ブックマークのタイトル更新中にエラーが発生しました。"); // ユーザーフレンドリーなメッセージ
-    } finally {
-      setLoadingMessage("");
-    }
-  }, []);
+    },
+    []
+  );
 
   return {
     bookmarks,
