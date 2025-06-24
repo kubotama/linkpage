@@ -86,7 +86,7 @@ export const useBookmarks = () => {
 
   const updateBookmark = useCallback(
     async (id: number, url: string, title: string) => {
-      setLoadingMessage("ブックマークのタイトル更新処理中...");
+      setLoadingMessage("ブックマークの更新処理中...");
       try {
         const response = await fetch(BOOKMARK_UPDATE_ENDPOINT, {
           method: "POST",
@@ -107,14 +107,14 @@ export const useBookmarks = () => {
           // エラーレスポンスの処理
           const errorText = await response.text();
           throw new Error(
-            `タイトルの更新エラー: [${response.status}] ${
+            `ブックマークの更新エラー: [${response.status}] ${
               errorText || response.statusText
             }`
           );
         }
       } catch (error: unknown) {
-        console.error("ブックマークのタイトル更新エラー:", error); // 詳細なエラーはコンソールへ
-        setErrorMessage("ブックマークのタイトル更新中にエラーが発生しました。"); // ユーザーフレンドリーなメッセージ
+        console.error("ブックマークの更新エラー:", error); // 詳細なエラーはコンソールへ
+        setErrorMessage("ブックマークの更新中にエラーが発生しました。"); // ユーザーフレンドリーなメッセージ
       } finally {
         setLoadingMessage("");
       }
