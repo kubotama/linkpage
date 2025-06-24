@@ -44,12 +44,6 @@ describe("BookmarkManager", () => {
       name: OPEN_BUTTON_ROLE_NAME,
     });
 
-    mockFetch.mockResolvedValueOnce({
-      ok: false,
-      status: 500,
-      text: async () => "URLが無効です。正しいURLを入力してください。",
-    });
-
     await act(async () => {
       fireEvent.change(urlInput, { target: { value: "" } });
       fireEvent.change(titleInput, { target: { value: "" } });
