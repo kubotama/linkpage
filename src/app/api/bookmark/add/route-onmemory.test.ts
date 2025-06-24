@@ -142,11 +142,8 @@ describe("ブックマーク追加APIのテスト (オンメモリDB)", () => {
     const response = await POST(createPostRequest(JSON.stringify(bookmark)));
 
     expect(response.status).toBe(409);
-    const json = await response.json();
-    expect(json).toEqual({
-      error: "指定されたURLのブックマークは既に登録されています。",
-      message: "指定されたURLのブックマークは既に登録されています。",
-    });
+    const text = await response.text();
+    expect(text).toEqual("指定されたURLのブックマークは既に登録されています。");
   });
 
   it("POST: URLが空文字の場合にエラーを返す", async () => {
