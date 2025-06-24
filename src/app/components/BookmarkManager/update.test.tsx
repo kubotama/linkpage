@@ -118,19 +118,27 @@ describe("タイトルの更新ボタン", () => {
         }),
       });
     });
-    const updateText = screen.queryAllByText(updateTitle);
-    expect(updateText).toHaveLength(1);
+    await waitFor(() => {
+      // 更新されたタイトルが表示されていることを確認
+      const updateText = screen.getAllByText(updateTitle);
+      expect(updateText).toHaveLength(1);
 
-    // 画面の更新の確認;
-    expect(screen.getByRole("textbox", { name: URL_ROLE_NAME })).toHaveValue(
-      updateUrl
-    );
-    expect(screen.getByRole("textbox", { name: TITLE_ROLE_NAME })).toHaveValue(
-      updateTitle
-    );
-    expect(
-      screen.getByRole("button", { name: UPDATE_BUTTON_ROLE_NAME })
-    ).toBeInTheDocument();
+      // 画面の更新の確認;
+      expect(urlInput).toHaveValue(updateUrl);
+      expect(titleInput).toHaveValue(updateTitle);
+      expect(updateButton).toBeInTheDocument();
+    });
+
+    const updatedBookmark = {
+      id: bookmarkToSelect.id,
+      url: updateUrl,
+      title: updateTitle,
+    };
+    clickBookmark(updatedBookmark);
+    await waitFor(() => {
+      expect(urlInput).toHaveValue(updateUrl);
+      expect(titleInput).toHaveValue(updateTitle);
+    });
   });
 
   it("登録されていないブックマークIDを指定された場合は404を返す。", async () => {

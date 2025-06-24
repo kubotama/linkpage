@@ -99,7 +99,7 @@ export const useBookmarks = () => {
           // APIが更新後のオブジェクトを返さないため、ローカルでタイトルを更新
           setBookmarks((currentBookmarks) =>
             currentBookmarks.map((bookmark) =>
-              bookmark.id === id ? { ...bookmark, title } : bookmark
+              bookmark.id === id ? { ...bookmark, url, title } : bookmark
             )
           );
           setErrorMessage("");
