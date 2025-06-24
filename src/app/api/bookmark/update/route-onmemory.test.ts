@@ -90,19 +90,16 @@ describe("ブックマーク更新APIのテスト (オンメモリDB)", () => {
 
     // データベースが更新されたことを確認
     const selectStmt = inMemoryDbInstance.prepare(
-      "SELECT id, url, title FROM bookmarks WHERE url = ?"
+      "SELECT id, url, title FROM bookmarks WHERE id = ?"
     );
-    const updatedEntry = selectStmt.get(bookmarkToUpdate.url);
-    expect(
-      (updatedEntry as { id: number; url: string; title: string }).id
-    ).toEqual(bookmarkToUpdate.id);
-    expect(
-      (updatedEntry as { id: number; url: string; title: string }).url
-    ).toEqual(bookmarkToUpdate.url);
-    expect(
-      (updatedEntry as { id: number; url: string; title: string }).title
-    ).toEqual("Updated Title");
-
+    const updatedEntry = selectStmt.get(bookmarkToUpdate.id) as {
+      id: number;
+      url: string;
+      title: string;
+    };
+    expect(updatedEntry.id).toEqual(bookmarkToUpdate.id);
+    expect(updatedEntry.url).toEqual(bookmarkToUpdate.url);
+    expect(updatedEntry.title).toEqual("Updated Title");
     // 更新後の件数を確認
     const countAfter = (
       inMemoryDbInstance
