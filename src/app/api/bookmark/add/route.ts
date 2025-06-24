@@ -27,13 +27,13 @@ export const POST: (request: Request) => Promise<Response> = async (
     if (!bookmark.url || bookmark.url.trim() === "") {
       return new Response("URL cannot be empty", {
         status: 400,
-        headers: commonHeaders,
+        headers: { ...commonHeaders, "Content-Type": "text/plain" },
       });
     }
     if (!bookmark.title || bookmark.title.trim() === "") {
       return new Response("Title cannot be empty", {
         status: 400,
-        headers: commonHeaders,
+        headers: { ...commonHeaders, "Content-Type": "text/plain" },
       });
     }
 
@@ -59,13 +59,10 @@ export const POST: (request: Request) => Promise<Response> = async (
       error.code === "SQLITE_CONSTRAINT_UNIQUE"
     ) {
       return new Response(
-        JSON.stringify({
-          error: "指定されたURLのブックマークは既に登録されています。",
-          message: "指定されたURLのブックマークは既に登録されています。",
-        }),
+        "指定されたURLのブックマークは既に登録されています。",
         {
           status: 409,
-          headers: { "Content-Type": "application/json", ...commonHeaders },
+          headers: { "Content-Type": "text/plain", ...commonHeaders },
         }
       );
     }
