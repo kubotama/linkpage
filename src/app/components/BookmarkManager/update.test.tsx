@@ -173,7 +173,7 @@ describe("タイトルの更新ボタン", () => {
 
     await waitFor(() => {
       expect(screen.getByTestId("bookmark-message")).toHaveTextContent(
-        "ブックマークのタイトル更新中にエラーが発生しました。"
+        "ブックマークの更新中にエラーが発生しました。"
       );
       // 更新操作のコンテキストが依然として表示されていることを確認
       expect(screen.getByText(bookmarkToSelect.title)).toBeInTheDocument();
@@ -217,7 +217,7 @@ describe("タイトルの更新ボタン", () => {
 
     await waitFor(() => {
       expect(screen.getByTestId("bookmark-message")).toHaveTextContent(
-        "ブックマークのタイトル更新中にエラーが発生しました。"
+        "ブックマークの更新中にエラーが発生しました。"
       );
       // 更新操作のコンテキストが依然として表示されていることを確認
       expect(screen.getByText(bookmarkToSelect.title)).toBeInTheDocument();
@@ -259,7 +259,7 @@ describe("タイトルの更新ボタン", () => {
 
     await waitFor(() => {
       expect(screen.getByTestId("bookmark-message")).toHaveTextContent(
-        "ブックマークのタイトル更新中にエラーが発生しました。"
+        "ブックマークの更新中にエラーが発生しました。"
       );
       // 更新操作のコンテキストが依然として表示されていることを確認
       expect(screen.getByText(bookmarkToSelect.title)).toBeInTheDocument();
@@ -302,7 +302,7 @@ describe("タイトルの更新ボタン", () => {
 
     await waitFor(() => {
       expect(screen.getByTestId("bookmark-message")).toHaveTextContent(
-        "ブックマークのタイトル更新中にエラーが発生しました。"
+        "ブックマークの更新中にエラーが発生しました。"
       );
       // 更新操作のコンテキストが依然として表示されていることを確認
       expect(screen.getByText(bookmarkToSelect.title)).toBeInTheDocument();
@@ -345,7 +345,7 @@ describe("タイトルの更新ボタン", () => {
 
     await waitFor(() => {
       expect(screen.getByTestId("bookmark-message")).toHaveTextContent(
-        "ブックマークのタイトル更新中にエラーが発生しました。"
+        "ブックマークの更新中にエラーが発生しました。"
       );
       // 更新操作のコンテキストが依然として表示されていることを確認
       expect(screen.getByText(bookmarkToSelect.title)).toBeInTheDocument();
