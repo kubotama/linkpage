@@ -62,12 +62,12 @@ export const BookmarkManager = () => {
             {isBookmarkSelected() && (
               <>
                 <div className="mb-2 flex justify-between">
+                  <ActionButton onClick={openClick}>開く</ActionButton>
+                  <ActionButton onClick={updateClick}>更新</ActionButton>
                   <ActionButton onClick={() => setSelectedBookmark(null)}>
                     選択解除
                   </ActionButton>
-                  <ActionButton onClick={openClick}>開く</ActionButton>
                   <ActionButton onClick={deleteClick}>削除</ActionButton>
-                  <ActionButton onClick={updateClick}>更新</ActionButton>
                 </div>
                 <div className="mb-2 flex justify-between">
                   <ActionButton onClick={clearClick}>クリア</ActionButton>
