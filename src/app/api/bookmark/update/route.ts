@@ -20,7 +20,7 @@ export async function POST(request: Request) {
     if (!bookmark.hasOwnProperty("id")) {
       return new Response("IDが指定されていません。", {
         status: 400,
-        headers: { "Content-Type": "text/plain" },
+        headers: { "Content-Type": "text/plain", ...commonHeaders },
       });
     } else if (
       typeof bookmark.id !== "number" ||
@@ -29,7 +29,7 @@ export async function POST(request: Request) {
     ) {
       return new Response("IDは正の整数である必要があります。", {
         status: 400,
-        headers: { "Content-Type": "text/plain" },
+        headers: { "Content-Type": "text/plain", ...commonHeaders },
       });
     } else if (
       !bookmark.hasOwnProperty("title") ||
@@ -38,7 +38,7 @@ export async function POST(request: Request) {
     ) {
       return new Response("タイトルが指定されていません。", {
         status: 400,
-        headers: { "Content-Type": "text/plain" },
+        headers: { "Content-Type": "text/plain", ...commonHeaders },
       });
     } else if (
       !bookmark.hasOwnProperty("url") ||
@@ -47,7 +47,7 @@ export async function POST(request: Request) {
     ) {
       return new Response("URLが指定されていません。", {
         status: 400,
-        headers: { "Content-Type": "text/plain" },
+        headers: { "Content-Type": "text/plain", ...commonHeaders },
       });
     }
 
@@ -59,11 +59,12 @@ export async function POST(request: Request) {
     if (info.changes === 0) {
       return new Response("指定されたブックマークがありません。", {
         status: 404,
-        headers: { "Content-Type": "text/plain" },
+        headers: { "Content-Type": "text/plain", ...commonHeaders },
       });
     }
     return new Response(null, {
       status: 204,
+      headers: { "Content-Type": "text/plain", ...commonHeaders },
     });
   } catch (error: unknown) {
     if (
@@ -81,7 +82,7 @@ export async function POST(request: Request) {
     console.error("Error in POST /api/bookmark/update:", error); // サーバー側でエラーを記録
     return new Response("サーバーで予期せぬエラーが発生しました。", {
       status: 500,
-      headers: { "Content-Type": "text/plain" },
+      headers: { "Content-Type": "text/plain", ...commonHeaders },
     });
   }
 }
