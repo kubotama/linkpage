@@ -68,9 +68,7 @@ export const BookmarkManager = () => {
                   </ActionButton>
                   <ActionButton onClick={openClick}>開く</ActionButton>
                   <ActionButton onClick={deleteClick}>削除</ActionButton>
-                  <ActionButton onClick={updateClick}>
-                    タイトル更新
-                  </ActionButton>
+                  <ActionButton onClick={updateClick}>更新</ActionButton>
                 </div>
                 <div className="mb-2 flex justify-between">
                   <ActionButton onClick={titleClick}>タイトル</ActionButton>

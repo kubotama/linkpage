@@ -25,18 +25,6 @@ function createPostRequest(body: string): Request {
   });
 }
 
-const getBookmarkIdFromUrl = (url: string) => {
-  // データベースからIDを取得して確認
-  const selectStmt = inMemoryDbInstance.prepare(
-    "SELECT id, title FROM bookmarks WHERE url = ?"
-  );
-  const dbEntry = selectStmt.get(url) as { id: number };
-  expect(dbEntry).toBeDefined();
-  const bookmarkIdToUpdate = dbEntry.id;
-
-  return bookmarkIdToUpdate;
-};
-
 describe("ブックマーク更新APIのテスト (オンメモリDB)", () => {
   beforeEach(() => {
     // Reset mocks before each test
@@ -75,12 +63,9 @@ describe("ブックマーク更新APIのテスト (オンメモリDB)", () => {
     }
   });
 
-  it("POST: ブックマークを更新できる。", async () => {
+  it("POST: ブックマークのタイトルのみを更新できる。", async () => {
     // 更新対象のブックマーク (例: Google, IDは2になるはず)
     const bookmarkToUpdate = mockBookmarks[1]; // Google
-
-    // データベースからIDを取得して確認
-    const bookmarkIdToUpdate = getBookmarkIdFromUrl(bookmarkToUpdate.url);
 
     // 更新前の件数を確認
     const countBefore = (
@@ -92,7 +77,11 @@ describe("ブックマーク更新APIのテスト (オンメモリDB)", () => {
 
     // 更新リクエストを作成
     const request = createPostRequest(
-      JSON.stringify({ id: bookmarkIdToUpdate, title: "Updated Title" })
+      JSON.stringify({
+        id: bookmarkToUpdate.id,
+        url: bookmarkToUpdate.url,
+        title: "Updated Title",
+      })
     );
     const response = await POST(request);
 
@@ -101,15 +90,67 @@ describe("ブックマーク更新APIのテスト (オンメモリDB)", () => {
 
     // データベースが更新されたことを確認
     const selectStmt = inMemoryDbInstance.prepare(
-      "SELECT id, title FROM bookmarks WHERE url = ?"
+      "SELECT id, url, title FROM bookmarks WHERE id = ?"
     );
-    const updatedEntry = selectStmt.get(bookmarkToUpdate.url);
-    expect((updatedEntry as { id: number; title: string }).id).toEqual(
-      bookmarkIdToUpdate
+    const updatedEntry = selectStmt.get(bookmarkToUpdate.id) as {
+      id: number;
+      url: string;
+      title: string;
+    };
+    expect(updatedEntry.id).toEqual(bookmarkToUpdate.id);
+    expect(updatedEntry.url).toEqual(bookmarkToUpdate.url);
+    expect(updatedEntry.title).toEqual("Updated Title");
+    // 更新後の件数を確認
+    const countAfter = (
+      inMemoryDbInstance
+        .prepare("SELECT COUNT(*) as count FROM bookmarks")
+        .get() as { count: number }
+    ).count;
+    expect(countAfter).toBe(mockBookmarks.length);
+  });
+
+  it("POST: ブックマークのタイトルとURLを更新できる。", async () => {
+    // 更新対象のブックマーク (例: Google, IDは2になるはず
+    const bookmarkToUpdate = mockBookmarks[1]; // Google
+
+    // データベースからIDを取得して確認
+    // const bookmarkIdToUpdate = getBookmarkIdFromUrl(bookmarkToUpdate.url);
+
+    // 更新前の件数を確認
+    const countBefore = (
+      inMemoryDbInstance
+        .prepare("SELECT COUNT(*) as count FROM bookmarks")
+        .get() as { count: number }
+    ).count;
+    expect(countBefore).toBe(mockBookmarks.length);
+
+    // 更新リクエストを作成
+    const request = createPostRequest(
+      JSON.stringify({
+        id: bookmarkToUpdate.id,
+        url: "https://www.google.com/mail",
+        title: "Updated Title",
+      })
     );
-    expect((updatedEntry as { id: number; title: string }).title).toEqual(
-      "Updated Title"
+    const response = await POST(request);
+
+    // レスポンスステータスを確認 (200 OK)
+    expect(response.status).toBe(204);
+
+    // データベースが更新されたことを確認
+    const selectStmt = inMemoryDbInstance.prepare(
+      "SELECT id, url, title FROM bookmarks WHERE id = ?"
     );
+    const updatedEntry = selectStmt.get(bookmarkToUpdate.id);
+    expect(
+      (updatedEntry as { id: number; url: string; title: string }).id
+    ).toEqual(bookmarkToUpdate.id);
+    expect(
+      (updatedEntry as { id: number; url: string; title: string }).url
+    ).toEqual("https://www.google.com/mail");
+    expect(
+      (updatedEntry as { id: number; url: string; title: string }).title
+    ).toEqual("Updated Title");
 
     // 更新後の件数を確認
     const countAfter = (
@@ -123,7 +164,11 @@ describe("ブックマーク更新APIのテスト (オンメモリDB)", () => {
   it("POST: 登録されていないブックマークIDを指定された場合は404を返す。", async () => {
     // 更新リクエストを作成
     const request = createPostRequest(
-      JSON.stringify({ id: 9999, title: "unregistered bookmark" })
+      JSON.stringify({
+        id: 9999,
+        url: "https://example.com",
+        title: "unregistered bookmark",
+      })
     );
     const response = await POST(request);
 
@@ -134,11 +179,9 @@ describe("ブックマーク更新APIのテスト (オンメモリDB)", () => {
   });
 
   it("POST: タイトルが指定されていない場合には400を返す。", async () => {
-    const bookmarkIdToUpdate = getBookmarkIdFromUrl(mockBookmarks[1].url);
-
     // 更新リクエストを作成
     const request = createPostRequest(
-      JSON.stringify({ id: bookmarkIdToUpdate })
+      JSON.stringify({ id: mockBookmarks[1].id, url: mockBookmarks[1].url })
     );
     const response = await POST(request);
 
@@ -148,6 +191,18 @@ describe("ブックマーク更新APIのテスト (オンメモリDB)", () => {
     expect(errorText).toBe("タイトルが指定されていません。");
   });
 
+  it("POST: URLが指定されていない場合には400を返す。", async () => {
+    // 更新リクエストを作成
+    const request = createPostRequest(
+      JSON.stringify({ id: mockBookmarks[1].id, title: "Updated Title" })
+    );
+    const response = await POST(request);
+
+    // レスポンスステータスを確認 (400: Bad Request)
+    expect(response?.status).toBe(400);
+    const errorText = await response?.text();
+    expect(errorText).toBe("URLが指定されていません。");
+  });
   it("POST: IDが指定されていない場合には400を返す。", async () => {
     // 更新リクエストを作成
     const request = createPostRequest(
@@ -183,5 +238,24 @@ describe("ブックマーク更新APIのテスト (オンメモリDB)", () => {
     expect(response?.status).toBe(500);
     const errorText = await response?.text();
     expect(errorText).toBe("サーバーで予期せぬエラーが発生しました。");
+  });
+
+  it("POST: 同じURLが登録される場合には409を返す。", async () => {
+    // 更新リクエストを作成
+    const request = createPostRequest(
+      JSON.stringify({
+        id: mockBookmarks[1].id,
+        url: mockBookmarks[0].url,
+        title: "Updated Title",
+      })
+    );
+    const response = await POST(request);
+
+    // レスポンスステータスを確認 (409: Conflict
+    expect(response?.status).toBe(409);
+    const errorText = await response?.text();
+    expect(errorText).toBe(
+      "指定されたURLのブックマークは既に登録されています。"
+    );
   });
 });

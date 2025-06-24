@@ -7,6 +7,7 @@ import { fireEvent, render, screen, waitFor } from "@testing-library/react";
 
 import { clickBookmark } from "../../test-utils/click.test";
 import {
+  URL_ROLE_NAME,
   TITLE_ROLE_NAME,
   UPDATE_BUTTON_ROLE_NAME,
 } from "../../test-utils/constants";
@@ -85,8 +86,10 @@ describe("タイトルの更新ボタン", () => {
     const updateButton = screen.getByRole("button", {
       name: UPDATE_BUTTON_ROLE_NAME,
     });
+    const urlInput = screen.getByRole("textbox", { name: URL_ROLE_NAME });
     const titleInput = screen.getByRole("textbox", { name: TITLE_ROLE_NAME });
 
+    const updateUrl = "https://www.google.com/mail";
     const updateTitle = "更新されたタイトル";
     mockFetch.mockResolvedValueOnce({
       ok: true,
@@ -94,6 +97,7 @@ describe("タイトルの更新ボタン", () => {
     });
 
     await act(async () => {
+      fireEvent.change(urlInput, { target: { value: updateUrl } });
       fireEvent.change(titleInput, { target: { value: updateTitle } });
       fireEvent.click(updateButton);
     });
@@ -107,14 +111,34 @@ describe("タイトルの更新ボタン", () => {
         headers: {
           "Content-Type": "application/json",
         },
-        body: JSON.stringify({ id: bookmarkToSelect.id, title: updateTitle }),
+        body: JSON.stringify({
+          id: bookmarkToSelect.id,
+          url: updateUrl,
+          title: updateTitle,
+        }),
       });
     });
-    const updateText = await screen.findByText(updateTitle);
-    expect(updateText).toBeInTheDocument();
-    expect(
-      screen.queryByRole("button", { name: UPDATE_BUTTON_ROLE_NAME })
-    ).not.toBeInTheDocument();
+    await waitFor(() => {
+      // 更新されたタイトルが表示されていることを確認
+      const updateText = screen.getAllByText(updateTitle);
+      expect(updateText).toHaveLength(1);
+
+      // 画面の更新の確認;
+      expect(urlInput).toHaveValue(updateUrl);
+      expect(titleInput).toHaveValue(updateTitle);
+      expect(updateButton).toBeInTheDocument();
+    });
+
+    const updatedBookmark = {
+      id: bookmarkToSelect.id,
+      url: updateUrl,
+      title: updateTitle,
+    };
+    clickBookmark(updatedBookmark);
+    await waitFor(() => {
+      expect(urlInput).toHaveValue(updateUrl);
+      expect(titleInput).toHaveValue(updateTitle);
+    });
   });
 
   it("登録されていないブックマークIDを指定された場合は404を返す。", async () => {
@@ -149,7 +173,7 @@ describe("タイトルの更新ボタン", () => {
 
     await waitFor(() => {
       expect(screen.getByTestId("bookmark-message")).toHaveTextContent(
-        "ブックマークのタイトル更新中にエラーが発生しました。"
+        "ブックマークの更新中にエラーが発生しました。"
       );
       // 更新操作のコンテキストが依然として表示されていることを確認
       expect(screen.getByText(bookmarkToSelect.title)).toBeInTheDocument();
@@ -193,7 +217,7 @@ describe("タイトルの更新ボタン", () => {
 
     await waitFor(() => {
       expect(screen.getByTestId("bookmark-message")).toHaveTextContent(
-        "ブックマークのタイトル更新中にエラーが発生しました。"
+        "ブックマークの更新中にエラーが発生しました。"
       );
       // 更新操作のコンテキストが依然として表示されていることを確認
       expect(screen.getByText(bookmarkToSelect.title)).toBeInTheDocument();
@@ -235,7 +259,7 @@ describe("タイトルの更新ボタン", () => {
 
     await waitFor(() => {
       expect(screen.getByTestId("bookmark-message")).toHaveTextContent(
-        "ブックマークのタイトル更新中にエラーが発生しました。"
+        "ブックマークの更新中にエラーが発生しました。"
       );
       // 更新操作のコンテキストが依然として表示されていることを確認
       expect(screen.getByText(bookmarkToSelect.title)).toBeInTheDocument();
@@ -278,7 +302,7 @@ describe("タイトルの更新ボタン", () => {
 
     await waitFor(() => {
       expect(screen.getByTestId("bookmark-message")).toHaveTextContent(
-        "ブックマークのタイトル更新中にエラーが発生しました。"
+        "ブックマークの更新中にエラーが発生しました。"
       );
       // 更新操作のコンテキストが依然として表示されていることを確認
       expect(screen.getByText(bookmarkToSelect.title)).toBeInTheDocument();
@@ -321,7 +345,7 @@ describe("タイトルの更新ボタン", () => {
 
     await waitFor(() => {
       expect(screen.getByTestId("bookmark-message")).toHaveTextContent(
-        "ブックマークのタイトル更新中にエラーが発生しました。"
+        "ブックマークの更新中にエラーが発生しました。"
       );
       // 更新操作のコンテキストが依然として表示されていることを確認
       expect(screen.getByText(bookmarkToSelect.title)).toBeInTheDocument();

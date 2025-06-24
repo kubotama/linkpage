@@ -1,12 +1,8 @@
 "use server";
 import { SqliteError } from "better-sqlite3";
 
+import { ALLOWED_CORS_ORIGIN } from "../../../constants/apiEndpoints";
 import { getDb } from "../database";
-
-const ALLOWED_CORS_ORIGIN =
-  process.env.ALLOWED_CORS_ORIGIN ||
-  // 開発環境用のデフォルト値。本番環境では必ず環境変数 ALLOWED_CORS_ORIGIN で指定する。
-  "chrome-extension://jonckoigjppkhajocdbgfbgjdgffhebf";
 
 export const OPTIONS = async () => {
   return new Response(null, {

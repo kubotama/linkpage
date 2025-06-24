@@ -131,7 +131,7 @@ export const useBookmarkManager = () => {
     if (selectedBookmark === null) {
       return;
     }
-    updateBookmark(selectedBookmark.id, textTitle);
+    updateBookmark(selectedBookmark.id, textUrl, textTitle);
   };
 
   const isBookmarkSelected = () => {

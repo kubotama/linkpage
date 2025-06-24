@@ -9,4 +9,4 @@ export const CLEAR_BUTTON_ROLE_NAME = "クリア";
 export const DELETE_BUTTON_ROLE_NAME = "削除";
 export const REFRESH_BUTTON_ROLE_NAME = "再表示";
 export const UNSELECT_BUTTON_ROLE_NAME = "選択解除";
-export const UPDATE_BUTTON_ROLE_NAME = "タイトル更新";
+export const UPDATE_BUTTON_ROLE_NAME = "更新";
