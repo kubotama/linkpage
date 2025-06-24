@@ -18,7 +18,6 @@ export const BookmarkManager = () => {
     setTextUrl,
     setTextTitle,
     deleteClick,
-    titleClick,
     urlClick,
     pathClick,
     openClick,
@@ -71,7 +70,6 @@ export const BookmarkManager = () => {
                   <ActionButton onClick={updateClick}>更新</ActionButton>
                 </div>
                 <div className="mb-2 flex justify-between">
-                  <ActionButton onClick={titleClick}>タイトル</ActionButton>
                   <ActionButton onClick={clearClick}>クリア</ActionButton>
                   <ActionButton onClick={urlClick}>パラメータ</ActionButton>
                   <ActionButton onClick={pathClick}>←</ActionButton>

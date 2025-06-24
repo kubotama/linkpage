@@ -1,6 +1,5 @@
 import { useCallback, useEffect, useState } from "react";
 
-import { TITLE_ENDPOINT } from "../constants/apiEndpoints";
 import { useBookmarks } from "./useBookmark";
 
 export const useBookmarkManager = () => {
@@ -52,31 +51,6 @@ export const useBookmarkManager = () => {
     deleteBookmark(selectedBookmark.id);
   };
 
-  // titleClick fetches the title of the URL
-  const titleClick = () => {
-    setTextMessage("タイトルを取得中...");
-    fetch(`${TITLE_ENDPOINT}?url=${encodeURIComponent(textUrl)}`)
-      .then((response) => {
-        if (!response.ok) {
-          throw new Error(`タイトルが見つかりません: [${response.status}] `);
-        } else {
-          return response.text();
-        }
-      })
-      .then((text) => {
-        if (!text) {
-          throw new Error(`タイトルが見つかりません: [${textUrl}] `);
-        } else {
-          setTextTitle(text);
-          setTextMessage("");
-        }
-      })
-      .catch((error) => {
-        console.error("タイトルの取得エラー:", error); // 詳細なエラーはコンソールへ
-        setErrorMessage("タイトルの取得中にエラーが発生しました。"); // ユーザーフレンドリーなメッセージ
-      });
-  };
-
   // urlClick delete the parameter of URL
   const urlClick = () => {
     // #や?の後ろを削除する
@@ -112,7 +86,7 @@ export const useBookmarkManager = () => {
       // 新しいウィンドウでURLを開く
       window.open(textUrl, "_blank", "noopener,noreferrer");
     } catch {
-      setTextMessage("URLが無効です。正しいURLを入力してください。");
+      setErrorMessage("URLが無効です。正しいURLを入力してください。");
     }
   };
 
@@ -159,7 +133,6 @@ export const useBookmarkManager = () => {
     setTextUrl,
     setTextTitle,
     deleteClick,
-    titleClick,
     urlClick,
     pathClick,
     openClick,

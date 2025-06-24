@@ -1,6 +1,5 @@
 export const TITLE_ROLE_NAME = "タイトル";
 export const URL_ROLE_NAME = "URL";
-export const TITLE_BUTTON_ROLE_NAME = "タイトル";
 export const CLOSE_BUTTON_ROLE_NAME = "閉じる";
 export const OPEN_BUTTON_ROLE_NAME = "開く";
 export const PARAMETER_BUTTON_ROLE_NAME = "パラメータ";

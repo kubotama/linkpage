@@ -8,7 +8,7 @@ import { fireEvent, render, screen, waitFor } from "@testing-library/react";
 import { clickBookmark } from "../../test-utils/click.test";
 import {
   CLOSE_BUTTON_ROLE_NAME,
-  TITLE_BUTTON_ROLE_NAME,
+  OPEN_BUTTON_ROLE_NAME,
   TITLE_ROLE_NAME,
   URL_ROLE_NAME,
 } from "../../test-utils/constants";
@@ -40,26 +40,26 @@ describe("BookmarkManager", () => {
     const urlInput = screen.getByRole("textbox", { name: URL_ROLE_NAME });
     const titleInput = screen.getByRole("textbox", { name: TITLE_ROLE_NAME });
 
-    const titleButton = screen.getByRole("button", {
-      name: TITLE_BUTTON_ROLE_NAME,
+    const openButton = screen.getByRole("button", {
+      name: OPEN_BUTTON_ROLE_NAME,
     });
 
     mockFetch.mockResolvedValueOnce({
       ok: false,
       status: 500,
-      text: async () => "URLを入力してください。",
+      text: async () => "URLが無効です。正しいURLを入力してください。",
     });
 
     await act(async () => {
       fireEvent.change(urlInput, { target: { value: "" } });
       fireEvent.change(titleInput, { target: { value: "" } });
-      fireEvent.click(titleButton);
+      fireEvent.click(openButton);
     });
 
     await waitFor(() => {
       const errorSpan = screen.getByTestId("bookmark-message");
       expect(errorSpan).toHaveTextContent(
-        "タイトルの取得中にエラーが発生しました。"
+        "URLが無効です。正しいURLを入力してください。"
       );
       expect(errorSpan).toHaveStyle("color: rgb(255, 0, 0)");
     });
