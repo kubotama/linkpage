@@ -28,18 +28,22 @@ export const BookmarkManager = () => {
     refreshClick,
   } = useBookmarkManager();
 
-  useHotkeys("enter, escape", (_, handler) => {
-    if (!isBookmarkSelected()) {
+  useHotkeys(
+    "enter, escape",
+    (_, handler) => {
+      if (!isBookmarkSelected()) {
+        return true;
+      }
+      const key = handler.keys?.join("+");
+      if (key === "enter") {
+        openClick();
+      } else if (key === "escape") {
+        setSelectedBookmark(null);
+      }
       return true;
-    }
-    const key = handler.keys?.join("");
-    if (key === "enter") {
-      openClick();
-    } else if (key === "escape") {
-      setSelectedBookmark(null);
-    }
-    return true;
-  });
+    },
+    [isBookmarkSelected, openClick, setSelectedBookmark]
+  );
 
   return (
     <>
