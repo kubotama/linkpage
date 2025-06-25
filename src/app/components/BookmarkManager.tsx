@@ -1,4 +1,5 @@
 import React from "react";
+import { useHotkeys } from "react-hotkeys-hook";
 
 import { useBookmarkManager } from "../hooks/useBookmarkManager";
 import { ActionButton } from "./ActionButton";
@@ -26,6 +27,15 @@ export const BookmarkManager = () => {
     updateClick,
     refreshClick,
   } = useBookmarkManager();
+
+  useHotkeys("enter, escape", (_, handler) => {
+    if (handler.keys?.join("") === "enter") {
+      openClick();
+    } else if (handler.keys?.join("") === "escape") {
+      setSelectedBookmark(null);
+    }
+    return true;
+  });
 
   return (
     <>
