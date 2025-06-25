@@ -29,9 +29,13 @@ export const BookmarkManager = () => {
   } = useBookmarkManager();
 
   useHotkeys("enter, escape", (_, handler) => {
-    if (handler.keys?.join("") === "enter") {
+    if (!isBookmarkSelected()) {
+      return true;
+    }
+    const key = handler.keys?.join("");
+    if (key === "enter") {
       openClick();
-    } else if (handler.keys?.join("") === "escape") {
+    } else if (key === "escape") {
       setSelectedBookmark(null);
     }
     return true;
