@@ -1,77 +1,57 @@
 import "@testing-library/jest-dom";
 
-import { beforeEach, describe, expect, it, vi } from "vitest";
+import ActualDatabase from "better-sqlite3"; // Import the actual library
+import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 
 import { mockKeywords } from "../../types/Keywords";
 import { getDb } from "../bookmark/database";
 import { GET } from "./route";
 
-// Mock the better-sqlite3 library
-vi.mock("better-sqlite3");
+vi.mock("../bookmark/database");
 
-vi.mock("../bookmark/database", () => ({
-  getDb: vi.fn(),
-}));
+let inMemoryDbInstance: ActualDatabase.Database;
 
 describe("ブックマークのAPIのテスト", () => {
-  // Define reusable mock implementations
-  const mockPrepare = vi.fn();
-  const mockAll = vi.fn();
-  const mockRun = vi.fn();
-  const mockExec = vi.fn();
-  const mockTransaction = vi.fn();
-  const mockClose = vi.fn();
-
   beforeEach(() => {
     // Reset mocks before each test
     vi.resetAllMocks();
 
-    // Configure the mock Database constructor and methods
-    (getDb as unknown as ReturnType<typeof vi.fn>).mockImplementation(() => ({
-      prepare: mockPrepare,
-      all: mockAll, // Used in GET
-      run: mockRun, // Used in POST (inside transaction)
-      exec: mockExec, // Used in initializeDb
-      transaction: mockTransaction,
-      close: mockClose,
-    }));
+    // Create a new in-memory database for each test
+    inMemoryDbInstance = new ActualDatabase(":memory:");
+    // Initialize the schema (same as in the original database.ts)
+    inMemoryDbInstance.exec(`
+      CREATE TABLE IF NOT EXISTS bookmarks (
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        url TEXT NOT NULL UNIQUE,
+        title TEXT NOT NULL
+      );
+      CREATE TABLE IF NOT EXISTS keywords (
+        keyword_id INTEGER PRIMARY KEY AUTOINCREMENT,
+        keyword_name TEXT NOT NULL UNIQUE
+      );
+    `);
 
-    // Default mock behavior for prepare -> all (for GET)
-    mockPrepare.mockReturnValue({ all: mockAll });
-    mockAll.mockReturnValue(mockKeywords); // GET returns our sample bookmarks
+    const insert = inMemoryDbInstance.prepare(`
+                      INSERT INTO keywords (keyword_id, keyword_name) VALUES (?, ?)
+                  `);
+    for (const keyword of mockKeywords) {
+      insert.run(keyword.keyword_id, keyword.keyword_name);
+    }
+    vi.mocked(getDb).mockReturnValue(inMemoryDbInstance);
 
-    // Default mock behavior for prepare -> run (for POST)
-    // We need different prepare mocks for DELETE and INSERT
-    mockPrepare.mockImplementation((sql: string) => {
-      if (sql.toUpperCase().startsWith("DELETE")) {
-        return { run: mockRun };
+    afterEach(() => {
+      if (inMemoryDbInstance) {
+        inMemoryDbInstance.close();
       }
-      if (sql.toUpperCase().startsWith("INSERT")) {
-        return { run: mockRun };
-      }
-      if (sql.toUpperCase().startsWith("SELECT")) {
-        return { all: mockAll };
-      }
-      // Mock for CREATE TABLE in initializeDb
-      if (sql.toUpperCase().startsWith("CREATE TABLE")) {
-        return { run: mockRun }; // exec calls run internally in the mock? Let's assume exec works directly.
-      }
-      throw new Error(`Unhandled SQL in mockPrepare: ${sql}`);
     });
   });
 
   it("GET: キーワードのデータが取得できる", async () => {
-    // Mocks are set up in beforeEach
-
     const response = await GET();
+
     expect(response.status).toBe(200);
     const json = await response.json();
     expect(json).toEqual(mockKeywords);
-    expect(mockPrepare).toHaveBeenCalledWith(
-      "SELECT keyword_id, keyword_name FROM keywords"
-    );
-    expect(mockAll).toHaveBeenCalledTimes(1);
-    expect(mockClose).not.toHaveBeenCalled(); // Should not be called
   });
 
   it("GET: データベースエラー時に500エラーを返す", async () => {
@@ -84,19 +64,22 @@ describe("ブックマークのAPIのテスト", () => {
     expect(response.status).toBe(500);
     const text = await response.text();
     expect(text).toEqual(dbError.message);
-    expect(mockClose).not.toHaveBeenCalled(); // Should not be called if constructor fails
   });
 
   it("GET: クエリエラー時に500エラーを返す", async () => {
     const queryError = new Error("Failed to execute query");
-    mockPrepare.mockImplementation(() => {
-      throw queryError;
-    });
+    // prepareメソッドをモックしてクエリエラーを発生させる
+    const prepareSpy = vi
+      .spyOn(inMemoryDbInstance, "prepare")
+      .mockImplementation(() => {
+        throw queryError;
+      });
 
     const response = await GET();
     expect(response.status).toBe(500);
     const text = await response.text();
     expect(text).toEqual(queryError.message);
-    expect(mockClose).not.toHaveBeenCalled(); // Should not be called
+
+    prepareSpy.mockRestore();
   });
 });
