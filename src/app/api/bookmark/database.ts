@@ -14,6 +14,11 @@ export const getDb = () => {
         title TEXT NOT NULL
       )
     `);
+    db.exec(`
+      CREATE TABLE IF NOT EXISTS keywords (
+        keyword_id INTEGER PRIMARY KEY AUTOINCREMENT,
+        keyword_name TEXT NOT NULL UNIQUE
+      )`);
   }
   return db;
 };

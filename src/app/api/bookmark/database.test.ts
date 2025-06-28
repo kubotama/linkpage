@@ -54,8 +54,8 @@ describe("Database Module - getDb", () => {
     // Verify that the constructor was called with the correct database file path.
     expect(mockDatabaseConstructor).toHaveBeenCalledWith("./bookmarks.sqlite");
 
-    // Verify that the 'exec' method was called once on the database instance.
-    expect(mockExec).toHaveBeenCalledTimes(1);
+    // Verify that the 'exec' method was called twice on the database instance (once for bookmarks table, once for keywords table).
+    expect(mockExec).toHaveBeenCalledTimes(2);
 
     // Verify that 'exec' was called with the correct SQL schema initialization query.
     // The SQL string includes specific newlines and indentation from the template literal in database.ts.
@@ -76,14 +76,14 @@ describe("Database Module - getDb", () => {
     // First call to getDb: should initialize the database.
     const dbInstance1 = getDb();
     expect(mockDatabaseConstructor).toHaveBeenCalledTimes(1); // Initial call
-    expect(mockExec).toHaveBeenCalledTimes(1); // Initial call
+    expect(mockExec).toHaveBeenCalledTimes(2); // Initial call
 
     // Second call to getDb: should return the existing instance.
     const dbInstance2 = getDb();
 
     // Verify that the constructor and exec were NOT called again.
     expect(mockDatabaseConstructor).toHaveBeenCalledTimes(1); // Still 1, not 2
-    expect(mockExec).toHaveBeenCalledTimes(1); // Still 1, not 2
+    expect(mockExec).toHaveBeenCalledTimes(2); // Should still be 2, not incremented
 
     // Verify that both calls returned the exact same instance.
     expect(dbInstance2).toBe(dbInstance1);
