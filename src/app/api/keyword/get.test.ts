@@ -1,5 +1,3 @@
-import "@testing-library/jest-dom";
-
 import ActualDatabase from "better-sqlite3"; // Import the actual library
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 
@@ -11,7 +9,7 @@ vi.mock("../bookmark/database");
 
 let inMemoryDbInstance: ActualDatabase.Database;
 
-describe("ブックマークのAPIのテスト", () => {
+describe("キーワードGET APIのテスト", () => {
   beforeEach(() => {
     // Reset mocks before each test
     vi.resetAllMocks();
@@ -38,12 +36,12 @@ describe("ブックマークのAPIのテスト", () => {
       insert.run(keyword.keyword_id, keyword.keyword_name);
     }
     vi.mocked(getDb).mockReturnValue(inMemoryDbInstance);
+  });
 
-    afterEach(() => {
-      if (inMemoryDbInstance) {
-        inMemoryDbInstance.close();
-      }
-    });
+  afterEach(() => {
+    if (inMemoryDbInstance) {
+      inMemoryDbInstance.close();
+    }
   });
 
   it("GET: キーワードのデータが取得できる", async () => {
