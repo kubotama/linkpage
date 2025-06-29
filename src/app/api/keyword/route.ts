@@ -35,12 +35,12 @@ export const POST = async (request: Request): Promise<Response> => {
   }
 
   try {
-    const keywordName = rawBody.keyword_name;
-    // 前後の空白を許容し、trimした結果が空でないことのみをチェック
-    if (typeof keywordName !== "string" || keywordName.trim().length === 0) {
+    const keywordName = rawBody?.keyword_name;
+    if (typeof keywordName !== "string") {
+      return createErrorResponse("リクエストボディのJSONが不正です。", 400);
+    } else if (keywordName.trim().length === 0) {
       return createErrorResponse("キーワードを指定してください。", 400);
     }
-
     const keyword: KeywordInput = { keyword_name: keywordName.trim() };
 
     // データベース操作
@@ -49,6 +49,8 @@ export const POST = async (request: Request): Promise<Response> => {
       "INSERT INTO keywords (keyword_name) VALUES (?)"
     );
     const result = insertStmt.run(keyword.keyword_name);
+
+    // キーワードの追加に成功
     return new Response(
       JSON.stringify({
         keyword_name: keyword.keyword_name,
