@@ -41,7 +41,12 @@ export const POST: (request: Request) => Promise<Response> = async (
       }
       const keywordName = rawBody.keyword_name;
       // keyword_nameが文字列であり、かつ空でないことを確認
-      if (typeof keywordName !== "string" || keywordName.trim().length === 0) {
+      // if (typeof keywordName !== "string" || keywordName.trim().length === 0) {
+      if (
+        typeof keywordName !== "string" ||
+        keywordName.trim().length === 0 ||
+        keywordName.trim().length !== keywordName.length
+      ) {
         return new Response("キーワードを指定してください。", {
           status: 400,
           headers: { "Content-Type": "text/plain" },
