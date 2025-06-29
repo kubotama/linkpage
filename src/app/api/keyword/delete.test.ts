@@ -1,5 +1,5 @@
 import ActualDatabase from "better-sqlite3";
-import { afterEach, beforeEach, describe, expect, it, Mock, vi } from "vitest";
+import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 
 import { setupInMemoryDb } from "../../test-utils/db-setup";
 import { mockKeywords } from "../../types/Keywords";
@@ -53,8 +53,7 @@ describe("キーワードDELETE APIのテスト", () => {
   });
 
   it("DELETE: DBエラー時は500を返す", async () => {
-    // 修正: vi.MockedFunction ではなく Mock 型を使用
-    (getDb as Mock).mockImplementation(() => {
+    vi.mocked(getDb).mockImplementation(() => {
       throw new Error("DB error");
     });
     const [req, ctx] = createDeleteRequest("1");
