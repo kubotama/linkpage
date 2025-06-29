@@ -43,8 +43,8 @@ describe("キーワードGET APIのテスト", () => {
 
     const response = await GET();
     expect(response.status).toBe(500);
-    const text = await response.text();
-    expect(text).toEqual("サーバー内部でエラーが発生しました。");
+    const text = await response.json();
+    expect(text.message).toEqual("サーバー内部でエラーが発生しました。");
   });
 
   it("GET: クエリエラー時に500エラーを返す", async () => {
@@ -58,8 +58,8 @@ describe("キーワードGET APIのテスト", () => {
 
     const response = await GET();
     expect(response.status).toBe(500);
-    const text = await response.text();
-    expect(text).toEqual("サーバー内部でエラーが発生しました。");
+    const text = await response.json();
+    expect(text.message).toEqual("サーバー内部でエラーが発生しました。");
 
     prepareSpy.mockRestore();
   });

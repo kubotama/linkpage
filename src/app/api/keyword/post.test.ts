@@ -67,8 +67,8 @@ describe("キーワードAPIのテスト", () => {
     const response = await POST(createPostRequest(""));
 
     expect(response.status).toBe(400);
-    const text = await response.text();
-    expect(text).toEqual("キーワードを指定してください。");
+    const text = await response.json();
+    expect(text.message).toEqual("キーワードを指定してください。");
   });
 
   it("POST: 不正なJSONデータ(JSON.parseエラー)の場合は400を返す", async () => {
@@ -82,8 +82,8 @@ describe("キーワードAPIのテスト", () => {
       })
     );
     expect(response.status).toBe(400);
-    const text = await response.text();
-    expect(text).toEqual("リクエストボディのJSONが不正です。");
+    const text = await response.json();
+    expect(text.message).toEqual("リクエストボディのJSONが不正です。");
   });
 
   it("POST: 不正なJSONデータ(null)の場合は400を返す", async () => {
@@ -97,8 +97,8 @@ describe("キーワードAPIのテスト", () => {
       })
     );
     expect(response.status).toBe(400);
-    const text = await response.text();
-    expect(text).toEqual("リクエストボディのJSONが不正です。");
+    const text = await response.json();
+    expect(text.message).toEqual("リクエストボディのJSONが不正です。");
   });
 
   it("POST: 重複したキーワードを追加時に409 Conflictを返す", async () => {
@@ -107,8 +107,10 @@ describe("キーワードAPIのテスト", () => {
     );
 
     expect(response.status).toBe(409);
-    const text = await response.text();
-    expect(text).toEqual("指定されたキーワードは既に登録されています。");
+    const text = await response.json();
+    expect(text.message).toEqual(
+      "指定されたキーワードは既に登録されています。"
+    );
   });
 
   it("POST: データベースエラー時に500エラーを返す", async () => {
@@ -122,8 +124,8 @@ describe("キーワードAPIのテスト", () => {
 
     const response = await POST(createPostRequest("テスト"));
     expect(response.status).toBe(500);
-    const text = await response.text();
-    expect(text).toEqual("サーバー内部でエラーが発生しました。");
+    const text = await response.json();
+    expect(text.message).toEqual("サーバー内部でエラーが発生しました。");
 
     prepareSpy.mockRestore();
   });

@@ -14,10 +14,13 @@ export const GET = async () => {
     });
   } catch (error: unknown) {
     console.error("Internal Server Error:", error);
-    return new Response("サーバー内部でエラーが発生しました。", {
-      status: 500,
-      headers: { "Content-Type": "text/plain" },
-    });
+    return new Response(
+      JSON.stringify({ message: "サーバー内部でエラーが発生しました。" }),
+      {
+        status: 500,
+        headers: { "Content-Type": "application/json" },
+      }
+    );
   }
 };
 
@@ -34,30 +37,38 @@ export const POST: (request: Request) => Promise<Response> = async (
       const rawBody = await request.json();
       // リクエストボディがオブジェクトであることを確認
       if (typeof rawBody !== "object" || rawBody === null) {
-        return new Response("リクエストボディのJSONが不正です。", {
-          status: 400,
-          headers: { "Content-Type": "text/plain" },
-        });
+        return new Response(
+          JSON.stringify({ message: "リクエストボディのJSONが不正です。" }),
+          {
+            status: 400,
+            headers: { "Content-Type": "application/json" },
+          }
+        );
       }
       const keywordName = rawBody.keyword_name;
       // keyword_nameが文字列であり、かつ空でないことを確認
-      // if (typeof keywordName !== "string" || keywordName.trim().length === 0) {
       if (
         typeof keywordName !== "string" ||
         keywordName.trim().length === 0 ||
         keywordName.trim().length !== keywordName.length
       ) {
-        return new Response("キーワードを指定してください。", {
-          status: 400,
-          headers: { "Content-Type": "text/plain" },
-        });
+        return new Response(
+          JSON.stringify({ message: "キーワードを指定してください。" }),
+          {
+            status: 400,
+            headers: { "Content-Type": "application/json" },
+          }
+        );
       }
       keyword = { keyword_name: keywordName.trim() };
     } catch {
-      return new Response("リクエストボディのJSONが不正です。", {
-        status: 400,
-        headers: { "Content-Type": "text/plain" },
-      });
+      return new Response(
+        JSON.stringify({ message: "リクエストボディのJSONが不正です。" }),
+        {
+          status: 400,
+          headers: { "Content-Type": "application/json" },
+        }
+      );
     }
     const db = getDb();
     const insertStmt = db.prepare(
@@ -79,17 +90,23 @@ export const POST: (request: Request) => Promise<Response> = async (
       error instanceof SqliteError &&
       error.code === "SQLITE_CONSTRAINT_UNIQUE"
     ) {
-      return new Response("指定されたキーワードは既に登録されています。", {
-        status: 409,
-        headers: { "Content-Type": "text/plain" },
-      });
+      return new Response(
+        JSON.stringify({
+          message: "指定されたキーワードは既に登録されています。",
+        }),
+        {
+          status: 409,
+          headers: { "Content-Type": "application/json" },
+        }
+      );
     }
     console.error("Internal Server Error:", error);
-    return new Response("サーバー内部でエラーが発生しました。", {
-      status: 500,
-      headers: {
-        "Content-Type": "text/plain",
-      },
-    });
+    return new Response(
+      JSON.stringify({ message: "サーバー内部でエラーが発生しました。" }),
+      {
+        status: 500,
+        headers: { "Content-Type": "application/json" },
+      }
+    );
   }
 };
