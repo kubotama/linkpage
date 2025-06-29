@@ -14,8 +14,11 @@ export const GET = async () => {
       headers: { "Content-Type": "application/json" },
     });
   } catch (error: unknown) {
-    console.error("Internal Server Error:", error);
-    return createErrorResponse("サーバー内部でエラーが発生しました。", 500);
+    return createErrorResponse(
+      "サーバー内部でエラーが発生しました。",
+      500,
+      `Internal Server Error: ${error}`
+    );
   }
 };
 
@@ -68,7 +71,10 @@ export const POST = async (request: Request): Promise<Response> => {
     } else if (error instanceof TypeError) {
       return createErrorResponse("リクエストボディのJSONが不正です。", 400);
     }
-    console.error("Internal Server Error:", error);
-    return createErrorResponse("サーバー内部でエラーが発生しました。", 500);
+    return createErrorResponse(
+      "サーバー内部でエラーが発生しました。",
+      500,
+      `Internal Server Error: ${error}`
+    );
   }
 };
