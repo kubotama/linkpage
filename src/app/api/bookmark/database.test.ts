@@ -78,7 +78,7 @@ describe("Database Module - getDb", () => {
 
     // Verify that the constructor and exec were NOT called again.
     expect(mockDatabaseConstructor).toHaveBeenCalledTimes(1); // Still 1, not 2
-    expect(mockExec).toHaveBeenCalledTimes(1); // Should still be 2, not incremented
+    expect(mockExec).toHaveBeenCalledTimes(1); // Still 1, not 2
 
     // Verify that both calls returned the exact same instance.
     expect(dbInstance2).toBe(dbInstance1);
