@@ -1,6 +1,8 @@
 import OriginalDatabase from "better-sqlite3"; // Import for type annotation
 import { beforeEach, describe, expect, it, vi } from "vitest";
 
+import { DB_SCHEMA } from "../bookmark/schema";
+
 // Define mocks for 'better-sqlite3'
 // This mock will replace the actual 'better-sqlite3' module when 'database.ts' imports it.
 
@@ -59,14 +61,7 @@ describe("Database Module - getDb", () => {
 
     // Verify that 'exec' was called with the correct SQL schema initialization query.
     // The SQL string includes specific newlines and indentation from the template literal in database.ts.
-    const expectedSql = `
-      CREATE TABLE IF NOT EXISTS bookmarks (
-        id INTEGER PRIMARY KEY AUTOINCREMENT,
-        url TEXT NOT NULL UNIQUE,
-        title TEXT NOT NULL
-      )
-    `;
-    expect(mockExec).toHaveBeenCalledWith(expectedSql);
+    expect(mockExec).toHaveBeenCalledWith(DB_SCHEMA);
 
     // Verify that getDb returned the instance created by our mock constructor.
     expect(dbInstance).toBe(mockDbInstance);
