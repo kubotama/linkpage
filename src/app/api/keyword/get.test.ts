@@ -5,6 +5,8 @@ import { mockKeywords } from "../../types/Keywords";
 import { getDb } from "../bookmark/database";
 import { GET } from "./route";
 
+import { setupInMemoryDb } from "../../test-utils/db-setup";
+
 vi.mock("../bookmark/database");
 
 let inMemoryDbInstance: ActualDatabase.Database;
@@ -14,27 +16,8 @@ describe("キーワードGET APIのテスト", () => {
     // Reset mocks before each test
     vi.resetAllMocks();
 
-    // Create a new in-memory database for each test
-    inMemoryDbInstance = new ActualDatabase(":memory:");
-    // Initialize the schema (same as in the original database.ts)
-    inMemoryDbInstance.exec(`
-      CREATE TABLE IF NOT EXISTS bookmarks (
-        id INTEGER PRIMARY KEY AUTOINCREMENT,
-        url TEXT NOT NULL UNIQUE,
-        title TEXT NOT NULL
-      );
-      CREATE TABLE IF NOT EXISTS keywords (
-        keyword_id INTEGER PRIMARY KEY AUTOINCREMENT,
-        keyword_name TEXT NOT NULL UNIQUE
-      );
-    `);
+    inMemoryDbInstance = setupInMemoryDb(mockKeywords);
 
-    const insert = inMemoryDbInstance.prepare(`
-                      INSERT INTO keywords (keyword_id, keyword_name) VALUES (?, ?)
-                  `);
-    for (const keyword of mockKeywords) {
-      insert.run(keyword.keyword_id, keyword.keyword_name);
-    }
     vi.mocked(getDb).mockReturnValue(inMemoryDbInstance);
   });
 
@@ -61,7 +44,7 @@ describe("キーワードGET APIのテスト", () => {
     const response = await GET();
     expect(response.status).toBe(500);
     const text = await response.text();
-    expect(text).toEqual(dbError.message);
+    expect(text).toEqual("サーバー内部でエラーが発生しました。");
   });
 
   it("GET: クエリエラー時に500エラーを返す", async () => {
@@ -76,7 +59,7 @@ describe("キーワードGET APIのテスト", () => {
     const response = await GET();
     expect(response.status).toBe(500);
     const text = await response.text();
-    expect(text).toEqual(queryError.message);
+    expect(text).toEqual("サーバー内部でエラーが発生しました。");
 
     prepareSpy.mockRestore();
   });

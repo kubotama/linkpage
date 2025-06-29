@@ -5,6 +5,8 @@ import { mockKeywords } from "../../types/Keywords";
 import { getDb } from "../bookmark/database";
 import { POST } from "./route";
 
+import { setupInMemoryDb } from "../../test-utils/db-setup";
+
 vi.mock("../bookmark/database");
 
 let inMemoryDbInstance: ActualDatabase.Database;
@@ -28,27 +30,8 @@ describe("キーワードAPIのテスト", () => {
     // Reset mocks before each test
     vi.resetAllMocks();
 
-    // Create a new in-memory database for each test
-    inMemoryDbInstance = new ActualDatabase(":memory:");
-    // Initialize the schema (same as in the original database.ts)
-    inMemoryDbInstance.exec(`
-      CREATE TABLE IF NOT EXISTS bookmarks (
-        id INTEGER PRIMARY KEY AUTOINCREMENT,
-        url TEXT NOT NULL UNIQUE,
-        title TEXT NOT NULL
-      );
-      CREATE TABLE IF NOT EXISTS keywords (
-        keyword_id INTEGER PRIMARY KEY AUTOINCREMENT,
-        keyword_name TEXT NOT NULL UNIQUE
-      );
-    `);
+    inMemoryDbInstance = setupInMemoryDb(mockKeywords);
 
-    const insert = inMemoryDbInstance.prepare(`
-                      INSERT INTO keywords (keyword_id, keyword_name) VALUES (?, ?)
-                  `);
-    for (const keyword of mockKeywords) {
-      insert.run(keyword.keyword_id, keyword.keyword_name);
-    }
     vi.mocked(getDb).mockReturnValue(inMemoryDbInstance);
   });
 
@@ -88,7 +71,7 @@ describe("キーワードAPIのテスト", () => {
     expect(text).toEqual("キーワードを指定してください。");
   });
 
-  it("POST: 不正なJSONデータの場合は400を返す", async () => {
+  it("POST: 不正なJSONデータ(JSON.parseエラー)の場合は400を返す", async () => {
     const response = await POST(
       new Request(API_URL, {
         method: "POST",
@@ -96,6 +79,21 @@ describe("キーワードAPIのテスト", () => {
           "Content-Type": "application/json",
         },
         body: "invalid json",
+      })
+    );
+    expect(response.status).toBe(400);
+    const text = await response.text();
+    expect(text).toEqual("リクエストボディのJSONが不正です。");
+  });
+
+  it("POST: 不正なJSONデータ(null)の場合は400を返す", async () => {
+    const response = await POST(
+      new Request(API_URL, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(null),
       })
     );
     expect(response.status).toBe(400);

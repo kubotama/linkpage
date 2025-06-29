@@ -13,7 +13,8 @@ export const GET = async () => {
       headers: { "Content-Type": "application/json" },
     });
   } catch (error: unknown) {
-    return new Response((error as Error).message, {
+    console.error("Internal Server Error:", error);
+    return new Response("サーバー内部でエラーが発生しました。", {
       status: 500,
       headers: { "Content-Type": "text/plain" },
     });
@@ -27,18 +28,28 @@ interface KeywordInput {
 export const POST: (request: Request) => Promise<Response> = async (
   request: Request
 ) => {
+  let keyword: KeywordInput;
   try {
-    let keyword: KeywordInput;
     try {
-      keyword = (await request.json()) as KeywordInput;
+      const rawBody = await request.json();
+      // リクエストボディがオブジェクトであることを確認
+      if (typeof rawBody !== "object" || rawBody === null) {
+        return new Response("リクエストボディのJSONが不正です。", {
+          status: 400,
+          headers: { "Content-Type": "text/plain" },
+        });
+      }
+      const keywordName = rawBody.keyword_name;
+      // keyword_nameが文字列であり、かつ空でないことを確認
+      if (typeof keywordName !== "string" || keywordName.trim().length === 0) {
+        return new Response("キーワードを指定してください。", {
+          status: 400,
+          headers: { "Content-Type": "text/plain" },
+        });
+      }
+      keyword = { keyword_name: keywordName.trim() };
     } catch {
       return new Response("リクエストボディのJSONが不正です。", {
-        status: 400,
-        headers: { "Content-Type": "text/plain" },
-      });
-    }
-    if (!keyword.keyword_name || keyword.keyword_name.trim() === "") {
-      return new Response("キーワードを指定してください。", {
         status: 400,
         headers: { "Content-Type": "text/plain" },
       });
