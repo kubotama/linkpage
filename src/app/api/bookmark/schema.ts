@@ -1,0 +1,11 @@
+export const DB_SCHEMA = `
+  CREATE TABLE IF NOT EXISTS bookmarks (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    url TEXT NOT NULL UNIQUE,
+    title TEXT NOT NULL
+  );
+  CREATE TABLE IF NOT EXISTS keywords (
+    keyword_id INTEGER PRIMARY KEY AUTOINCREMENT,
+    keyword_name TEXT NOT NULL UNIQUE
+  );
+`;

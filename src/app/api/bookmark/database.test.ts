@@ -1,6 +1,8 @@
 import OriginalDatabase from "better-sqlite3"; // Import for type annotation
 import { beforeEach, describe, expect, it, vi } from "vitest";
 
+import { DB_SCHEMA } from "../bookmark/schema";
+
 // Define mocks for 'better-sqlite3'
 // This mock will replace the actual 'better-sqlite3' module when 'database.ts' imports it.
 
@@ -55,18 +57,11 @@ describe("Database Module - getDb", () => {
     expect(mockDatabaseConstructor).toHaveBeenCalledWith("./bookmarks.sqlite");
 
     // Verify that the 'exec' method was called twice on the database instance (once for bookmarks table, once for keywords table).
-    expect(mockExec).toHaveBeenCalledTimes(2);
+    expect(mockExec).toHaveBeenCalledTimes(1);
 
     // Verify that 'exec' was called with the correct SQL schema initialization query.
     // The SQL string includes specific newlines and indentation from the template literal in database.ts.
-    const expectedSql = `
-      CREATE TABLE IF NOT EXISTS bookmarks (
-        id INTEGER PRIMARY KEY AUTOINCREMENT,
-        url TEXT NOT NULL UNIQUE,
-        title TEXT NOT NULL
-      )
-    `;
-    expect(mockExec).toHaveBeenCalledWith(expectedSql);
+    expect(mockExec).toHaveBeenCalledWith(DB_SCHEMA);
 
     // Verify that getDb returned the instance created by our mock constructor.
     expect(dbInstance).toBe(mockDbInstance);
@@ -76,14 +71,14 @@ describe("Database Module - getDb", () => {
     // First call to getDb: should initialize the database.
     const dbInstance1 = getDb();
     expect(mockDatabaseConstructor).toHaveBeenCalledTimes(1); // Initial call
-    expect(mockExec).toHaveBeenCalledTimes(2); // Initial call
+    expect(mockExec).toHaveBeenCalledTimes(1); // Initial call
 
     // Second call to getDb: should return the existing instance.
     const dbInstance2 = getDb();
 
     // Verify that the constructor and exec were NOT called again.
     expect(mockDatabaseConstructor).toHaveBeenCalledTimes(1); // Still 1, not 2
-    expect(mockExec).toHaveBeenCalledTimes(2); // Should still be 2, not incremented
+    expect(mockExec).toHaveBeenCalledTimes(1); // Should still be 2, not incremented
 
     // Verify that both calls returned the exact same instance.
     expect(dbInstance2).toBe(dbInstance1);
