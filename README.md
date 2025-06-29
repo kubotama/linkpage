@@ -122,7 +122,7 @@ npm run start
     "keyword_id": 3,
     "keyword_name": "デザイン"
   }
-```
+]
 
 #### POST: 新しいキーワードの作成 /keyword
 
