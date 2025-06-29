@@ -28,48 +28,39 @@ interface KeywordInput {
   keyword_name: string;
 }
 
-export const POST: (request: Request) => Promise<Response> = async (
-  request: Request
-) => {
-  let keyword: KeywordInput;
+export const POST = async (request: Request): Promise<Response> => {
+  let rawBody: KeywordInput;
   try {
-    try {
-      const rawBody = await request.json();
-      // リクエストボディがオブジェクトであることを確認
-      if (typeof rawBody !== "object" || rawBody === null) {
-        return new Response(
-          JSON.stringify({ message: "リクエストボディのJSONが不正です。" }),
-          {
-            status: 400,
-            headers: { "Content-Type": "application/json" },
-          }
-        );
-      }
-      const keywordName = rawBody.keyword_name;
-      // keyword_nameが文字列であり、かつ空でないことを確認
-      if (
-        typeof keywordName !== "string" ||
-        keywordName.trim().length === 0 ||
-        keywordName.trim().length !== keywordName.length
-      ) {
-        return new Response(
-          JSON.stringify({ message: "キーワードを指定してください。" }),
-          {
-            status: 400,
-            headers: { "Content-Type": "application/json" },
-          }
-        );
-      }
-      keyword = { keyword_name: keywordName.trim() };
-    } catch {
-      return new Response(
-        JSON.stringify({ message: "リクエストボディのJSONが不正です。" }),
-        {
-          status: 400,
-          headers: { "Content-Type": "application/json" },
-        }
-      );
-    }
+    rawBody = (await request.json()) as KeywordInput;
+  } catch {
+    // request.json()が失敗した場合 (不正なJSON)
+    return new Response(
+      JSON.stringify({ message: "リクエストボディのJSONが不正です。" }),
+      { status: 400, headers: { "Content-Type": "application/json" } }
+    );
+  }
+
+  // バリデーション
+  if (typeof rawBody !== "object" || rawBody === null) {
+    return new Response(
+      JSON.stringify({ message: "リクエストボディのJSONが不正です。" }),
+      { status: 400, headers: { "Content-Type": "application/json" } }
+    );
+  }
+
+  const keywordName = rawBody.keyword_name;
+  // 前後の空白を許容し、trimした結果が空でないことのみをチェック
+  if (typeof keywordName !== "string" || keywordName.trim().length === 0) {
+    return new Response(
+      JSON.stringify({ message: "キーワードを指定してください。" }),
+      { status: 400, headers: { "Content-Type": "application/json" } }
+    );
+  }
+
+  const keyword: KeywordInput = { keyword_name: keywordName.trim() };
+
+  // データベース操作
+  try {
     const db = getDb();
     const insertStmt = db.prepare(
       "INSERT INTO keywords (keyword_name) VALUES (?)"
