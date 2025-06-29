@@ -140,7 +140,6 @@ npm run start
 
 ```json
 {
-{
   "keyword_id": 10,
   "keyword_name": "プログラミング"
 }
