@@ -27,20 +27,30 @@ interface KeywordInput {
 }
 
 export const POST = async (request: Request): Promise<Response> => {
-  let rawBody: KeywordInput;
+  let rawBody: unknown;
   try {
-    rawBody = (await request.json()) as KeywordInput;
+    rawBody = await request.json();
+    // 型ガードを使用してrawBodyがKeywordInputの構造を持つか検証します。
+    // ここではKeywordInputが { keyword_name: string } であると仮定しています。
+    if (
+      typeof rawBody !== "object" ||
+      rawBody === null ||
+      !("keyword_name" in rawBody) ||
+      typeof (rawBody as { keyword_name: unknown }).keyword_name !== "string"
+    ) {
+      throw new Error("リクエストボディのJSONが不正です。");
+    }
   } catch {
     return createErrorResponse("リクエストボディのJSONが不正です。", 400);
   }
 
+  // 型ガードにより、rawBodyは安全にKeywordInputとして扱えます。
+  const keywordInput = rawBody as KeywordInput; // ここで安全に型アサーション
+  const keywordName = keywordInput.keyword_name;
+  if (keywordName.trim().length === 0) {
+    return createErrorResponse("キーワードを指定してください。", 400);
+  }
   try {
-    const keywordName = rawBody?.keyword_name;
-    if (typeof keywordName !== "string") {
-      return createErrorResponse("リクエストボディのJSONが不正です。", 400);
-    } else if (keywordName.trim().length === 0) {
-      return createErrorResponse("キーワードを指定してください。", 400);
-    }
     const keyword: KeywordInput = { keyword_name: keywordName.trim() };
 
     // データベース操作
