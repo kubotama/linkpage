@@ -56,7 +56,7 @@ describe("Database Module - getDb", () => {
     // Verify that the constructor was called with the correct database file path.
     expect(mockDatabaseConstructor).toHaveBeenCalledWith("./bookmarks.sqlite");
 
-    // Verify that the 'exec' method was called twice on the database instance (once for bookmarks table, once for keywords table).
+    // Verify that the 'exec' method was called once on the database instance.
     expect(mockExec).toHaveBeenCalledTimes(1);
 
     // Verify that 'exec' was called with the correct SQL schema initialization query.
@@ -78,7 +78,7 @@ describe("Database Module - getDb", () => {
 
     // Verify that the constructor and exec were NOT called again.
     expect(mockDatabaseConstructor).toHaveBeenCalledTimes(1); // Still 1, not 2
-    expect(mockExec).toHaveBeenCalledTimes(1); // Should still be 2, not incremented
+    expect(mockExec).toHaveBeenCalledTimes(1); // Still 1, not 2
 
     // Verify that both calls returned the exact same instance.
     expect(dbInstance2).toBe(dbInstance1);

@@ -37,7 +37,7 @@ describe("キーワードGET APIのテスト", () => {
 
   it("GET: データベースエラー時に500エラーを返す", async () => {
     const dbError = new Error("Database connection failed");
-    (getDb as unknown as ReturnType<typeof vi.fn>).mockImplementation(() => {
+    vi.mocked(getDb).mockImplementation(() => {
       throw dbError;
     });
 
