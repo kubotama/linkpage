@@ -70,8 +70,6 @@ export const POST = async (request: Request): Promise<Response> => {
         "指定されたキーワードは既に登録されています。",
         409
       );
-    } else if (error instanceof TypeError) {
-      return createErrorResponse("リクエストボディのJSONが不正です。", 400);
     }
     return createErrorResponse(
       "サーバー内部でエラーが発生しました。",
