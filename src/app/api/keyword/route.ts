@@ -2,6 +2,7 @@
 import { SqliteError } from "better-sqlite3";
 
 import { getDb } from "../bookmark/database";
+import { createErrorResponse } from "../utils/response";
 
 export const GET = async () => {
   try {
@@ -14,13 +15,7 @@ export const GET = async () => {
     });
   } catch (error: unknown) {
     console.error("Internal Server Error:", error);
-    return new Response(
-      JSON.stringify({ message: "サーバー内部でエラーが発生しました。" }),
-      {
-        status: 500,
-        headers: { "Content-Type": "application/json" },
-      }
-    );
+    return createErrorResponse("サーバー内部でエラーが発生しました。", 500);
   }
 };
 
@@ -33,29 +28,14 @@ export const POST = async (request: Request): Promise<Response> => {
   try {
     rawBody = (await request.json()) as KeywordInput;
   } catch {
-    // request.json()が失敗した場合 (不正なJSON)
-    return new Response(
-      JSON.stringify({ message: "リクエストボディのJSONが不正です。" }),
-      { status: 400, headers: { "Content-Type": "application/json" } }
-    );
+    return createErrorResponse("リクエストボディのJSONが不正です。", 400);
   }
-
-  // バリデーション
-  // if (typeof rawBody !== "object" || rawBody === null) {
-  //   return new Response(
-  //     JSON.stringify({ message: "リクエストボディのJSONが不正です。" }),
-  //     { status: 400, headers: { "Content-Type": "application/json" } }
-  //   );
-  // }
 
   try {
     const keywordName = rawBody.keyword_name;
     // 前後の空白を許容し、trimした結果が空でないことのみをチェック
     if (typeof keywordName !== "string" || keywordName.trim().length === 0) {
-      return new Response(
-        JSON.stringify({ message: "キーワードを指定してください。" }),
-        { status: 400, headers: { "Content-Type": "application/json" } }
-      );
+      return createErrorResponse("キーワードを指定してください。", 400);
     }
 
     const keyword: KeywordInput = { keyword_name: keywordName.trim() };
@@ -81,28 +61,14 @@ export const POST = async (request: Request): Promise<Response> => {
       error instanceof SqliteError &&
       error.code === "SQLITE_CONSTRAINT_UNIQUE"
     ) {
-      return new Response(
-        JSON.stringify({
-          message: "指定されたキーワードは既に登録されています。",
-        }),
-        {
-          status: 409,
-          headers: { "Content-Type": "application/json" },
-        }
+      return createErrorResponse(
+        "指定されたキーワードは既に登録されています。",
+        409
       );
     } else if (error instanceof TypeError) {
-      return new Response(
-        JSON.stringify({ message: "リクエストボディのJSONが不正です。" }),
-        { status: 400, headers: { "Content-Type": "application/json" } }
-      );
+      return createErrorResponse("リクエストボディのJSONが不正です。", 400);
     }
     console.error("Internal Server Error:", error);
-    return new Response(
-      JSON.stringify({ message: "サーバー内部でエラーが発生しました。" }),
-      {
-        status: 500,
-        headers: { "Content-Type": "application/json" },
-      }
-    );
+    return createErrorResponse("サーバー内部でエラーが発生しました。", 500);
   }
 };
