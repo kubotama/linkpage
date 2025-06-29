@@ -41,26 +41,26 @@ export const POST = async (request: Request): Promise<Response> => {
   }
 
   // バリデーション
-  if (typeof rawBody !== "object" || rawBody === null) {
-    return new Response(
-      JSON.stringify({ message: "リクエストボディのJSONが不正です。" }),
-      { status: 400, headers: { "Content-Type": "application/json" } }
-    );
-  }
+  // if (typeof rawBody !== "object" || rawBody === null) {
+  //   return new Response(
+  //     JSON.stringify({ message: "リクエストボディのJSONが不正です。" }),
+  //     { status: 400, headers: { "Content-Type": "application/json" } }
+  //   );
+  // }
 
-  const keywordName = rawBody.keyword_name;
-  // 前後の空白を許容し、trimした結果が空でないことのみをチェック
-  if (typeof keywordName !== "string" || keywordName.trim().length === 0) {
-    return new Response(
-      JSON.stringify({ message: "キーワードを指定してください。" }),
-      { status: 400, headers: { "Content-Type": "application/json" } }
-    );
-  }
-
-  const keyword: KeywordInput = { keyword_name: keywordName.trim() };
-
-  // データベース操作
   try {
+    const keywordName = rawBody.keyword_name;
+    // 前後の空白を許容し、trimした結果が空でないことのみをチェック
+    if (typeof keywordName !== "string" || keywordName.trim().length === 0) {
+      return new Response(
+        JSON.stringify({ message: "キーワードを指定してください。" }),
+        { status: 400, headers: { "Content-Type": "application/json" } }
+      );
+    }
+
+    const keyword: KeywordInput = { keyword_name: keywordName.trim() };
+
+    // データベース操作
     const db = getDb();
     const insertStmt = db.prepare(
       "INSERT INTO keywords (keyword_name) VALUES (?)"
@@ -89,6 +89,11 @@ export const POST = async (request: Request): Promise<Response> => {
           status: 409,
           headers: { "Content-Type": "application/json" },
         }
+      );
+    } else if (error instanceof TypeError) {
+      return new Response(
+        JSON.stringify({ message: "リクエストボディのJSONが不正です。" }),
+        { status: 400, headers: { "Content-Type": "application/json" } }
       );
     }
     console.error("Internal Server Error:", error);
