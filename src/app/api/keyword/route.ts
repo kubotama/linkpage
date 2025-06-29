@@ -45,7 +45,7 @@ export const POST = async (request: Request): Promise<Response> => {
   }
 
   // 型ガードにより、rawBodyは安全にKeywordInputとして扱えます。
-  const keywordInput = rawBody as KeywordInput; // 型ガードにより、rawBodyは安全にKeywordInputとして扱えます。
+  const keywordInput = rawBody as KeywordInput;
   const keywordName = keywordInput.keyword_name;
   if (keywordName.trim().length === 0) {
     return createErrorResponse("キーワードを指定してください。", 400);
