@@ -110,10 +110,18 @@ npm run start
 
 ```json
 [
-  { "keyword_id": "1", "keyword_name": "Web" },
-  { "keyword_id": "2", "keyword_name": "開発" },
-  { "keyword_id": "3", "keyword_name": "デザイン" }
-]
+  {
+    "keyword_id": 1,
+    "keyword_name": "Web"
+  },
+  {
+    "keyword_id": 2,
+    "keyword_name": "開発"
+  },
+  {
+    "keyword_id": 3,
+    "keyword_name": "デザイン"
+  }
 ```
 
 #### POST: 新しいキーワードの作成 /keyword
