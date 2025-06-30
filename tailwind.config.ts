@@ -12,11 +12,8 @@ export default {
         background: "var(--background)",
         foreground: "var(--foreground)",
       },
-      width: {
+      spacing: {
         "bookmark-list": "800px",
-        "bookmark-details": "500px",
-      },
-      minWidth: {
         "bookmark-details": "500px",
       },
     },
