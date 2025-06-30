@@ -1,7 +1,7 @@
 import OriginalDatabase from "better-sqlite3"; // Import for type annotation
 import { beforeEach, describe, expect, it, vi } from "vitest";
 
-import { DB_SCHEMA } from "../bookmark/schema";
+import { DB_SCHEMA } from "./schema";
 
 // Define mocks for 'better-sqlite3'
 // This mock will replace the actual 'better-sqlite3' module when 'database.ts' imports it.
