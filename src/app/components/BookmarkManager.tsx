@@ -65,7 +65,7 @@ export const BookmarkManager = () => {
           </div>
         )}
         <div className="flex space-x-4">
-          <div className="w-[800]">
+          <div className="w-[800px]">
             <div className="mb-2">
               <ActionButton onClick={refreshClick}>再表示</ActionButton>
             </div>
@@ -76,7 +76,7 @@ export const BookmarkManager = () => {
               onSelectBookmark={setSelectedBookmark}
             />
           </div>
-          <div className="w-[500]">
+          <div className="w-[500px]">
             {isBookmarkSelected() && (
               <>
                 <div className="mb-2 flex justify-between">
