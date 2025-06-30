@@ -4,6 +4,11 @@ type BookmarkInputFieldProps = {
   label: string;
   value: string;
   onChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
+  /**
+   * Tailwind CSS class to specify the minimum width.
+   * @example 'min-w-[300px]'
+   * @default 'min-w-bookmark-details'
+   */
   minWidthClass?: string;
 };
 
