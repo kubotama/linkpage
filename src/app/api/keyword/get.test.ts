@@ -16,7 +16,7 @@ describe("キーワードGET APIのテスト", () => {
     // Reset mocks before each test
     vi.resetAllMocks();
 
-    inMemoryDbInstance = setupInMemoryDb(mockKeywords);
+    inMemoryDbInstance = setupInMemoryDb();
 
     vi.mocked(getDb).mockReturnValue(inMemoryDbInstance);
   });

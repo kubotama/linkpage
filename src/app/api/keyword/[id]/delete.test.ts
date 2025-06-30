@@ -1,12 +1,12 @@
 import ActualDatabase from "better-sqlite3";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 
-import { setupInMemoryDb } from "../../test-utils/db-setup";
-import { mockKeywords } from "../../types/Keywords";
-import { getDb } from "../bookmark/database";
-import { DELETE } from "./[id]/route";
+import { setupInMemoryDb } from "../../../test-utils/db-setup";
+// import { mockKeywords } from "../../types/Keywords";
+import { getDb } from "../../bookmark/database";
+import { DELETE } from "./route";
 
-vi.mock("../bookmark/database");
+vi.mock("../../bookmark/database");
 
 let inMemoryDbInstance: ActualDatabase.Database;
 
@@ -21,7 +21,7 @@ const createDeleteRequest = (
 describe("キーワードDELETE APIのテスト", () => {
   beforeEach(() => {
     vi.resetAllMocks();
-    inMemoryDbInstance = setupInMemoryDb(mockKeywords);
+    inMemoryDbInstance = setupInMemoryDb();
     vi.mocked(getDb).mockReturnValue(inMemoryDbInstance);
   });
 
