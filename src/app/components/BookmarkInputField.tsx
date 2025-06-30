@@ -4,7 +4,7 @@ type BookmarkInputFieldProps = {
   label: string;
   value: string;
   onChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
-  minWidthClass?: string; // 例: "min-w-[500px]", "min-w-[300px]"
+  minWidthClass?: string;
 };
 
 export const BookmarkInputField: React.FC<BookmarkInputFieldProps> = ({
@@ -13,7 +13,7 @@ export const BookmarkInputField: React.FC<BookmarkInputFieldProps> = ({
   label,
   value,
   onChange,
-  minWidthClass = "min-w-[500px]", // デフォルト値
+  minWidthClass = "min-w-bookmark-details", // デフォルト値
 }) => {
   return (
     <label htmlFor={id} className="flex flex-col">
