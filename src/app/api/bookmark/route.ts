@@ -81,7 +81,7 @@ export async function POST(request: Request) {
       return createErrorResponse(
         "指定されたURLのブックマークは既に登録されています。",
         409,
-        "指定されたURLのブックマークは既に登録されています。"
+        `Bookmark with URL \"${bookmark.url}\" already exists.`
       );
     }
     return createErrorResponse(
