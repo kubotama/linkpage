@@ -101,8 +101,6 @@ describe("ブックマーク削除APIのテスト (オンメモリDB)", () => {
     vi.mocked(getDb).mockImplementation(() => {
       throw new Error("DB error");
     });
-    // const request = "invalid json data";
-    // const response = await POST(request);
     const nonExistentId = 1; // 存在しないID
     const [request, context] = createDeleteRequest(nonExistentId.toString());
     const response = await DELETE(request, context);
@@ -113,8 +111,6 @@ describe("ブックマーク削除APIのテスト (オンメモリDB)", () => {
   });
 
   it("DELETE: 不正なIDの場合には400エラーを返す", async () => {
-    // const request = createPostRequest(JSON.stringify({ title: "missing id" }));
-    // const response = await POST(request);
     const nonExistentId = -1; // 不正なID
     const [request, context] = createDeleteRequest(nonExistentId.toString());
     const response = await DELETE(request, context);

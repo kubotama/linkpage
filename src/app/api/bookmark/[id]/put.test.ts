@@ -159,13 +159,8 @@ describe("ブックマーク更新APIのテスト (オンメモリDB)", () => {
   });
 
   it("PUT: URLが指定されていない場合には400を返す。", async () => {
-    // // 更新リクエストを作成
-    // const request = createPostRequest(
-    //   JSON.stringify({ id: mockBookmarks[1].id, title: "Updated Title" })
-    // );
-    // const response = await POST(request);
     const bookmarkToUpdate = {
-      id: 999,
+      id: 1,
       url: "",
       title: "Example Title",
     };
@@ -188,18 +183,17 @@ describe("ブックマーク更新APIのテスト (オンメモリDB)", () => {
 
   it("PUT: IDが指定されていない場合には400を返す。", async () => {
     const bookmarkToUpdate = {
-      id: 0,
       url: "https://www.example.com",
       title: "Example Title",
     };
 
     const [request] = createPutRequest(
       JSON.stringify({
-        id: 0,
         url: bookmarkToUpdate.url,
         title: bookmarkToUpdate.title,
       }),
-      bookmarkToUpdate.id
+      // このテストでは、params.idが空文字列であることを意図的に設定
+      0 // ダミーのID。params.idが優先されるため、この値は影響しない
     );
     const response = await PUT(request, { params: { id: "" } });
 

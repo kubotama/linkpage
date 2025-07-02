@@ -88,7 +88,6 @@ export async function DELETE(
 ) {
   const id = Number(params.id);
   if (!Number.isInteger(id) || id <= 0) {
-    // return new Response("IDは正の整数である必要があります。", { status: 400 });
     return createErrorResponse("IDは正の整数である必要があります。", 400);
   }
   try {
@@ -96,17 +95,10 @@ export async function DELETE(
     const prepare = db.prepare("DELETE FROM bookmarks WHERE id = ?");
     const info = prepare.run(id);
     if (info.changes === 0) {
-      // return new Response("指定されたブックマークがありません。", {
-      //   status: 404,
-      // });
       return createErrorResponse("指定されたブックマークがありません。", 404);
     }
     return new Response(null, { status: 204 });
   } catch (error: unknown) {
-    // return new Response((error as Error).message, {
-    //   status: 500,
-    //   headers: { "Content-Type": "text/plain" },
-    // });
     return createErrorResponse(
       "サーバー内部でエラーが発生しました。",
       500,
