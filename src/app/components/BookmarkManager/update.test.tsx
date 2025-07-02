@@ -163,9 +163,12 @@ describe("タイトルの更新ボタン", () => {
     mockFetch.mockResolvedValueOnce({
       ok: false, // 404の場合は false
       status: 404,
-      headers: { "Content-Type": "text/plain" },
-      text: async () => "指定されたブックマークがありません。",
+      headers: { "Content-Type": "application/json" },
+      json: async () => ({
+        message: "指定されたブックマークがありません。",
+      }),
     });
+
     const updateButton = screen.getByRole("button", {
       name: UPDATE_BUTTON_ROLE_NAME,
     });
@@ -206,8 +209,10 @@ describe("タイトルの更新ボタン", () => {
     mockFetch.mockResolvedValueOnce({
       ok: false, // 400の場合は false
       status: 400,
-      headers: { "Content-Type": "text/plain" },
-      text: async () => "タイトルが指定されていません。",
+      headers: { "Content-Type": "application/json" },
+      json: async () => ({
+        message: "タイトルが指定されていません。",
+      }),
     });
 
     const updateButton = screen.getByRole("button", {
@@ -249,9 +254,12 @@ describe("タイトルの更新ボタン", () => {
     mockFetch.mockResolvedValueOnce({
       ok: false, // 400の場合は false
       status: 400,
-      headers: { "Content-Type": "text/plain" },
-      text: async () => "リクエストにIDがありませんでした。",
+      headers: { "Content-Type": "application/json" },
+      json: async () => ({
+        message: "リクエストにIDがありませんでした。",
+      }),
     });
+
     const updateButton = screen.getByRole("button", {
       name: UPDATE_BUTTON_ROLE_NAME,
     });
@@ -291,8 +299,10 @@ describe("タイトルの更新ボタン", () => {
     mockFetch.mockResolvedValueOnce({
       ok: false, // 400の場合は false
       status: 400,
-      headers: { "Content-Type": "text/plain" },
-      text: async () => "IDは正の整数である必要があります。",
+      headers: { "Content-Type": "application/json" },
+      json: async () => ({
+        message: "IDは正の整数である必要があります。",
+      }),
     });
 
     const updateButton = screen.getByRole("button", {
@@ -334,8 +344,10 @@ describe("タイトルの更新ボタン", () => {
     mockFetch.mockResolvedValueOnce({
       ok: false, // 500の場合は false
       status: 500,
-      headers: { "Content-Type": "text/plain" },
-      text: async () => "サーバーで予期せぬエラーが発生しました。",
+      headers: { "Content-Type": "application/json" },
+      json: async () => ({
+        message: "サーバーで予期せぬエラーが発生しました。",
+      }),
     });
 
     const updateButton = screen.getByRole("button", {

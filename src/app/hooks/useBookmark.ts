@@ -2,6 +2,7 @@ import { useCallback, useState } from "react";
 
 import { BOOKMARKS_ENDPOINT } from "../constants/apiEndpoints";
 import { Bookmark, SelectedBookmark } from "../types/Bookmark";
+import { json } from "stream/consumers";
 
 export const useBookmarks = () => {
   const [bookmarks, setBookmarks] = useState<Bookmark[]>([]);
@@ -51,28 +52,15 @@ export const useBookmarks = () => {
         setSelectedBookmark(null);
         setErrorMessage("");
       } else if (response.status === 404 || response.status === 400) {
-        const errorText = await response.text();
-        throw new Error(errorText); // This error will be caught by the catch block below
+        const json = await response.json();
+        throw new Error(json.message); // This error will be caught by the catch block below
       } else {
-        let errorDetail = response.statusText;
-        try {
-          const serverMessage = await response.text();
-          if (serverMessage) {
-            errorDetail = serverMessage;
-          }
-        } catch (e) {
-          console.error("Failed to read error response body:", e);
-        }
-        throw new Error(
-          `Failed to delete: [${response.status}] ${errorDetail}` // Caught by catch block
-        );
+        const json = await response.json();
+        throw new Error(json.message);
       }
     } catch (error: unknown) {
       // より具体的なエラー型付けも検討可能です
-      console.error(
-        "ブックマーク削除エラー:",
-        (error as Error).message ? (error as Error).message : String(error)
-      );
+      console.error("ブックマーク削除エラー:", (error as Error).message);
       setErrorMessage("ブックマークの削除中にエラーが発生しました。");
     } finally {
       setLoadingMessage("");
@@ -100,15 +88,11 @@ export const useBookmarks = () => {
           setErrorMessage("");
         } else {
           // エラーレスポンスの処理
-          const errorText = await response.text();
-          throw new Error(
-            `ブックマークの更新エラー: [${response.status}] ${
-              errorText || response.statusText
-            }`
-          );
+          const json = await response.json();
+          throw new Error(json.message);
         }
       } catch (error: unknown) {
-        console.error("ブックマークの更新エラー:", error); // 詳細なエラーはコンソールへ
+        console.error("ブックマークの更新エラー:", (error as Error).message); // 詳細なエラーはコンソールへ
         setErrorMessage("ブックマークの更新中にエラーが発生しました。"); // ユーザーフレンドリーなメッセージ
       } finally {
         setLoadingMessage("");

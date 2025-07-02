@@ -141,8 +141,10 @@ describe("削除ボタン", () => {
     mockFetch.mockResolvedValueOnce({
       ok: false, // 404の場合は false
       status: 404,
-      headers: { "Content-Type": "text/plain" },
-      text: async () => "指定されたブックマークがありません。",
+      headers: { "Content-Type": "application/json" },
+      json: async () => ({
+        message: "指定されたブックマークがありません。",
+      }),
     });
 
     const deleteButton = screen.getByRole("button", {
@@ -188,8 +190,10 @@ describe("削除ボタン", () => {
     mockFetch.mockResolvedValueOnce({
       ok: false, // 400の場合は false
       status: 400,
-      headers: { "Content-Type": "text/plain" },
-      text: async () => "リクエストにIDがありませんでした。",
+      headers: { "Content-Type": "application/json" },
+      json: async () => ({
+        message: "リクエストにIDがありませんでした。",
+      }),
     });
 
     const deleteButton = screen.getByRole("button", {
@@ -231,8 +235,10 @@ describe("削除ボタン", () => {
     mockFetch.mockResolvedValueOnce({
       ok: false, // 500の場合は false
       status: 500,
-      headers: { "Content-Type": "text/plain" },
-      text: async () => "サーバーで予期せぬエラーが発生しました。",
+      headers: { "Content-Type": "application/json" },
+      json: async () => ({
+        message: "サーバーで予期せぬエラーが発生しました。",
+      }),
     });
 
     // クリックするブックマークを選択（例：2番目のブックマーク）
