@@ -12,7 +12,11 @@ export async function GET(
 ) {
   const id = Number(params.id);
   if (!Number.isInteger(id) || id <= 0) {
-    return createErrorResponse("IDは正の整数である必要があります。", 400);
+    return createErrorResponse(
+      "IDは正の整数である必要があります。",
+      400,
+      "IDが不正です。"
+    );
   }
   try {
     const db = getDb();
@@ -21,7 +25,11 @@ export async function GET(
     );
     const bookmark = stmt.get(id);
     if (!bookmark) {
-      return createErrorResponse("指定されたブックマークがありません。", 404);
+      return createErrorResponse(
+        "指定されたブックマークがありません。",
+        404,
+        "ブックマークが見つかりません。"
+      );
     }
     return new Response(JSON.stringify(bookmark), {
       status: 200,
@@ -31,7 +39,7 @@ export async function GET(
     return createErrorResponse(
       "サーバー内部でエラーが発生しました。",
       500,
-      `Internal Server Error: ${error}`
+      `Internal Server Error: ${(error as Error).message}`
     );
   }
 }
@@ -43,15 +51,27 @@ export async function PUT(
 ) {
   const id = Number(params.id);
   if (!Number.isInteger(id) || id <= 0) {
-    return createErrorResponse("IDは正の整数である必要があります。", 400);
+    return createErrorResponse(
+      "IDは正の整数である必要があります。",
+      400,
+      "IDが不正です。"
+    );
   }
   try {
     const bookmark = await request.json();
     if (!bookmark.title || bookmark.title.trim() === "") {
-      return createErrorResponse("タイトルが指定されていません。", 400);
+      return createErrorResponse(
+        "タイトルが指定されていません。",
+        400,
+        "タイトルが指定されていません。"
+      );
     }
     if (!bookmark.url || bookmark.url.trim() === "") {
-      return createErrorResponse("URLが指定されていません。", 400);
+      return createErrorResponse(
+        "URLが指定されていません。",
+        400,
+        "URLが指定されていません。"
+      );
     }
 
     const db = getDb();
@@ -60,7 +80,11 @@ export async function PUT(
     );
     const info = prepare.run(bookmark.title, bookmark.url, id);
     if (info.changes === 0) {
-      return createErrorResponse("指定されたブックマークがありません。", 404);
+      return createErrorResponse(
+        "指定されたブックマークがありません。",
+        404,
+        "ブックマークが見つかりません。"
+      );
     }
     return new Response(null, { status: 204 });
   } catch (error: unknown) {
@@ -70,13 +94,14 @@ export async function PUT(
     ) {
       return createErrorResponse(
         "指定されたURLのブックマークは既に登録されています。",
-        409
+        409,
+        "指定されたURLのブックマークは既に登録されています。"
       );
     }
     return createErrorResponse(
       "サーバーで予期せぬエラーが発生しました。",
       500,
-      (error as Error).message
+      `Internal Server Error: ${(error as Error).message}`
     );
   }
 }
@@ -102,7 +127,7 @@ export async function DELETE(
     return createErrorResponse(
       "サーバー内部でエラーが発生しました。",
       500,
-      (error as Error).message
+      `Internal Server Error: ${(error as Error).message}`
     );
   }
 }

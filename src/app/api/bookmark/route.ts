@@ -18,7 +18,7 @@ export async function GET() {
     return createErrorResponse(
       "サーバー内部でエラーが発生しました。",
       500,
-      `Internal Server Error: ${error}`
+      `Internal Server Error: ${(error as Error).message}`
     );
   }
 }
@@ -46,7 +46,7 @@ export async function POST(request: Request) {
       return createErrorResponse(
         "URLを指定してください。",
         400,
-        "",
+        "URLが指定されていません。",
         commonHeaders
       );
     }
@@ -54,7 +54,7 @@ export async function POST(request: Request) {
       return createErrorResponse(
         "タイトルを指定してください。",
         400,
-        "",
+        "タイトルが指定されていません。",
         commonHeaders
       );
     }
@@ -80,13 +80,14 @@ export async function POST(request: Request) {
     ) {
       return createErrorResponse(
         "指定されたURLのブックマークは既に登録されています。",
-        409
+        409,
+        "指定されたURLのブックマークは既に登録されています。"
       );
     }
     return createErrorResponse(
       "サーバー内部でエラーが発生しました。",
       500,
-      `Internal Server Error: ${error}`
+      `Internal Server Error: ${(error as Error).message}`
     );
   }
 }

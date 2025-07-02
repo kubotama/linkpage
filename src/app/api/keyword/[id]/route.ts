@@ -9,21 +9,25 @@ export const DELETE = async (
 ): Promise<Response> => {
   const id = params.id;
   if (!id || isNaN(Number(id))) {
-    return createErrorResponse("不正なIDです。", 400);
+    return createErrorResponse("不正なIDです。", 400, "不正なIDです。");
   }
   try {
     const db = getDb();
     const stmt = db.prepare("DELETE FROM keywords WHERE keyword_id = ?");
     const result = stmt.run(Number(id));
     if (result.changes === 0) {
-      return createErrorResponse("指定されたキーワードが見つかりません。", 404);
+      return createErrorResponse(
+        "指定されたキーワードが見つかりません。",
+        404,
+        "指定されたキーワードが見つかりません。"
+      );
     }
     return new Response(null, { status: 204 });
   } catch (error: unknown) {
     return createErrorResponse(
       "サーバー内部でエラーが発生しました。",
       500,
-      String(error)
+      `Internal Server Error: ${(error as Error).message}`
     );
   }
 };

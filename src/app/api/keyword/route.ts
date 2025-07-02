@@ -17,7 +17,7 @@ export const GET = async () => {
     return createErrorResponse(
       "サーバー内部でエラーが発生しました。",
       500,
-      `Internal Server Error: ${error}`
+      `Internal Server Error: ${(error as Error).message}`
     );
   }
 };
@@ -41,14 +41,22 @@ export const POST = async (request: Request): Promise<Response> => {
       throw new Error("リクエストボディのJSONが不正です。");
     }
   } catch {
-    return createErrorResponse("リクエストボディのJSONが不正です。", 400);
+    return createErrorResponse(
+      "リクエストボディのJSONが不正です。",
+      400,
+      "リクエストボディのJSONが不正です。"
+    );
   }
 
   // 型ガードにより、rawBodyは安全にKeywordInputとして扱えます。
   const keywordInput = rawBody as KeywordInput;
   const keywordName = keywordInput.keyword_name;
   if (keywordName.trim().length === 0) {
-    return createErrorResponse("キーワードを指定してください。", 400);
+    return createErrorResponse(
+      "キーワードを指定してください。",
+      400,
+      "キーワードが指定されていません。"
+    );
   }
   try {
     const keyword: KeywordInput = { keyword_name: keywordName.trim() };
@@ -78,13 +86,14 @@ export const POST = async (request: Request): Promise<Response> => {
     ) {
       return createErrorResponse(
         "指定されたキーワードは既に登録されています。",
-        409
+        409,
+        "指定されたキーワードは既に登録されています。"
       );
     }
     return createErrorResponse(
       "サーバー内部でエラーが発生しました。",
       500,
-      `Internal Server Error: ${error}`
+      `Internal Server Error: ${(error as Error).message}`
     );
   }
 };
