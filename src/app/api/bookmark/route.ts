@@ -1,6 +1,8 @@
 "use server";
 import { SqliteError } from "better-sqlite3";
 
+import { Bookmark } from "@/app/types/Bookmark";
+
 import { ALLOWED_CORS_ORIGIN } from "../../constants/apiEndpoints";
 import { createErrorResponse } from "../utils/response";
 import { getDb } from "./database";
@@ -40,8 +42,9 @@ export async function POST(request: Request) {
     "Access-Control-Allow-Origin": ALLOWED_CORS_ORIGIN,
   };
 
+  let bookmark: Bookmark = { id: 0, url: "", title: "" };
   try {
-    const bookmark = await request.json();
+    bookmark = await request.json();
     if (!bookmark.url || bookmark.url.trim() === "") {
       return createErrorResponse(
         "URLを指定してください。",
