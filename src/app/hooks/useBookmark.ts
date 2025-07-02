@@ -38,7 +38,7 @@ export const useBookmarks = () => {
     setLoadingMessage("ブックマークの削除処理中...");
     try {
       const response = await fetch(`${BOOKMARKS_ENDPOINT}/${id}`, {
-        method: "POST",
+        method: "DELETE",
         headers: {
           "Content-Type": "application/json",
         },
@@ -71,7 +71,7 @@ export const useBookmarks = () => {
       setLoadingMessage("ブックマークの更新処理中...");
       try {
         const response = await fetch(`${BOOKMARKS_ENDPOINT}/${id}`, {
-          method: "POST",
+          method: "PUT",
           headers: {
             "Content-Type": "application/json",
           },

@@ -103,7 +103,7 @@ describe("削除ボタン", () => {
         `${BOOKMARKS_ENDPOINT}/${bookmarkToSelect.id}`
       );
       expect(mockFetch.mock.calls[0][1]).toEqual({
-        method: "POST",
+        method: "DELETE",
         headers: {
           "Content-Type": "application/json",
         },

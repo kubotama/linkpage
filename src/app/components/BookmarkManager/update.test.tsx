@@ -110,7 +110,7 @@ describe("タイトルの更新ボタン", () => {
         `${BOOKMARKS_ENDPOINT}/${bookmarkToSelect.id}`
       );
       expect(mockFetch.mock.calls[0][1]).toEqual({
-        method: "POST",
+        method: "PUT",
         headers: {
           "Content-Type": "application/json",
         },
