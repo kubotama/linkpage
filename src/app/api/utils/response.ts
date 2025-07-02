@@ -12,8 +12,12 @@ export const createErrorResponse = (
   } else {
     headers["Content-Type"] = "application/json";
   }
+  const responseHeaders = {
+    ...headers,
+    "Content-Type": "application/json",
+  };
   return new Response(JSON.stringify({ message }), {
     status,
-    headers,
+    headers: responseHeaders,
   });
 };
