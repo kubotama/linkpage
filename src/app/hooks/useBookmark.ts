@@ -2,7 +2,6 @@ import { useCallback, useState } from "react";
 
 import { BOOKMARKS_ENDPOINT } from "../constants/apiEndpoints";
 import { Bookmark, SelectedBookmark } from "../types/Bookmark";
-import { json } from "stream/consumers";
 
 export const useBookmarks = () => {
   const [bookmarks, setBookmarks] = useState<Bookmark[]>([]);
