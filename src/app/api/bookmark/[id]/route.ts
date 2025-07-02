@@ -120,7 +120,7 @@ export async function DELETE(
     const prepare = db.prepare("DELETE FROM bookmarks WHERE id = ?");
     const info = prepare.run(id);
     if (info.changes === 0) {
-      return createErrorResponse("指定されたブックマークがありません。", 404);
+      return createErrorResponse("指定されたブックマークがありません。", 404, `Bookmark with id: ${id} not found.`);
     }
     return new Response(null, { status: 204 });
   } catch (error: unknown) {
