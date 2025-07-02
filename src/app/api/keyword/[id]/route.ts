@@ -1,5 +1,4 @@
 "use server";
-import { SqliteError } from "better-sqlite3";
 
 import { getDb } from "../../bookmark/database";
 import { createErrorResponse } from "../../utils/response";
@@ -21,13 +20,6 @@ export const DELETE = async (
     }
     return new Response(null, { status: 204 });
   } catch (error: unknown) {
-    if (error instanceof SqliteError) {
-      return createErrorResponse(
-        "データベースエラーが発生しました。",
-        500,
-        String(error)
-      );
-    }
     return createErrorResponse(
       "サーバー内部でエラーが発生しました。",
       500,
