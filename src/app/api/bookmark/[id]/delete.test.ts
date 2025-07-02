@@ -97,7 +97,7 @@ describe("ブックマーク削除APIのテスト (オンメモリDB)", () => {
     expect(count).toBe(mockBookmarks.length);
   });
 
-  it("DELETE: 不正なJSONデータの場合は500エラーを返す", async () => {
+  it("DELETE: データベースエラーの場合は500エラーを返す", async () => {
     vi.mocked(getDb).mockImplementation(() => {
       throw new Error("DB error");
     });
