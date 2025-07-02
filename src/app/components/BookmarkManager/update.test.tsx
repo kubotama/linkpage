@@ -5,11 +5,12 @@ import { beforeEach, describe, expect, it, vi } from "vitest";
 
 import { fireEvent, render, screen, waitFor } from "@testing-library/react";
 
+import { BOOKMARKS_ENDPOINT } from "../../constants/apiEndpoints";
 import { clickBookmark } from "../../test-utils/click.test";
 import {
-  URL_ROLE_NAME,
   TITLE_ROLE_NAME,
   UPDATE_BUTTON_ROLE_NAME,
+  URL_ROLE_NAME,
 } from "../../test-utils/constants";
 import { mockBookmarks } from "../../types/Bookmark";
 import { BookmarkManager } from "../BookmarkManager";
@@ -105,7 +106,9 @@ describe("タイトルの更新ボタン", () => {
     await waitFor(() => {
       // APIの呼び出しの確認
       expect(mockFetch).toHaveBeenCalledTimes(1);
-      expect(mockFetch.mock.calls[0][0]).toEqual("/api/bookmark/update");
+      expect(mockFetch.mock.calls[0][0]).toEqual(
+        `${BOOKMARKS_ENDPOINT}/${bookmarkToSelect.id}`
+      );
       expect(mockFetch.mock.calls[0][1]).toEqual({
         method: "POST",
         headers: {

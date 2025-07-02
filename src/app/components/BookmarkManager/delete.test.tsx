@@ -5,7 +5,7 @@ import { beforeEach, describe, expect, it, vi } from "vitest";
 
 import { fireEvent, render, screen, waitFor } from "@testing-library/react";
 
-import { BOOKMARK_DELETE_ENDPOINT } from "../../constants/apiEndpoints";
+import { BOOKMARKS_ENDPOINT } from "../../constants/apiEndpoints";
 import { clickBookmark } from "../../test-utils/click.test";
 import { DELETE_BUTTON_ROLE_NAME } from "../../test-utils/constants";
 import { mockBookmarks } from "../../types/Bookmark";
@@ -99,13 +99,14 @@ describe("削除ボタン", () => {
     await waitFor(() => {
       // APIの呼び出しの確認
       expect(mockFetch).toHaveBeenCalledTimes(1);
-      expect(mockFetch.mock.calls[0][0]).toEqual(BOOKMARK_DELETE_ENDPOINT);
+      expect(mockFetch.mock.calls[0][0]).toEqual(
+        `${BOOKMARKS_ENDPOINT}/${bookmarkToSelect.id}`
+      );
       expect(mockFetch.mock.calls[0][1]).toEqual({
         method: "POST",
         headers: {
           "Content-Type": "application/json",
         },
-        body: JSON.stringify({ id: bookmarkToSelect.id }),
       });
 
       // 画面の更新の確認

@@ -1,10 +1,6 @@
 import { useCallback, useState } from "react";
 
-import {
-  BOOKMARK_DELETE_ENDPOINT,
-  BOOKMARK_UPDATE_ENDPOINT,
-  BOOKMARKS_ENDPOINT,
-} from "../constants/apiEndpoints";
+import { BOOKMARKS_ENDPOINT } from "../constants/apiEndpoints";
 import { Bookmark, SelectedBookmark } from "../types/Bookmark";
 
 export const useBookmarks = () => {
@@ -41,12 +37,11 @@ export const useBookmarks = () => {
   const deleteBookmark = useCallback(async (id: number) => {
     setLoadingMessage("ブックマークの削除処理中...");
     try {
-      const response = await fetch(BOOKMARK_DELETE_ENDPOINT, {
+      const response = await fetch(`${BOOKMARKS_ENDPOINT}/${id}`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
         },
-        body: JSON.stringify({ id: id }),
       });
 
       if (response.status === 204) {
@@ -88,7 +83,7 @@ export const useBookmarks = () => {
     async (id: number, url: string, title: string) => {
       setLoadingMessage("ブックマークの更新処理中...");
       try {
-        const response = await fetch(BOOKMARK_UPDATE_ENDPOINT, {
+        const response = await fetch(`${BOOKMARKS_ENDPOINT}/${id}`, {
           method: "POST",
           headers: {
             "Content-Type": "application/json",
