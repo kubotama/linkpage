@@ -114,11 +114,13 @@ npm run start
 [
   {
     "id": 1,
-    "url": "https://example.com"
+    "url": "https://example.com",
+    "title": "Example Title 1"
   },
   {
     "id": 2,
-    "url": "https://example.org"
+    "url": "https://example.org",
+    "title": "Example Title 2"
   }
 ]
 ```
