@@ -83,7 +83,7 @@ export async function PUT(
       return createErrorResponse(
         "指定されたブックマークがありません。",
         404,
-        "ブックマークが見つかりません。"
+        `Bookmark with id: ${id} not found.`
       );
     }
     return new Response(null, { status: 204 });
