@@ -175,7 +175,6 @@ npm run start
 
 ```json
 {
-{
   "message": "指定されたブックマークがありません。"
 }
 ```
