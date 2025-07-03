@@ -43,7 +43,6 @@ describe("ブックマーク更新APIのテスト (オンメモリDB)", () => {
   it("PUT: ブックマークのタイトルのみを更新できる。", async () => {
     const [request, context] = createPutRequest(
       JSON.stringify({
-        id: 1,
         url: mockBookmarks[0].url,
         title: "Updated Title",
       }),
@@ -85,7 +84,6 @@ describe("ブックマーク更新APIのテスト (オンメモリDB)", () => {
 
     const [request, context] = createPutRequest(
       JSON.stringify({
-        id: bookmarkToUpdate.id,
         url: bookmarkToUpdate.url,
         title: bookmarkToUpdate.title,
       }),
@@ -121,7 +119,6 @@ describe("ブックマーク更新APIのテスト (オンメモリDB)", () => {
 
     const [request, context] = createPutRequest(
       JSON.stringify({
-        id: bookmarkToUpdate.id,
         url: bookmarkToUpdate.url,
         title: bookmarkToUpdate.title,
       }),
@@ -144,7 +141,6 @@ describe("ブックマーク更新APIのテスト (オンメモリDB)", () => {
 
     const [request, context] = createPutRequest(
       JSON.stringify({
-        id: bookmarkToUpdate.id,
         url: bookmarkToUpdate.url,
         title: bookmarkToUpdate.title,
       }),
@@ -167,7 +163,6 @@ describe("ブックマーク更新APIのテスト (オンメモリDB)", () => {
 
     const [request, context] = createPutRequest(
       JSON.stringify({
-        id: bookmarkToUpdate.id,
         url: bookmarkToUpdate.url,
         title: bookmarkToUpdate.title,
       }),
@@ -212,7 +207,6 @@ describe("ブックマーク更新APIのテスト (オンメモリDB)", () => {
 
     const [request] = createPutRequest(
       JSON.stringify({
-        id: bookmarkToUpdate.id,
         url: bookmarkToUpdate.url,
         title: bookmarkToUpdate.title,
       }),
@@ -254,7 +248,6 @@ describe("ブックマーク更新APIのテスト (オンメモリDB)", () => {
 
     const [request, context] = createPutRequest(
       JSON.stringify({
-        id: bookmarkToUpdate.id,
         url: mockBookmarks[2].url,
         title: bookmarkToUpdate.title,
       }),
