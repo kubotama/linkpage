@@ -7,6 +7,8 @@ import { ALLOWED_CORS_ORIGIN } from "../../constants/apiEndpoints";
 import { createErrorResponse } from "../utils/response";
 import { getDb } from "./database";
 
+const API_URL = "http://localhost:3000/api/bookmark";
+
 export async function GET() {
   try {
     const db = getDb();
@@ -76,7 +78,11 @@ export async function POST(request: Request) {
       }),
       {
         status: 201,
-        headers: { ...commonHeaders, "Content-Type": "application/json" },
+        headers: {
+          ...commonHeaders,
+          "Content-Type": "application/json",
+          Location: `${API_URL}/${result.lastInsertRowid}`,
+        },
       }
     );
   } catch (error: unknown) {
