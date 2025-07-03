@@ -107,7 +107,7 @@ export async function PUT(
       );
     }
     return createErrorResponse(
-      "サーバーで予期せぬエラーが発生しました。",
+      "サーバー内部でエラーが発生しました。",
       500,
       `Internal Server Error: ${(error as Error).message}`
     );

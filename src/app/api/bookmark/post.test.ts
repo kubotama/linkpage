@@ -94,6 +94,28 @@ describe("ブックマーク追加APIのテスト (オンメモリDB)", () => {
     expect(json.message).toEqual("リクエストボディのJSONが不正です。");
   });
 
+  it("POST: クエリエラー時に500エラーを返す", async () => {
+    const queryError = new Error("Failed to execute query");
+    // prepareメソッドをモックしてクエリエラーを発生させる
+    const prepareSpy = vi
+      .spyOn(inMemoryDbInstance, "prepare")
+      .mockImplementation(() => {
+        throw queryError;
+      });
+
+    const bookmark: Bookmark = createBookmark({
+      url: "https://www2.example.com",
+      title: "サンプルのタイトル2",
+    });
+
+    const response = await POST(createPostRequest(JSON.stringify(bookmark)));
+    expect(response.status).toBe(500);
+    const text = await response.json();
+    expect(text.message).toEqual("サーバー内部でエラーが発生しました。");
+
+    prepareSpy.mockRestore();
+  });
+
   it("POST: 重複したURLのブックマーク追加時に409 Conflictを返す", async () => {
     const bookmark: Bookmark = createBookmark({
       url: mockBookmarks[1].url, // Same URL

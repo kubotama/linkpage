@@ -238,6 +238,37 @@ describe("ブックマーク更新APIのテスト (オンメモリDB)", () => {
     expect(json.message).toEqual("リクエストボディのJSONが不正です。");
   });
 
+  it("PUT: クエリエラー時に500エラーを返す", async () => {
+    const queryError = new Error("Failed to execute query");
+    // prepareメソッドをモックしてクエリエラーを発生させる
+    const prepareSpy = vi
+      .spyOn(inMemoryDbInstance, "prepare")
+      .mockImplementation(() => {
+        throw queryError;
+      });
+
+    const bookmarkToUpdate = {
+      id: 1,
+      url: "https://www.example.com",
+      title: "Example Title",
+    };
+
+    const [request, context] = createPutRequest(
+      JSON.stringify({
+        url: bookmarkToUpdate.url,
+        title: bookmarkToUpdate.title,
+      }),
+      bookmarkToUpdate.id
+    );
+    const response = await PUT(request, context);
+
+    expect(response.status).toBe(500);
+    const text = await response.json();
+    expect(text.message).toEqual("サーバー内部でエラーが発生しました。");
+
+    prepareSpy.mockRestore();
+  });
+
   it("PUT: 同じURLが登録される場合には409を返す。", async () => {
     const bookmarkToUpdate = {
       id: 1,
