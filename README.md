@@ -179,7 +179,7 @@ npm run start
 }
 ```
 
-#### DELETE: ブックマークの削除 /bookmarks/[bookmark_id]
+#### DELETE: ブックマークの削除 /bookmarks/[id]
 
 指定された ID のブックマークを削除します。
 
