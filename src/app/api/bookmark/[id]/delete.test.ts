@@ -101,7 +101,7 @@ describe("ブックマーク削除APIのテスト (オンメモリDB)", () => {
     vi.mocked(getDb).mockImplementation(() => {
       throw new Error("DB error");
     });
-    const nonExistentId = 1; // 存在しないID
+    const anyValidId = 1; // DBエラーのテストなので、IDは任意の値で問題ありません。
     const [request, context] = createDeleteRequest(nonExistentId.toString());
     const response = await DELETE(request, context);
 
