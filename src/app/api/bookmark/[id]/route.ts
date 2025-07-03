@@ -54,7 +54,7 @@ export async function PUT(
     return createErrorResponse(
       "IDは正の整数である必要があります。",
       400,
-      `Bookmark with id: ${id} is invalid.}`
+`Bookmark with id: ${id} is invalid.`
     );
   }
   let bookmark: { url: string; title: string } = { url: "", title: "" };
