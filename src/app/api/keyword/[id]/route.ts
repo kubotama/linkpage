@@ -9,7 +9,7 @@ export const DELETE = async (
 ): Promise<Response> => {
   const id = params.id;
   if (!id || isNaN(Number(id))) {
-    return createErrorResponse("不正なIDです。", 400, "不正なIDです。");
+    return createErrorResponse("不正なIDです。", 400, `Invalid ID: ${id}`);
   }
   try {
     const db = getDb();
@@ -19,7 +19,7 @@ export const DELETE = async (
       return createErrorResponse(
         "指定されたキーワードが見つかりません。",
         404,
-        "指定されたキーワードが見つかりません。"
+        `Keyword with id: ${id} not found.`
       );
     }
     return new Response(null, { status: 204 });

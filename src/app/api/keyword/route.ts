@@ -44,7 +44,7 @@ export const POST = async (request: Request): Promise<Response> => {
     return createErrorResponse(
       "リクエストボディのJSONが不正です。",
       400,
-      "リクエストボディのJSONが不正です。"
+      `Request body JSON is invalid.`
     );
   }
 
@@ -87,7 +87,7 @@ export const POST = async (request: Request): Promise<Response> => {
       return createErrorResponse(
         "指定されたキーワードは既に登録されています。",
         409,
-        "指定されたキーワードは既に登録されています。"
+        `Keyword \"${keywordName}\" already exists.`
       );
     }
     return createErrorResponse(

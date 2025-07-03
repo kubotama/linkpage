@@ -15,7 +15,7 @@ export async function GET(
     return createErrorResponse(
       "IDは正の整数である必要があります。",
       400,
-      "IDが不正です。"
+      `Bookmark with id: ${id} is invalid.}`
     );
   }
   try {
@@ -28,7 +28,7 @@ export async function GET(
       return createErrorResponse(
         "指定されたブックマークがありません。",
         404,
-        "ブックマークが見つかりません。"
+        `Bookmark with id: ${id} not found.`
       );
     }
     return new Response(JSON.stringify(bookmark), {
@@ -54,7 +54,7 @@ export async function PUT(
     return createErrorResponse(
       "IDは正の整数である必要があります。",
       400,
-      "IDが不正です。"
+      `Bookmark with id: ${id} is invalid.}`
     );
   }
   try {
@@ -113,14 +113,22 @@ export async function DELETE(
 ) {
   const id = Number(params.id);
   if (!Number.isInteger(id) || id <= 0) {
-    return createErrorResponse("IDは正の整数である必要があります。", 400);
+    return createErrorResponse(
+      "IDは正の整数である必要があります。",
+      400,
+      `Bookmark with id: ${id} is invalid.}`
+    );
   }
   try {
     const db = getDb();
     const prepare = db.prepare("DELETE FROM bookmarks WHERE id = ?");
     const info = prepare.run(id);
     if (info.changes === 0) {
-      return createErrorResponse("指定されたブックマークがありません。", 404, `Bookmark with id: ${id} not found.`);
+      return createErrorResponse(
+        "指定されたブックマークがありません。",
+        404,
+        `Bookmark with id: ${id} not found.`
+      );
     }
     return new Response(null, { status: 204 });
   } catch (error: unknown) {
