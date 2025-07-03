@@ -55,7 +55,7 @@ export const useBookmarks = () => {
         throw new Error(json.message); // This error will be caught by the catch block below
       } else {
         const json = await response.json();
-        throw new Error(json.message);
+        throw new Error(`[${response.status}] ${json.message}`);
       }
     } catch (error: unknown) {
       // より具体的なエラー型付けも検討可能です
@@ -88,7 +88,7 @@ export const useBookmarks = () => {
         } else {
           // エラーレスポンスの処理
           const json = await response.json();
-          throw new Error(json.message);
+          throw new Error(`[${response.status}] ${json.message}`);
         }
       } catch (error: unknown) {
         console.error("ブックマークの更新エラー:", (error as Error).message); // 詳細なエラーはコンソールへ

@@ -156,7 +156,7 @@ npm run start
 }
 ```
 
-#### PUT: ブックマークの更新 /bookmarks/[bookmark_id]
+#### PUT: ブックマークの更新 /bookmarks/[id]
 
 指定された ID のブックマークを更新します。
 
@@ -179,7 +179,7 @@ npm run start
 }
 ```
 
-#### DELETE: ブックマークの削除 /bookmarks/[bookmark_id]
+#### DELETE: ブックマークの削除 /bookmarks/[id]
 
 指定された ID のブックマークを削除します。
 
