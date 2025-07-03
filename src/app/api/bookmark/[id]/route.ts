@@ -47,9 +47,9 @@ export async function GET(
 // 更新
 export async function PUT(
   request: Request,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
-  const id = Number(params.id);
+  const id = Number((await params).id);
   if (!Number.isInteger(id) || id <= 0) {
     return createErrorResponse(
       "IDは正の整数である必要があります。",
@@ -117,9 +117,9 @@ export async function PUT(
 // 削除
 export async function DELETE(
   request: Request,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
-  const id = Number(params.id);
+  const id = Number((await params).id);
   if (!Number.isInteger(id) || id <= 0) {
     return createErrorResponse(
       "IDは正の整数である必要があります。",
