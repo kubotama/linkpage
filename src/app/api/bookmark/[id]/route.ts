@@ -57,8 +57,9 @@ export async function PUT(
       `Bookmark with id: ${id} is invalid.}`
     );
   }
+  let bookmark: { url: string; title: string } = { url: "", title: "" };
   try {
-    const bookmark = await request.json();
+    bookmark = await request.json();
     if (!bookmark.title || bookmark.title.trim() === "") {
       return createErrorResponse(
         "タイトルが指定されていません。",
@@ -95,7 +96,7 @@ export async function PUT(
       return createErrorResponse(
         "指定されたURLのブックマークは既に登録されています。",
         409,
-        "指定されたURLのブックマークは既に登録されています。"
+        `Bookmark with URL \"${bookmark.url}\" already exists.`
       );
     }
     return createErrorResponse(
