@@ -74,7 +74,7 @@ export async function POST(request: Request) {
         title: bookmark.title,
         id: result.lastInsertRowid,
       }),
-      { status: 201, headers: { "Content-Type": "application/json" } }
+      { status: 201, headers: { ...commonHeaders, "Content-Type": "application/json" } }
     );
   } catch (error: unknown) {
     if (
