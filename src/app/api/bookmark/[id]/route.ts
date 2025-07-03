@@ -15,7 +15,7 @@ export async function GET(
     return createErrorResponse(
       "IDは正の整数である必要があります。",
       400,
-      `Bookmark with id: ${id} is invalid.}`
+      `Bookmark with id: ${id} is invalid.`
     );
   }
   try {
