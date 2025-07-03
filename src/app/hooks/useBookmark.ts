@@ -75,7 +75,7 @@ export const useBookmarks = () => {
           headers: {
             "Content-Type": "application/json",
           },
-          body: JSON.stringify({ id, url, title }),
+          body: JSON.stringify({ url, title }),
         });
         if (response.ok) {
           // APIが更新後のオブジェクトを返さないため、ローカルでタイトルを更新

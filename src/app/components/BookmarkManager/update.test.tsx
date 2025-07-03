@@ -115,7 +115,6 @@ describe("タイトルの更新ボタン", () => {
           "Content-Type": "application/json",
         },
         body: JSON.stringify({
-          id: bookmarkToSelect.id,
           url: updateUrl,
           title: updateTitle,
         }),
