@@ -102,7 +102,7 @@ describe("ブックマーク削除APIのテスト (オンメモリDB)", () => {
       throw new Error("DB error");
     });
     const anyValidId = 1; // DBエラーのテストなので、IDは任意の値で問題ありません。
-    const [request, context] = createDeleteRequest(nonExistentId.toString());
+    const [request, context] = createDeleteRequest(anyValidId.toString());
     const response = await DELETE(request, context);
 
     expect(response.status).toEqual(500);
