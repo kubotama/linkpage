@@ -54,7 +54,7 @@ export async function PUT(
     return createErrorResponse(
       "IDは正の整数である必要があります。",
       400,
-`Bookmark with id: ${id} is invalid.`
+      `Bookmark with id: ${id} is invalid.`
     );
   }
   let bookmark: { url: string; title: string } = { url: "", title: "" };
@@ -89,6 +89,13 @@ export async function PUT(
     }
     return new Response(null, { status: 204 });
   } catch (error: unknown) {
+    if (error instanceof SyntaxError) {
+      return createErrorResponse(
+        "リクエストボディのJSONが不正です。",
+        400,
+        `Invalid JSON format: ${error.message}`
+      );
+    }
     if (
       error instanceof SqliteError &&
       error.code === "SQLITE_CONSTRAINT_UNIQUE"
@@ -117,7 +124,7 @@ export async function DELETE(
     return createErrorResponse(
       "IDは正の整数である必要があります。",
       400,
-`Bookmark with id: ${id} is invalid.`
+      `Bookmark with id: ${id} is invalid.`
     );
   }
   try {

@@ -220,7 +220,7 @@ describe("ブックマーク更新APIのテスト (オンメモリDB)", () => {
     expect(json.message).toEqual("IDは正の整数である必要があります。");
   });
 
-  it("PUT: 不正なJSONデータの場合は500を返す。", async () => {
+  it("PUT: 不正なJSONデータの場合は400を返す。", async () => {
     const bookmarkToUpdate = {
       id: 1,
       url: "https://www.example.com",
@@ -233,10 +233,9 @@ describe("ブックマーク更新APIのテスト (オンメモリDB)", () => {
     );
     const response = await PUT(request, context);
 
-    // レスポンスステータスを確認 (500: Internal Server Error)
-    expect(response.status).toEqual(500);
+    expect(response.status).toEqual(400);
     const json = await response.json();
-    expect(json.message).toEqual("サーバーで予期せぬエラーが発生しました。");
+    expect(json.message).toEqual("リクエストボディのJSONが不正です。");
   });
 
   it("PUT: 同じURLが登録される場合には409を返す。", async () => {

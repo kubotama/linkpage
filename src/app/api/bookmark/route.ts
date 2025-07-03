@@ -74,9 +74,20 @@ export async function POST(request: Request) {
         title: bookmark.title,
         id: result.lastInsertRowid,
       }),
-      { status: 201, headers: { ...commonHeaders, "Content-Type": "application/json" } }
+      {
+        status: 201,
+        headers: { ...commonHeaders, "Content-Type": "application/json" },
+      }
     );
   } catch (error: unknown) {
+    if (error instanceof SyntaxError) {
+      return createErrorResponse(
+        "リクエストボディのJSONが不正です。",
+        400,
+        `Invalid JSON format: ${error.message}`,
+        commonHeaders
+      );
+    }
     if (
       error instanceof SqliteError &&
       error.code === "SQLITE_CONSTRAINT_UNIQUE"
@@ -84,13 +95,15 @@ export async function POST(request: Request) {
       return createErrorResponse(
         "指定されたURLのブックマークは既に登録されています。",
         409,
-        `Bookmark with URL \"${bookmark.url}\" already exists.`
+        `Bookmark with URL \"${bookmark.url}\" already exists.`,
+        commonHeaders
       );
     }
     return createErrorResponse(
       "サーバー内部でエラーが発生しました。",
       500,
-      `Internal Server Error: ${(error as Error).message}`
+      `Internal Server Error: ${(error as Error).message}`,
+      commonHeaders
     );
   }
 }

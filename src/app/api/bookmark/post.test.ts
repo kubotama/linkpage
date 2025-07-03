@@ -89,9 +89,9 @@ describe("ブックマーク追加APIのテスト (オンメモリDB)", () => {
   it("POST: 不正なJSONデータの場合はエラーを返す", async () => {
     const response = await POST(createPostRequest("invalid json"));
 
-    expect(response.status).toBe(500);
+    expect(response.status).toBe(400);
     const json = await response.json();
-    expect(json.message).toEqual("サーバー内部でエラーが発生しました。");
+    expect(json.message).toEqual("リクエストボディのJSONが不正です。");
   });
 
   it("POST: 重複したURLのブックマーク追加時に409 Conflictを返す", async () => {
