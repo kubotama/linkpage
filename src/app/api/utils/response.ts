@@ -21,7 +21,7 @@ export function createInvalidIdError(params: { id: string }) {
   return createErrorResponse(
     "IDは正の整数である必要があります。",
     400,
-    `Bookmark with id: ${params.id} is invalid.`
+    `Invalid ID provided: ${params.id}. It must be a positive integer.`
   );
 }
 
