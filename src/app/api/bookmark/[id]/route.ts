@@ -16,7 +16,7 @@ import { getDb } from "../database";
 
 // 1件取得
 export async function GET(
-  request: Request,
+  _request: Request,
   { params }: { params: { id: string } }
 ) {
   try {
