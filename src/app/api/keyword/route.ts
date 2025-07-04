@@ -2,7 +2,12 @@
 import { SqliteError } from "better-sqlite3";
 
 import { getDb } from "../bookmark/database";
-import { createErrorResponse } from "../utils/response";
+import {
+  createDuplicateKeywordError,
+  createInternarlError,
+  createInvalidBodyError,
+  createNoKeywordError,
+} from "../utils/response";
 
 export const GET = async () => {
   try {
@@ -14,11 +19,7 @@ export const GET = async () => {
       headers: { "Content-Type": "application/json" },
     });
   } catch (error: unknown) {
-    return createErrorResponse(
-      "サーバー内部でエラーが発生しました。",
-      500,
-      `Internal Server Error: ${(error as Error).message}`
-    );
+    return createInternarlError(error);
   }
 };
 
@@ -40,23 +41,15 @@ export const POST = async (request: Request): Promise<Response> => {
     ) {
       throw new Error("リクエストボディのJSONが不正です。");
     }
-  } catch {
-    return createErrorResponse(
-      "リクエストボディのJSONが不正です。",
-      400,
-      `Request body JSON is invalid.`
-    );
+  } catch (error: unknown) {
+    return createInvalidBodyError(error);
   }
 
   // 型ガードにより、rawBodyは安全にKeywordInputとして扱えます。
   const keywordInput = rawBody as KeywordInput;
   const keywordName = keywordInput.keyword_name;
   if (keywordName.trim().length === 0) {
-    return createErrorResponse(
-      "キーワードを指定してください。",
-      400,
-      "キーワードが指定されていません。"
-    );
+    return createNoKeywordError();
   }
   try {
     const keyword: KeywordInput = { keyword_name: keywordName.trim() };
@@ -84,16 +77,8 @@ export const POST = async (request: Request): Promise<Response> => {
       error instanceof SqliteError &&
       error.code === "SQLITE_CONSTRAINT_UNIQUE"
     ) {
-      return createErrorResponse(
-        "指定されたキーワードは既に登録されています。",
-        409,
-        `Keyword \"${keywordName}\" already exists.`
-      );
+      return createDuplicateKeywordError(keywordName);
     }
-    return createErrorResponse(
-      "サーバー内部でエラーが発生しました。",
-      500,
-      `Internal Server Error: ${(error as Error).message}`
-    );
+    return createInternarlError(error);
   }
 };

@@ -2,7 +2,16 @@
 
 import { SqliteError } from "better-sqlite3";
 
-import { createErrorResponse } from "../../utils/response";
+import { getId, getIdAsync, InvalidIdError } from "../../utils/id";
+import {
+  createDuplicateBookmarkError,
+  createInternarlError,
+  createInvalidBodyError,
+  createInvalidIdError,
+  createNotFoundBookmarkError,
+  createNoTitleError,
+  createNoUrlError,
+} from "../../utils/response";
 import { getDb } from "../database";
 
 // 1件取得
@@ -10,37 +19,25 @@ export async function GET(
   request: Request,
   { params }: { params: { id: string } }
 ) {
-  const id = Number(params.id);
-  if (!Number.isInteger(id) || id <= 0) {
-    return createErrorResponse(
-      "IDは正の整数である必要があります。",
-      400,
-      `Bookmark with id: ${id} is invalid.`
-    );
-  }
   try {
+    const id = getId(params);
     const db = getDb();
     const stmt = db.prepare(
       "SELECT id, url, title FROM bookmarks WHERE id = ?"
     );
     const bookmark = stmt.get(id);
     if (!bookmark) {
-      return createErrorResponse(
-        "指定されたブックマークがありません。",
-        404,
-        `Bookmark with id: ${id} not found.`
-      );
+      return createNotFoundBookmarkError(id);
     }
     return new Response(JSON.stringify(bookmark), {
       status: 200,
       headers: { "Content-Type": "application/json" },
     });
   } catch (error: unknown) {
-    return createErrorResponse(
-      "サーバー内部でエラーが発生しました。",
-      500,
-      `Internal Server Error: ${(error as Error).message}`
-    );
+    if (error instanceof InvalidIdError) {
+      return createInvalidIdError(params);
+    }
+    return createInternarlError(error);
   }
 }
 
@@ -49,30 +46,15 @@ export async function PUT(
   request: Request,
   { params }: { params: Promise<{ id: string }> }
 ) {
-  const id = Number((await params).id);
-  if (!Number.isInteger(id) || id <= 0) {
-    return createErrorResponse(
-      "IDは正の整数である必要があります。",
-      400,
-      `Bookmark with id: ${id} is invalid.`
-    );
-  }
   let bookmark: { url: string; title: string } = { url: "", title: "" };
   try {
+    const id = await getIdAsync({ params });
     bookmark = await request.json();
     if (!bookmark.title || bookmark.title.trim() === "") {
-      return createErrorResponse(
-        "タイトルが指定されていません。",
-        400,
-        "タイトルが指定されていません。"
-      );
+      return createNoTitleError();
     }
     if (!bookmark.url || bookmark.url.trim() === "") {
-      return createErrorResponse(
-        "URLが指定されていません。",
-        400,
-        "URLが指定されていません。"
-      );
+      return createNoUrlError();
     }
 
     const db = getDb();
@@ -81,36 +63,23 @@ export async function PUT(
     );
     const info = prepare.run(bookmark.title, bookmark.url, id);
     if (info.changes === 0) {
-      return createErrorResponse(
-        "指定されたブックマークがありません。",
-        404,
-        `Bookmark with id: ${id} not found.`
-      );
+      return createNotFoundBookmarkError(id);
     }
     return new Response(null, { status: 204 });
   } catch (error: unknown) {
     if (error instanceof SyntaxError) {
-      return createErrorResponse(
-        "リクエストボディのJSONが不正です。",
-        400,
-        `Invalid JSON format: ${error.message}`
-      );
+      return createInvalidBodyError(error);
     }
     if (
       error instanceof SqliteError &&
       error.code === "SQLITE_CONSTRAINT_UNIQUE"
     ) {
-      return createErrorResponse(
-        "指定されたURLのブックマークは既に登録されています。",
-        409,
-        `Bookmark with URL \"${bookmark.url}\" already exists.`
-      );
+      return createDuplicateBookmarkError(bookmark.url);
     }
-    return createErrorResponse(
-      "サーバー内部でエラーが発生しました。",
-      500,
-      `Internal Server Error: ${(error as Error).message}`
-    );
+    if (error instanceof InvalidIdError) {
+      return createInvalidIdError(await params);
+    }
+    return createInternarlError(error);
   }
 }
 
@@ -119,31 +88,19 @@ export async function DELETE(
   request: Request,
   { params }: { params: Promise<{ id: string }> }
 ) {
-  const id = Number((await params).id);
-  if (!Number.isInteger(id) || id <= 0) {
-    return createErrorResponse(
-      "IDは正の整数である必要があります。",
-      400,
-      `Bookmark with id: ${id} is invalid.`
-    );
-  }
   try {
+    const id = await getIdAsync({ params });
     const db = getDb();
     const prepare = db.prepare("DELETE FROM bookmarks WHERE id = ?");
     const info = prepare.run(id);
     if (info.changes === 0) {
-      return createErrorResponse(
-        "指定されたブックマークがありません。",
-        404,
-        `Bookmark with id: ${id} not found.`
-      );
+      return createNotFoundBookmarkError(id);
     }
     return new Response(null, { status: 204 });
   } catch (error: unknown) {
-    return createErrorResponse(
-      "サーバー内部でエラーが発生しました。",
-      500,
-      `Internal Server Error: ${(error as Error).message}`
-    );
+    if (error instanceof InvalidIdError) {
+      return createInvalidIdError(await params);
+    }
+    return createInternarlError(error);
   }
 }

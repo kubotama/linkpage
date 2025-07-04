@@ -151,7 +151,7 @@ describe("ブックマーク更新APIのテスト (オンメモリDB)", () => {
     // レスポンスステータスを確認 (400: Bad Request)
     expect(response.status).toBe(400);
     const json = await response.json();
-    expect(json.message).toEqual("タイトルが指定されていません。");
+    expect(json.message).toEqual("タイトルを指定してください。");
   });
 
   it("PUT: URLが指定されていない場合には400を返す。", async () => {
@@ -173,7 +173,7 @@ describe("ブックマーク更新APIのテスト (オンメモリDB)", () => {
     // レスポンスステータスを確認 (400: Bad Request)
     expect(response.status).toBe(400);
     const json = await response.json();
-    expect(json.message).toEqual("URLが指定されていません。");
+    expect(json.message).toEqual("URLを指定してください。");
   });
 
   it("PUT: IDが指定されていない場合には400を返す。", async () => {

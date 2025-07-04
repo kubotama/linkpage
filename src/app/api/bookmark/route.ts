@@ -4,7 +4,13 @@ import { SqliteError } from "better-sqlite3";
 import { Bookmark } from "@/app/types/Bookmark";
 
 import { ALLOWED_CORS_ORIGIN } from "../../constants/apiEndpoints";
-import { createErrorResponse } from "../utils/response";
+import {
+  createDuplicateBookmarkError,
+  createInvalidBodyError,
+  createInternarlError,
+  createNoTitleError,
+  createNoUrlError,
+} from "../utils/response";
 import { getDb } from "./database";
 
 const API_URL = "http://localhost:3000/api/bookmark";
@@ -19,11 +25,7 @@ export async function GET() {
       headers: { "Content-Type": "application/json" },
     });
   } catch (error: unknown) {
-    return createErrorResponse(
-      "サーバー内部でエラーが発生しました。",
-      500,
-      `Internal Server Error: ${(error as Error).message}`
-    );
+    return createInternarlError(error);
   }
 }
 
@@ -48,20 +50,10 @@ export async function POST(request: Request) {
   try {
     bookmark = await request.json();
     if (!bookmark.url || bookmark.url.trim() === "") {
-      return createErrorResponse(
-        "URLを指定してください。",
-        400,
-        "URLが指定されていません。",
-        commonHeaders
-      );
+      return createNoUrlError(commonHeaders);
     }
     if (!bookmark.title || bookmark.title.trim() === "") {
-      return createErrorResponse(
-        "タイトルを指定してください。",
-        400,
-        "タイトルが指定されていません。",
-        commonHeaders
-      );
+      return createNoTitleError(commonHeaders);
     }
 
     const db = getDb();
@@ -87,29 +79,14 @@ export async function POST(request: Request) {
     );
   } catch (error: unknown) {
     if (error instanceof SyntaxError) {
-      return createErrorResponse(
-        "リクエストボディのJSONが不正です。",
-        400,
-        `Invalid JSON format: ${error.message}`,
-        commonHeaders
-      );
+      return createInvalidBodyError(error, commonHeaders);
     }
     if (
       error instanceof SqliteError &&
       error.code === "SQLITE_CONSTRAINT_UNIQUE"
     ) {
-      return createErrorResponse(
-        "指定されたURLのブックマークは既に登録されています。",
-        409,
-        `Bookmark with URL \"${bookmark.url}\" already exists.`,
-        commonHeaders
-      );
+      return createDuplicateBookmarkError(bookmark.url, commonHeaders);
     }
-    return createErrorResponse(
-      "サーバー内部でエラーが発生しました。",
-      500,
-      `Internal Server Error: ${(error as Error).message}`,
-      commonHeaders
-    );
+    return createInternarlError(error, commonHeaders);
   }
 }
