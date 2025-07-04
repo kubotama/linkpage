@@ -5,9 +5,9 @@ import { createErrorResponse } from "../../utils/response";
 
 export const DELETE = async (
   _request: Request,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ): Promise<Response> => {
-  const id = params.id;
+  const id = Number((await params).id);
   if (!id || isNaN(Number(id))) {
     return createErrorResponse("不正なIDです。", 400, `Invalid ID: ${id}`);
   }

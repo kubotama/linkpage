@@ -13,8 +13,11 @@ const API_URL = "http://localhost:3000/api/keyword/1";
 
 const createDeleteRequest = (
   id: string
-): [Request, { params: { id: string } }] => {
-  return [new Request(API_URL, { method: "DELETE" }), { params: { id } }];
+): [Request, { params: Promise<{ id: string }> }] => {
+  return [
+    new Request(API_URL, { method: "DELETE" }),
+    { params: Promise.resolve({ id }) },
+  ];
 };
 
 describe("キーワードDELETE APIのテスト", () => {

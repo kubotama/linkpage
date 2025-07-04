@@ -16,10 +16,10 @@ const API_URL = "http://localhost:3000/api/bookmark/";
 
 const createDeleteRequest = (
   id: string
-): [Request, { params: { id: string } }] => {
+): [Request, { params: Promise<{ id: string }> }] => {
   return [
     new Request(`${API_URL}${id}`, { method: "DELETE" }),
-    { params: { id } },
+    { params: Promise.resolve({ id }) },
   ];
 };
 

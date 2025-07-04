@@ -17,10 +17,10 @@ const API_URL = "http://localhost:3000/api/bookmark/";
 const createPutRequest = (
   body: string,
   id: number
-): [Request, { params: { id: string } }] => {
+): [Request, { params: Promise<{ id: string }> }] => {
   return [
     new Request(`${API_URL}${id}`, { method: "Put", body: body }),
-    { params: { id: id.toString() } },
+    { params: Promise.resolve({ id: id.toString() }) },
   ];
 };
 
@@ -187,10 +187,11 @@ describe("ブックマーク更新APIのテスト (オンメモリDB)", () => {
         url: bookmarkToUpdate.url,
         title: bookmarkToUpdate.title,
       }),
-      // このテストでは、params.idが空文字列であることを意図的に設定
       0 // ダミーのID。params.idが優先されるため、この値は影響しない
     );
-    const response = await PUT(request, { params: { id: "" } });
+    const response = await PUT(request, {
+      params: Promise.resolve({ id: "" }),
+    });
 
     // レスポンスステータスを確認 (400: Bad Request)
     expect(response.status).toBe(400);
@@ -212,7 +213,9 @@ describe("ブックマーク更新APIのテスト (オンメモリDB)", () => {
       }),
       bookmarkToUpdate.id
     );
-    const response = await PUT(request, { params: { id: "invalid id" } });
+    const response = await PUT(request, {
+      params: Promise.resolve({ id: "invalid id" }),
+    });
 
     // レスポンスステータスを確認 (400: Bad Request)
     expect(response.status).toEqual(400);
