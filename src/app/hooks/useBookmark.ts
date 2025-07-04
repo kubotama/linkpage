@@ -53,7 +53,7 @@ export const useBookmarks = () => {
       } else if (response.status === 404 || response.status === 400) {
         const json = await response.json();
         throw new Error(json.message); // This error will be caught by the catch block below
-      } else {
+      } else if (response.ok === false) {
         const json = await response.json();
         throw new Error(`[${response.status}] ${json.message}`);
       }
