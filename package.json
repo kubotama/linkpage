@@ -1,6 +1,6 @@
 {
   "name": "linkpage",
-  "version": "1.8.0",
+  "version": "1.8.1",
   "private": true,
   "scripts": {
     "dev": "next dev --turbopack",
@@ -13,7 +13,7 @@
   },
   "dependencies": {
     "better-sqlite3": "^11.9.1",
-    "next": "15.3.2",
+    "next": "15.3.3",
     "react": "^19.0.0",
     "react-dom": "^19.0.0",
     "react-hotkeys-hook": "^5.1.0",
