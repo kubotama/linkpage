@@ -3,7 +3,7 @@
 import { getDb } from "../../bookmarks/database";
 import { getIdAsync, InvalidIdError } from "../../utils/id";
 import {
-  createInternarlError,
+  createInternalError,
   createInvalidIdError,
   createNotFoundKeywordError,
 } from "../../utils/response";
@@ -16,7 +16,7 @@ export const DELETE = async (
     const id = await getIdAsync({ params });
     const db = getDb();
     const stmt = db.prepare("DELETE FROM keywords WHERE keyword_id = ?");
-    const result = stmt.run(Number(id));
+    const result = stmt.run(id);
     if (result.changes === 0) {
       return createNotFoundKeywordError(id);
     }
@@ -25,6 +25,6 @@ export const DELETE = async (
     if (error instanceof InvalidIdError) {
       return createInvalidIdError(await params);
     }
-    return createInternarlError(error);
+    return createInternalError(error);
   }
 };

@@ -3,19 +3,18 @@ import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 
 import { setupInMemoryDb } from "../../../test-utils/db-setup";
 import { getDb } from "../../bookmarks/database";
+import { API_KEYWORDS_URL } from "../../utils/constants";
 import { DELETE } from "./route";
 
 vi.mock("../../bookmarks/database");
 
 let inMemoryDbInstance: ActualDatabase.Database;
 
-const API_URL = "http://localhost:3000/api/keywords/1";
-
 const createDeleteRequest = (
   id: string
 ): [Request, { params: Promise<{ id: string }> }] => {
   return [
-    new Request(API_URL, { method: "DELETE" }),
+    new Request(API_KEYWORDS_URL, { method: "DELETE" }),
     { params: Promise.resolve({ id }) },
   ];
 };

@@ -4,16 +4,15 @@ import { SqliteError } from "better-sqlite3";
 import { Bookmark } from "@/app/types/Bookmark";
 
 import { ALLOWED_CORS_ORIGIN } from "../../constants/apiEndpoints";
+import { API_BOOKMARKS_URL } from "../utils/constants";
 import {
   createDuplicateBookmarkError,
+  createInternalError,
   createInvalidBodyError,
-  createInternarlError,
   createNoTitleError,
   createNoUrlError,
 } from "../utils/response";
 import { getDb } from "./database";
-
-const API_URL = "http://localhost:3000/api/bookmark";
 
 export async function GET() {
   try {
@@ -25,7 +24,7 @@ export async function GET() {
       headers: { "Content-Type": "application/json" },
     });
   } catch (error: unknown) {
-    return createInternarlError(error);
+    return createInternalError(error);
   }
 }
 
@@ -73,7 +72,7 @@ export async function POST(request: Request) {
         headers: {
           ...commonHeaders,
           "Content-Type": "application/json",
-          Location: `${API_URL}/${result.lastInsertRowid}`,
+          Location: `${API_BOOKMARKS_URL}/${result.lastInsertRowid}`,
         },
       }
     );
@@ -87,6 +86,6 @@ export async function POST(request: Request) {
     ) {
       return createDuplicateBookmarkError(bookmark.url, commonHeaders);
     }
-    return createInternarlError(error, commonHeaders);
+    return createInternalError(error, commonHeaders);
   }
 }

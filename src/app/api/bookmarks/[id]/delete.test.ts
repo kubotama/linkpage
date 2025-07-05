@@ -3,6 +3,7 @@ import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 
 import { setupInMemoryDb } from "../../../test-utils/db-setup";
 import { mockBookmarks } from "../../../types/Bookmark";
+import { API_BOOKMARKS_URL } from "../../utils/constants";
 import { getDb } from "../database";
 import { DELETE } from "./route";
 
@@ -12,13 +13,11 @@ vi.mock("../database");
 
 let inMemoryDbInstance: ActualDatabase.Database;
 
-const API_URL = "http://localhost:3000/api/bookmark/";
-
 const createDeleteRequest = (
   id: string
 ): [Request, { params: Promise<{ id: string }> }] => {
   return [
-    new Request(`${API_URL}${id}`, { method: "DELETE" }),
+    new Request(`${API_BOOKMARKS_URL}${id}`, { method: "DELETE" }),
     { params: Promise.resolve({ id }) },
   ];
 };

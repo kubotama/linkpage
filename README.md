@@ -111,18 +111,22 @@ npm run start
 ##### レスポンス (200 OK): 登録されている全てのブックマークを示す JSON 配列
 
 ```json
-[
-  {
-    "id": 1,
-    "url": "https://example.com",
-    "title": "Example Title 1"
-  },
-  {
-    "id": 2,
-    "url": "https://example.org",
-    "title": "Example Title 2"
-  }
-]
+{
+  "status": 200,
+  "headers": { "Content-Type": "application/json" },
+  "json": [
+    {
+      "id": 1,
+      "url": "https://example.com",
+      "title": "Example Title 1"
+    },
+    {
+      "id": 2,
+      "url": "https://example.org",
+      "title": "Example Title 2"
+    }
+  ]
+}
 ```
 
 #### POST: 新しいブックマークの作成 /bookmarks
@@ -142,10 +146,14 @@ npm run start
 
 ```json
 {
-  "id": 3,
-  "url": "https://example.com",
-  "title": "Example",
-  "Location": "/bookmarks/[作成されたブックマークのID]"
+  "status": 201,
+  "headers": { "Content-Type": "application/json" },
+  "Location": "http://localhost:3000/api/bookmarks/3",
+  "json": {
+    "id": 3,
+    "url": "https://example.com",
+    "title": "Example"
+  }
 }
 ```
 
@@ -153,7 +161,11 @@ npm run start
 
 ```json
 {
-  "message": "指定されたブックマークは既に登録されています。"
+  "status": 409,
+  "headers": { "Content-Type": "application/json" },
+  "json": {
+    "message": "指定されたブックマークは既に登録されています。"
+  }
 }
 ```
 
@@ -172,11 +184,21 @@ npm run start
 
 ##### レスポンス (204 No Content): ブックマークの更新成功
 
+```json
+{
+  "status": 204
+}
+```
+
 ##### レスポンス (404 Not Found): ブックマークが見つからない場合
 
 ```json
 {
-  "message": "指定されたブックマークがありません。"
+  "status": 409,
+  "headers": { "Content-Type": "application/json" },
+  "json": {
+    "message": "指定されたブックマークは既に登録されています。"
+  }
 }
 ```
 
@@ -188,11 +210,21 @@ npm run start
 
 ##### レスポンス (204 No Content): ブックマークの削除成功
 
+```json
+{
+  "status": 204
+}
+```
+
 ##### レスポンス (404 Not Found): ブックマークが見つからない場合
 
 ```json
 {
-  "message": "指定されたブックマークがありません。"
+  "status": 404,
+  "headers": { "Content-Type": "application/json" },
+  "json": {
+    "message": "指定されたブックマークがありません。"
+  }
 }
 ```
 
@@ -207,20 +239,24 @@ npm run start
 ##### レスポンス (200 OK): 登録されている全てのキーワードを示す JSON 配列
 
 ```json
-[
-  {
-    "keyword_id": 1,
-    "keyword_name": "Web"
-  },
-  {
-    "keyword_id": 2,
-    "keyword_name": "開発"
-  },
-  {
-    "keyword_id": 3,
-    "keyword_name": "デザイン"
-  }
-]
+{
+  "status": 200,
+  "headers": { "Content-Type": "application/json" },
+  "json": [
+    {
+      "keyword_id": 1,
+      "keyword_name": "Web"
+    },
+    {
+      "keyword_id": 2,
+      "keyword_name": "開発"
+    },
+    {
+      "keyword_id": 3,
+      "keyword_name": "デザイン"
+    }
+  ]
+}
 ```
 
 #### POST: 新しいキーワードの作成 /keyword
@@ -239,8 +275,12 @@ npm run start
 
 ```json
 {
-  "keyword_id": 10,
-  "keyword_name": "プログラミング"
+  "status": 201,
+  "headers": { "Content-Type": "application/json" },
+  "json": {
+    "keyword_id": 10,
+    "keyword_name": "プログラミング"
+  }
 }
 ```
 
@@ -248,7 +288,11 @@ npm run start
 
 ```json
 {
-  "message": "指定されたキーワードは既に登録されています。"
+  "status": 409,
+  "headers": { "Content-Type": "application/json" },
+  "json": {
+    "message": "指定されたキーワードは既に登録されています。"
+  }
 }
 ```
 
@@ -260,11 +304,21 @@ npm run start
 
 ##### レスポンス (204 No Content): キーワードの削除成功
 
+```json
+{
+  "status": 204
+}
+```
+
 ##### レスポンス (404 Not Found): キーワードが見つからない場合
 
 ```json
 {
-  "message": "指定された keyword_id のキーワードがありません。"
+  "status": 404,
+  "headers": { "Content-Type": "application/json" },
+  "json": {
+    "message": "指定された keyword_id のキーワードがありません。"
+  }
 }
 ```
 

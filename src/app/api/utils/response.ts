@@ -25,7 +25,7 @@ export function createInvalidIdError(params: { id: string }) {
   );
 }
 
-export const createInternarlError = (
+export const createInternalError = (
   error: unknown,
   headers: Record<string, string> = {}
 ) => {

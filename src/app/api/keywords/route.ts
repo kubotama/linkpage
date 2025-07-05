@@ -4,7 +4,7 @@ import { SqliteError } from "better-sqlite3";
 import { getDb } from "../bookmarks/database";
 import {
   createDuplicateKeywordError,
-  createInternarlError,
+  createInternalError,
   createInvalidBodyError,
   createNoKeywordError,
 } from "../utils/response";
@@ -19,7 +19,7 @@ export const GET = async () => {
       headers: { "Content-Type": "application/json" },
     });
   } catch (error: unknown) {
-    return createInternarlError(error);
+    return createInternalError(error);
   }
 };
 
@@ -79,6 +79,6 @@ export const POST = async (request: Request): Promise<Response> => {
     ) {
       return createDuplicateKeywordError(keywordName);
     }
-    return createInternarlError(error);
+    return createInternalError(error);
   }
 };

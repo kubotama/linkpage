@@ -2,10 +2,10 @@
 
 import { SqliteError } from "better-sqlite3";
 
-import { getId, getIdAsync, InvalidIdError } from "../../utils/id";
+import { getIdAsync, InvalidIdError } from "../../utils/id";
 import {
   createDuplicateBookmarkError,
-  createInternarlError,
+  createInternalError,
   createInvalidBodyError,
   createInvalidIdError,
   createNotFoundBookmarkError,
@@ -17,10 +17,10 @@ import { getDb } from "../database";
 // 1件取得
 export async function GET(
   _request: Request,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
-    const id = getId(params);
+    const id = await getIdAsync({ params });
     const db = getDb();
     const stmt = db.prepare(
       "SELECT id, url, title FROM bookmarks WHERE id = ?"
@@ -35,9 +35,9 @@ export async function GET(
     });
   } catch (error: unknown) {
     if (error instanceof InvalidIdError) {
-      return createInvalidIdError(params);
+      return createInvalidIdError(await params);
     }
-    return createInternarlError(error);
+    return createInternalError(error);
   }
 }
 
@@ -79,7 +79,7 @@ export async function PUT(
     if (error instanceof InvalidIdError) {
       return createInvalidIdError(await params);
     }
-    return createInternarlError(error);
+    return createInternalError(error);
   }
 }
 
@@ -101,6 +101,6 @@ export async function DELETE(
     if (error instanceof InvalidIdError) {
       return createInvalidIdError(await params);
     }
-    return createInternarlError(error);
+    return createInternalError(error);
   }
 }

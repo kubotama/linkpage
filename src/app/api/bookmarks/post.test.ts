@@ -3,6 +3,7 @@ import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 
 import { setupInMemoryDb } from "../../test-utils/db-setup";
 import { Bookmark, createBookmark, mockBookmarks } from "../../types/Bookmark";
+import { API_BOOKMARKS_URL } from "../utils/constants";
 import { getDb } from "./database";
 import { OPTIONS, POST } from "./route";
 
@@ -10,10 +11,8 @@ vi.mock("./database");
 
 let inMemoryDbInstance: ActualDatabase.Database;
 
-const API_URL = "http://localhost:3000/api/bookmark/";
-
 function createPostRequest(body: string): Request {
-  return new Request(API_URL, {
+  return new Request(API_BOOKMARKS_URL, {
     method: "POST",
     headers: {
       "Content-Type": "application/json",

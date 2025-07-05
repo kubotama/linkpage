@@ -4,16 +4,15 @@ import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import { setupInMemoryDb } from "../../test-utils/db-setup";
 import { mockKeywords } from "../../types/Keywords";
 import { getDb } from "../bookmarks/database";
+import { API_KEYWORDS_URL } from "../utils/constants";
 import { POST } from "./route";
 
 vi.mock("../bookmarks/database");
 
 let inMemoryDbInstance: ActualDatabase.Database;
 
-const API_URL = "http://localhost:3000/api/keyword";
-
 const createPostRequest = (keyword_name: string): Request => {
-  return new Request(API_URL, {
+  return new Request(API_KEYWORDS_URL, {
     method: "POST",
     headers: {
       "Content-Type": "application/json",
@@ -72,7 +71,7 @@ describe("キーワードAPIのテスト", () => {
 
   it("POST: 不正なJSONデータ(JSON.parseエラー)の場合は400を返す", async () => {
     const response = await POST(
-      new Request(API_URL, {
+      new Request(API_KEYWORDS_URL, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -87,7 +86,7 @@ describe("キーワードAPIのテスト", () => {
 
   it("POST: 不正なJSONデータ(null)の場合は400を返す", async () => {
     const response = await POST(
-      new Request(API_URL, {
+      new Request(API_KEYWORDS_URL, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",

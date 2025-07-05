@@ -3,21 +3,22 @@ import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 
 import { setupInMemoryDb } from "../../../test-utils/db-setup";
 import { mockBookmarks } from "../../../types/Bookmark";
+import { API_BOOKMARKS_URL } from "../../utils/constants";
 import { getDb } from "../database";
 import { GET } from "./route";
 
 vi.mock("../database");
 
-const API_URL = "http://localhost:3000/api/bookmark/";
-
 let inMemoryDbInstance: ActualDatabase.Database;
 
 const createGetRequest = (
   id: string
-): [Request, { params: { id: string } }] => {
+  // ): [Request, { params: { id: string } }] => {
+): [Request, { params: Promise<{ id: string }> }] => {
   return [
-    new Request(`${API_URL}${id}`, { method: "Get" }),
-    { params: { id } },
+    new Request(`${API_BOOKMARKS_URL}${id}`, { method: "Get" }),
+    // { params: { id } },
+    { params: Promise.resolve({ id: id.toString() }) },
   ];
 };
 
