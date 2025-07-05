@@ -39,9 +39,6 @@ export const useBookmarks = () => {
     try {
       const response = await fetch(`${BOOKMARKS_ENDPOINT}/${id}`, {
         method: "DELETE",
-        headers: {
-          "Content-Type": "application/json",
-        },
       });
 
       if (response.status === 204) {

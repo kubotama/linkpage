@@ -104,9 +104,6 @@ describe("削除ボタン", () => {
       );
       expect(mockFetch.mock.calls[0][1]).toEqual({
         method: "DELETE",
-        headers: {
-          "Content-Type": "application/json",
-        },
       });
 
       // 画面の更新の確認
