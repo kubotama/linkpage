@@ -3,10 +3,10 @@ import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 
 import { setupInMemoryDb } from "../../test-utils/db-setup";
 import { mockKeywords } from "../../types/Keywords";
-import { getDb } from "../bookmark/database";
+import { getDb } from "../bookmarks/database";
 import { GET } from "./route";
 
-vi.mock("../bookmark/database");
+vi.mock("../bookmarks/database");
 
 let inMemoryDbInstance: ActualDatabase.Database;
 

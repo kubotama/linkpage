@@ -1,7 +1,7 @@
 "use server";
 import { SqliteError } from "better-sqlite3";
 
-import { getDb } from "../bookmark/database";
+import { getDb } from "../bookmarks/database";
 import {
   createDuplicateKeywordError,
   createInternarlError,

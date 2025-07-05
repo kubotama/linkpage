@@ -1,6 +1,6 @@
 import ActualDatabase from "better-sqlite3"; // Import the actual library
 
-import { DB_SCHEMA } from "../api/bookmark/schema";
+import { DB_SCHEMA } from "../api/bookmarks/schema";
 import { Bookmark, mockBookmarks } from "../types/Bookmark";
 import { Keyword, mockKeywords } from "../types/Keywords";
 

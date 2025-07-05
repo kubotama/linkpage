@@ -2,14 +2,14 @@ import ActualDatabase from "better-sqlite3";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 
 import { setupInMemoryDb } from "../../../test-utils/db-setup";
-import { getDb } from "../../bookmark/database";
+import { getDb } from "../../bookmarks/database";
 import { DELETE } from "./route";
 
-vi.mock("../../bookmark/database");
+vi.mock("../../bookmarks/database");
 
 let inMemoryDbInstance: ActualDatabase.Database;
 
-const API_URL = "http://localhost:3000/api/keyword/1";
+const API_URL = "http://localhost:3000/api/keywords/1";
 
 const createDeleteRequest = (
   id: string
