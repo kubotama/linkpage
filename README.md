@@ -194,11 +194,13 @@ npm run start
 
 ```json
 {
-  "status": 409,
+{
+  "status": 404,
   "headers": { "Content-Type": "application/json" },
   "json": {
-    "message": "指定されたブックマークは既に登録されています。"
+    "message": "指定されたブックマークがありません。"
   }
+}
 }
 ```
 
