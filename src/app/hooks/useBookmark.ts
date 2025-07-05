@@ -1,10 +1,6 @@
 import { useCallback, useState } from "react";
 
-import {
-  BOOKMARK_DELETE_ENDPOINT,
-  BOOKMARK_UPDATE_ENDPOINT,
-  BOOKMARKS_ENDPOINT,
-} from "../constants/apiEndpoints";
+import { BOOKMARKS_ENDPOINT } from "../constants/apiEndpoints";
 import { Bookmark, SelectedBookmark } from "../types/Bookmark";
 
 export const useBookmarks = () => {
@@ -41,12 +37,8 @@ export const useBookmarks = () => {
   const deleteBookmark = useCallback(async (id: number) => {
     setLoadingMessage("ブックマークの削除処理中...");
     try {
-      const response = await fetch(BOOKMARK_DELETE_ENDPOINT, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({ id: id }),
+      const response = await fetch(`${BOOKMARKS_ENDPOINT}/${id}`, {
+        method: "DELETE",
       });
 
       if (response.status === 204) {
@@ -55,29 +47,13 @@ export const useBookmarks = () => {
         );
         setSelectedBookmark(null);
         setErrorMessage("");
-      } else if (response.status === 404 || response.status === 400) {
-        const errorText = await response.text();
-        throw new Error(errorText); // This error will be caught by the catch block below
-      } else {
-        let errorDetail = response.statusText;
-        try {
-          const serverMessage = await response.text();
-          if (serverMessage) {
-            errorDetail = serverMessage;
-          }
-        } catch (e) {
-          console.error("Failed to read error response body:", e);
-        }
-        throw new Error(
-          `Failed to delete: [${response.status}] ${errorDetail}` // Caught by catch block
-        );
+      } else if (!response.ok) {
+        const json = await response.json();
+        throw new Error(`[${response.status}] ${json.message}`);
       }
     } catch (error: unknown) {
       // より具体的なエラー型付けも検討可能です
-      console.error(
-        "ブックマーク削除エラー:",
-        (error as Error).message ? (error as Error).message : String(error)
-      );
+      console.error("ブックマーク削除エラー:", (error as Error).message);
       setErrorMessage("ブックマークの削除中にエラーが発生しました。");
     } finally {
       setLoadingMessage("");
@@ -88,12 +64,12 @@ export const useBookmarks = () => {
     async (id: number, url: string, title: string) => {
       setLoadingMessage("ブックマークの更新処理中...");
       try {
-        const response = await fetch(BOOKMARK_UPDATE_ENDPOINT, {
-          method: "POST",
+        const response = await fetch(`${BOOKMARKS_ENDPOINT}/${id}`, {
+          method: "PUT",
           headers: {
             "Content-Type": "application/json",
           },
-          body: JSON.stringify({ id, url, title }),
+          body: JSON.stringify({ url, title }),
         });
         if (response.ok) {
           // APIが更新後のオブジェクトを返さないため、ローカルでタイトルを更新
@@ -105,15 +81,11 @@ export const useBookmarks = () => {
           setErrorMessage("");
         } else {
           // エラーレスポンスの処理
-          const errorText = await response.text();
-          throw new Error(
-            `ブックマークの更新エラー: [${response.status}] ${
-              errorText || response.statusText
-            }`
-          );
+          const json = await response.json();
+          throw new Error(`[${response.status}] ${json.message}`);
         }
       } catch (error: unknown) {
-        console.error("ブックマークの更新エラー:", error); // 詳細なエラーはコンソールへ
+        console.error("ブックマークの更新エラー:", (error as Error).message); // 詳細なエラーはコンソールへ
         setErrorMessage("ブックマークの更新中にエラーが発生しました。"); // ユーザーフレンドリーなメッセージ
       } finally {
         setLoadingMessage("");

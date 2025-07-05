@@ -1,22 +1,21 @@
 import ActualDatabase from "better-sqlite3"; // Import the actual library
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 
-import { mockKeywords } from "../../types/Keywords";
-import { getDb } from "../bookmark/database";
+import { setupInMemoryDb } from "../../test-utils/db-setup";
+import { mockBookmarks } from "../../types/Bookmark";
+import { getDb } from "./database";
 import { GET } from "./route";
 
-import { setupInMemoryDb } from "../../test-utils/db-setup";
-
-vi.mock("../bookmark/database");
+vi.mock("./database");
 
 let inMemoryDbInstance: ActualDatabase.Database;
 
-describe("キーワードGET APIのテスト", () => {
+describe("ブックマークのAPIのテスト", () => {
   beforeEach(() => {
     // Reset mocks before each test
     vi.resetAllMocks();
 
-    inMemoryDbInstance = setupInMemoryDb(mockKeywords);
+    inMemoryDbInstance = setupInMemoryDb();
 
     vi.mocked(getDb).mockReturnValue(inMemoryDbInstance);
   });
@@ -27,12 +26,12 @@ describe("キーワードGET APIのテスト", () => {
     }
   });
 
-  it("GET: キーワードのデータが取得できる", async () => {
+  it("GET: ブックマークのデータが取得できる", async () => {
     const response = await GET();
 
     expect(response.status).toBe(200);
     const json = await response.json();
-    expect(json).toEqual(mockKeywords);
+    expect(json).toEqual(mockBookmarks);
   });
 
   it("GET: データベースエラー時に500エラーを返す", async () => {

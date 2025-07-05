@@ -1,27 +1,28 @@
 import ActualDatabase from "better-sqlite3";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 
-import { setupInMemoryDb } from "../../test-utils/db-setup";
-import { mockKeywords } from "../../types/Keywords";
-import { getDb } from "../bookmark/database";
-import { DELETE } from "./[id]/route";
+import { setupInMemoryDb } from "../../../test-utils/db-setup";
+import { getDb } from "../../bookmarks/database";
+import { API_KEYWORDS_URL } from "../../utils/constants";
+import { DELETE } from "./route";
 
-vi.mock("../bookmark/database");
+vi.mock("../../bookmarks/database");
 
 let inMemoryDbInstance: ActualDatabase.Database;
 
-const API_URL = "http://localhost:3000/api/keyword/1";
-
 const createDeleteRequest = (
   id: string
-): [Request, { params: { id: string } }] => {
-  return [new Request(API_URL, { method: "DELETE" }), { params: { id } }];
+): [Request, { params: Promise<{ id: string }> }] => {
+  return [
+    new Request(API_KEYWORDS_URL, { method: "DELETE" }),
+    { params: Promise.resolve({ id }) },
+  ];
 };
 
 describe("キーワードDELETE APIのテスト", () => {
   beforeEach(() => {
     vi.resetAllMocks();
-    inMemoryDbInstance = setupInMemoryDb(mockKeywords);
+    inMemoryDbInstance = setupInMemoryDb();
     vi.mocked(getDb).mockReturnValue(inMemoryDbInstance);
   });
 

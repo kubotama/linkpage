@@ -5,7 +5,7 @@ import { beforeEach, describe, expect, it, vi } from "vitest";
 
 import { fireEvent, render, screen, waitFor } from "@testing-library/react";
 
-import { BOOKMARK_DELETE_ENDPOINT } from "../../constants/apiEndpoints";
+import { BOOKMARKS_ENDPOINT } from "../../constants/apiEndpoints";
 import { clickBookmark } from "../../test-utils/click.test";
 import { DELETE_BUTTON_ROLE_NAME } from "../../test-utils/constants";
 import { mockBookmarks } from "../../types/Bookmark";
@@ -99,13 +99,11 @@ describe("削除ボタン", () => {
     await waitFor(() => {
       // APIの呼び出しの確認
       expect(mockFetch).toHaveBeenCalledTimes(1);
-      expect(mockFetch.mock.calls[0][0]).toEqual(BOOKMARK_DELETE_ENDPOINT);
+      expect(mockFetch.mock.calls[0][0]).toEqual(
+        `${BOOKMARKS_ENDPOINT}/${bookmarkToSelect.id}`
+      );
       expect(mockFetch.mock.calls[0][1]).toEqual({
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({ id: bookmarkToSelect.id }),
+        method: "DELETE",
       });
 
       // 画面の更新の確認
@@ -140,8 +138,10 @@ describe("削除ボタン", () => {
     mockFetch.mockResolvedValueOnce({
       ok: false, // 404の場合は false
       status: 404,
-      headers: { "Content-Type": "text/plain" },
-      text: async () => "指定されたブックマークがありません。",
+      headers: { "Content-Type": "application/json" },
+      json: async () => ({
+        message: "指定されたブックマークがありません。",
+      }),
     });
 
     const deleteButton = screen.getByRole("button", {
@@ -187,8 +187,10 @@ describe("削除ボタン", () => {
     mockFetch.mockResolvedValueOnce({
       ok: false, // 400の場合は false
       status: 400,
-      headers: { "Content-Type": "text/plain" },
-      text: async () => "リクエストにIDがありませんでした。",
+      headers: { "Content-Type": "application/json" },
+      json: async () => ({
+        message: "リクエストにIDがありませんでした。",
+      }),
     });
 
     const deleteButton = screen.getByRole("button", {
@@ -230,8 +232,10 @@ describe("削除ボタン", () => {
     mockFetch.mockResolvedValueOnce({
       ok: false, // 500の場合は false
       status: 500,
-      headers: { "Content-Type": "text/plain" },
-      text: async () => "サーバーで予期せぬエラーが発生しました。",
+      headers: { "Content-Type": "application/json" },
+      json: async () => ({
+        message: "サーバーで予期せぬエラーが発生しました。",
+      }),
     });
 
     // クリックするブックマークを選択（例：2番目のブックマーク）

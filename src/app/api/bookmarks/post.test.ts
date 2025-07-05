@@ -1,22 +1,18 @@
-import "@testing-library/jest-dom";
-
 import ActualDatabase from "better-sqlite3"; // Import the actual library
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 
-import { Bookmark, createBookmark } from "../../../types/Bookmark";
-import { getDb } from "../database";
+import { setupInMemoryDb } from "../../test-utils/db-setup";
+import { Bookmark, createBookmark, mockBookmarks } from "../../types/Bookmark";
+import { API_BOOKMARKS_URL } from "../utils/constants";
+import { getDb } from "./database";
 import { OPTIONS, POST } from "./route";
 
-// We will mock getDb to return our in-memory instance.
-// The actual getDb function is simple, but mocking allows us to inject the in-memory DB.
-vi.mock("../database");
+vi.mock("./database");
 
 let inMemoryDbInstance: ActualDatabase.Database;
 
-const API_URL = "http://localhost:3000/api/bookmark/add";
-
 function createPostRequest(body: string): Request {
-  return new Request(API_URL, {
+  return new Request(API_BOOKMARKS_URL, {
     method: "POST",
     headers: {
       "Content-Type": "application/json",
@@ -30,23 +26,9 @@ describe("ブックマーク追加APIのテスト (オンメモリDB)", () => {
     // Reset mocks before each test
     vi.resetAllMocks();
 
-    // Create a new in-memory database for each test
-    inMemoryDbInstance = new ActualDatabase(":memory:");
-    // Initialize the schema (same as in the original database.ts)
-    inMemoryDbInstance.exec(`
-      CREATE TABLE IF NOT EXISTS bookmarks (
-        id INTEGER PRIMARY KEY AUTOINCREMENT,
-        url TEXT NOT NULL UNIQUE,
-        title TEXT NOT NULL
-      )
-    `);
+    inMemoryDbInstance = setupInMemoryDb();
 
-    // Configure the getDb mock to return this instance
-    (
-      getDb as unknown as {
-        mockReturnValue: (db: ActualDatabase.Database) => void;
-      }
-    ).mockReturnValue(inMemoryDbInstance);
+    vi.mocked(getDb).mockReturnValue(inMemoryDbInstance);
   });
 
   afterEach(() => {
@@ -55,13 +37,11 @@ describe("ブックマーク追加APIのテスト (オンメモリDB)", () => {
     }
   });
 
-  // --- POST Tests ---
-
   // Utility function to add a bookmark and verify the response
   async function addBookmarkAndVerify(bookmark: Bookmark) {
     const response = await POST(createPostRequest(JSON.stringify(bookmark)));
 
-    expect(response.status).toBe(200);
+    expect(response.status).toBe(201);
     const json = await response.json();
     expect(json).toEqual({
       id: expect.any(Number),
@@ -83,8 +63,8 @@ describe("ブックマーク追加APIのテスト (オンメモリDB)", () => {
   it("POST: ブックマークのデータが追加できる", async () => {
     await addBookmarkAndVerify(
       createBookmark({
-        url: "https://github.com/kubotama/linkpage",
-        title: "kubotama/linkpage",
+        url: "https://example.com",
+        title: "サンプルのタイトル",
       })
     );
   });
@@ -92,15 +72,15 @@ describe("ブックマーク追加APIのテスト (オンメモリDB)", () => {
   it("POST: ブックマークのデータを2回、追加できる", async () => {
     await addBookmarkAndVerify(
       createBookmark({
-        url: "https://github.com/kubotama/linkpage",
-        title: "kubotama/linkpage",
+        url: "https://www1.example.com",
+        title: "サンプルのタイトル1",
       })
     );
 
     await addBookmarkAndVerify(
       createBookmark({
-        url: "https://www.google.com/",
-        title: "Google",
+        url: "https://www2.example.com",
+        title: "サンプルのタイトル2",
       })
     );
   });
@@ -108,42 +88,46 @@ describe("ブックマーク追加APIのテスト (オンメモリDB)", () => {
   it("POST: 不正なJSONデータの場合はエラーを返す", async () => {
     const response = await POST(createPostRequest("invalid json"));
 
+    expect(response.status).toBe(400);
+    const json = await response.json();
+    expect(json.message).toEqual("リクエストボディのJSONが不正です。");
+  });
+
+  it("POST: クエリエラー時に500エラーを返す", async () => {
+    const queryError = new Error("Failed to execute query");
+    // prepareメソッドをモックしてクエリエラーを発生させる
+    const prepareSpy = vi
+      .spyOn(inMemoryDbInstance, "prepare")
+      .mockImplementation(() => {
+        throw queryError;
+      });
+
+    const bookmark: Bookmark = createBookmark({
+      url: "https://www2.example.com",
+      title: "サンプルのタイトル2",
+    });
+
+    const response = await POST(createPostRequest(JSON.stringify(bookmark)));
     expect(response.status).toBe(500);
-    const text = await response.text();
-    expect(text).toMatch(/Unexpected token|JSON.parse/i); // Check for JSON parsing error message
+    const text = await response.json();
+    expect(text.message).toEqual("サーバー内部でエラーが発生しました。");
+
+    prepareSpy.mockRestore();
   });
 
   it("POST: 重複したURLのブックマーク追加時に409 Conflictを返す", async () => {
-    const initialBookmark = {
-      url: "https://example.com",
-      title: "Example",
-    };
-    // Pre-populate the database with one entry
-    // Ensure the in-memory DB schema includes the UNIQUE constraint
-    inMemoryDbInstance.exec(`
-      DROP TABLE IF EXISTS bookmarks;
-      CREATE TABLE bookmarks (
-        id INTEGER PRIMARY KEY AUTOINCREMENT,
-        url TEXT NOT NULL UNIQUE,
-        title TEXT NOT NULL
-      )
-    `);
-
-    const insertStmt = inMemoryDbInstance.prepare(
-      "INSERT INTO bookmarks (url, title) VALUES (?, ?)"
-    );
-    insertStmt.run(initialBookmark.url, initialBookmark.title);
-
     const bookmark: Bookmark = createBookmark({
-      url: initialBookmark.url, // Same URL
+      url: mockBookmarks[1].url, // Same URL
       title: "同じURLで別のタイトル",
     });
 
     const response = await POST(createPostRequest(JSON.stringify(bookmark)));
 
     expect(response.status).toBe(409);
-    const text = await response.text();
-    expect(text).toEqual("指定されたURLのブックマークは既に登録されています。");
+    const json = await response.json();
+    expect(json.message).toEqual(
+      "指定されたURLのブックマークは既に登録されています。"
+    );
   });
 
   it("POST: URLが空文字の場合にエラーを返す", async () => {
@@ -154,8 +138,8 @@ describe("ブックマーク追加APIのテスト (オンメモリDB)", () => {
     const response = await POST(createPostRequest(JSON.stringify(bookmark)));
 
     expect(response.status).toBe(400);
-    const text = await response.text();
-    expect(text).toEqual("URL cannot be empty");
+    const json = await response.json();
+    expect(json.message).toEqual("URLを指定してください。");
   });
 
   it("POST: タイトルが空文字の場合にエラーを返す", async () => {
@@ -166,8 +150,8 @@ describe("ブックマーク追加APIのテスト (オンメモリDB)", () => {
     const response = await POST(createPostRequest(JSON.stringify(bookmark)));
 
     expect(response.status).toBe(400);
-    const text = await response.text();
-    expect(text).toEqual("Title cannot be empty");
+    const json = await response.json();
+    expect(json.message).toEqual("タイトルを指定してください。");
   });
 
   // --- OPTIONS Tests ---

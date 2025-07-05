@@ -5,11 +5,12 @@ import { beforeEach, describe, expect, it, vi } from "vitest";
 
 import { fireEvent, render, screen, waitFor } from "@testing-library/react";
 
+import { BOOKMARKS_ENDPOINT } from "../../constants/apiEndpoints";
 import { clickBookmark } from "../../test-utils/click.test";
 import {
-  URL_ROLE_NAME,
   TITLE_ROLE_NAME,
   UPDATE_BUTTON_ROLE_NAME,
+  URL_ROLE_NAME,
 } from "../../test-utils/constants";
 import { mockBookmarks } from "../../types/Bookmark";
 import { BookmarkManager } from "../BookmarkManager";
@@ -105,14 +106,15 @@ describe("タイトルの更新ボタン", () => {
     await waitFor(() => {
       // APIの呼び出しの確認
       expect(mockFetch).toHaveBeenCalledTimes(1);
-      expect(mockFetch.mock.calls[0][0]).toEqual("/api/bookmark/update");
+      expect(mockFetch.mock.calls[0][0]).toEqual(
+        `${BOOKMARKS_ENDPOINT}/${bookmarkToSelect.id}`
+      );
       expect(mockFetch.mock.calls[0][1]).toEqual({
-        method: "POST",
+        method: "PUT",
         headers: {
           "Content-Type": "application/json",
         },
         body: JSON.stringify({
-          id: bookmarkToSelect.id,
           url: updateUrl,
           title: updateTitle,
         }),
@@ -160,9 +162,12 @@ describe("タイトルの更新ボタン", () => {
     mockFetch.mockResolvedValueOnce({
       ok: false, // 404の場合は false
       status: 404,
-      headers: { "Content-Type": "text/plain" },
-      text: async () => "指定されたブックマークがありません。",
+      headers: { "Content-Type": "application/json" },
+      json: async () => ({
+        message: "指定されたブックマークがありません。",
+      }),
     });
+
     const updateButton = screen.getByRole("button", {
       name: UPDATE_BUTTON_ROLE_NAME,
     });
@@ -203,8 +208,10 @@ describe("タイトルの更新ボタン", () => {
     mockFetch.mockResolvedValueOnce({
       ok: false, // 400の場合は false
       status: 400,
-      headers: { "Content-Type": "text/plain" },
-      text: async () => "タイトルが指定されていません。",
+      headers: { "Content-Type": "application/json" },
+      json: async () => ({
+        message: "タイトルが指定されていません。",
+      }),
     });
 
     const updateButton = screen.getByRole("button", {
@@ -246,9 +253,12 @@ describe("タイトルの更新ボタン", () => {
     mockFetch.mockResolvedValueOnce({
       ok: false, // 400の場合は false
       status: 400,
-      headers: { "Content-Type": "text/plain" },
-      text: async () => "リクエストにIDがありませんでした。",
+      headers: { "Content-Type": "application/json" },
+      json: async () => ({
+        message: "リクエストにIDがありませんでした。",
+      }),
     });
+
     const updateButton = screen.getByRole("button", {
       name: UPDATE_BUTTON_ROLE_NAME,
     });
@@ -288,8 +298,10 @@ describe("タイトルの更新ボタン", () => {
     mockFetch.mockResolvedValueOnce({
       ok: false, // 400の場合は false
       status: 400,
-      headers: { "Content-Type": "text/plain" },
-      text: async () => "IDは正の整数である必要があります。",
+      headers: { "Content-Type": "application/json" },
+      json: async () => ({
+        message: "IDは正の整数である必要があります。",
+      }),
     });
 
     const updateButton = screen.getByRole("button", {
@@ -331,8 +343,10 @@ describe("タイトルの更新ボタン", () => {
     mockFetch.mockResolvedValueOnce({
       ok: false, // 500の場合は false
       status: 500,
-      headers: { "Content-Type": "text/plain" },
-      text: async () => "サーバーで予期せぬエラーが発生しました。",
+      headers: { "Content-Type": "application/json" },
+      json: async () => ({
+        message: "サーバーで予期せぬエラーが発生しました。",
+      }),
     });
 
     const updateButton = screen.getByRole("button", {

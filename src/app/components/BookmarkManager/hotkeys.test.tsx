@@ -180,4 +180,65 @@ describe("BookmarkManager Hotkeys", () => {
       ).not.toBeInTheDocument();
     });
   });
+
+  it("Escapeキーを押して選択が解除された後でEnterキーを押しても、なにも起きない。", async () => {
+    await act(async () => {
+      render(<BookmarkManager />);
+    });
+
+    // 初期データがロードされ、UIが安定するのを待つ
+    await waitFor(() => {
+      expect(screen.getByText(mockBookmarks[0].title)).toBeInTheDocument();
+    });
+
+    // ブックマークを選択
+    const bookmarkToSelect = mockBookmarks[1]; // Google
+    await clickBookmark(bookmarkToSelect);
+
+    // 入力フィールドが存在し、値が設定されていることを検証
+    await waitFor(() => {
+      expect(screen.getByRole("textbox", { name: URL_ROLE_NAME })).toHaveValue(
+        bookmarkToSelect.url
+      );
+      expect(
+        screen.getByRole("button", { name: UNSELECT_BUTTON_ROLE_NAME })
+      ).toBeInTheDocument();
+    });
+
+    // Escapeキーの押下をシミュレート
+    await act(async () => {
+      fireEvent.keyDown(document.body, { key: "Escape", code: "Escape" });
+    });
+
+    // 入力フィールドがドキュメントから消えたことを検証
+    await waitFor(() => {
+      expect(
+        screen.queryByRole("textbox", { name: URL_ROLE_NAME })
+      ).not.toBeInTheDocument();
+      expect(
+        screen.queryByRole("textbox", { name: TITLE_ROLE_NAME })
+      ).not.toBeInTheDocument();
+      expect(
+        screen.queryByRole("button", { name: UNSELECT_BUTTON_ROLE_NAME })
+      ).not.toBeInTheDocument();
+    });
+
+    // Enterキーの押下をシミュレート
+    await act(async () => {
+      fireEvent.keyDown(document.body, { key: "Enter", code: "Enter" });
+    });
+
+    // 入力フィールドがドキュメントから消えたことを検証
+    await waitFor(() => {
+      expect(
+        screen.queryByRole("textbox", { name: URL_ROLE_NAME })
+      ).not.toBeInTheDocument();
+      expect(
+        screen.queryByRole("textbox", { name: TITLE_ROLE_NAME })
+      ).not.toBeInTheDocument();
+      expect(
+        screen.queryByRole("button", { name: UNSELECT_BUTTON_ROLE_NAME })
+      ).not.toBeInTheDocument();
+    });
+  });
 });

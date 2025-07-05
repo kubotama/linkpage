@@ -1,20 +1,18 @@
 import ActualDatabase from "better-sqlite3"; // Import the actual library
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 
+import { setupInMemoryDb } from "../../test-utils/db-setup";
 import { mockKeywords } from "../../types/Keywords";
-import { getDb } from "../bookmark/database";
+import { getDb } from "../bookmarks/database";
+import { API_KEYWORDS_URL } from "../utils/constants";
 import { POST } from "./route";
 
-import { setupInMemoryDb } from "../../test-utils/db-setup";
-
-vi.mock("../bookmark/database");
+vi.mock("../bookmarks/database");
 
 let inMemoryDbInstance: ActualDatabase.Database;
 
-const API_URL = "http://localhost:3000/api/keyword";
-
 const createPostRequest = (keyword_name: string): Request => {
-  return new Request(API_URL, {
+  return new Request(API_KEYWORDS_URL, {
     method: "POST",
     headers: {
       "Content-Type": "application/json",
@@ -30,7 +28,7 @@ describe("キーワードAPIのテスト", () => {
     // Reset mocks before each test
     vi.resetAllMocks();
 
-    inMemoryDbInstance = setupInMemoryDb(mockKeywords);
+    inMemoryDbInstance = setupInMemoryDb();
 
     vi.mocked(getDb).mockReturnValue(inMemoryDbInstance);
   });
@@ -73,7 +71,7 @@ describe("キーワードAPIのテスト", () => {
 
   it("POST: 不正なJSONデータ(JSON.parseエラー)の場合は400を返す", async () => {
     const response = await POST(
-      new Request(API_URL, {
+      new Request(API_KEYWORDS_URL, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -88,7 +86,7 @@ describe("キーワードAPIのテスト", () => {
 
   it("POST: 不正なJSONデータ(null)の場合は400を返す", async () => {
     const response = await POST(
-      new Request(API_URL, {
+      new Request(API_KEYWORDS_URL, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",

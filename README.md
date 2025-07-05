@@ -100,29 +100,166 @@ npm run start
 
 ## API の仕様
 
+### ブックマーク関連 API
+
+#### GET: 全ブックマークの取得 /bookmarks
+
+登録されている全てのブックマークを取得します。
+
+##### リクエストボディ: なし
+
+##### レスポンス (200 OK): 登録されている全てのブックマークを示す JSON 配列
+
+```json
+{
+  "status": 200,
+  "headers": { "Content-Type": "application/json" },
+  "json": [
+    {
+      "id": 1,
+      "url": "https://example.com",
+      "title": "Example Title 1"
+    },
+    {
+      "id": 2,
+      "url": "https://example.org",
+      "title": "Example Title 2"
+    }
+  ]
+}
+```
+
+#### POST: 新しいブックマークの作成 /bookmarks
+
+新しいブックマークを明示的に作成します。
+
+##### リクエストボディ: 作成するブックマークを示す JSON オブジェクト
+
+```json
+{
+  "url": "https://example.com",
+  "title": "Example"
+}
+```
+
+##### レスポンス (201 Created): 作成したブックマークを示す JSON オブジェクト
+
+```json
+{
+  "status": 201,
+  "headers": { "Content-Type": "application/json" },
+  "Location": "http://localhost:3000/api/bookmarks/3",
+  "json": {
+    "id": 3,
+    "url": "https://example.com",
+    "title": "Example"
+  }
+}
+```
+
+##### レスポンス (409 Conflict): ブックマークが既に存在する場合
+
+```json
+{
+  "status": 409,
+  "headers": { "Content-Type": "application/json" },
+  "json": {
+    "message": "指定されたブックマークは既に登録されています。"
+  }
+}
+```
+
+#### PUT: ブックマークの更新 /bookmarks/[id]
+
+指定された ID のブックマークを更新します。
+
+##### リクエストボディ: 更新するブックマークを示す JSON オブジェクト
+
+```json
+{
+  "url": "https://example.com",
+  "title": "Updated Example"
+}
+```
+
+##### レスポンス (204 No Content): ブックマークの更新成功
+
+```json
+{
+  "status": 204
+}
+```
+
+##### レスポンス (404 Not Found): ブックマークが見つからない場合
+
+```json
+{
+{
+  "status": 404,
+  "headers": { "Content-Type": "application/json" },
+  "json": {
+    "message": "指定されたブックマークがありません。"
+  }
+}
+}
+```
+
+#### DELETE: ブックマークの削除 /bookmarks/[id]
+
+指定された ID のブックマークを削除します。
+
+##### リクエストボディ: なし
+
+##### レスポンス (204 No Content): ブックマークの削除成功
+
+```json
+{
+  "status": 204
+}
+```
+
+##### レスポンス (404 Not Found): ブックマークが見つからない場合
+
+```json
+{
+  "status": 404,
+  "headers": { "Content-Type": "application/json" },
+  "json": {
+    "message": "指定されたブックマークがありません。"
+  }
+}
+```
+
 ### キーワード関連 API
 
 #### GET: 全キーワードの取得 /keyword
 
 登録されている全てのキーワードを取得します。
 
+##### リクエストボディ: なし
+
 ##### レスポンス (200 OK): 登録されている全てのキーワードを示す JSON 配列
 
 ```json
-[
-  {
-    "keyword_id": 1,
-    "keyword_name": "Web"
-  },
-  {
-    "keyword_id": 2,
-    "keyword_name": "開発"
-  },
-  {
-    "keyword_id": 3,
-    "keyword_name": "デザイン"
-  }
-]
+{
+  "status": 200,
+  "headers": { "Content-Type": "application/json" },
+  "json": [
+    {
+      "keyword_id": 1,
+      "keyword_name": "Web"
+    },
+    {
+      "keyword_id": 2,
+      "keyword_name": "開発"
+    },
+    {
+      "keyword_id": 3,
+      "keyword_name": "デザイン"
+    }
+  ]
+}
+```
 
 #### POST: 新しいキーワードの作成 /keyword
 
@@ -140,26 +277,52 @@ npm run start
 
 ```json
 {
-  "keyword_id": 10,
-  "keyword_name": "プログラミング"
+  "status": 201,
+  "headers": { "Content-Type": "application/json" },
+  "json": {
+    "keyword_id": 10,
+    "keyword_name": "プログラミング"
+  }
 }
 ```
 
 ##### レスポンス (409 Conflict): キーワードが既に存在する場合
 
-指定されたキーワードは既に登録されています。
+```json
+{
+  "status": 409,
+  "headers": { "Content-Type": "application/json" },
+  "json": {
+    "message": "指定されたキーワードは既に登録されています。"
+  }
+}
+```
 
 #### DELETE: キーワードの削除 /keyword/[keyword_id]
 
-指定された ID のキーワードを削除します。キーワードとブックマークの関連付けが可能になったら、削除されたキーワードが割り当てられている全てのブックマークから関連付けが解除されます。
+指定された keyword_id のキーワードを削除します。キーワードとブックマークの関連付けが可能になったら、削除されたキーワードが割り当てられている全てのブックマークから関連付けが解除されます。
 
 ##### リクエストボディ: なし
 
 ##### レスポンス (204 No Content): キーワードの削除成功
 
+```json
+{
+  "status": 204
+}
+```
+
 ##### レスポンス (404 Not Found): キーワードが見つからない場合
 
-指定された keyword_id のキーワードがありません。
+```json
+{
+  "status": 404,
+  "headers": { "Content-Type": "application/json" },
+  "json": {
+    "message": "指定された keyword_id のキーワードがありません。"
+  }
+}
+```
 
 #### エラーハンドリングの共通仕様:
 
