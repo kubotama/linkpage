@@ -144,7 +144,8 @@ npm run start
 {
   "id": 3,
   "url": "https://example.com",
-  "title": "Example"
+  "title": "Example",
+  "Location": "/bookmarks/[作成されたブックマークのID]"
 }
 ```
 
