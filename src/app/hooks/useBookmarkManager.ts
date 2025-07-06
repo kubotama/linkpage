@@ -43,7 +43,6 @@ export const useBookmarkManager = () => {
     // エラーハンドリング
     eventSource.onerror = (error) => {
       console.error("EventSource failed:", error);
-      eventSource.close();
     };
 
     // コンポーネントがアンマウントされるときに接続を閉じるクリーンアップ処理
