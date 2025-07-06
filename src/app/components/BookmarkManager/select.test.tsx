@@ -145,7 +145,7 @@ describe("ブックマークの選択", () => {
 
     // クリックするブックマークを選択（例：2番目のブックマーク）
     const bookmarkToSelect: Bookmark = {
-      id: 999,
+      bookmark_id: 999,
       url: "bad url",
       title: "bad title",
     };
