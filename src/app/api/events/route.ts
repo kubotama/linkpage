@@ -3,16 +3,18 @@ import eventEmitter from "../../../lib/event-emitter";
 // このルートが動的に処理されるようにNext.jsに指示します
 export const dynamic = "force-dynamic";
 
+const encoder = new TextEncoder();
+
 export async function GET(request: Request) {
   // ReadableStreamを使用して、サーバーからのデータをストリーミングします
   const stream = new ReadableStream({
     start(controller) {
       const onUpdate = () => {
         // クライアントにイベントを送信します
-        // "data: " の形式はSSEの仕様です
-        controller.enqueue(
-          `data: ${JSON.stringify({ type: "bookmarks-updated" })}\n\n`
-        );
+        const message = `data: ${JSON.stringify({
+          type: "bookmarks-updated",
+        })}\n\n`;
+        controller.enqueue(encoder.encode(message));
       };
 
       // "bookmarks-updated" イベントをリッスンします
