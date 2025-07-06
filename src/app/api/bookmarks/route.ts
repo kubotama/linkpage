@@ -17,7 +17,7 @@ import { getDb } from "./database";
 export async function GET() {
   try {
     const db = getDb();
-    const stmt = db.prepare("SELECT id, url, title FROM bookmarks");
+    const stmt = db.prepare("SELECT bookmark_id, url, title FROM bookmarks");
     const bookmarks = stmt.all();
     return new Response(JSON.stringify(bookmarks), {
       status: 200,
@@ -45,7 +45,7 @@ export async function POST(request: Request) {
     "Access-Control-Allow-Origin": ALLOWED_CORS_ORIGIN,
   };
 
-  let bookmark: Bookmark = { id: 0, url: "", title: "" };
+  let bookmark: Bookmark = { bookmark_id: 0, url: "", title: "" };
   try {
     bookmark = await request.json();
     if (!bookmark.url || bookmark.url.trim() === "") {
@@ -65,7 +65,7 @@ export async function POST(request: Request) {
       JSON.stringify({
         url: bookmark.url,
         title: bookmark.title,
-        id: result.lastInsertRowid,
+        bookmark_id: result.lastInsertRowid,
       }),
       {
         status: 201,

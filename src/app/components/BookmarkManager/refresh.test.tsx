@@ -37,17 +37,17 @@ describe("ブックマークの再表示", () => {
     mockFetch.mockReset();
     const updatedMockBookmarks: Bookmark[] = createBookmarkList([
       {
-        id: 1,
+        bookmark_id: 1,
         url: "https://www.google.co.jp/maps/",
         title: "Google マップ",
       },
       {
-        id: 2,
+        bookmark_id: 2,
         url: "https://qiita.com/",
         title: "Qiita",
       },
       {
-        id: 3,
+        bookmark_id: 3,
         url: "https://zenn.dev/",
         title: "Zenn",
       },

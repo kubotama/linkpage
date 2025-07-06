@@ -15,11 +15,14 @@ let inMemoryDbInstance: ActualDatabase.Database;
 
 const createPutRequest = (
   body: string,
-  id: number
-): [Request, { params: Promise<{ id: string }> }] => {
+  bookmark_id: number
+): [Request, { params: Promise<{ bookmark_id: string }> }] => {
   return [
-    new Request(`${API_BOOKMARKS_URL}${id}`, { method: "Put", body: body }),
-    { params: Promise.resolve({ id: id.toString() }) },
+    new Request(`${API_BOOKMARKS_URL}${bookmark_id}`, {
+      method: "Put",
+      body: body,
+    }),
+    { params: Promise.resolve({ bookmark_id: bookmark_id.toString() }) },
   ];
 };
 
@@ -45,7 +48,7 @@ describe("ブックマーク更新APIのテスト (オンメモリDB)", () => {
         url: mockBookmarks[0].url,
         title: "Updated Title",
       }),
-      mockBookmarks[0].id
+      mockBookmarks[0].bookmark_id
     );
     const response = await PUT(request, context);
 
@@ -54,14 +57,14 @@ describe("ブックマーク更新APIのテスト (オンメモリDB)", () => {
 
     // データベースが更新されたことを確認
     const selectStmt = inMemoryDbInstance.prepare(
-      "SELECT id, url, title FROM bookmarks WHERE id = ?"
+      "SELECT bookmark_id, url, title FROM bookmarks WHERE bookmark_id = ?"
     );
-    const updatedEntry = selectStmt.get(mockBookmarks[0].id) as {
-      id: number;
+    const updatedEntry = selectStmt.get(mockBookmarks[0].bookmark_id) as {
+      bookmark_id: number;
       url: string;
       title: string;
     };
-    expect(updatedEntry.id).toEqual(mockBookmarks[0].id);
+    expect(updatedEntry.bookmark_id).toEqual(mockBookmarks[0].bookmark_id);
     expect(updatedEntry.url).toEqual(mockBookmarks[0].url);
     expect(updatedEntry.title).toEqual("Updated Title");
     // 更新後の件数を確認
@@ -76,7 +79,7 @@ describe("ブックマーク更新APIのテスト (オンメモリDB)", () => {
   it("PUT: ブックマークのタイトルとURLを更新できる。", async () => {
     // // 更新対象のブックマーク
     const bookmarkToUpdate = {
-      id: 1,
+      bookmark_id: 1,
       url: "https://www.example.com",
       title: "Example Title",
     };
@@ -86,7 +89,7 @@ describe("ブックマーク更新APIのテスト (オンメモリDB)", () => {
         url: bookmarkToUpdate.url,
         title: bookmarkToUpdate.title,
       }),
-      bookmarkToUpdate.id
+      bookmarkToUpdate.bookmark_id
     );
     const response = await PUT(request, context);
 
@@ -95,9 +98,9 @@ describe("ブックマーク更新APIのテスト (オンメモリDB)", () => {
 
     // データベースが更新されたことを確認
     const selectStmt = inMemoryDbInstance.prepare(
-      "SELECT id, url, title FROM bookmarks WHERE id = ?"
+      "SELECT bookmark_id, url, title FROM bookmarks WHERE bookmark_id = ?"
     );
-    const updatedEntry = selectStmt.get(bookmarkToUpdate.id);
+    const updatedEntry = selectStmt.get(bookmarkToUpdate.bookmark_id);
     expect(updatedEntry).toEqual(bookmarkToUpdate);
 
     // 更新後の件数を確認
@@ -111,7 +114,7 @@ describe("ブックマーク更新APIのテスト (オンメモリDB)", () => {
 
   it("PUT: 登録されていないブックマークIDを指定された場合は404を返す。", async () => {
     const bookmarkToUpdate = {
-      id: 999,
+      bookmark_id: 999,
       url: "https://www.example.com",
       title: "Example Title",
     };
@@ -121,7 +124,7 @@ describe("ブックマーク更新APIのテスト (オンメモリDB)", () => {
         url: bookmarkToUpdate.url,
         title: bookmarkToUpdate.title,
       }),
-      bookmarkToUpdate.id
+      bookmarkToUpdate.bookmark_id
     );
     const response = await PUT(request, context);
 
@@ -133,7 +136,7 @@ describe("ブックマーク更新APIのテスト (オンメモリDB)", () => {
 
   it("PUT: タイトルが指定されていない場合には400を返す。", async () => {
     const bookmarkToUpdate = {
-      id: 1,
+      bookmark_id: 1,
       url: "https://www.example.com",
       title: "",
     };
@@ -143,7 +146,7 @@ describe("ブックマーク更新APIのテスト (オンメモリDB)", () => {
         url: bookmarkToUpdate.url,
         title: bookmarkToUpdate.title,
       }),
-      bookmarkToUpdate.id
+      bookmarkToUpdate.bookmark_id
     );
     const response = await PUT(request, context);
 
@@ -155,7 +158,7 @@ describe("ブックマーク更新APIのテスト (オンメモリDB)", () => {
 
   it("PUT: URLが指定されていない場合には400を返す。", async () => {
     const bookmarkToUpdate = {
-      id: 1,
+      bookmark_id: 1,
       url: "",
       title: "Example Title",
     };
@@ -165,7 +168,7 @@ describe("ブックマーク更新APIのテスト (オンメモリDB)", () => {
         url: bookmarkToUpdate.url,
         title: bookmarkToUpdate.title,
       }),
-      bookmarkToUpdate.id
+      bookmarkToUpdate.bookmark_id
     );
     const response = await PUT(request, context);
 
@@ -189,7 +192,7 @@ describe("ブックマーク更新APIのテスト (オンメモリDB)", () => {
       0 // ダミーのID。params.idが優先されるため、この値は影響しない
     );
     const response = await PUT(request, {
-      params: Promise.resolve({ id: "" }),
+      params: Promise.resolve({ bookmark_id: "" }),
     });
 
     // レスポンスステータスを確認 (400: Bad Request)
@@ -213,7 +216,7 @@ describe("ブックマーク更新APIのテスト (オンメモリDB)", () => {
       bookmarkToUpdate.id
     );
     const response = await PUT(request, {
-      params: Promise.resolve({ id: "invalid id" }),
+      params: Promise.resolve({ bookmark_id: "invalid id" }),
     });
 
     // レスポンスステータスを確認 (400: Bad Request)
@@ -224,14 +227,14 @@ describe("ブックマーク更新APIのテスト (オンメモリDB)", () => {
 
   it("PUT: 不正なJSONデータの場合は400を返す。", async () => {
     const bookmarkToUpdate = {
-      id: 1,
+      bookmark_id: 1,
       url: "https://www.example.com",
       title: "Example Title",
     };
 
     const [request, context] = createPutRequest(
       "invalid json data",
-      bookmarkToUpdate.id
+      bookmarkToUpdate.bookmark_id
     );
     const response = await PUT(request, context);
 
@@ -250,7 +253,7 @@ describe("ブックマーク更新APIのテスト (オンメモリDB)", () => {
       });
 
     const bookmarkToUpdate = {
-      id: 1,
+      bookmark_id: 1,
       url: "https://www.example.com",
       title: "Example Title",
     };
@@ -260,7 +263,7 @@ describe("ブックマーク更新APIのテスト (オンメモリDB)", () => {
         url: bookmarkToUpdate.url,
         title: bookmarkToUpdate.title,
       }),
-      bookmarkToUpdate.id
+      bookmarkToUpdate.bookmark_id
     );
     const response = await PUT(request, context);
 
@@ -273,7 +276,7 @@ describe("ブックマーク更新APIのテスト (オンメモリDB)", () => {
 
   it("PUT: 同じURLが登録される場合には409を返す。", async () => {
     const bookmarkToUpdate = {
-      id: 1,
+      bookmark_id: 1,
       url: "https://www.example.com",
       title: "Example Title",
     };
@@ -283,7 +286,7 @@ describe("ブックマーク更新APIのテスト (オンメモリDB)", () => {
         url: mockBookmarks[2].url,
         title: bookmarkToUpdate.title,
       }),
-      bookmarkToUpdate.id
+      bookmarkToUpdate.bookmark_id
     );
     const response = await PUT(request, context);
 

@@ -5,18 +5,26 @@ export class InvalidIdError extends Error {
   }
 }
 
-export const getId = (params: { id: string }): number => {
+export const getId = (params: { id: string }): string => {
   const id = Number(params.id);
   if (!Number.isInteger(id) || id <= 0) {
     throw new InvalidIdError("IDは正の整数である必要があります。");
   }
-  return id;
+  return params.id;
 };
 
-export const getIdAsync = async ({
+export const getBookmarkIdAsync = async ({
   params,
 }: {
-  params: Promise<{ id: string }>;
-}): Promise<number> => {
-  return getId(await params);
+  params: Promise<{ bookmark_id: string }>;
+}): Promise<string> => {
+  return getId({ id: (await params).bookmark_id });
+};
+
+export const getKeywordIdAsync = async ({
+  params,
+}: {
+  params: Promise<{ keyword_id: string }>;
+}): Promise<string> => {
+  return getId({ id: (await params).keyword_id });
 };

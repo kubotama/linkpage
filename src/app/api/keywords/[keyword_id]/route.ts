@@ -1,7 +1,7 @@
 "use server";
 
 import { getDb } from "../../bookmarks/database";
-import { getIdAsync, InvalidIdError } from "../../utils/id";
+import { getKeywordIdAsync, InvalidIdError } from "../../utils/id";
 import {
   createInternalError,
   createInvalidIdError,
@@ -10,20 +10,20 @@ import {
 
 export const DELETE = async (
   _request: Request,
-  { params }: { params: Promise<{ id: string }> }
+  { params }: { params: Promise<{ keyword_id: string }> }
 ): Promise<Response> => {
   try {
-    const id = await getIdAsync({ params });
+    const keyword_id = await getKeywordIdAsync({ params });
     const db = getDb();
     const stmt = db.prepare("DELETE FROM keywords WHERE keyword_id = ?");
-    const result = stmt.run(id);
+    const result = stmt.run(keyword_id);
     if (result.changes === 0) {
-      return createNotFoundKeywordError(id);
+      return createNotFoundKeywordError(keyword_id);
     }
     return new Response(null, { status: 204 });
   } catch (error: unknown) {
     if (error instanceof InvalidIdError) {
-      return createInvalidIdError(await params);
+      return createInvalidIdError({ id: (await params).keyword_id });
     }
     return createInternalError(error);
   }
