@@ -11,7 +11,7 @@ export async function GET(request: Request) {
         // クライアントにイベントを送信します
         // "data: " の形式はSSEの仕様です
         controller.enqueue(
-          'data: JSON.stringify({"type": "bookmarks-updated"}\n\n'
+          `data: ${JSON.stringify({ type: "bookmarks-updated" })}\n\n`
         );
       };
 
