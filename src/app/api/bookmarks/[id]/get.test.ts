@@ -12,13 +12,13 @@ vi.mock("../database");
 let inMemoryDbInstance: ActualDatabase.Database;
 
 const createGetRequest = (
-  id: string
+  bookmark_id: string
   // ): [Request, { params: { id: string } }] => {
-): [Request, { params: Promise<{ id: string }> }] => {
+): [Request, { params: Promise<{ bookmark_id: string }> }] => {
   return [
-    new Request(`${API_BOOKMARKS_URL}${id}`, { method: "Get" }),
+    new Request(`${API_BOOKMARKS_URL}${bookmark_id}`, { method: "Get" }),
     // { params: { id } },
-    { params: Promise.resolve({ id: id.toString() }) },
+    { params: Promise.resolve({ bookmark_id: bookmark_id.toString() }) },
   ];
 };
 

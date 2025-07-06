@@ -14,11 +14,11 @@ vi.mock("../database");
 let inMemoryDbInstance: ActualDatabase.Database;
 
 const createDeleteRequest = (
-  id: string
-): [Request, { params: Promise<{ id: string }> }] => {
+  bookmark_id: string
+): [Request, { params: Promise<{ bookmark_id: string }> }] => {
   return [
-    new Request(`${API_BOOKMARKS_URL}${id}`, { method: "DELETE" }),
-    { params: Promise.resolve({ id }) },
+    new Request(`${API_BOOKMARKS_URL}${bookmark_id}`, { method: "DELETE" }),
+    { params: Promise.resolve({ bookmark_id }) },
   ];
 };
 
@@ -42,9 +42,11 @@ describe("ブックマーク削除APIのテスト (オンメモリDB)", () => {
 
     // データベースからIDを取得して確認
     const selectStmt = inMemoryDbInstance.prepare(
-      "SELECT id FROM bookmarks WHERE url = ?"
+      "SELECT bookmark_id FROM bookmarks WHERE url = ?"
     );
-    const dbEntry = selectStmt.get(bookmarkToDelete.url) as { id: number };
+    const dbEntry = selectStmt.get(bookmarkToDelete.url) as {
+      bookmark_id: number;
+    };
     expect(dbEntry).toBeDefined();
     // const bookmarkIdToDelete = dbEntry.id;
 
@@ -58,7 +60,7 @@ describe("ブックマーク削除APIのテスト (オンメモリDB)", () => {
 
     // 削除リクエストを作成
     const [request, context] = createDeleteRequest(
-      bookmarkToDelete.id.toString()
+      bookmarkToDelete.bookmark_id.toString()
     );
     const response = await DELETE(request, context);
 

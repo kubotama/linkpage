@@ -107,7 +107,7 @@ describe("タイトルの更新ボタン", () => {
       // APIの呼び出しの確認
       expect(mockFetch).toHaveBeenCalledTimes(1);
       expect(mockFetch.mock.calls[0][0]).toEqual(
-        `${BOOKMARKS_ENDPOINT}/${bookmarkToSelect.id}`
+        `${BOOKMARKS_ENDPOINT}/${bookmarkToSelect.bookmark_id}`
       );
       expect(mockFetch.mock.calls[0][1]).toEqual({
         method: "PUT",
@@ -132,7 +132,7 @@ describe("タイトルの更新ボタン", () => {
     });
 
     const updatedBookmark = {
-      id: bookmarkToSelect.id,
+      bookmark_id: bookmarkToSelect.bookmark_id,
       url: updateUrl,
       title: updateTitle,
     };

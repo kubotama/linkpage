@@ -44,16 +44,16 @@ describe("ブックマーク追加APIのテスト (オンメモリDB)", () => {
     expect(response.status).toBe(201);
     const json = await response.json();
     expect(json).toEqual({
-      id: expect.any(Number),
+      bookmark_id: expect.any(Number),
       url: bookmark.url,
       title: bookmark.title,
     });
 
     // Verify data in the in-memory database
     const stmt = inMemoryDbInstance.prepare(
-      "SELECT url, title FROM bookmarks WHERE id = ?"
+      "SELECT url, title FROM bookmarks WHERE bookmark_id = ?"
     );
-    const dbData = stmt.get(json.id); // json.id comes from the response (lastInsertRowid)
+    const dbData = stmt.get(json.bookmark_id); // json.id comes from the response (lastInsertRowid)
     expect(dbData).toEqual({
       url: bookmark.url,
       title: bookmark.title,

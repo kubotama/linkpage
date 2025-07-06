@@ -37,11 +37,11 @@ export const createInternalError = (
   );
 };
 
-export const createNotFoundKeywordError = (id: number) => {
+export const createNotFoundKeywordError = (keyword_id: number) => {
   return createErrorResponse(
     "指定されたキーワードが見つかりません。",
     404,
-    `Keyword with id: ${id} not found.`
+    `Keyword with id: ${keyword_id} not found.`
   );
 };
 
@@ -99,11 +99,11 @@ export const createInvalidBodyError = (
   );
 };
 
-export const createNotFoundBookmarkError = (id: number) => {
+export const createNotFoundBookmarkError = (bookmark_id: number) => {
   return createErrorResponse(
     "指定されたブックマークがありません。",
     404,
-    `Bookmark with id: ${id} not found.`
+    `Bookmark with id: ${bookmark_id} not found.`
   );
 };
 

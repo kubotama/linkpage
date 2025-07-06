@@ -48,7 +48,7 @@ export const useBookmarkManager = () => {
     if (selectedBookmark === null) {
       return;
     }
-    deleteBookmark(selectedBookmark.id);
+    deleteBookmark(selectedBookmark.bookmark_id);
   };
 
   // urlClick delete the parameter of URL
@@ -105,7 +105,7 @@ export const useBookmarkManager = () => {
     if (selectedBookmark === null) {
       return;
     }
-    updateBookmark(selectedBookmark.id, textUrl, textTitle);
+    updateBookmark(selectedBookmark.bookmark_id, textUrl, textTitle);
   };
 
   const isBookmarkSelected = () => {

@@ -16,7 +16,8 @@ export const BookmarkTable: React.FC<{
         タイトル
       </div>
       {bookmarks.map((bookmark) => {
-        const isSelected = selectedBookmark?.id === bookmark.id;
+        const isSelected =
+          selectedBookmark?.bookmark_id === bookmark.bookmark_id;
         const conditionalClasses = isSelected
           ? "bg-sky-500 text-gray-100"
           : "bg-gray-100 text-gray-900";
@@ -24,7 +25,7 @@ export const BookmarkTable: React.FC<{
         return (
           <div
             role="row"
-            key={bookmark.id}
+            key={bookmark.bookmark_id}
             onClick={() => onSelectBookmark(bookmark)}
           >
             <div

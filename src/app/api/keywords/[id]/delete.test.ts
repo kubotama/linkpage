@@ -11,11 +11,11 @@ vi.mock("../../bookmarks/database");
 let inMemoryDbInstance: ActualDatabase.Database;
 
 const createDeleteRequest = (
-  id: string
-): [Request, { params: Promise<{ id: string }> }] => {
+  keyword_id: string
+): [Request, { params: Promise<{ keyword_id: string }> }] => {
   return [
     new Request(API_KEYWORDS_URL, { method: "DELETE" }),
-    { params: Promise.resolve({ id }) },
+    { params: Promise.resolve({ keyword_id: keyword_id }) },
   ];
 };
 

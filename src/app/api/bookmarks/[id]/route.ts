@@ -2,7 +2,7 @@
 
 import { SqliteError } from "better-sqlite3";
 
-import { getIdAsync, InvalidIdError } from "../../utils/id";
+import { getBookmarkIdAsync, InvalidIdError } from "../../utils/id";
 import {
   createDuplicateBookmarkError,
   createInternalError,
@@ -17,17 +17,17 @@ import { getDb } from "../database";
 // 1件取得
 export async function GET(
   _request: Request,
-  { params }: { params: Promise<{ id: string }> }
+  { params }: { params: Promise<{ bookmark_id: string }> }
 ) {
   try {
-    const id = await getIdAsync({ params });
+    const bookmark_id = await getBookmarkIdAsync({ params });
     const db = getDb();
     const stmt = db.prepare(
-      "SELECT id, url, title FROM bookmarks WHERE id = ?"
+      "SELECT bookmark_id, url, title FROM bookmarks WHERE bookmark_id = ?"
     );
-    const bookmark = stmt.get(id);
+    const bookmark = stmt.get(bookmark_id);
     if (!bookmark) {
-      return createNotFoundBookmarkError(id);
+      return createNotFoundBookmarkError(bookmark_id);
     }
     return new Response(JSON.stringify(bookmark), {
       status: 200,
@@ -35,7 +35,7 @@ export async function GET(
     });
   } catch (error: unknown) {
     if (error instanceof InvalidIdError) {
-      return createInvalidIdError(await params);
+      return createInvalidIdError({ id: (await params).bookmark_id });
     }
     return createInternalError(error);
   }
@@ -44,11 +44,11 @@ export async function GET(
 // 更新
 export async function PUT(
   request: Request,
-  { params }: { params: Promise<{ id: string }> }
+  { params }: { params: Promise<{ bookmark_id: string }> }
 ) {
   let bookmark: { url: string; title: string } = { url: "", title: "" };
   try {
-    const id = await getIdAsync({ params });
+    const bookmark_id = await getBookmarkIdAsync({ params });
     bookmark = await request.json();
     if (!bookmark.title || bookmark.title.trim() === "") {
       return createNoTitleError();
@@ -59,11 +59,11 @@ export async function PUT(
 
     const db = getDb();
     const prepare = db.prepare(
-      "UPDATE bookmarks SET title = ?, url = ? WHERE id = ?"
+      "UPDATE bookmarks SET title = ?, url = ? WHERE bookmark_id = ?"
     );
-    const info = prepare.run(bookmark.title, bookmark.url, id);
+    const info = prepare.run(bookmark.title, bookmark.url, bookmark_id);
     if (info.changes === 0) {
-      return createNotFoundBookmarkError(id);
+      return createNotFoundBookmarkError(bookmark_id);
     }
     return new Response(null, { status: 204 });
   } catch (error: unknown) {
@@ -77,7 +77,7 @@ export async function PUT(
       return createDuplicateBookmarkError(bookmark.url);
     }
     if (error instanceof InvalidIdError) {
-      return createInvalidIdError(await params);
+      return createInvalidIdError({ id: (await params).bookmark_id });
     }
     return createInternalError(error);
   }
@@ -86,20 +86,20 @@ export async function PUT(
 // 削除
 export async function DELETE(
   _request: Request,
-  { params }: { params: Promise<{ id: string }> }
+  { params }: { params: Promise<{ bookmark_id: string }> }
 ) {
   try {
-    const id = await getIdAsync({ params });
+    const bookmark_id = await getBookmarkIdAsync({ params });
     const db = getDb();
-    const prepare = db.prepare("DELETE FROM bookmarks WHERE id = ?");
-    const info = prepare.run(id);
+    const prepare = db.prepare("DELETE FROM bookmarks WHERE bookmark_id = ?");
+    const info = prepare.run(bookmark_id);
     if (info.changes === 0) {
-      return createNotFoundBookmarkError(id);
+      return createNotFoundBookmarkError(bookmark_id);
     }
     return new Response(null, { status: 204 });
   } catch (error: unknown) {
     if (error instanceof InvalidIdError) {
-      return createInvalidIdError(await params);
+      return createInvalidIdError({ id: (await params).bookmark_id });
     }
     return createInternalError(error);
   }

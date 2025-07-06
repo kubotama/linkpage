@@ -34,16 +34,18 @@ export const useBookmarks = () => {
       });
   }, []);
 
-  const deleteBookmark = useCallback(async (id: number) => {
+  const deleteBookmark = useCallback(async (bookmark_id: number) => {
     setLoadingMessage("ブックマークの削除処理中...");
     try {
-      const response = await fetch(`${BOOKMARKS_ENDPOINT}/${id}`, {
+      const response = await fetch(`${BOOKMARKS_ENDPOINT}/${bookmark_id}`, {
         method: "DELETE",
       });
 
       if (response.status === 204) {
         setBookmarks((currentBookmarks) =>
-          currentBookmarks.filter((bookmark) => bookmark.id !== id)
+          currentBookmarks.filter(
+            (bookmark) => bookmark.bookmark_id !== bookmark_id
+          )
         );
         setSelectedBookmark(null);
         setErrorMessage("");
@@ -61,10 +63,10 @@ export const useBookmarks = () => {
   }, []);
 
   const updateBookmark = useCallback(
-    async (id: number, url: string, title: string) => {
+    async (bookmark_id: number, url: string, title: string) => {
       setLoadingMessage("ブックマークの更新処理中...");
       try {
-        const response = await fetch(`${BOOKMARKS_ENDPOINT}/${id}`, {
+        const response = await fetch(`${BOOKMARKS_ENDPOINT}/${bookmark_id}`, {
           method: "PUT",
           headers: {
             "Content-Type": "application/json",
@@ -75,7 +77,9 @@ export const useBookmarks = () => {
           // APIが更新後のオブジェクトを返さないため、ローカルでタイトルを更新
           setBookmarks((currentBookmarks) =>
             currentBookmarks.map((bookmark) =>
-              bookmark.id === id ? { ...bookmark, url, title } : bookmark
+              bookmark.bookmark_id === bookmark_id
+                ? { ...bookmark, url, title }
+                : bookmark
             )
           );
           setErrorMessage("");
