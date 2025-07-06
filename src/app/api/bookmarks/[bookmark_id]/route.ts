@@ -19,9 +19,8 @@ export async function GET(
   _request: Request,
   { params }: { params: Promise<{ bookmark_id: string }> }
 ) {
-  let bookmark_id: string = "";
   try {
-    bookmark_id = await getBookmarkIdAsync({ params });
+    const bookmark_id = await getBookmarkIdAsync({ params });
     const db = getDb();
     const stmt = db.prepare(
       "SELECT bookmark_id, url, title FROM bookmarks WHERE bookmark_id = ?"
@@ -36,7 +35,7 @@ export async function GET(
     });
   } catch (error: unknown) {
     if (error instanceof InvalidIdError) {
-      return createInvalidIdError({ id: bookmark_id });
+      return createInvalidIdError({ id: (await params).bookmark_id });
     }
     return createInternalError(error);
   }
@@ -48,9 +47,8 @@ export async function PUT(
   { params }: { params: Promise<{ bookmark_id: string }> }
 ) {
   let bookmark: { url: string; title: string } = { url: "", title: "" };
-  let bookmark_id: string = "";
   try {
-    bookmark_id = await getBookmarkIdAsync({ params });
+    const bookmark_id = await getBookmarkIdAsync({ params });
     bookmark = await request.json();
     if (!bookmark.title || bookmark.title.trim() === "") {
       return createNoTitleError();
@@ -79,7 +77,7 @@ export async function PUT(
       return createDuplicateBookmarkError(bookmark.url);
     }
     if (error instanceof InvalidIdError) {
-      return createInvalidIdError({ id: bookmark_id });
+      return createInvalidIdError({ id: (await params).bookmark_id });
     }
     return createInternalError(error);
   }
@@ -90,9 +88,8 @@ export async function DELETE(
   _request: Request,
   { params }: { params: Promise<{ bookmark_id: string }> }
 ) {
-  let bookmark_id: string = "";
   try {
-    bookmark_id = await getBookmarkIdAsync({ params });
+    const bookmark_id = await getBookmarkIdAsync({ params });
     const db = getDb();
     const prepare = db.prepare("DELETE FROM bookmarks WHERE bookmark_id = ?");
     const info = prepare.run(bookmark_id);
@@ -102,7 +99,7 @@ export async function DELETE(
     return new Response(null, { status: 204 });
   } catch (error: unknown) {
     if (error instanceof InvalidIdError) {
-      return createInvalidIdError({ id: bookmark_id });
+      return createInvalidIdError({ id: (await params).bookmark_id });
     }
     return createInternalError(error);
   }
