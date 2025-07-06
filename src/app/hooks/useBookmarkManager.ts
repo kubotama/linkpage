@@ -1,3 +1,5 @@
+"use client";
+
 import { useCallback, useEffect, useState } from "react";
 
 import { useBookmarks } from "./useBookmark";
@@ -27,11 +29,14 @@ export const useBookmarkManager = () => {
     // SSEエンドポイントに接続
     const eventSource = new EventSource("/api/events");
 
-    // サーバーからメッセージが届いたときの処理
     eventSource.onmessage = (event) => {
-      const data = JSON.parse(event.data);
-      if (data.type === "bookmarks-updated") {
-        refreshClick();
+      try {
+        const data = JSON.parse(event.data);
+        if (data.type === "bookmarks-updated") {
+          loadBookmarks();
+        }
+      } catch (error) {
+        console.error("Failed to parse SSE message data:", error, event.data);
       }
     };
 
@@ -45,7 +50,7 @@ export const useBookmarkManager = () => {
     return () => {
       eventSource.close();
     };
-  }, [refreshClick]); // routerが変更されることは稀ですが、依存配列に含めておくのが作法です
+  }, [loadBookmarks]);
 
   useEffect(() => {
     if (selectedBookmark === null) {

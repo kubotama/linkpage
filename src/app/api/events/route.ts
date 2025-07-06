@@ -10,7 +10,9 @@ export async function GET(request: Request) {
       const onUpdate = () => {
         // クライアントにイベントを送信します
         // "data: " の形式はSSEの仕様です
-        controller.enqueue('data: {"type": "bookmarks-updated"}\n\n');
+        controller.enqueue(
+          'data: JSON.stringify({"type": "bookmarks-updated"}\n\n'
+        );
       };
 
       // "bookmarks-updated" イベントをリッスンします
