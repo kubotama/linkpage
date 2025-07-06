@@ -16,9 +16,9 @@ export const DELETE = async (
     const keyword_id = await getKeywordIdAsync({ params });
     const db = getDb();
     const stmt = db.prepare("DELETE FROM keywords WHERE keyword_id = ?");
-    const result = stmt.run(id);
+    const result = stmt.run(keyword_id);
     if (result.changes === 0) {
-      return createNotFoundKeywordError(id);
+      return createNotFoundKeywordError(keyword_id);
     }
     return new Response(null, { status: 204 });
   } catch (error: unknown) {
