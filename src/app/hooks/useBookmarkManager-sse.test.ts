@@ -91,12 +91,12 @@ describe("useBookmarkManager › SSE", () => {
       eventSourceInstance.onerror(new Error("test error"));
     });
 
-    // console.errorとcloseが呼ばれたことを確認
+    // console.errorが呼ばれたことを確認
     expect(consoleErrorSpy).toHaveBeenCalledWith(
       "EventSource failed:",
       expect.any(Error)
     );
-    expect(eventSourceInstance.close).toHaveBeenCalledTimes(1);
+    expect(eventSourceInstance.close).toHaveBeenCalledTimes(0);
   });
 
   it("should handle invalid JSON data from SSE and not call loadBookmarks", () => {
