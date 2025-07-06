@@ -2,6 +2,7 @@
 import { SqliteError } from "better-sqlite3";
 
 import { Bookmark } from "@/app/types/Bookmark";
+import eventEmitter from "../../../lib/event-emitter";
 
 import { ALLOWED_CORS_ORIGIN } from "../../constants/apiEndpoints";
 import { API_BOOKMARKS_URL } from "../utils/constants";
@@ -60,6 +61,9 @@ export async function POST(request: Request) {
       "INSERT INTO bookmarks (url, title) VALUES (?, ?)"
     );
     const result = insertStmt.run(bookmark.url, bookmark.title);
+
+    // ブックマークが更新されたことを通知
+    eventEmitter.emit("bookmarks-updated");
 
     return new Response(
       JSON.stringify({

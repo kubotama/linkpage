@@ -19,6 +19,34 @@ export const useBookmarkManager = () => {
     updateBookmark,
   } = useBookmarks();
 
+  const refreshClick = useCallback(() => {
+    loadBookmarks();
+  }, [loadBookmarks]);
+
+  useEffect(() => {
+    // SSEエンドポイントに接続
+    const eventSource = new EventSource("/api/events");
+
+    // サーバーからメッセージが届いたときの処理
+    eventSource.onmessage = (event) => {
+      const data = JSON.parse(event.data);
+      if (data.type === "bookmarks-updated") {
+        refreshClick();
+      }
+    };
+
+    // エラーハンドリング
+    eventSource.onerror = (error) => {
+      console.error("EventSource failed:", error);
+      eventSource.close();
+    };
+
+    // コンポーネントがアンマウントされるときに接続を閉じるクリーンアップ処理
+    return () => {
+      eventSource.close();
+    };
+  }, [refreshClick]); // routerが変更されることは稀ですが、依存配列に含めておくのが作法です
+
   useEffect(() => {
     if (selectedBookmark === null) {
       setTextUrl("");
@@ -38,10 +66,6 @@ export const useBookmarkManager = () => {
       setTextMessage("");
     }
   }, [loadingMessage, errorMessage]);
-
-  const refreshClick = useCallback(() => {
-    loadBookmarks();
-  }, [loadBookmarks]);
 
   // deleteClick deletes the selected bookmark
   const deleteClick = async () => {
