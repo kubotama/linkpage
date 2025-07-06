@@ -6,11 +6,11 @@ export class InvalidIdError extends Error {
 }
 
 export const getId = (params: { id: string }): number => {
-  const bookmark_id = Number(params.id);
-  if (!Number.isInteger(bookmark_id) || bookmark_id <= 0) {
+  const id = Number(params.id);
+  if (!Number.isInteger(id) || id <= 0) {
     throw new InvalidIdError("IDは正の整数である必要があります。");
   }
-  return bookmark_id;
+  return id;
 };
 
 export const getBookmarkIdAsync = async ({
