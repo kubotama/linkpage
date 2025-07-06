@@ -13,7 +13,7 @@ export const DELETE = async (
   { params }: { params: Promise<{ keyword_id: string }> }
 ): Promise<Response> => {
   try {
-    const id = await getKeywordIdAsync({ params });
+    const keyword_id = await getKeywordIdAsync({ params });
     const db = getDb();
     const stmt = db.prepare("DELETE FROM keywords WHERE keyword_id = ?");
     const result = stmt.run(id);
