@@ -1,6 +1,7 @@
 "use client";
 
-import { useCallback, useEffect, useState } from "react";
+import { useEffect, useState } from "react";
+import { useHotkeys } from "react-hotkeys-hook";
 
 import { useBookmarks } from "./useBookmark";
 
@@ -20,10 +21,6 @@ export const useBookmarkManager = () => {
     deleteBookmark,
     updateBookmark,
   } = useBookmarks();
-
-  const refreshClick = useCallback(() => {
-    loadBookmarks();
-  }, [loadBookmarks]);
 
   useEffect(() => {
     // SSEエンドポイントに接続
@@ -108,7 +105,7 @@ export const useBookmarkManager = () => {
   };
 
   // openClick opens the URL in a new tab
-  const openClick = () => {
+  const openBookmark = () => {
     try {
       new URL(textUrl);
       // 新しいウィンドウでURLを開く
@@ -117,12 +114,6 @@ export const useBookmarkManager = () => {
       setErrorMessage("URLが無効です。正しいURLを入力してください。");
     }
   };
-
-  // clearClick clears the URL and Title input fields
-  const clearClick = useCallback(() => {
-    setTextUrl("");
-    setTextTitle("");
-  }, []);
 
   // handleErrorClose clears the error message
   const handleErrorClose = () => {
@@ -148,8 +139,24 @@ export const useBookmarkManager = () => {
     loadBookmarks();
   }, [loadBookmarks]);
 
+  useHotkeys(
+    "enter, escape",
+    (_, handler) => {
+      if (!isBookmarkSelected()) {
+        return true;
+      }
+      const key = handler.keys?.join("+");
+      if (key === "enter") {
+        openBookmark();
+      } else if (key === "escape") {
+        setSelectedBookmark(null);
+      }
+      return true;
+    },
+    [isBookmarkSelected, openBookmark, setSelectedBookmark]
+  );
+
   return {
-    // selectedBookmark,
     bookmarks,
     textUrl,
     textTitle,
@@ -163,10 +170,7 @@ export const useBookmarkManager = () => {
     deleteClick,
     urlClick,
     pathClick,
-    openClick,
-    clearClick,
     handleErrorClose,
     updateClick,
-    refreshClick,
   };
 };

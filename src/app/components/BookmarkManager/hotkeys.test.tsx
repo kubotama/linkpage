@@ -14,11 +14,7 @@ import {
 import { fireEvent, render, screen, waitFor } from "@testing-library/react";
 
 import { clickBookmark } from "../../test-utils/click.test";
-import {
-  TITLE_ROLE_NAME,
-  URL_ROLE_NAME,
-  UNSELECT_BUTTON_ROLE_NAME,
-} from "../../test-utils/constants";
+import { TITLE_ROLE_NAME, URL_ROLE_NAME } from "../../test-utils/constants";
 import { mockBookmarks } from "../../types/Bookmark";
 import { BookmarkManager } from "../BookmarkManager";
 
@@ -157,9 +153,6 @@ describe("BookmarkManager Hotkeys", () => {
       expect(screen.getByRole("textbox", { name: URL_ROLE_NAME })).toHaveValue(
         bookmarkToSelect.url
       );
-      expect(
-        screen.getByRole("button", { name: UNSELECT_BUTTON_ROLE_NAME })
-      ).toBeInTheDocument();
     });
 
     // Escapeキーの押下をシミュレート
@@ -174,9 +167,6 @@ describe("BookmarkManager Hotkeys", () => {
       ).not.toBeInTheDocument();
       expect(
         screen.queryByRole("textbox", { name: TITLE_ROLE_NAME })
-      ).not.toBeInTheDocument();
-      expect(
-        screen.queryByRole("button", { name: UNSELECT_BUTTON_ROLE_NAME })
       ).not.toBeInTheDocument();
     });
   });
@@ -200,9 +190,6 @@ describe("BookmarkManager Hotkeys", () => {
       expect(screen.getByRole("textbox", { name: URL_ROLE_NAME })).toHaveValue(
         bookmarkToSelect.url
       );
-      expect(
-        screen.getByRole("button", { name: UNSELECT_BUTTON_ROLE_NAME })
-      ).toBeInTheDocument();
     });
 
     // Escapeキーの押下をシミュレート
@@ -218,9 +205,6 @@ describe("BookmarkManager Hotkeys", () => {
       expect(
         screen.queryByRole("textbox", { name: TITLE_ROLE_NAME })
       ).not.toBeInTheDocument();
-      expect(
-        screen.queryByRole("button", { name: UNSELECT_BUTTON_ROLE_NAME })
-      ).not.toBeInTheDocument();
     });
 
     // Enterキーの押下をシミュレート
@@ -235,9 +219,6 @@ describe("BookmarkManager Hotkeys", () => {
       ).not.toBeInTheDocument();
       expect(
         screen.queryByRole("textbox", { name: TITLE_ROLE_NAME })
-      ).not.toBeInTheDocument();
-      expect(
-        screen.queryByRole("button", { name: UNSELECT_BUTTON_ROLE_NAME })
       ).not.toBeInTheDocument();
     });
   });

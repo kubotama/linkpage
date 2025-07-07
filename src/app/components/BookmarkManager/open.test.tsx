@@ -14,10 +14,7 @@ import {
 import { fireEvent, render, screen, waitFor } from "@testing-library/react";
 
 import { clickBookmark } from "../../test-utils/click.test";
-import {
-  OPEN_BUTTON_ROLE_NAME,
-  URL_ROLE_NAME,
-} from "../../test-utils/constants";
+import { URL_ROLE_NAME } from "../../test-utils/constants";
 import { mockBookmarks } from "../../types/Bookmark";
 import { BookmarkManager } from "../BookmarkManager";
 
@@ -94,13 +91,10 @@ describe("「開く」ボタン: 入力されたURLを新しいタブで開く",
     await clickBookmark(bookmarkToSelect);
 
     const urlInput = screen.getByRole("textbox", { name: URL_ROLE_NAME });
-    const openButton = screen.getByRole("button", {
-      name: OPEN_BUTTON_ROLE_NAME,
-    });
 
     await act(async () => {
       fireEvent.change(urlInput, { target: { value: url } });
-      fireEvent.click(openButton);
+      fireEvent.keyDown(document.body, { key: "Enter", code: "Enter" });
     });
 
     await waitFor(() => {
@@ -122,13 +116,11 @@ describe("「開く」ボタン: 入力されたURLを新しいタブで開く",
     await clickBookmark(bookmarkToSelect);
 
     const urlInput = screen.getByRole("textbox", { name: URL_ROLE_NAME });
-    const openButton = screen.getByRole("button", {
-      name: OPEN_BUTTON_ROLE_NAME,
-    });
 
     await act(async () => {
       fireEvent.change(urlInput, { target: { value: "invalid-url" } });
-      fireEvent.click(openButton);
+      fireEvent.keyDown(document.body, { key: "Enter", code: "Enter" });
+      // fireEvent.click(openButton);
     });
 
     await waitFor(() => {

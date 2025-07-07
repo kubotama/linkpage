@@ -1,11 +1,7 @@
 export const TITLE_ROLE_NAME = "タイトル";
 export const URL_ROLE_NAME = "URL";
 export const CLOSE_BUTTON_ROLE_NAME = "閉じる";
-export const OPEN_BUTTON_ROLE_NAME = "開く";
 export const PARAMETER_BUTTON_ROLE_NAME = "パラメータ";
 export const ARROW_BUTTON_ROLE_NAME = "←";
-export const CLEAR_BUTTON_ROLE_NAME = "クリア";
 export const DELETE_BUTTON_ROLE_NAME = "削除";
-export const REFRESH_BUTTON_ROLE_NAME = "再表示";
-export const UNSELECT_BUTTON_ROLE_NAME = "選択解除";
 export const UPDATE_BUTTON_ROLE_NAME = "更新";
