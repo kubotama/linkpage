@@ -120,7 +120,6 @@ describe("「開く」ボタン: 入力されたURLを新しいタブで開く",
     await act(async () => {
       fireEvent.change(urlInput, { target: { value: "invalid-url" } });
       fireEvent.keyDown(document.body, { key: "Enter", code: "Enter" });
-      // fireEvent.click(openButton);
     });
 
     await waitFor(() => {
