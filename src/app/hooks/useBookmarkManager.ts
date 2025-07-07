@@ -23,6 +23,8 @@ export const useBookmarkManager = () => {
   } = useBookmarks();
 
   useEffect(() => {
+    loadBookmarks();
+
     // SSEエンドポイントに接続
     const eventSource = new EventSource("/api/events");
 
@@ -132,10 +134,6 @@ export const useBookmarkManager = () => {
   const isError = () => {
     return errorMessage !== "";
   };
-
-  useEffect(() => {
-    loadBookmarks();
-  }, [loadBookmarks]);
 
   useHotkeys(
     "enter, escape",
