@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { useHotkeys } from "react-hotkeys-hook";
 
 import { useBookmarks } from "./useBookmark";
@@ -104,17 +104,6 @@ export const useBookmarkManager = () => {
     }
   };
 
-  // openClick opens the URL in a new tab
-  const openBookmark = () => {
-    try {
-      new URL(textUrl);
-      // 新しいウィンドウでURLを開く
-      window.open(textUrl, "_blank", "noopener,noreferrer");
-    } catch {
-      setErrorMessage("URLが無効です。正しいURLを入力してください。");
-    }
-  };
-
   // handleErrorClose clears the error message
   const handleErrorClose = () => {
     setErrorMessage("");
@@ -127,9 +116,18 @@ export const useBookmarkManager = () => {
     updateBookmark(selectedBookmark.bookmark_id, textUrl, textTitle);
   };
 
-  const isBookmarkSelected = () => {
+  const openBookmark = useCallback(() => {
+    try {
+      new URL(textUrl);
+      window.open(textUrl, "_blank", "noopener,noreferrer");
+    } catch {
+      setErrorMessage("URLが無効です。正しいURLを入力してください。");
+    }
+  }, [textUrl, setErrorMessage]);
+
+  const isBookmarkSelected = useCallback(() => {
     return selectedBookmark !== null;
-  };
+  }, [selectedBookmark]);
 
   const isError = () => {
     return errorMessage !== "";
