@@ -27,22 +27,6 @@ export const BookmarkManager = () => {
   return (
     <>
       <div className="mt-5 mb-5">
-        {textMessage && (
-          <div className="flex justify-center items-center mb-2">
-            {isError() && ( // エラーメッセージがある場合のみ「閉じる」ボタンを表示
-              <ActionButton onClick={handleErrorClose}>閉じる</ActionButton>
-            )}
-            <div
-              data-testid="bookmark-message"
-              className="ml-2"
-              style={{
-                color: isError() ? "red" : "inherit", // エラーの場合は文字色を赤に
-              }}
-            >
-              {textMessage}
-            </div>
-          </div>
-        )}
         <div className="flex space-x-4">
           <div className="w-bookmark-list">
             <BookmarkTable
@@ -52,6 +36,26 @@ export const BookmarkManager = () => {
             />
           </div>
           <div className="w-bookmark-details">
+            <div className="mb-1 flex justify-center h-8">
+              {textMessage && (
+                <div className="flex justify-center items-center mb-2">
+                  {isError() && ( // エラーメッセージがある場合のみ「閉じる」ボタンを表示
+                    <ActionButton onClick={handleErrorClose}>
+                      閉じる
+                    </ActionButton>
+                  )}
+                  <div
+                    data-testid="bookmark-message"
+                    className="ml-2"
+                    style={{
+                      color: isError() ? "red" : "inherit", // エラーの場合は文字色を赤に
+                    }}
+                  >
+                    {textMessage}
+                  </div>
+                </div>
+              )}
+            </div>
             {isBookmarkSelected() && (
               <>
                 <div className="mb-2 flex justify-between">
