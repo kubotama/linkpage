@@ -1,3 +1,5 @@
+"use client";
+
 import { useCallback, useEffect, useState } from "react";
 
 import { useBookmarks } from "./useBookmark";
@@ -19,6 +21,36 @@ export const useBookmarkManager = () => {
     updateBookmark,
   } = useBookmarks();
 
+  const refreshClick = useCallback(() => {
+    loadBookmarks();
+  }, [loadBookmarks]);
+
+  useEffect(() => {
+    // SSEエンドポイントに接続
+    const eventSource = new EventSource("/api/events");
+
+    eventSource.onmessage = (event) => {
+      try {
+        const data = JSON.parse(event.data);
+        if (data.type === "bookmarks-updated") {
+          loadBookmarks();
+        }
+      } catch (error) {
+        console.error("Failed to parse SSE message data:", error, event.data);
+      }
+    };
+
+    // エラーハンドリング
+    eventSource.onerror = (error) => {
+      console.error("EventSource failed:", error);
+    };
+
+    // コンポーネントがアンマウントされるときに接続を閉じるクリーンアップ処理
+    return () => {
+      eventSource.close();
+    };
+  }, [loadBookmarks]);
+
   useEffect(() => {
     if (selectedBookmark === null) {
       setTextUrl("");
@@ -38,10 +70,6 @@ export const useBookmarkManager = () => {
       setTextMessage("");
     }
   }, [loadingMessage, errorMessage]);
-
-  const refreshClick = useCallback(() => {
-    loadBookmarks();
-  }, [loadBookmarks]);
 
   // deleteClick deletes the selected bookmark
   const deleteClick = async () => {
