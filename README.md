@@ -361,7 +361,7 @@ linkpage はリンクデータを SQLite のデータベースで管理します
 
 | 整形前                                                                              | 整形後                                                       |
 | ----------------------------------------------------------------------------------- | ------------------------------------------------------------ |
-| https://mail.google.com/mail/u/0/#inbox                                             | https://mail.google.com/mail/u/0/                            |
+| https://mail.google.com/mail/u/0/#inbox                                             | https://mail.google.com/mail/u/#inbox                        |
 | https://mail.google.com/mail/u/0/                                                   | https://mail.google.com/mail/u/                              |
 | https://mail.google.com/mail/u/0                                                    | https://mail.google.com/mail/u/                              |
 | https://xtech.nikkei.com/atcl/nxt/column/18/00148/030500376/?n_cid=nbpnxt_mled_itmh | https://xtech.nikkei.com/atcl/nxt/column/18/00148/030500376/ |

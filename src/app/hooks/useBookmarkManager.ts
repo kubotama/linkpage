@@ -92,17 +92,24 @@ export const useBookmarkManager = () => {
 
   // pathClick truncate the most last part of path
   const pathClick = () => {
-    const regex_notslash = /^(http:\/\/|https:\/\/)(.*\/)[^\/]+$/;
-    const match_notslash = textUrl.match(regex_notslash);
-    if (match_notslash) {
-      setTextUrl(match_notslash[1] + match_notslash[2]);
-      return;
-    }
-    const regex_slash = /^(http:\/\/|https:\/\/)(.+\/)[^\/]+\/$/;
-    const match_slash = textUrl.match(regex_slash);
-    if (match_slash) {
-      setTextUrl(match_slash[1] + match_slash[2]);
-      return;
+    try {
+      const url = new URL(textUrl);
+      // 末尾にスラッシュがあれば除去して親ディレクトリを取得
+      const path = url.pathname.replace(/\/$/, "");
+      const lastSlashIndex = path.lastIndexOf("/");
+
+      if (lastSlashIndex > 0) {
+        // e.g. /foo/bar -> /foo/
+        url.pathname = path.substring(0, lastSlashIndex) + "/";
+        setTextUrl(url.toString());
+      } else if (lastSlashIndex === 0 && path.length > 1) {
+        // e.g. /foo -> /
+        url.pathname = "/";
+        setTextUrl(url.toString());
+      }
+      // ルートディレクトリやパスがない場合は何もしない
+    } catch {
+      // 不正なURLの場合は何もしない
     }
   };
 
