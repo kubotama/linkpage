@@ -148,7 +148,7 @@ export const useBookmarkManager = () => {
       if (!isBookmarkSelected()) {
         return true;
       }
-      const key = handler.keys && handler.keys.length > 0 && handler.keys[0];
+      const key = handler.keys?.[0];
       if (key === "enter") {
         openBookmark();
       } else if (key === "escape") {
