@@ -47,7 +47,7 @@ describe("「←」ボタン: URLから、/の階層を一段、削除する", (
     });
 
     await waitFor(() => {
-      expect(urlInput).toHaveValue("https://mail.google.com/mail/u/0/");
+      expect(urlInput).toHaveValue("https://mail.google.com/mail/u/#inbox");
     });
   });
 

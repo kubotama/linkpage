@@ -1,6 +1,7 @@
 "use client";
 
 import { useCallback, useEffect, useState } from "react";
+import { useHotkeys } from "react-hotkeys-hook";
 
 import { useBookmarks } from "./useBookmark";
 
@@ -21,11 +22,9 @@ export const useBookmarkManager = () => {
     updateBookmark,
   } = useBookmarks();
 
-  const refreshClick = useCallback(() => {
-    loadBookmarks();
-  }, [loadBookmarks]);
-
   useEffect(() => {
+    loadBookmarks();
+
     // SSEエンドポイントに接続
     const eventSource = new EventSource("/api/events");
 
@@ -93,36 +92,26 @@ export const useBookmarkManager = () => {
 
   // pathClick truncate the most last part of path
   const pathClick = () => {
-    const regex_notslash = /^(http:\/\/|https:\/\/)(.*\/)[^\/]+$/;
-    const match_notslash = textUrl.match(regex_notslash);
-    if (match_notslash) {
-      setTextUrl(match_notslash[1] + match_notslash[2]);
-      return;
-    }
-    const regex_slash = /^(http:\/\/|https:\/\/)(.+\/)[^\/]+\/$/;
-    const match_slash = textUrl.match(regex_slash);
-    if (match_slash) {
-      setTextUrl(match_slash[1] + match_slash[2]);
-      return;
-    }
-  };
-
-  // openClick opens the URL in a new tab
-  const openClick = () => {
     try {
-      new URL(textUrl);
-      // 新しいウィンドウでURLを開く
-      window.open(textUrl, "_blank", "noopener,noreferrer");
+      const url = new URL(textUrl);
+      // 末尾にスラッシュがあれば除去して親ディレクトリを取得
+      const path = url.pathname.replace(/\/$/, "");
+      const lastSlashIndex = path.lastIndexOf("/");
+
+      if (lastSlashIndex > 0) {
+        // e.g. /foo/bar -> /foo/
+        url.pathname = path.substring(0, lastSlashIndex) + "/";
+        setTextUrl(url.toString());
+      } else if (lastSlashIndex === 0 && path.length > 1) {
+        // e.g. /foo -> /
+        url.pathname = "/";
+        setTextUrl(url.toString());
+      }
+      // ルートディレクトリやパスがない場合は何もしない
     } catch {
-      setErrorMessage("URLが無効です。正しいURLを入力してください。");
+      // 不正なURLの場合は何もしない
     }
   };
-
-  // clearClick clears the URL and Title input fields
-  const clearClick = useCallback(() => {
-    setTextUrl("");
-    setTextTitle("");
-  }, []);
 
   // handleErrorClose clears the error message
   const handleErrorClose = () => {
@@ -136,20 +125,41 @@ export const useBookmarkManager = () => {
     updateBookmark(selectedBookmark.bookmark_id, textUrl, textTitle);
   };
 
-  const isBookmarkSelected = () => {
+  const openBookmark = useCallback(() => {
+    try {
+      new URL(textUrl);
+      window.open(textUrl, "_blank", "noopener,noreferrer");
+    } catch {
+      setErrorMessage("URLが無効です。正しいURLを入力してください。");
+    }
+  }, [textUrl, setErrorMessage]);
+
+  const isBookmarkSelected = useCallback(() => {
     return selectedBookmark !== null;
-  };
+  }, [selectedBookmark]);
 
   const isError = () => {
     return errorMessage !== "";
   };
 
-  useEffect(() => {
-    loadBookmarks();
-  }, [loadBookmarks]);
+  useHotkeys(
+    "enter, escape",
+    (_, handler) => {
+      if (!isBookmarkSelected()) {
+        return true;
+      }
+      const key = handler.keys?.[0];
+      if (key === "enter") {
+        openBookmark();
+      } else if (key === "escape") {
+        setSelectedBookmark(null);
+      }
+      return true;
+    },
+    [isBookmarkSelected, openBookmark, setSelectedBookmark]
+  );
 
   return {
-    // selectedBookmark,
     bookmarks,
     textUrl,
     textTitle,
@@ -163,10 +173,7 @@ export const useBookmarkManager = () => {
     deleteClick,
     urlClick,
     pathClick,
-    openClick,
-    clearClick,
     handleErrorClose,
     updateClick,
-    refreshClick,
   };
 };

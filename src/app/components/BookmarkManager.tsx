@@ -1,5 +1,4 @@
 import React from "react";
-import { useHotkeys } from "react-hotkeys-hook";
 
 import { useBookmarkManager } from "../hooks/useBookmarkManager";
 import { ActionButton } from "./ActionButton";
@@ -21,55 +20,15 @@ export const BookmarkManager = () => {
     deleteClick,
     urlClick,
     pathClick,
-    openClick,
-    clearClick,
     handleErrorClose,
     updateClick,
-    refreshClick,
   } = useBookmarkManager();
-
-  useHotkeys(
-    "enter, escape",
-    (_, handler) => {
-      if (!isBookmarkSelected()) {
-        return true;
-      }
-      const key = handler.keys?.join("+");
-      if (key === "enter") {
-        openClick();
-      } else if (key === "escape") {
-        setSelectedBookmark(null);
-      }
-      return true;
-    },
-    [isBookmarkSelected, openClick, setSelectedBookmark]
-  );
 
   return (
     <>
       <div className="mt-5 mb-5">
-        {textMessage && (
-          <div className="flex justify-center items-center mb-2">
-            {isError() && ( // エラーメッセージがある場合のみ「閉じる」ボタンを表示
-              <ActionButton onClick={handleErrorClose}>閉じる</ActionButton>
-            )}
-            <div
-              data-testid="bookmark-message"
-              className="ml-2"
-              style={{
-                color: isError() ? "red" : "inherit", // エラーの場合は文字色を赤に
-              }}
-            >
-              {textMessage}
-            </div>
-          </div>
-        )}
         <div className="flex space-x-4">
           <div className="w-bookmark-list">
-            <div className="mb-2">
-              <ActionButton onClick={refreshClick}>再表示</ActionButton>
-            </div>
-
             <BookmarkTable
               bookmarks={bookmarks}
               selectedBookmark={selectedBookmark}
@@ -77,18 +36,31 @@ export const BookmarkManager = () => {
             />
           </div>
           <div className="w-bookmark-details">
+            <div className="mb-1 flex justify-center items-center h-8">
+              {textMessage && (
+                <>
+                  {isError() && ( // エラーメッセージがある場合のみ「閉じる」ボタンを表示
+                    <ActionButton onClick={handleErrorClose}>
+                      閉じる
+                    </ActionButton>
+                  )}
+                  <div
+                    data-testid="bookmark-message"
+                    className="ml-2"
+                    style={{
+                      color: isError() ? "red" : "inherit", // エラーの場合は文字色を赤に
+                    }}
+                  >
+                    {textMessage}
+                  </div>
+                </>
+              )}
+            </div>
             {isBookmarkSelected() && (
               <>
                 <div className="mb-2 flex justify-between">
-                  <ActionButton onClick={openClick}>開く</ActionButton>
                   <ActionButton onClick={updateClick}>更新</ActionButton>
-                  <ActionButton onClick={() => setSelectedBookmark(null)}>
-                    選択解除
-                  </ActionButton>
                   <ActionButton onClick={deleteClick}>削除</ActionButton>
-                </div>
-                <div className="mb-2 flex justify-between">
-                  <ActionButton onClick={clearClick}>クリア</ActionButton>
                   <ActionButton onClick={urlClick}>パラメータ</ActionButton>
                   <ActionButton onClick={pathClick}>←</ActionButton>
                 </div>
