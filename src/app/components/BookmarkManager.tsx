@@ -4,6 +4,7 @@ import { useBookmarkManager } from "../hooks/useBookmarkManager";
 import { ActionButton } from "./ActionButton";
 import { BookmarkInputField } from "./BookmarkInputField";
 import { BookmarkTable } from "./BookmarkTable";
+import { ErrorMessage } from "./ErrorMessage";
 
 export const BookmarkManager = () => {
   const {
@@ -37,24 +38,11 @@ export const BookmarkManager = () => {
           </div>
           <div className="w-bookmark-details">
             <div className="mb-1 flex justify-center items-center h-8">
-              {textMessage && (
-                <>
-                  {isError() && ( // エラーメッセージがある場合のみ「閉じる」ボタンを表示
-                    <ActionButton onClick={handleErrorClose}>
-                      閉じる
-                    </ActionButton>
-                  )}
-                  <div
-                    data-testid="bookmark-message"
-                    className="ml-2"
-                    style={{
-                      color: isError() ? "red" : "inherit", // エラーの場合は文字色を赤に
-                    }}
-                  >
-                    {textMessage}
-                  </div>
-                </>
-              )}
+              <ErrorMessage
+                textMessage={textMessage}
+                isError={isError}
+                handleErrorClose={handleErrorClose}
+              />
             </div>
             {isBookmarkSelected() && (
               <>
