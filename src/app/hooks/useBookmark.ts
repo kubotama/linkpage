@@ -61,10 +61,8 @@ export const useBookmarks = () => {
           const json = await response.json();
           throw new Error(`[${response.status}] ${json.message}`);
         }
-      } catch (error: unknown) {
-        // より具体的なエラー型付けも検討可能です
         console.error("ブックマーク削除エラー:", (error as Error).message);
-        setErrorMessage("ブックマークの削除中にエラーが発生しました。");
+        setErrorMessage("ブックマークの削除中にエラーが発生しました。ネットワーク接続を確認し、URLが正しいか確認してください。");
       } finally {
         setLoadingMessage("");
       }
