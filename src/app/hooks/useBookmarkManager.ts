@@ -4,24 +4,35 @@ import { useCallback, useEffect, useState } from "react";
 import { useHotkeys } from "react-hotkeys-hook";
 
 import { useBookmarks } from "./useBookmark";
+import { SelectedBookmarkIndex, SelectedBookmark } from "../types/Bookmark";
 
 export const useBookmarkManager = () => {
   const [textUrl, setTextUrl] = useState("");
   const [textTitle, setTextTitle] = useState("");
+  const [selectedBookmark, setSelectedBookmark] =
+    useState<SelectedBookmark>(undefined);
+  const [selectedBookmarkIndex, setSelectedBookmarkIndex] =
+    useState<SelectedBookmarkIndex>(undefined);
 
   const {
     bookmarks,
-    selectedBookmark,
     textMessage,
     setLoadingMessage,
     setErrorMessage,
-    setSelectedBookmark,
     isError,
     handleErrorClose,
     loadBookmarks,
     deleteBookmark,
     updateBookmark,
   } = useBookmarks();
+
+  useEffect(() => {
+    if (selectedBookmarkIndex === undefined) {
+      setSelectedBookmark(undefined);
+    } else {
+      setSelectedBookmark(bookmarks[selectedBookmarkIndex]);
+    }
+  }, [bookmarks, selectedBookmarkIndex, setSelectedBookmark]);
 
   useEffect(() => {
     loadBookmarks();
@@ -52,7 +63,7 @@ export const useBookmarkManager = () => {
   }, [loadBookmarks]);
 
   useEffect(() => {
-    if (selectedBookmark === null) {
+    if (selectedBookmark === undefined) {
       setTextUrl("");
       setTextTitle("");
     } else {
@@ -61,22 +72,14 @@ export const useBookmarkManager = () => {
     }
   }, [selectedBookmark]);
 
-  // useEffect(() => {
-  //   if (errorMessage) {
-  //     setTextMessage(errorMessage);
-  //   } else if (loadingMessage) {
-  //     setTextMessage(loadingMessage);
-  //   } else {
-  //     setTextMessage("");
-  //   }
-  // }, [loadingMessage, errorMessage]);
-
   // deleteClick deletes the selected bookmark
   const deleteClick = async () => {
-    if (selectedBookmark === null) {
+    if (selectedBookmark === undefined) {
       return;
     }
-    deleteBookmark(selectedBookmark.bookmark_id);
+    deleteBookmark(selectedBookmark.bookmark_id).then(() => {
+      setSelectedBookmarkIndex(undefined);
+    });
   };
 
   // urlClick delete the parameter of URL
@@ -114,13 +117,8 @@ export const useBookmarkManager = () => {
     }
   };
 
-  // handleErrorClose clears the error message
-  // const handleErrorClose = () => {
-  //   setErrorMessage("");
-  // };
-
   const updateClick = () => {
-    if (selectedBookmark === null) {
+    if (selectedBookmark === undefined) {
       return;
     }
     updateBookmark(selectedBookmark.bookmark_id, textUrl, textTitle);
@@ -136,12 +134,8 @@ export const useBookmarkManager = () => {
   }, [textUrl, setErrorMessage]);
 
   const isBookmarkSelected = useCallback(() => {
-    return selectedBookmark !== null;
-  }, [selectedBookmark]);
-
-  // const isError = () => {
-  //   return errorMessage !== "";
-  // };
+    return selectedBookmarkIndex !== undefined;
+  }, [selectedBookmarkIndex]);
 
   useHotkeys(
     "enter, escape",
@@ -153,25 +147,25 @@ export const useBookmarkManager = () => {
       if (key === "enter") {
         openBookmark();
       } else if (key === "escape") {
-        setSelectedBookmark(null);
+        setSelectedBookmarkIndex(undefined);
       }
       return true;
     },
-    [isBookmarkSelected, openBookmark, setSelectedBookmark]
+    [isBookmarkSelected, openBookmark, setSelectedBookmarkIndex]
   );
 
   return {
     bookmarks,
     textUrl,
     textTitle,
-    selectedBookmark,
+    selectedBookmarkIndex,
+    setSelectedBookmarkIndex,
     isBookmarkSelected,
     textMessage,
     setLoadingMessage,
     setErrorMessage,
     isError,
     loadBookmarks,
-    setSelectedBookmark,
     setTextUrl,
     setTextTitle,
     deleteClick,

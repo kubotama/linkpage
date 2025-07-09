@@ -23,7 +23,7 @@ describe("useBookmarkManager", () => {
     vi.resetAllMocks();
 
     act(() => {
-      result.current.setSelectedBookmark(null);
+      result.current.setSelectedBookmarkIndex(undefined);
       result.current.deleteClick();
     });
 
@@ -38,7 +38,7 @@ describe("useBookmarkManager", () => {
     vi.resetAllMocks();
 
     act(() => {
-      result.current.setSelectedBookmark(null);
+      result.current.setSelectedBookmarkIndex(undefined);
       result.current.updateClick();
     });
 

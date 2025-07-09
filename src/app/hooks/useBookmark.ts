@@ -1,13 +1,11 @@
 import { useCallback, useState } from "react";
 
 import { BOOKMARKS_ENDPOINT } from "../constants/apiEndpoints";
-import { Bookmark, SelectedBookmark } from "../types/Bookmark";
+import { Bookmark } from "../types/Bookmark";
 import { useErrorMessage } from "./useErrorMessage";
 
 export const useBookmarks = () => {
   const [bookmarks, setBookmarks] = useState<Bookmark[]>([]);
-  const [selectedBookmark, setSelectedBookmark] =
-    useState<SelectedBookmark>(null);
 
   const {
     textMessage,
@@ -57,7 +55,6 @@ export const useBookmarks = () => {
               (bookmark) => bookmark.bookmark_id !== bookmark_id
             )
           );
-          setSelectedBookmark(null);
           setErrorMessage("");
         } else if (!response.ok) {
           const json = await response.json();
@@ -68,6 +65,7 @@ export const useBookmarks = () => {
         setErrorMessage(
           "ブックマークの削除中にエラーが発生しました。ネットワーク接続を確認し、URLが正しいか確認してください。"
         );
+        throw error;
       } finally {
         setLoadingMessage("");
       }
@@ -115,8 +113,6 @@ export const useBookmarks = () => {
 
   return {
     bookmarks,
-    setSelectedBookmark,
-    selectedBookmark,
     loadBookmarks,
     deleteBookmark,
     updateBookmark,

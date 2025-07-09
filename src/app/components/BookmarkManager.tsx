@@ -13,9 +13,9 @@ export const BookmarkManager = () => {
     textUrl,
     textTitle,
     textMessage,
-    selectedBookmark,
+    selectedBookmarkIndex,
+    setSelectedBookmarkIndex,
     isBookmarkSelected,
-    setSelectedBookmark,
     setTextUrl,
     setTextTitle,
     deleteClick,
@@ -32,8 +32,8 @@ export const BookmarkManager = () => {
           <div className="w-bookmark-list">
             <BookmarkTable
               bookmarks={bookmarks}
-              selectedBookmark={selectedBookmark}
-              onSelectBookmark={setSelectedBookmark}
+              selectedBookmarkIndex={selectedBookmarkIndex}
+              onSelectBookmarkIndex={setSelectedBookmarkIndex}
             />
           </div>
           <div className="w-bookmark-details">
