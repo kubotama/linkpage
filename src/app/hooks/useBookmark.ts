@@ -34,7 +34,9 @@ export const useBookmarks = () => {
       })
       .catch((error) => {
         console.error("ブックマークのロードエラー:", error); // 詳細なエラーはコンソールへ
-        setErrorMessage("ブックマークのロード中にエラーが発生しました。"); // ユーザーフレンドリーなメッセージ
+        setErrorMessage(
+          "ブックマークのロード中にエラーが発生しました。ネットワーク接続を確認し、URLが正しいか確認してください。"
+        ); // ユーザーフレンドリーなメッセージ
       })
       .finally(() => {
         setLoadingMessage("");
@@ -61,8 +63,11 @@ export const useBookmarks = () => {
           const json = await response.json();
           throw new Error(`[${response.status}] ${json.message}`);
         }
+      } catch (error: unknown) {
         console.error("ブックマーク削除エラー:", (error as Error).message);
-        setErrorMessage("ブックマークの削除中にエラーが発生しました。ネットワーク接続を確認し、URLが正しいか確認してください。");
+        setErrorMessage(
+          "ブックマークの削除中にエラーが発生しました。ネットワーク接続を確認し、URLが正しいか確認してください。"
+        );
       } finally {
         setLoadingMessage("");
       }
@@ -98,7 +103,9 @@ export const useBookmarks = () => {
         }
       } catch (error: unknown) {
         console.error("ブックマークの更新エラー:", (error as Error).message); // 詳細なエラーはコンソールへ
-        setErrorMessage("ブックマークの更新中にエラーが発生しました。"); // ユーザーフレンドリーなメッセージ
+        setErrorMessage(
+          "ブックマークの更新中にエラーが発生しました。ネットワーク接続を確認し、URLが正しいか確認してください。"
+        ); // ユーザーフレンドリーなメッセージ
       } finally {
         setLoadingMessage("");
       }
