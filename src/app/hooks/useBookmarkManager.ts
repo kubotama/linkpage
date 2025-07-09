@@ -8,15 +8,16 @@ import { useBookmarks } from "./useBookmark";
 export const useBookmarkManager = () => {
   const [textUrl, setTextUrl] = useState("");
   const [textTitle, setTextTitle] = useState("");
-  const [textMessage, setTextMessage] = useState("ブックマークをロード中...");
 
   const {
     bookmarks,
     selectedBookmark,
-    setSelectedBookmark,
-    loadingMessage,
-    errorMessage,
+    textMessage,
+    setLoadingMessage,
     setErrorMessage,
+    setSelectedBookmark,
+    isError,
+    handleErrorClose,
     loadBookmarks,
     deleteBookmark,
     updateBookmark,
@@ -60,15 +61,15 @@ export const useBookmarkManager = () => {
     }
   }, [selectedBookmark]);
 
-  useEffect(() => {
-    if (errorMessage) {
-      setTextMessage(errorMessage);
-    } else if (loadingMessage) {
-      setTextMessage(loadingMessage);
-    } else {
-      setTextMessage("");
-    }
-  }, [loadingMessage, errorMessage]);
+  // useEffect(() => {
+  //   if (errorMessage) {
+  //     setTextMessage(errorMessage);
+  //   } else if (loadingMessage) {
+  //     setTextMessage(loadingMessage);
+  //   } else {
+  //     setTextMessage("");
+  //   }
+  // }, [loadingMessage, errorMessage]);
 
   // deleteClick deletes the selected bookmark
   const deleteClick = async () => {
@@ -114,9 +115,9 @@ export const useBookmarkManager = () => {
   };
 
   // handleErrorClose clears the error message
-  const handleErrorClose = () => {
-    setErrorMessage("");
-  };
+  // const handleErrorClose = () => {
+  //   setErrorMessage("");
+  // };
 
   const updateClick = () => {
     if (selectedBookmark === null) {
@@ -138,9 +139,9 @@ export const useBookmarkManager = () => {
     return selectedBookmark !== null;
   }, [selectedBookmark]);
 
-  const isError = () => {
-    return errorMessage !== "";
-  };
+  // const isError = () => {
+  //   return errorMessage !== "";
+  // };
 
   useHotkeys(
     "enter, escape",
@@ -163,10 +164,13 @@ export const useBookmarkManager = () => {
     bookmarks,
     textUrl,
     textTitle,
-    textMessage,
     selectedBookmark,
-    isError,
     isBookmarkSelected,
+    textMessage,
+    setLoadingMessage,
+    setErrorMessage,
+    isError,
+    loadBookmarks,
     setSelectedBookmark,
     setTextUrl,
     setTextTitle,
