@@ -6,11 +6,7 @@ export const BookmarkTable: React.FC<{
   bookmarks: Bookmark[];
   selectedBookmarkIndex: SelectedBookmarkIndex;
   onSelectBookmarkIndex: (index: number) => void;
-}> = ({
-  bookmarks,
-  selectedBookmarkIndex,
-  onSelectBookmarkIndex: onSelectBookmarkIndex,
-}) => {
+}> = ({ bookmarks, selectedBookmarkIndex, onSelectBookmarkIndex }) => {
   return (
     <div role="table" className="flex flex-col " aria-label="bookmarks table">
       <div
