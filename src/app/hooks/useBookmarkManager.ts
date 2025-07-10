@@ -84,7 +84,7 @@ export const useBookmarkManager = () => {
   }, [selectedBookmark]);
 
   // deleteClick deletes the selected bookmark
-  const deleteClick = async () => {
+  const deleteClick = useCallback(async () => {
     if (selectedBookmark === undefined) {
       return;
     }
@@ -97,10 +97,17 @@ export const useBookmarkManager = () => {
     } catch {
       setErrorMessage("ブックマークの削除中にエラーが発生しました。");
     }
-  };
+  }, [
+    clearMessage,
+    deleteBookmark,
+    selectedBookmark,
+    setSelectedBookmarkIndex,
+    setErrorMessage,
+    setLoadingMessage,
+  ]);
 
   // urlClick delete the parameter of URL
-  const urlClick = () => {
+  const urlClick = useCallback(() => {
     // #や?の後ろを削除する
     // #や?のない場合は、入力されたURLをそのままとする
     const regex = /(https?:\/\/(.*?))(?:[#\?].*|$)/;
@@ -109,10 +116,10 @@ export const useBookmarkManager = () => {
     if (matches && matches.length > 2) {
       setTextUrl(matches[1]);
     }
-  };
+  }, [textUrl]);
 
   // pathClick truncate the most last part of path
-  const pathClick = () => {
+  const pathClick = useCallback(() => {
     try {
       const url = new URL(textUrl);
       // 末尾にスラッシュがあれば除去して親ディレクトリを取得
@@ -132,9 +139,10 @@ export const useBookmarkManager = () => {
     } catch {
       // 不正なURLの場合は何もしない
     }
-  };
+  }, [textUrl]);
 
-  const updateClick = async () => {
+  // updateClick updates the selected bookmark
+  const updateClick = useCallback(async () => {
     if (selectedBookmark === undefined) {
       return;
     }
@@ -149,7 +157,15 @@ export const useBookmarkManager = () => {
         setErrorMessage("ブックマークの更新中にエラーが発生しました。");
       }
     }
-  };
+  }, [
+    clearMessage,
+    selectedBookmark,
+    setLoadingMessage,
+    setErrorMessage,
+    textTitle,
+    textUrl,
+    updateBookmark,
+  ]);
 
   const openBookmark = useCallback(() => {
     try {

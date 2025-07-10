@@ -19,9 +19,9 @@ export const useErrorMessage = () => {
     setIsError(false);
   }, []);
 
-  const handleErrorClose = () => {
+  const handleErrorClose = useCallback(() => {
     clearMessage();
-  };
+  }, [clearMessage]);
 
   return {
     textMessage,
