@@ -21,7 +21,6 @@ export const useErrorMessage = () => {
 
   const handleErrorClose = () => {
     clearMessage();
-    setIsError(false);
   };
 
   return {
