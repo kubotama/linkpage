@@ -23,19 +23,13 @@ const MockEventSource = global.EventSource;
 
 describe("useBookmarkManager › SSE", () => {
   const mockLoadBookmarks = vi.fn();
-  const mockSetSelectedBookmark = vi.fn();
-  const mockSetErrorMessage = vi.fn();
 
   beforeEach(() => {
     // 各テストの前にモックとインスタンスリストをリセット
+    mockLoadBookmarks.mockResolvedValueOnce("");
     vi.clearAllMocks();
     (useBookmarks as ReturnType<typeof vi.fn>).mockReturnValue({
       bookmarks: [],
-      selectedBookmark: null,
-      setSelectedBookmark: mockSetSelectedBookmark,
-      loadingMessage: "",
-      errorMessage: "",
-      setErrorMessage: mockSetErrorMessage,
       loadBookmarks: mockLoadBookmarks,
       deleteBookmark: vi.fn(),
       updateBookmark: vi.fn(),

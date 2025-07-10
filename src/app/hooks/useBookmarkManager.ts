@@ -3,8 +3,9 @@
 import { useCallback, useEffect, useState } from "react";
 import { useHotkeys } from "react-hotkeys-hook";
 
-import { useBookmarks } from "./useBookmark";
-import { SelectedBookmarkIndex, SelectedBookmark } from "../types/Bookmark";
+import { SelectedBookmark, SelectedBookmarkIndex } from "../types/Bookmark";
+import { DuplicatedUrlError, useBookmarks } from "./useBookmark";
+import { useErrorMessage } from "./useErrorMessage";
 
 export const useBookmarkManager = () => {
   const [textUrl, setTextUrl] = useState("");
@@ -14,17 +15,16 @@ export const useBookmarkManager = () => {
   const [selectedBookmarkIndex, setSelectedBookmarkIndex] =
     useState<SelectedBookmarkIndex>(undefined);
 
+  const { bookmarks, loadBookmarks, deleteBookmark, updateBookmark } =
+    useBookmarks();
+
   const {
-    bookmarks,
     textMessage,
     setLoadingMessage,
     setErrorMessage,
     isError,
     handleErrorClose,
-    loadBookmarks,
-    deleteBookmark,
-    updateBookmark,
-  } = useBookmarks();
+  } = useErrorMessage();
 
   useEffect(() => {
     if (selectedBookmarkIndex === undefined) {
@@ -35,7 +35,17 @@ export const useBookmarkManager = () => {
   }, [bookmarks, selectedBookmarkIndex, setSelectedBookmark]);
 
   useEffect(() => {
-    loadBookmarks();
+    setLoadingMessage("ブックマークをロード中...");
+    loadBookmarks()
+      .then(() => {
+        setErrorMessage("");
+      })
+      .catch(() => {
+        setErrorMessage("ブックマークのロード中にエラーが発生しました。");
+      })
+      .finally(() => {
+        setLoadingMessage("");
+      });
 
     // SSEエンドポイントに接続
     const eventSource = new EventSource("/api/events");
@@ -60,7 +70,7 @@ export const useBookmarkManager = () => {
     return () => {
       eventSource.close();
     };
-  }, [loadBookmarks]);
+  }, [loadBookmarks, setErrorMessage, setLoadingMessage]);
 
   useEffect(() => {
     if (selectedBookmark === undefined) {
@@ -77,9 +87,19 @@ export const useBookmarkManager = () => {
     if (selectedBookmark === undefined) {
       return;
     }
-    deleteBookmark(selectedBookmark.bookmark_id).then(() => {
-      setSelectedBookmarkIndex(undefined);
-    });
+
+    setLoadingMessage("ブックマークの削除処理中...");
+    deleteBookmark(selectedBookmark.bookmark_id)
+      .then(() => {
+        setSelectedBookmarkIndex(undefined);
+        setErrorMessage("");
+      })
+      .catch(() => {
+        setErrorMessage("ブックマークの削除中にエラーが発生しました。");
+      })
+      .finally(() => {
+        setLoadingMessage("");
+      });
   };
 
   // urlClick delete the parameter of URL
@@ -121,7 +141,24 @@ export const useBookmarkManager = () => {
     if (selectedBookmark === undefined) {
       return;
     }
-    updateBookmark(selectedBookmark.bookmark_id, textUrl, textTitle);
+    setLoadingMessage("ブックマークの更新中...");
+    updateBookmark(selectedBookmark.bookmark_id, textUrl, textTitle)
+      .then(() => {
+        setErrorMessage("");
+        setLoadingMessage("");
+      })
+      .catch((error: unknown) => {
+        if (error instanceof DuplicatedUrlError) {
+          setErrorMessage(
+            "指定されたURLのブックマークは既に登録されています。"
+          );
+        } else {
+          setErrorMessage("ブックマークの更新中にエラーが発生しました。");
+        }
+      })
+      .finally(() => {
+        setLoadingMessage("");
+      });
   };
 
   const openBookmark = useCallback(() => {
@@ -162,10 +199,7 @@ export const useBookmarkManager = () => {
     setSelectedBookmarkIndex,
     isBookmarkSelected,
     textMessage,
-    setLoadingMessage,
-    setErrorMessage,
     isError,
-    loadBookmarks,
     setTextUrl,
     setTextTitle,
     deleteClick,
