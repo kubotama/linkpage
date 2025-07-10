@@ -156,4 +156,56 @@ describe("「←」ボタン: URLから、/の階層を一段、削除する", (
       expect(urlInput).toHaveValue("https://xtech.nikkei.com/");
     });
   });
+
+  it("https://xtech.nikkei.com/atcl", async () => {
+    const url = "https://xtech.nikkei.com/atcl";
+
+    await act(async () => {
+      render(<BookmarkManager />);
+    });
+
+    // クリックするブックマークを選択（例：2番目のブックマーク）
+    const bookmarkToSelect = mockBookmarks[1]; // Google
+    await clickBookmark(bookmarkToSelect);
+
+    const urlInput = screen.getByRole("textbox", { name: URL_ROLE_NAME });
+    const pathButton = screen.getByRole("button", {
+      name: ARROW_BUTTON_ROLE_NAME,
+    });
+
+    await act(async () => {
+      fireEvent.change(urlInput, { target: { value: url } });
+      fireEvent.click(pathButton);
+    });
+
+    await waitFor(() => {
+      expect(urlInput).toHaveValue("https://xtech.nikkei.com/");
+    });
+  });
+
+  it("invalid-url", async () => {
+    const url = "invalid-url";
+
+    await act(async () => {
+      render(<BookmarkManager />);
+    });
+
+    // クリックするブックマークを選択（例：2番目のブックマーク）
+    const bookmarkToSelect = mockBookmarks[1]; // Google
+    await clickBookmark(bookmarkToSelect);
+
+    const urlInput = screen.getByRole("textbox", { name: URL_ROLE_NAME });
+    const pathButton = screen.getByRole("button", {
+      name: ARROW_BUTTON_ROLE_NAME,
+    });
+
+    await act(async () => {
+      fireEvent.change(urlInput, { target: { value: url } });
+      fireEvent.click(pathButton);
+    });
+
+    await waitFor(() => {
+      expect(urlInput).toHaveValue(url);
+    });
+  });
 });
