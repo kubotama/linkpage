@@ -49,18 +49,6 @@ export const useBookmarkManager = () => {
   useEffect(() => {
     loadBookmarks();
 
-    // setLoadingMessage("ブックマークをロード中...");
-    // getBookmarks()
-    //   .then(() => {
-    //     clearMessage();
-    //   })
-    //   .catch(() => {
-    //     setErrorMessage("ブックマークのロード中にエラーが発生しました。");
-    //   });
-    // .finally(() => {
-    //   setLoadingMessage("");
-    // });
-
     // SSEエンドポイントに接続
     const eventSource = new EventSource("/api/events");
 
