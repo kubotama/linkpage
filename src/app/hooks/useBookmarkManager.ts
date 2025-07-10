@@ -3,7 +3,7 @@
 import { useCallback, useEffect, useState } from "react";
 import { useHotkeys } from "react-hotkeys-hook";
 
-import { SelectedBookmark, SelectedBookmarkIndex } from "../types/Bookmark";
+import { SelectedBookmark } from "../types/Bookmark";
 import { DuplicatedUrlError, useBookmarks } from "./useBookmark";
 import { useErrorMessage } from "./useErrorMessage";
 
@@ -12,8 +12,6 @@ export const useBookmarkManager = () => {
   const [textTitle, setTextTitle] = useState("");
   const [selectedBookmark, setSelectedBookmark] =
     useState<SelectedBookmark>(undefined);
-  const [selectedBookmarkIndex, setSelectedBookmarkIndex] =
-    useState<SelectedBookmarkIndex>(undefined);
 
   const { bookmarks, getBookmarks, deleteBookmark, updateBookmark } =
     useBookmarks();
@@ -26,14 +24,6 @@ export const useBookmarkManager = () => {
     isError,
     handleErrorClose,
   } = useErrorMessage();
-
-  useEffect(() => {
-    if (selectedBookmarkIndex === undefined) {
-      setSelectedBookmark(undefined);
-    } else {
-      setSelectedBookmark(bookmarks[selectedBookmarkIndex]);
-    }
-  }, [bookmarks, selectedBookmarkIndex, setSelectedBookmark]);
 
   const loadBookmarks = useCallback(async () => {
     setLoadingMessage("ブックマークをロード中...");
@@ -92,7 +82,7 @@ export const useBookmarkManager = () => {
     setLoadingMessage("ブックマークの削除処理中...");
     try {
       await deleteBookmark(selectedBookmark.bookmark_id);
-      setSelectedBookmarkIndex(undefined);
+      setSelectedBookmark(undefined);
       clearMessage();
     } catch {
       setErrorMessage("ブックマークの削除中にエラーが発生しました。");
@@ -101,7 +91,7 @@ export const useBookmarkManager = () => {
     clearMessage,
     deleteBookmark,
     selectedBookmark,
-    setSelectedBookmarkIndex,
+    // setSelectedBookmarkIndex,
     setErrorMessage,
     setLoadingMessage,
   ]);
@@ -177,8 +167,8 @@ export const useBookmarkManager = () => {
   }, [textUrl, setErrorMessage]);
 
   const isBookmarkSelected = useCallback(() => {
-    return selectedBookmarkIndex !== undefined;
-  }, [selectedBookmarkIndex]);
+    return selectedBookmark !== undefined;
+  }, [selectedBookmark]);
 
   useHotkeys(
     "enter, escape",
@@ -190,19 +180,19 @@ export const useBookmarkManager = () => {
       if (key === "enter") {
         openBookmark();
       } else if (key === "escape") {
-        setSelectedBookmarkIndex(undefined);
+        setSelectedBookmark(undefined);
       }
       return true;
     },
-    [isBookmarkSelected, openBookmark, setSelectedBookmarkIndex]
+    [isBookmarkSelected, openBookmark, setSelectedBookmark]
   );
 
   return {
     bookmarks,
     textUrl,
     textTitle,
-    selectedBookmarkIndex,
-    setSelectedBookmarkIndex,
+    selectedBookmark,
+    setSelectedBookmark,
     isBookmarkSelected,
     textMessage,
     isError,

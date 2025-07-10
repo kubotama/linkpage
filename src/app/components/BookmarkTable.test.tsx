@@ -3,18 +3,18 @@ import "@testing-library/jest-dom";
 import { describe, expect, it, vi } from "vitest";
 
 import { render, screen, within } from "@testing-library/react";
-import { mockBookmarks } from "../types/Bookmark";
+import { mockBookmarks, SelectedBookmark } from "../types/Bookmark";
 
 import { BookmarkTable } from "./BookmarkTable";
 
 describe("BookmarkTableのテスト", () => {
   it("テーブルとヘッダーが正しく表示される", () => {
-    const mockOnSelectBookmark: React.Dispatch<number> = vi.fn();
+    const mockOnSelectBookmark: React.Dispatch<SelectedBookmark> = vi.fn();
     render(
       <BookmarkTable
         bookmarks={mockBookmarks}
-        selectedBookmarkIndex={0}
-        onSelectBookmarkIndex={mockOnSelectBookmark}
+        selectedBookmark={undefined}
+        onSelectBookmark={mockOnSelectBookmark}
       />
     );
 
@@ -29,12 +29,12 @@ describe("BookmarkTableのテスト", () => {
   });
 
   it("ブックマークデータが正しく表示される", () => {
-    const mockOnSelectBookmark: React.Dispatch<number> = vi.fn();
+    const mockOnSelectBookmark: React.Dispatch<SelectedBookmark> = vi.fn();
     render(
       <BookmarkTable
         bookmarks={mockBookmarks}
-        selectedBookmarkIndex={0}
-        onSelectBookmarkIndex={mockOnSelectBookmark}
+        selectedBookmark={undefined}
+        onSelectBookmark={mockOnSelectBookmark}
       />
     );
 
@@ -50,12 +50,12 @@ describe("BookmarkTableのテスト", () => {
   });
 
   it("空のブックマークリストでテーブルが表示される", () => {
-    const mockOnSelectBookmark: React.Dispatch<number> = vi.fn();
+    const mockOnSelectBookmark: React.Dispatch<SelectedBookmark> = vi.fn();
     render(
       <BookmarkTable
         bookmarks={[]}
-        selectedBookmarkIndex={undefined}
-        onSelectBookmarkIndex={mockOnSelectBookmark}
+        selectedBookmark={undefined}
+        onSelectBookmark={mockOnSelectBookmark}
       />
     );
 
@@ -75,8 +75,8 @@ describe("BookmarkTableのテスト", () => {
     render(
       <BookmarkTable
         bookmarks={mockBookmarks}
-        selectedBookmarkIndex={1}
-        onSelectBookmarkIndex={mockOnSelectBookmark}
+        selectedBookmark={selected}
+        onSelectBookmark={mockOnSelectBookmark}
       />
     );
 

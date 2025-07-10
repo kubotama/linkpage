@@ -1,12 +1,12 @@
 import React from "react";
 
-import { Bookmark, SelectedBookmarkIndex } from "../types/Bookmark";
+import { Bookmark, SelectedBookmark } from "../types/Bookmark";
 
 export const BookmarkTable: React.FC<{
   bookmarks: Bookmark[];
-  selectedBookmarkIndex: SelectedBookmarkIndex;
-  onSelectBookmarkIndex: (index: number) => void;
-}> = ({ bookmarks, selectedBookmarkIndex, onSelectBookmarkIndex }) => {
+  selectedBookmark: SelectedBookmark;
+  onSelectBookmark: (bookmark: SelectedBookmark) => void;
+}> = ({ bookmarks, selectedBookmark, onSelectBookmark }) => {
   return (
     <div role="table" className="flex flex-col " aria-label="bookmarks table">
       <div
@@ -15,8 +15,9 @@ export const BookmarkTable: React.FC<{
       >
         タイトル
       </div>
-      {bookmarks.map((bookmark, index) => {
-        const isSelected = selectedBookmarkIndex === index;
+      {bookmarks.map((bookmark) => {
+        const isSelected =
+          selectedBookmark?.bookmark_id === bookmark.bookmark_id;
         const conditionalClasses = isSelected
           ? "bg-sky-500 text-gray-100"
           : "bg-gray-100 text-gray-900";
@@ -25,7 +26,7 @@ export const BookmarkTable: React.FC<{
           <div
             role="row"
             key={bookmark.bookmark_id}
-            onClick={() => onSelectBookmarkIndex(index)}
+            onClick={() => onSelectBookmark(bookmark)}
           >
             <div
               className={`p-1 text-sm border border-gray-700 ${conditionalClasses}`}
