@@ -37,13 +37,12 @@ export const useBookmarkManager = () => {
 
   const loadBookmarks = useCallback(async () => {
     setLoadingMessage("ブックマークをロード中...");
-    getBookmarks()
-      .then(() => {
-        clearMessage();
-      })
-      .catch(() => {
-        setErrorMessage("ブックマークのロード中にエラーが発生しました。");
-      });
+    try {
+      await getBookmarks();
+      clearMessage();
+    } catch {
+      setErrorMessage("ブックマークのロード中にエラーが発生しました。");
+    }
   }, [clearMessage, getBookmarks, setErrorMessage, setLoadingMessage]);
 
   useEffect(() => {
@@ -91,17 +90,13 @@ export const useBookmarkManager = () => {
     }
 
     setLoadingMessage("ブックマークの削除処理中...");
-    deleteBookmark(selectedBookmark.bookmark_id)
-      .then(() => {
-        setSelectedBookmarkIndex(undefined);
-        clearMessage();
-      })
-      .catch(() => {
-        setErrorMessage("ブックマークの削除中にエラーが発生しました。");
-      });
-    // .finally(() => {
-    //   setLoadingMessage("");
-    // });
+    try {
+      await deleteBookmark(selectedBookmark.bookmark_id);
+      setSelectedBookmarkIndex(undefined);
+      clearMessage();
+    } catch {
+      setErrorMessage("ブックマークの削除中にエラーが発生しました。");
+    }
   };
 
   // urlClick delete the parameter of URL
@@ -139,29 +134,21 @@ export const useBookmarkManager = () => {
     }
   };
 
-  const updateClick = () => {
+  const updateClick = async () => {
     if (selectedBookmark === undefined) {
       return;
     }
     setLoadingMessage("ブックマークの更新中...");
-    updateBookmark(selectedBookmark.bookmark_id, textUrl, textTitle)
-      .then(() => {
-        clearMessage();
-        // setErrorMessage("");
-        // setLoadingMessage("");
-      })
-      .catch((error: unknown) => {
-        if (error instanceof DuplicatedUrlError) {
-          setErrorMessage(
-            "指定されたURLのブックマークは既に登録されています。"
-          );
-        } else {
-          setErrorMessage("ブックマークの更新中にエラーが発生しました。");
-        }
-        // })
-        // .finally(() => {
-        //   setLoadingMessage("");
-      });
+    try {
+      await updateBookmark(selectedBookmark.bookmark_id, textUrl, textTitle);
+      clearMessage();
+    } catch (error: unknown) {
+      if (error instanceof DuplicatedUrlError) {
+        setErrorMessage("指定されたURLのブックマークは既に登録されています。");
+      } else {
+        setErrorMessage("ブックマークの更新中にエラーが発生しました。");
+      }
+    }
   };
 
   const openBookmark = useCallback(() => {
