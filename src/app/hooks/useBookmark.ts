@@ -13,7 +13,7 @@ export class DuplicatedUrlError extends Error {
 export const useBookmarks = () => {
   const [bookmarks, setBookmarks] = useState<Bookmark[]>([]);
 
-  const loadBookmarks = useCallback(async () => {
+  const getBookmarks = useCallback(async () => {
     try {
       const response = await fetch(BOOKMARKS_ENDPOINT);
       if (response.status === 200) {
@@ -90,7 +90,7 @@ export const useBookmarks = () => {
 
   return {
     bookmarks,
-    loadBookmarks,
+    getBookmarks,
     deleteBookmark,
     updateBookmark,
   };

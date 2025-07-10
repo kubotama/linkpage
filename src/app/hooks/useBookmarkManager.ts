@@ -15,13 +15,14 @@ export const useBookmarkManager = () => {
   const [selectedBookmarkIndex, setSelectedBookmarkIndex] =
     useState<SelectedBookmarkIndex>(undefined);
 
-  const { bookmarks, loadBookmarks, deleteBookmark, updateBookmark } =
+  const { bookmarks, getBookmarks, deleteBookmark, updateBookmark } =
     useBookmarks();
 
   const {
     textMessage,
     setLoadingMessage,
     setErrorMessage,
+    clearMessage,
     isError,
     handleErrorClose,
   } = useErrorMessage();
@@ -34,18 +35,31 @@ export const useBookmarkManager = () => {
     }
   }, [bookmarks, selectedBookmarkIndex, setSelectedBookmark]);
 
-  useEffect(() => {
+  const loadBookmarks = useCallback(async () => {
     setLoadingMessage("ブックマークをロード中...");
-    loadBookmarks()
+    getBookmarks()
       .then(() => {
-        setErrorMessage("");
+        clearMessage();
       })
       .catch(() => {
         setErrorMessage("ブックマークのロード中にエラーが発生しました。");
-      })
-      .finally(() => {
-        setLoadingMessage("");
       });
+  }, [clearMessage, getBookmarks, setErrorMessage, setLoadingMessage]);
+
+  useEffect(() => {
+    loadBookmarks();
+
+    // setLoadingMessage("ブックマークをロード中...");
+    // getBookmarks()
+    //   .then(() => {
+    //     clearMessage();
+    //   })
+    //   .catch(() => {
+    //     setErrorMessage("ブックマークのロード中にエラーが発生しました。");
+    //   });
+    // .finally(() => {
+    //   setLoadingMessage("");
+    // });
 
     // SSEエンドポイントに接続
     const eventSource = new EventSource("/api/events");
@@ -70,7 +84,13 @@ export const useBookmarkManager = () => {
     return () => {
       eventSource.close();
     };
-  }, [loadBookmarks, setErrorMessage, setLoadingMessage]);
+  }, [
+    clearMessage,
+    getBookmarks,
+    loadBookmarks,
+    setErrorMessage,
+    setLoadingMessage,
+  ]);
 
   useEffect(() => {
     if (selectedBookmark === undefined) {
@@ -92,14 +112,14 @@ export const useBookmarkManager = () => {
     deleteBookmark(selectedBookmark.bookmark_id)
       .then(() => {
         setSelectedBookmarkIndex(undefined);
-        setErrorMessage("");
+        clearMessage();
       })
       .catch(() => {
         setErrorMessage("ブックマークの削除中にエラーが発生しました。");
-      })
-      .finally(() => {
-        setLoadingMessage("");
       });
+    // .finally(() => {
+    //   setLoadingMessage("");
+    // });
   };
 
   // urlClick delete the parameter of URL
@@ -144,8 +164,9 @@ export const useBookmarkManager = () => {
     setLoadingMessage("ブックマークの更新中...");
     updateBookmark(selectedBookmark.bookmark_id, textUrl, textTitle)
       .then(() => {
-        setErrorMessage("");
-        setLoadingMessage("");
+        clearMessage();
+        // setErrorMessage("");
+        // setLoadingMessage("");
       })
       .catch((error: unknown) => {
         if (error instanceof DuplicatedUrlError) {
@@ -155,9 +176,9 @@ export const useBookmarkManager = () => {
         } else {
           setErrorMessage("ブックマークの更新中にエラーが発生しました。");
         }
-      })
-      .finally(() => {
-        setLoadingMessage("");
+        // })
+        // .finally(() => {
+        //   setLoadingMessage("");
       });
   };
 
