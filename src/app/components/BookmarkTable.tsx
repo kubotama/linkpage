@@ -9,7 +9,7 @@ export const BookmarkTable: React.FC<{
 }> = ({
   bookmarks,
   selectedBookmarkIndex,
-  onSelectBookmarkIndex: onSelectBookmark,
+  onSelectBookmarkIndex: onSelectBookmarkIndex,
 }) => {
   return (
     <div role="table" className="flex flex-col " aria-label="bookmarks table">
@@ -29,7 +29,7 @@ export const BookmarkTable: React.FC<{
           <div
             role="row"
             key={bookmark.bookmark_id}
-            onClick={() => onSelectBookmark(index)}
+            onClick={() => onSelectBookmarkIndex(index)}
           >
             <div
               className={`p-1 text-sm border border-gray-700 ${conditionalClasses}`}
