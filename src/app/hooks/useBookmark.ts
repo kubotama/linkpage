@@ -16,11 +16,11 @@ export const useBookmarks = () => {
   const getBookmarks = useCallback(async () => {
     try {
       const response = await fetch(BOOKMARKS_ENDPOINT);
-      if (response.status === 200) {
+      if (response.ok) {
         const data = await response.json();
         setBookmarks(data);
         return;
-      } else if (!response.ok) {
+      } else {
         const json = await response.json();
         throw new Error(`[${response.status}] ${json.message}`);
       }
@@ -36,13 +36,13 @@ export const useBookmarks = () => {
         method: "DELETE",
       });
 
-      if (response.status === 204) {
+      if (response.ok) {
         setBookmarks((currentBookmarks) =>
           currentBookmarks.filter(
             (bookmark) => bookmark.bookmark_id !== bookmark_id
           )
         );
-      } else if (!response.ok) {
+      } else {
         const json = await response.json();
         throw new Error(`[${response.status}] ${json.message}`);
       }
