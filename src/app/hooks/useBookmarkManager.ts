@@ -72,13 +72,7 @@ export const useBookmarkManager = () => {
     return () => {
       eventSource.close();
     };
-  }, [
-    clearMessage,
-    getBookmarks,
-    loadBookmarks,
-    setErrorMessage,
-    setLoadingMessage,
-  ]);
+  }, [loadBookmarks]);
 
   useEffect(() => {
     if (selectedBookmark === undefined) {
