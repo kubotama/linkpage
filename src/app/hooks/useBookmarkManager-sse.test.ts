@@ -26,7 +26,7 @@ describe("useBookmarkManager › SSE", () => {
 
   beforeEach(() => {
     // 各テストの前にモックとインスタンスリストをリセット
-    mockGetBookmarks.mockResolvedValueOnce("");
+    mockGetBookmarks.mockResolvedValue("");
     vi.clearAllMocks();
     (useBookmarks as ReturnType<typeof vi.fn>).mockReturnValue({
       bookmarks: [],
