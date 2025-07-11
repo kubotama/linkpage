@@ -1,6 +1,10 @@
 import { act } from "react";
+import { expect } from "vitest";
+
+import { fireEvent, screen, waitFor } from "@testing-library/react";
+
+import { URL_ROLE_NAME } from "../test-utils/constants";
 import { Bookmark } from "../types/Bookmark";
-import { fireEvent, screen } from "@testing-library/react";
 
 export const clickBookmark = async (bookmark: Bookmark) => {
   // クリックするブックマークを選択（例：2番目のブックマーク）
@@ -11,6 +15,13 @@ export const clickBookmark = async (bookmark: Bookmark) => {
     // テーブル行のクリックをシミュレート
     await act(async () => {
       fireEvent.click(cellWithTitle);
+    });
+
+    // 入力フィールドが設定されるのを待つ
+    await waitFor(() => {
+      expect(screen.getByRole("textbox", { name: URL_ROLE_NAME })).toHaveValue(
+        bookmark.url
+      );
     });
   } catch (error) {
     // エラーメッセージに元のエラーを含めるとデバッグが容易になります
