@@ -39,4 +39,5 @@ export const mockBookmarks: Bookmark[] = createBookmarkList([
   },
 ]);
 
-export type SelectedBookmark = Bookmark | null;
+export type SelectedBookmarkIndex = number | undefined;
+export type SelectedBookmark = Bookmark | undefined;

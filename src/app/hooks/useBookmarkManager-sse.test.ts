@@ -22,21 +22,15 @@ declare const global: {
 const MockEventSource = global.EventSource;
 
 describe("useBookmarkManager › SSE", () => {
-  const mockLoadBookmarks = vi.fn();
-  const mockSetSelectedBookmark = vi.fn();
-  const mockSetErrorMessage = vi.fn();
+  const mockGetBookmarks = vi.fn();
 
   beforeEach(() => {
     // 各テストの前にモックとインスタンスリストをリセット
+    mockGetBookmarks.mockResolvedValue("");
     vi.clearAllMocks();
     (useBookmarks as ReturnType<typeof vi.fn>).mockReturnValue({
       bookmarks: [],
-      selectedBookmark: null,
-      setSelectedBookmark: mockSetSelectedBookmark,
-      loadingMessage: "",
-      errorMessage: "",
-      setErrorMessage: mockSetErrorMessage,
-      loadBookmarks: mockLoadBookmarks,
+      getBookmarks: mockGetBookmarks,
       deleteBookmark: vi.fn(),
       updateBookmark: vi.fn(),
     });
@@ -47,11 +41,11 @@ describe("useBookmarkManager › SSE", () => {
     vi.restoreAllMocks();
   });
 
-  it("should connect to SSE and call loadBookmarks on message", () => {
+  it("should connect to SSE and call getBookmarks on message", () => {
     renderHook(() => useBookmarkManager());
 
     // 初期ロードで1回呼ばれることを確認
-    expect(mockLoadBookmarks).toHaveBeenCalledTimes(1);
+    expect(mockGetBookmarks).toHaveBeenCalledTimes(1);
 
     // EventSourceが正しいURLで作成されたことを確認
     expect(MockEventSource.instances).toHaveLength(1);
@@ -63,7 +57,7 @@ describe("useBookmarkManager › SSE", () => {
     });
 
     // SSEイベントで追加で1回呼び出されたことを確認 (合計2回)
-    expect(mockLoadBookmarks).toHaveBeenCalledTimes(2);
+    expect(mockGetBookmarks).toHaveBeenCalledTimes(2);
   });
 
   it("should close EventSource on unmount", () => {
@@ -99,7 +93,7 @@ describe("useBookmarkManager › SSE", () => {
     expect(eventSourceInstance.close).toHaveBeenCalledTimes(0);
   });
 
-  it("should handle invalid JSON data from SSE and not call loadBookmarks", () => {
+  it("should handle invalid JSON data from SSE and not call getBookmarks", () => {
     const consoleErrorSpy = vi
       .spyOn(console, "error")
       .mockImplementation(() => {});
@@ -110,8 +104,8 @@ describe("useBookmarkManager › SSE", () => {
       MockEventSource.instances[0].onmessage({ data: "invalid json" });
     });
 
-    // loadBookmarksは追加で呼ばれないことを確認（初期ロードの1回のみ）
-    expect(mockLoadBookmarks).toHaveBeenCalledTimes(1);
+    // getBookmarksは追加で呼ばれないことを確認（初期ロードの1回のみ）
+    expect(mockGetBookmarks).toHaveBeenCalledTimes(1);
     // console.errorが呼ばれたことを確認
     expect(consoleErrorSpy).toHaveBeenCalledWith(
       "Failed to parse SSE message data:",

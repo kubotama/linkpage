@@ -3,25 +3,37 @@
 import { useCallback, useEffect, useState } from "react";
 import { useHotkeys } from "react-hotkeys-hook";
 
-import { useBookmarks } from "./useBookmark";
+import { SelectedBookmark } from "../types/Bookmark";
+import { DuplicatedUrlError, useBookmarks } from "./useBookmark";
+import { useErrorMessage } from "./useErrorMessage";
 
 export const useBookmarkManager = () => {
   const [textUrl, setTextUrl] = useState("");
   const [textTitle, setTextTitle] = useState("");
+  const [selectedBookmark, setSelectedBookmark] =
+    useState<SelectedBookmark>(undefined);
+
+  const { bookmarks, getBookmarks, deleteBookmark, updateBookmark } =
+    useBookmarks();
 
   const {
-    bookmarks,
-    selectedBookmark,
     textMessage,
     setLoadingMessage,
     setErrorMessage,
-    setSelectedBookmark,
+    clearMessage,
     isError,
     handleErrorClose,
-    loadBookmarks,
-    deleteBookmark,
-    updateBookmark,
-  } = useBookmarks();
+  } = useErrorMessage();
+
+  const loadBookmarks = useCallback(async () => {
+    setLoadingMessage("ブックマークをロード中...");
+    try {
+      await getBookmarks();
+      clearMessage();
+    } catch {
+      setErrorMessage("ブックマークのロード中にエラーが発生しました。");
+    }
+  }, [clearMessage, getBookmarks, setErrorMessage, setLoadingMessage]);
 
   useEffect(() => {
     loadBookmarks();
@@ -52,7 +64,7 @@ export const useBookmarkManager = () => {
   }, [loadBookmarks]);
 
   useEffect(() => {
-    if (selectedBookmark === null) {
+    if (selectedBookmark === undefined) {
       setTextUrl("");
       setTextTitle("");
     } else {
@@ -61,26 +73,31 @@ export const useBookmarkManager = () => {
     }
   }, [selectedBookmark]);
 
-  // useEffect(() => {
-  //   if (errorMessage) {
-  //     setTextMessage(errorMessage);
-  //   } else if (loadingMessage) {
-  //     setTextMessage(loadingMessage);
-  //   } else {
-  //     setTextMessage("");
-  //   }
-  // }, [loadingMessage, errorMessage]);
-
   // deleteClick deletes the selected bookmark
-  const deleteClick = async () => {
-    if (selectedBookmark === null) {
+  const deleteClick = useCallback(async () => {
+    if (selectedBookmark === undefined) {
       return;
     }
-    deleteBookmark(selectedBookmark.bookmark_id);
-  };
+
+    setLoadingMessage("ブックマークの削除処理中...");
+    try {
+      await deleteBookmark(selectedBookmark.bookmark_id);
+      setSelectedBookmark(undefined);
+      clearMessage();
+    } catch {
+      setErrorMessage("ブックマークの削除中にエラーが発生しました。");
+    }
+  }, [
+    clearMessage,
+    deleteBookmark,
+    selectedBookmark,
+    // setSelectedBookmarkIndex,
+    setErrorMessage,
+    setLoadingMessage,
+  ]);
 
   // urlClick delete the parameter of URL
-  const urlClick = () => {
+  const urlClick = useCallback(() => {
     // #や?の後ろを削除する
     // #や?のない場合は、入力されたURLをそのままとする
     const regex = /(https?:\/\/(.*?))(?:[#\?].*|$)/;
@@ -89,10 +106,10 @@ export const useBookmarkManager = () => {
     if (matches && matches.length > 2) {
       setTextUrl(matches[1]);
     }
-  };
+  }, [textUrl]);
 
   // pathClick truncate the most last part of path
-  const pathClick = () => {
+  const pathClick = useCallback(() => {
     try {
       const url = new URL(textUrl);
       // 末尾にスラッシュがあれば除去して親ディレクトリを取得
@@ -112,19 +129,33 @@ export const useBookmarkManager = () => {
     } catch {
       // 不正なURLの場合は何もしない
     }
-  };
+  }, [textUrl]);
 
-  // handleErrorClose clears the error message
-  // const handleErrorClose = () => {
-  //   setErrorMessage("");
-  // };
-
-  const updateClick = () => {
-    if (selectedBookmark === null) {
+  // updateClick updates the selected bookmark
+  const updateClick = useCallback(async () => {
+    if (selectedBookmark === undefined) {
       return;
     }
-    updateBookmark(selectedBookmark.bookmark_id, textUrl, textTitle);
-  };
+    setLoadingMessage("ブックマークの更新中...");
+    try {
+      await updateBookmark(selectedBookmark.bookmark_id, textUrl, textTitle);
+      clearMessage();
+    } catch (error: unknown) {
+      if (error instanceof DuplicatedUrlError) {
+        setErrorMessage("指定されたURLのブックマークは既に登録されています。");
+      } else {
+        setErrorMessage("ブックマークの更新中にエラーが発生しました。");
+      }
+    }
+  }, [
+    clearMessage,
+    selectedBookmark,
+    setLoadingMessage,
+    setErrorMessage,
+    textTitle,
+    textUrl,
+    updateBookmark,
+  ]);
 
   const openBookmark = useCallback(() => {
     try {
@@ -136,12 +167,8 @@ export const useBookmarkManager = () => {
   }, [textUrl, setErrorMessage]);
 
   const isBookmarkSelected = useCallback(() => {
-    return selectedBookmark !== null;
+    return selectedBookmark !== undefined;
   }, [selectedBookmark]);
-
-  // const isError = () => {
-  //   return errorMessage !== "";
-  // };
 
   useHotkeys(
     "enter, escape",
@@ -153,7 +180,7 @@ export const useBookmarkManager = () => {
       if (key === "enter") {
         openBookmark();
       } else if (key === "escape") {
-        setSelectedBookmark(null);
+        setSelectedBookmark(undefined);
       }
       return true;
     },
@@ -165,13 +192,10 @@ export const useBookmarkManager = () => {
     textUrl,
     textTitle,
     selectedBookmark,
+    setSelectedBookmark,
     isBookmarkSelected,
     textMessage,
-    setLoadingMessage,
-    setErrorMessage,
     isError,
-    loadBookmarks,
-    setSelectedBookmark,
     setTextUrl,
     setTextTitle,
     deleteClick,

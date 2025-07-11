@@ -15,7 +15,7 @@ describe("ErrorMessage", () => {
 
   it("should display loading message initially", async () => {
     const textMessage = "ブックマークをロード中...";
-    const isError = () => false;
+    const isError = false;
     const handleErrorClose = vi.fn();
 
     render(
@@ -39,7 +39,7 @@ describe("ErrorMessage", () => {
 
   it("should display error message and close button when there is an error", () => {
     const textMessage = "エラーが発生しました";
-    const isError = () => true;
+    const isError = true;
     const handleErrorClose = vi.fn();
 
     render(
@@ -57,7 +57,7 @@ describe("ErrorMessage", () => {
 
   it("should call handleErrorClose when close button is clicked", () => {
     const textMessage = "エラーが発生しました";
-    const isError = () => true;
+    const isError = true;
     const handleErrorClose = vi.fn();
 
     render(
@@ -73,7 +73,7 @@ describe("ErrorMessage", () => {
 
   it("should display no message when textMessage is empty", () => {
     const textMessage = "";
-    const isError = () => false;
+    const isError = false;
     const handleErrorClose = vi.fn();
 
     const { container } = render(

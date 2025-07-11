@@ -20,7 +20,7 @@ describe("useErrorMessage", () => {
     return (
       <div>
         <div data-testid="text-message">{textMessage}</div>
-        <div data-testid="error-state">{isError().toString()}</div>
+        <div data-testid="error-state">{isError.toString()}</div>
         <button onClick={() => setErrorMessage("Test Error")}>Set Error</button>
         <button onClick={() => setLoadingMessage("Test Loading")}>
           Set Loading

@@ -52,7 +52,7 @@ describe("BookmarkManagerの表示を確認", () => {
       ok: false,
       status: 500,
       headers: { "Content-Type": "text/plain" },
-      text: async () => "Internal Error",
+      json: async () => ({ message: "Internal Error" }),
     });
 
     await act(async () => {

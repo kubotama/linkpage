@@ -4,7 +4,7 @@ import { Bookmark, SelectedBookmark } from "../types/Bookmark";
 
 export const BookmarkTable: React.FC<{
   bookmarks: Bookmark[];
-  selectedBookmark: SelectedBookmark | null;
+  selectedBookmark: SelectedBookmark;
   onSelectBookmark: (bookmark: SelectedBookmark) => void;
 }> = ({ bookmarks, selectedBookmark, onSelectBookmark }) => {
   return (

@@ -3,20 +3,17 @@ import "@testing-library/jest-dom";
 import { describe, expect, it, vi } from "vitest";
 
 import { render, screen, within } from "@testing-library/react";
-import { mockBookmarks } from "../types/Bookmark";
+import { mockBookmarks, SelectedBookmark } from "../types/Bookmark";
 
-import { SelectedBookmark } from "../types/Bookmark";
 import { BookmarkTable } from "./BookmarkTable";
 
 describe("BookmarkTableのテスト", () => {
   it("テーブルとヘッダーが正しく表示される", () => {
-    const mockOnSelectBookmark: React.Dispatch<
-      React.SetStateAction<SelectedBookmark>
-    > = vi.fn();
+    const mockOnSelectBookmark: React.Dispatch<SelectedBookmark> = vi.fn();
     render(
       <BookmarkTable
         bookmarks={mockBookmarks}
-        selectedBookmark={mockBookmarks[0]}
+        selectedBookmark={undefined}
         onSelectBookmark={mockOnSelectBookmark}
       />
     );
@@ -32,13 +29,11 @@ describe("BookmarkTableのテスト", () => {
   });
 
   it("ブックマークデータが正しく表示される", () => {
-    const mockOnSelectBookmark: React.Dispatch<
-      React.SetStateAction<SelectedBookmark>
-    > = vi.fn();
+    const mockOnSelectBookmark: React.Dispatch<SelectedBookmark> = vi.fn();
     render(
       <BookmarkTable
         bookmarks={mockBookmarks}
-        selectedBookmark={mockBookmarks[0]}
+        selectedBookmark={undefined}
         onSelectBookmark={mockOnSelectBookmark}
       />
     );
@@ -55,13 +50,11 @@ describe("BookmarkTableのテスト", () => {
   });
 
   it("空のブックマークリストでテーブルが表示される", () => {
-    const mockOnSelectBookmark: React.Dispatch<
-      React.SetStateAction<SelectedBookmark>
-    > = vi.fn();
+    const mockOnSelectBookmark: React.Dispatch<SelectedBookmark> = vi.fn();
     render(
       <BookmarkTable
         bookmarks={[]}
-        selectedBookmark={null}
+        selectedBookmark={undefined}
         onSelectBookmark={mockOnSelectBookmark}
       />
     );
