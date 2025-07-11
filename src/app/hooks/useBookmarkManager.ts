@@ -170,13 +170,44 @@ export const useBookmarkManager = () => {
     return selectedBookmark !== undefined;
   }, [selectedBookmark]);
 
+  const getSelectedBoolmarkIndex = useCallback(() => {
+    if (selectedBookmark === undefined) {
+      return undefined;
+    }
+    return bookmarks.findIndex(
+      (bookmark) => bookmark.bookmark_id === selectedBookmark.bookmark_id
+    );
+  }, [bookmarks, selectedBookmark]);
+
   useHotkeys(
-    "enter, escape",
+    "enter, escape, up, down",
     (_, handler) => {
+      const key = handler.keys?.[0];
+      if (!key) {
+        return false;
+      }
+      if (key === "arrowdown") {
+        const index = getSelectedBoolmarkIndex();
+        if (index === undefined) {
+          setSelectedBookmark(bookmarks[0]);
+          return true;
+        }
+        const nextIndex = (index + 1) % bookmarks.length;
+        setSelectedBookmark(bookmarks[nextIndex]);
+        return true;
+      } else if (key === "arrowup") {
+        const index = getSelectedBoolmarkIndex();
+        if (index === undefined) {
+          setSelectedBookmark(bookmarks[bookmarks.length - 1]);
+          return true;
+        }
+        const prevIndex = index === 0 ? bookmarks.length - 1 : index - 1;
+        setSelectedBookmark(bookmarks[prevIndex]);
+        return true;
+      }
       if (!isBookmarkSelected()) {
         return true;
       }
-      const key = handler.keys?.[0];
       if (key === "enter") {
         openBookmark();
       } else if (key === "escape") {
@@ -184,7 +215,13 @@ export const useBookmarkManager = () => {
       }
       return true;
     },
-    [isBookmarkSelected, openBookmark, setSelectedBookmark]
+    [
+      isBookmarkSelected,
+      openBookmark,
+      setSelectedBookmark,
+      bookmarks,
+      getSelectedBoolmarkIndex,
+    ]
   );
 
   return {
