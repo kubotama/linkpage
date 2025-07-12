@@ -250,8 +250,8 @@ export const useBookmarkManager = () => {
       isBookmarkSelected,
       openBookmark,
       setSelectedBookmark,
-      // bookmarks と getSelectedBookmarkIndex は ref を介してアクセスされるため、
-      // 依存配列から削除されます。
+      // bookmarks, selectedBookmark, textUrl は ref を介してアクセスされるため、
+      // 依存配列から除外しています。
     ]
   );
 
