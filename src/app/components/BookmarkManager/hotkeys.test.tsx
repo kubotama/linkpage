@@ -15,7 +15,7 @@ import { fireEvent, render, screen, waitFor } from "@testing-library/react";
 
 import { clickBookmark } from "../../test-utils/click.test";
 import { TITLE_ROLE_NAME, URL_ROLE_NAME } from "../../test-utils/constants";
-import { mockBookmarks } from "../../types/Bookmark";
+import { Bookmark, mockBookmarks } from "../../types/Bookmark";
 import { BookmarkManager } from "../BookmarkManager";
 
 const mockFetch = vi.fn();
@@ -29,6 +29,15 @@ let originalLocation: Location;
 interface MockedLocation {
   href: string;
 }
+
+const assertBookmarkIsSelected = async (bookmark: Bookmark) => {
+  await waitFor(() => {
+    const urlInput = screen.getByRole("textbox", { name: URL_ROLE_NAME });
+    const titleInput = screen.getByRole("textbox", { name: TITLE_ROLE_NAME });
+    expect(urlInput).toHaveValue(bookmark.url);
+    expect(titleInput).toHaveValue(bookmark.title);
+  });
+};
 
 const assertNoBookmarkIsSelected = async () => {
   await waitFor(() => {
@@ -103,10 +112,7 @@ describe("BookmarkManager Hotkeys", () => {
     const bookmarkToSelect = mockBookmarks[1]; // Google
     await clickBookmark(bookmarkToSelect);
 
-    // Enterキーの押下をシミュレート
-    await act(async () => {
-      fireEvent.keyDown(document.body, { key: "Enter", code: "Enter" });
-    });
+    await keyDown("Enter");
 
     // window.openが正しいURLで呼び出されたことを検証
     await waitFor(() => {
@@ -128,9 +134,7 @@ describe("BookmarkManager Hotkeys", () => {
     });
 
     // Enterキーの押下をシミュレート
-    await act(async () => {
-      fireEvent.keyDown(document.body, { key: "Enter", code: "Enter" });
-    });
+    await keyDown("Enter");
 
     // エラーメッセージが表示され、window.openが呼び出されていないことを検証
     await waitFor(() => {
@@ -146,10 +150,7 @@ describe("BookmarkManager Hotkeys", () => {
     const bookmarkToSelect = mockBookmarks[1]; // Google
     await clickBookmark(bookmarkToSelect);
 
-    // Escapeキーの押下をシミュレート
-    await act(async () => {
-      fireEvent.keyDown(document.body, { key: "Escape", code: "Escape" });
-    });
+    await keyDown("Escape");
 
     // 入力フィールドがドキュメントから消えたことを検証
     await assertNoBookmarkIsSelected();
@@ -178,25 +179,13 @@ describe("BookmarkManager Hotkeys", () => {
   it("ブックマークが選択されていないときに↓キーを押した。→ 一番上のブックマークが選択される。", async () => {
     await keyDown("ArrowDown");
 
-    const firstBookmark = mockBookmarks[0];
-    await waitFor(() => {
-      const urlInput = screen.getByRole("textbox", { name: URL_ROLE_NAME });
-      const titleInput = screen.getByRole("textbox", { name: TITLE_ROLE_NAME });
-      expect(urlInput).toHaveValue(firstBookmark.url);
-      expect(titleInput).toHaveValue(firstBookmark.title);
-    });
+    await assertBookmarkIsSelected(mockBookmarks[0]);
   });
 
   it("ブックマークが選択されていないときに↑キーを押した。→ 一番下のブックマークが選択される。", async () => {
     await keyDown("ArrowUp");
 
-    const lastBookmark = mockBookmarks[mockBookmarks.length - 1];
-    await waitFor(() => {
-      const urlInput = screen.getByRole("textbox", { name: URL_ROLE_NAME });
-      const titleInput = screen.getByRole("textbox", { name: TITLE_ROLE_NAME });
-      expect(urlInput).toHaveValue(lastBookmark.url);
-      expect(titleInput).toHaveValue(lastBookmark.title);
-    });
+    await assertBookmarkIsSelected(mockBookmarks[mockBookmarks.length - 1]);
   });
 
   it("一番下のブックマークが選択されているときに↓キーを押した。→ 一番上のブックマークが選択される。", async () => {
@@ -205,13 +194,7 @@ describe("BookmarkManager Hotkeys", () => {
 
     await keyDown("ArrowDown");
 
-    const firstBookmark = mockBookmarks[0];
-    await waitFor(() => {
-      const urlInput = screen.getByRole("textbox", { name: URL_ROLE_NAME });
-      const titleInput = screen.getByRole("textbox", { name: TITLE_ROLE_NAME });
-      expect(urlInput).toHaveValue(firstBookmark.url);
-      expect(titleInput).toHaveValue(firstBookmark.title);
-    });
+    await assertBookmarkIsSelected(mockBookmarks[0]);
   });
 
   it("一番上のブックマークが選択されているときに↑キーを押した。→ 一番下のブックマークが選択される。", async () => {
@@ -220,13 +203,7 @@ describe("BookmarkManager Hotkeys", () => {
 
     await keyDown("ArrowUp");
 
-    const lastBookmark = mockBookmarks[mockBookmarks.length - 1];
-    await waitFor(() => {
-      const urlInput = screen.getByRole("textbox", { name: URL_ROLE_NAME });
-      const titleInput = screen.getByRole("textbox", { name: TITLE_ROLE_NAME });
-      expect(urlInput).toHaveValue(lastBookmark.url);
-      expect(titleInput).toHaveValue(lastBookmark.title);
-    });
+    await assertBookmarkIsSelected(mockBookmarks[mockBookmarks.length - 1]);
   });
 
   it("一番上でも下でもないブックマークが選択されているときに↓キーを押した。→ 一つ下のブックマークが選択される。", async () => {
@@ -235,13 +212,7 @@ describe("BookmarkManager Hotkeys", () => {
 
     await keyDown("ArrowDown");
 
-    const nextBookmark = mockBookmarks[2];
-    await waitFor(() => {
-      const urlInput = screen.getByRole("textbox", { name: URL_ROLE_NAME });
-      const titleInput = screen.getByRole("textbox", { name: TITLE_ROLE_NAME });
-      expect(urlInput).toHaveValue(nextBookmark.url);
-      expect(titleInput).toHaveValue(nextBookmark.title);
-    });
+    await assertBookmarkIsSelected(mockBookmarks[2]);
   });
 
   it("一番上でも下でもないブックマークが選択されているときに↑キーを押した。→ 一つ上のブックマークが選択される。", async () => {
@@ -250,12 +221,6 @@ describe("BookmarkManager Hotkeys", () => {
 
     await keyDown("ArrowUp");
 
-    const previousBookmark = mockBookmarks[0];
-    await waitFor(() => {
-      const urlInput = screen.getByRole("textbox", { name: URL_ROLE_NAME });
-      const titleInput = screen.getByRole("textbox", { name: TITLE_ROLE_NAME });
-      expect(urlInput).toHaveValue(previousBookmark.url);
-      expect(titleInput).toHaveValue(previousBookmark.title);
-    });
+    await assertBookmarkIsSelected(mockBookmarks[0]);
   });
 });
