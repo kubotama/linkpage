@@ -215,16 +215,18 @@ export const useBookmarkManager = () => {
               (currentIndex + increment + bookmarks.length) % bookmarks.length;
           }
           setSelectedBookmark(bookmarks[newIndex]);
-          return true;
+          return false; // Prevent default scroll
         }
         case "enter":
           if (isBookmarkSelected()) {
             openBookmark();
+            return false; // Prevent default
           }
           return true;
         case "escape":
           if (isBookmarkSelected()) {
             setSelectedBookmark(undefined);
+            return false; // Prevent default
           }
           return true;
         default:
