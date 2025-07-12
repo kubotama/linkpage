@@ -186,29 +186,25 @@ export const useBookmarkManager = () => {
       if (!key) {
         return false;
       }
-      if (key === "arrowdown") {
+      if (key === "arrowdown" || key === "arrowup") {
         if (bookmarks.length === 0) {
           return true;
         }
-        const index = getSelectedBookmarkIndex();
-        if (index === undefined) {
-          setSelectedBookmark(bookmarks[0]);
+        const currentIndex = getSelectedBookmarkIndex();
+        let newIndex;
+        if (key === "arrowdown") {
+          newIndex =
+            currentIndex === undefined
+              ? 0
+              : (currentIndex + 1) % bookmarks.length;
         } else {
-          const nextIndex = (index + 1) % bookmarks.length;
-          setSelectedBookmark(bookmarks[nextIndex]);
+          // "arrowup"
+          newIndex =
+            currentIndex === undefined
+              ? bookmarks.length - 1
+              : (currentIndex - 1 + bookmarks.length) % bookmarks.length;
         }
-        return true;
-      } else if (key === "arrowup") {
-        if (bookmarks.length === 0) {
-          return true;
-        }
-        const index = getSelectedBookmarkIndex();
-        if (index === undefined) {
-          setSelectedBookmark(bookmarks[bookmarks.length - 1]);
-        } else {
-          const prevIndex = index === 0 ? bookmarks.length - 1 : index - 1;
-          setSelectedBookmark(bookmarks[prevIndex]);
-        }
+        setSelectedBookmark(bookmarks[newIndex]);
         return true;
       }
       if (!isBookmarkSelected()) {
