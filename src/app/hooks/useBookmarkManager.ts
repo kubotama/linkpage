@@ -157,7 +157,9 @@ export const useBookmarkManager = () => {
     updateBookmark,
   ]);
 
-  // useBookmarkManagerのスコープで
+  // openBookmarkコールバック内で最新のtextUrlを参照しつつ、
+  // textUrlの変更でコールバックが再生成されるのを防ぐためのref。
+  // これにより、useHotkeysフックの再登録が抑制され、パフォーマンスが向上します。
   const textUrlRef = useRef(textUrl);
   useEffect(() => {
     textUrlRef.current = textUrl;
@@ -197,38 +199,37 @@ export const useBookmarkManager = () => {
         return true;
       }
 
-      switch (key) {
-        case "arrowup":
-        case "arrowdown": {
-          if (bookmarks.length === 0) {
-            return true;
-          }
-          const currentIndex = getSelectedBookmarkIndex();
-          const increment = key === "arrowdown" ? 1 : -1;
-          let newIndex;
-          if (currentIndex === undefined) {
-            // ブックマークが選択されていない場合、最初または最後に移動
-            newIndex = increment === 1 ? 0 : bookmarks.length - 1;
-          } else {
-            // ブックマークを循環
-            newIndex =
-              (currentIndex + increment + bookmarks.length) % bookmarks.length;
-          }
-          setSelectedBookmark(bookmarks[newIndex]);
-          return false; // Prevent default scroll
+      if (key === "arrowup" || key === "arrowdown") {
+        if (bookmarks.length === 0) {
+          return true;
         }
+        const currentIndex = getSelectedBookmarkIndex();
+        const increment = key === "arrowdown" ? 1 : -1;
+        let newIndex;
+        if (currentIndex === undefined) {
+          // ブックマークが選択されていない場合、最初または最後に移動
+          newIndex = increment === 1 ? 0 : bookmarks.length - 1;
+        } else {
+          // ブックマークを循環
+          newIndex =
+            (currentIndex + increment + bookmarks.length) % bookmarks.length;
+        }
+        setSelectedBookmark(bookmarks[newIndex]);
+        return false; // Prevent default scroll
+      }
+
+      // 以降のキー操作はブックマーク選択中のみ有効
+      if (!isBookmarkSelected()) {
+        return true;
+      }
+
+      switch (key) {
         case "enter":
-          if (isBookmarkSelected()) {
-            openBookmark();
-            return false; // Prevent default
-          }
-          return true;
+          openBookmark();
+          return false; // Prevent default
         case "escape":
-          if (isBookmarkSelected()) {
-            setSelectedBookmark(undefined);
-            return false; // Prevent default
-          }
-          return true;
+          setSelectedBookmark(undefined);
+          return false; // Prevent default
         default:
           return true;
       }
