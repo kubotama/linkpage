@@ -1,6 +1,6 @@
 "use client";
 
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import { useHotkeys } from "react-hotkeys-hook";
 
 import { SelectedBookmark } from "../types/Bookmark";
@@ -157,14 +157,20 @@ export const useBookmarkManager = () => {
     updateBookmark,
   ]);
 
+  // useBookmarkManagerのスコープで
+  const textUrlRef = useRef(textUrl);
+  useEffect(() => {
+    textUrlRef.current = textUrl;
+  }, [textUrl]);
+
   const openBookmark = useCallback(() => {
     try {
-      new URL(textUrl);
-      window.open(textUrl, "_blank", "noopener,noreferrer");
+      new URL(textUrlRef.current);
+      window.open(textUrlRef.current, "_blank", "noopener,noreferrer");
     } catch {
       setErrorMessage("URLが無効です。正しいURLを入力してください。");
     }
-  }, [textUrl, setErrorMessage]);
+  }, [setErrorMessage]); // textUrlへの依存を削除
 
   const isBookmarkSelected = useCallback(() => {
     return selectedBookmark !== undefined;
