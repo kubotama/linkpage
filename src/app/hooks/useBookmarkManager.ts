@@ -174,9 +174,13 @@ export const useBookmarkManager = () => {
     if (selectedBookmark === undefined) {
       return undefined;
     }
-    return bookmarks.findIndex(
+    const currentIndex = bookmarks.findIndex(
       (bookmark) => bookmark.bookmark_id === selectedBookmark.bookmark_id
     );
+    if (currentIndex === -1) {
+      return undefined;
+    }
+    return currentIndex;
   }, [bookmarks, selectedBookmark]);
 
   useHotkeys(
