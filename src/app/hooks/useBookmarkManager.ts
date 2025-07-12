@@ -164,7 +164,6 @@ export const useBookmarkManager = () => {
   useEffect(() => {
     textUrlRef.current = textUrl;
   }, [textUrl]);
-
   const openBookmark = useCallback(() => {
     try {
       new URL(textUrlRef.current);
@@ -174,23 +173,21 @@ export const useBookmarkManager = () => {
     }
   }, [setErrorMessage]); // textUrlへの依存を削除
 
-  const isBookmarkSelected = useCallback(() => {
-    return selectedBookmark !== undefined;
+  // ブックマークリストと選択されたブックマークの最新値を参照するためのref
+  // これにより、useHotkeysフックの依存配列からこれらを除外し、不要な再登録を防ぎます。
+  const bookmarksRef = useRef(bookmarks);
+  useEffect(() => {
+    bookmarksRef.current = bookmarks;
+  }, [bookmarks]);
+  const selectedBookmarkRef = useRef(selectedBookmark);
+  useEffect(() => {
+    selectedBookmarkRef.current = selectedBookmark;
   }, [selectedBookmark]);
+  const isBookmarkSelected = useCallback(() => {
+    return selectedBookmarkRef.current !== undefined;
+  }, []); // selectedBookmarkRef.current を使用するため、依存配列は空にできる
 
-  const getSelectedBookmarkIndex = useCallback(() => {
-    if (selectedBookmark === undefined) {
-      return undefined;
-    }
-    const currentIndex = bookmarks.findIndex(
-      (bookmark) => bookmark.bookmark_id === selectedBookmark.bookmark_id
-    );
-    if (currentIndex === -1) {
-      return undefined;
-    }
-    return currentIndex;
-  }, [bookmarks, selectedBookmark]);
-
+  // getSelectedBookmarkIndex は useHotkeys の内部で定義し、ref を使用する
   useHotkeys(
     "enter, escape, arrowup, arrowdown",
     (_, handler) => {
@@ -198,31 +195,46 @@ export const useBookmarkManager = () => {
       if (!key) {
         return true;
       }
-
+      // ホットキーハンドラ内で最新のブックマークと選択状態を参照するためのヘルパー関数
+      const getSelectedBookmarkIndexInternal = () => {
+        const currentSelectedBookmark = selectedBookmarkRef.current;
+        const currentBookmarks = bookmarksRef.current;
+        if (currentSelectedBookmark === undefined) {
+          return undefined;
+        }
+        const currentIndex = currentBookmarks.findIndex(
+          (bookmark) =>
+            bookmark.bookmark_id === currentSelectedBookmark.bookmark_id
+        );
+        if (currentIndex === -1) {
+          return undefined;
+        }
+        return currentIndex;
+      };
       if (key === "arrowup" || key === "arrowdown") {
-        if (bookmarks.length === 0) {
+        const currentBookmarks = bookmarksRef.current;
+        if (currentBookmarks.length === 0) {
           return true;
         }
-        const currentIndex = getSelectedBookmarkIndex();
+        const currentIndex = getSelectedBookmarkIndexInternal();
         const increment = key === "arrowdown" ? 1 : -1;
         let newIndex;
         if (currentIndex === undefined) {
           // ブックマークが選択されていない場合、最初または最後に移動
-          newIndex = increment === 1 ? 0 : bookmarks.length - 1;
+          newIndex = increment === 1 ? 0 : currentBookmarks.length - 1;
         } else {
           // ブックマークを循環
           newIndex =
-            (currentIndex + increment + bookmarks.length) % bookmarks.length;
+            (currentIndex + increment + currentBookmarks.length) %
+            currentBookmarks.length;
         }
-        setSelectedBookmark(bookmarks[newIndex]);
+        setSelectedBookmark(currentBookmarks[newIndex]);
         return false; // Prevent default scroll
       }
-
       // 以降のキー操作はブックマーク選択中のみ有効
       if (!isBookmarkSelected()) {
         return true;
       }
-
       switch (key) {
         case "enter":
           openBookmark();
@@ -238,8 +250,8 @@ export const useBookmarkManager = () => {
       isBookmarkSelected,
       openBookmark,
       setSelectedBookmark,
-      bookmarks,
-      getSelectedBookmarkIndex,
+      // bookmarks と getSelectedBookmarkIndex は ref を介してアクセスされるため、
+      // 依存配列から削除されます。
     ]
   );
 
