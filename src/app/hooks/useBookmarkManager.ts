@@ -184,35 +184,42 @@ export const useBookmarkManager = () => {
     (_, handler) => {
       const key = handler.keys?.[0];
       if (!key) {
-        return false;
+        return true;
       }
-      if (key === "arrowdown" || key === "arrowup") {
-        if (bookmarks.length === 0) {
+
+      switch (key) {
+        case "arrowup":
+        case "arrowdown": {
+          if (bookmarks.length === 0) {
+            return true;
+          }
+          const currentIndex = getSelectedBookmarkIndex();
+          const increment = key === "arrowdown" ? 1 : -1;
+          let newIndex;
+          if (currentIndex === undefined) {
+            // ブックマークが選択されていない場合、最初または最後に移動
+            newIndex = increment === 1 ? 0 : bookmarks.length - 1;
+          } else {
+            // ブックマークを循環
+            newIndex =
+              (currentIndex + increment + bookmarks.length) % bookmarks.length;
+          }
+          setSelectedBookmark(bookmarks[newIndex]);
           return true;
         }
-        const currentIndex = getSelectedBookmarkIndex();
-        let newIndex;
-        const increment = key === "arrowdown" ? 1 : -1;
-        if (currentIndex === undefined) {
-          // ブックマークが選択されていない場合、最初または最後に移動
-          newIndex = increment === 1 ? 0 : bookmarks.length - 1;
-        } else {
-          // ブックマークを循環
-          newIndex =
-            (currentIndex + increment + bookmarks.length) % bookmarks.length;
-        }
-        setSelectedBookmark(bookmarks[newIndex]);
-        return true;
+        case "enter":
+          if (isBookmarkSelected()) {
+            openBookmark();
+          }
+          return true;
+        case "escape":
+          if (isBookmarkSelected()) {
+            setSelectedBookmark(undefined);
+          }
+          return true;
+        default:
+          return true;
       }
-      if (!isBookmarkSelected()) {
-        return true;
-      }
-      if (key === "enter") {
-        openBookmark();
-      } else if (key === "escape") {
-        setSelectedBookmark(undefined);
-      }
-      return true;
     },
     [
       isBookmarkSelected,
