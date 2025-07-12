@@ -170,7 +170,7 @@ export const useBookmarkManager = () => {
     return selectedBookmark !== undefined;
   }, [selectedBookmark]);
 
-  const getSelectedBoolmarkIndex = useCallback(() => {
+  const getSelectedBookmarkIndex = useCallback(() => {
     if (selectedBookmark === undefined) {
       return undefined;
     }
@@ -187,22 +187,28 @@ export const useBookmarkManager = () => {
         return false;
       }
       if (key === "arrowdown") {
-        const index = getSelectedBoolmarkIndex();
+        if (bookmarks.length === 0) {
+          return true;
+        }
+        const index = getSelectedBookmarkIndex();
         if (index === undefined) {
           setSelectedBookmark(bookmarks[0]);
-          return true;
+        } else {
+          const nextIndex = (index + 1) % bookmarks.length;
+          setSelectedBookmark(bookmarks[nextIndex]);
         }
-        const nextIndex = (index + 1) % bookmarks.length;
-        setSelectedBookmark(bookmarks[nextIndex]);
         return true;
       } else if (key === "arrowup") {
-        const index = getSelectedBoolmarkIndex();
-        if (index === undefined) {
-          setSelectedBookmark(bookmarks[bookmarks.length - 1]);
+        if (bookmarks.length === 0) {
           return true;
         }
-        const prevIndex = index === 0 ? bookmarks.length - 1 : index - 1;
-        setSelectedBookmark(bookmarks[prevIndex]);
+        const index = getSelectedBookmarkIndex();
+        if (index === undefined) {
+          setSelectedBookmark(bookmarks[bookmarks.length - 1]);
+        } else {
+          const prevIndex = index === 0 ? bookmarks.length - 1 : index - 1;
+          setSelectedBookmark(bookmarks[prevIndex]);
+        }
         return true;
       }
       if (!isBookmarkSelected()) {
@@ -220,7 +226,7 @@ export const useBookmarkManager = () => {
       openBookmark,
       setSelectedBookmark,
       bookmarks,
-      getSelectedBoolmarkIndex,
+      getSelectedBookmarkIndex,
     ]
   );
 
