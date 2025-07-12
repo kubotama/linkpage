@@ -192,17 +192,14 @@ export const useBookmarkManager = () => {
         }
         const currentIndex = getSelectedBookmarkIndex();
         let newIndex;
-        if (key === "arrowdown") {
-          newIndex =
-            currentIndex === undefined
-              ? 0
-              : (currentIndex + 1) % bookmarks.length;
+        const increment = key === "arrowdown" ? 1 : -1;
+        if (currentIndex === undefined) {
+          // ブックマークが選択されていない場合、最初または最後に移動
+          newIndex = increment === 1 ? 0 : bookmarks.length - 1;
         } else {
-          // "arrowup"
+          // ブックマークを循環
           newIndex =
-            currentIndex === undefined
-              ? bookmarks.length - 1
-              : (currentIndex - 1 + bookmarks.length) % bookmarks.length;
+            (currentIndex + increment + bookmarks.length) % bookmarks.length;
         }
         setSelectedBookmark(bookmarks[newIndex]);
         return true;
