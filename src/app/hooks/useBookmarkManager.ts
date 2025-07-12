@@ -180,7 +180,7 @@ export const useBookmarkManager = () => {
   }, [bookmarks, selectedBookmark]);
 
   useHotkeys(
-    "enter, escape, up, down",
+    "enter, escape, arrowup, arrowdown",
     (_, handler) => {
       const key = handler.keys?.[0];
       if (!key) {
