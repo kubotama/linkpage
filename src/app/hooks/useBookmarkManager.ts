@@ -16,15 +16,8 @@ export const useBookmarkManager = () => {
   const { bookmarks, getBookmarks, deleteBookmark, updateBookmark } =
     useBookmarks();
 
-  const {
-    textMessage,
-    // setLoadingMessage,
-    // setErrorMessage,
-    // clearMessage,
-    setMessage,
-    isError,
-    handleErrorClose,
-  } = useErrorMessage();
+  const { textMessage, setMessage, isError, handleErrorClose } =
+    useErrorMessage();
 
   const loadBookmarks = useCallback(async () => {
     setMessage("ブックマークをロード中...", false);
@@ -88,14 +81,7 @@ export const useBookmarkManager = () => {
     } catch {
       setMessage("ブックマークの削除中にエラーが発生しました。", true);
     }
-  }, [
-    // clearMessage,
-    deleteBookmark,
-    selectedBookmark,
-    // setErrorMessage,
-    // setLoadingMessage,
-    setMessage,
-  ]);
+  }, [deleteBookmark, selectedBookmark, setMessage]);
 
   // urlClick delete the parameter of URL
   const urlClick = useCallback(() => {
@@ -148,16 +134,7 @@ export const useBookmarkManager = () => {
         setMessage("ブックマークの更新中にエラーが発生しました。", true);
       }
     }
-  }, [
-    // clearMessage,
-    selectedBookmark,
-    // setLoadingMessage,
-    // setErrorMessage,
-    setMessage,
-    textTitle,
-    textUrl,
-    updateBookmark,
-  ]);
+  }, [selectedBookmark, setMessage, textTitle, textUrl, updateBookmark]);
 
   // openBookmarkコールバック内で最新のtextUrlを参照しつつ、
   // textUrlの変更でコールバックが再生成されるのを防ぐためのref。

@@ -9,14 +9,8 @@ import { useErrorMessage } from "./useErrorMessage";
 describe("useErrorMessage", () => {
   // useErrorMessage フックをテストするためのヘルパーコンポーネント
   const TestComponent = () => {
-    const {
-      textMessage,
-      // setErrorMessage,
-      // setLoadingMessage,
-      setMessage,
-      isError,
-      handleErrorClose,
-    } = useErrorMessage();
+    const { textMessage, setMessage, isError, handleErrorClose } =
+      useErrorMessage();
 
     return (
       <div>
