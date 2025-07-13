@@ -34,3 +34,23 @@ export const clickBookmark = async (bookmark: Bookmark) => {
     );
   }
 };
+
+export const assertBookmarkIsSelected = async (bookmark: Bookmark) => {
+  await waitFor(() => {
+    const urlInput = screen.getByRole("textbox", { name: URL_ROLE_NAME });
+    const titleInput = screen.getByRole("textbox", { name: TITLE_ROLE_NAME });
+    expect(urlInput).toHaveValue(bookmark.url);
+    expect(titleInput).toHaveValue(bookmark.title);
+  });
+};
+
+export const assertNoBookmarkIsSelected = async () => {
+  await waitFor(() => {
+    expect(
+      screen.queryByRole("textbox", { name: URL_ROLE_NAME })
+    ).not.toBeInTheDocument();
+    expect(
+      screen.queryByRole("textbox", { name: TITLE_ROLE_NAME })
+    ).not.toBeInTheDocument();
+  });
+};
