@@ -18,22 +18,23 @@ export const useBookmarkManager = () => {
 
   const {
     textMessage,
-    setLoadingMessage,
-    setErrorMessage,
-    clearMessage,
+    // setLoadingMessage,
+    // setErrorMessage,
+    // clearMessage,
+    setMessage,
     isError,
     handleErrorClose,
   } = useErrorMessage();
 
   const loadBookmarks = useCallback(async () => {
-    setLoadingMessage("ブックマークをロード中...");
+    setMessage("ブックマークをロード中...", false);
     try {
       await getBookmarks();
-      clearMessage();
+      setMessage();
     } catch {
-      setErrorMessage("ブックマークのロード中にエラーが発生しました。");
+      setMessage("ブックマークのロード中にエラーが発生しました。", true);
     }
-  }, [clearMessage, getBookmarks, setErrorMessage, setLoadingMessage]);
+  }, [setMessage, getBookmarks]);
 
   useEffect(() => {
     loadBookmarks();
@@ -79,20 +80,21 @@ export const useBookmarkManager = () => {
       return;
     }
 
-    setLoadingMessage("ブックマークの削除処理中...");
+    setMessage("ブックマークの削除処理中...", false);
     try {
       await deleteBookmark(selectedBookmark.bookmark_id);
       setSelectedBookmark(undefined);
-      clearMessage();
+      setMessage();
     } catch {
-      setErrorMessage("ブックマークの削除中にエラーが発生しました。");
+      setMessage("ブックマークの削除中にエラーが発生しました。", true);
     }
   }, [
-    clearMessage,
+    // clearMessage,
     deleteBookmark,
     selectedBookmark,
-    setErrorMessage,
-    setLoadingMessage,
+    // setErrorMessage,
+    // setLoadingMessage,
+    setMessage,
   ]);
 
   // urlClick delete the parameter of URL
@@ -135,22 +137,23 @@ export const useBookmarkManager = () => {
     if (selectedBookmark === undefined) {
       return;
     }
-    setLoadingMessage("ブックマークの更新中...");
+    setMessage("ブックマークの更新中...", false);
     try {
       await updateBookmark(selectedBookmark.bookmark_id, textUrl, textTitle);
-      clearMessage();
+      setMessage();
     } catch (error: unknown) {
       if (error instanceof DuplicatedUrlError) {
-        setErrorMessage("指定されたURLのブックマークは既に登録されています。");
+        setMessage("指定されたURLのブックマークは既に登録されています。", true);
       } else {
-        setErrorMessage("ブックマークの更新中にエラーが発生しました。");
+        setMessage("ブックマークの更新中にエラーが発生しました。", true);
       }
     }
   }, [
-    clearMessage,
+    // clearMessage,
     selectedBookmark,
-    setLoadingMessage,
-    setErrorMessage,
+    // setLoadingMessage,
+    // setErrorMessage,
+    setMessage,
     textTitle,
     textUrl,
     updateBookmark,
@@ -168,9 +171,9 @@ export const useBookmarkManager = () => {
       new URL(textUrlRef.current);
       window.open(textUrlRef.current, "_blank", "noopener,noreferrer");
     } catch {
-      setErrorMessage("URLが無効です。正しいURLを入力してください。");
+      setMessage("URLが無効です。正しいURLを入力してください。", true);
     }
-  }, [setErrorMessage]); // textUrlへの依存を削除
+  }, [setMessage]); // textUrlへの依存を削除
 
   // ブックマークリストと選択されたブックマークの最新値を参照するためのref
   // これにより、useHotkeysフックの依存配列からこれらを除外し、不要な再登録を防ぎます。
