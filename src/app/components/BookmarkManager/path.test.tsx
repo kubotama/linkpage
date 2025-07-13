@@ -5,7 +5,7 @@ import { beforeEach, describe, expect, it, vi } from "vitest";
 
 import { fireEvent, render, screen, waitFor } from "@testing-library/react";
 
-import { clickBookmark } from "../../test-utils/click.test";
+import { clickBookmark } from "../../test-utils/bookmarkTestUtils";
 import {
   ARROW_BUTTON_ROLE_NAME,
   URL_ROLE_NAME,

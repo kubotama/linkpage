@@ -6,7 +6,7 @@ import { beforeEach, describe, expect, it, vi } from "vitest";
 import { fireEvent, render, screen, waitFor } from "@testing-library/react";
 
 import { BOOKMARKS_ENDPOINT } from "../../constants/apiEndpoints";
-import { clickBookmark } from "../../test-utils/click.test";
+import { clickBookmark } from "../../test-utils/bookmarkTestUtils";
 import { DELETE_BUTTON_ROLE_NAME } from "../../test-utils/constants";
 import { mockBookmarks } from "../../types/Bookmark";
 import { BookmarkManager } from "../BookmarkManager";

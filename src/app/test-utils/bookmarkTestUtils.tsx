@@ -3,7 +3,7 @@ import { expect } from "vitest";
 
 import { fireEvent, screen, waitFor } from "@testing-library/react";
 
-import { TITLE_ROLE_NAME, URL_ROLE_NAME } from "../test-utils/constants";
+import { TITLE_ROLE_NAME, URL_ROLE_NAME } from "./constants";
 import { Bookmark } from "../types/Bookmark";
 
 export const clickBookmark = async (bookmark: Bookmark) => {
