@@ -15,7 +15,6 @@ export const BookmarkManager = () => {
     textMessage,
     selectedBookmark,
     setSelectedBookmark,
-    isBookmarkSelected,
     setTextUrl,
     setTextTitle,
     deleteClick,
@@ -44,7 +43,7 @@ export const BookmarkManager = () => {
                 handleErrorClose={handleErrorClose}
               />
             </div>
-            {isBookmarkSelected() && (
+            {selectedBookmark && (
               <>
                 <div className="mb-2 flex justify-between">
                   <ActionButton onClick={updateClick}>更新</ActionButton>
