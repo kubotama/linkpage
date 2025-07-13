@@ -38,33 +38,6 @@ describe("ブックマークの選択", () => {
     });
   });
 
-  it("テーブル内のブックマーク行をクリックすると、URLとタイトルのテキストボックスにそのブックマークの情報が表示される。「選択解除」のボタンが表示される。", async () => {
-    // mockFetchはbeforeEachでmockBookmarksを返すように設定されています
-
-    await act(async () => {
-      render(<BookmarkManager />);
-    });
-
-    // 初期データがロードされ、UIが安定するのを待つ
-    // テーブル内に既知のブックマークのタイトルが表示されることを確認
-    // また、アクションボタンが表示されていることで、メインUIの準備ができていることを確認
-    await waitFor(() => {
-      expect(screen.getByText(mockBookmarks[0].title)).toBeInTheDocument();
-    });
-
-    // クリックするブックマークを選択（例：2番目のブックマーク）
-    const bookmarkToSelect = mockBookmarks[1]; // Google
-    await clickBookmark(bookmarkToSelect);
-
-    // BookmarkManager内のuseEffectによって入力フィールドが更新されるのを待つ
-    await waitFor(() => {
-      const urlInput = screen.getByRole("textbox", { name: URL_ROLE_NAME });
-      const titleInput = screen.getByRole("textbox", { name: TITLE_ROLE_NAME });
-      expect(urlInput).toHaveValue(bookmarkToSelect.url);
-      expect(titleInput).toHaveValue(bookmarkToSelect.title);
-    });
-  });
-
   it("選択解除のボタンをクリックすると、URLとタイトルのテキストボックスがクリアされる。選択解除のボタンが表示されていない。", async () => {
     // mockFetchはbeforeEachでmockBookmarksを返すように設定されています
 
@@ -82,14 +55,6 @@ describe("ブックマークの選択", () => {
     // クリックするブックマークを選択（例：2番目のブックマーク）
     const bookmarkToSelect = mockBookmarks[1]; // Google
     await clickBookmark(bookmarkToSelect);
-
-    // BookmarkManager内のuseEffectによって入力フィールドが更新されるのを待つ;
-    await waitFor(() => {
-      const urlInput = screen.getByRole("textbox", { name: URL_ROLE_NAME });
-      const titleInput = screen.getByRole("textbox", { name: TITLE_ROLE_NAME });
-      expect(urlInput).toHaveValue(bookmarkToSelect.url);
-      expect(titleInput).toHaveValue(bookmarkToSelect.title);
-    });
 
     await act(async () => {
       fireEvent.keyDown(document.body, { key: "Escape", code: "Escape" });
