@@ -5,6 +5,7 @@ import { ActionButton } from "./ActionButton";
 import { BookmarkInputField } from "./BookmarkInputField";
 import { BookmarkTable } from "./BookmarkTable";
 import { ErrorMessage } from "./ErrorMessage";
+import { FORM_BOOKMARK_DETAIL } from "../test-utils/constants";
 
 export const BookmarkManager = () => {
   const {
@@ -44,7 +45,7 @@ export const BookmarkManager = () => {
               />
             </div>
             {selectedBookmark && (
-              <>
+              <div role="form" aria-label={FORM_BOOKMARK_DETAIL}>
                 <div className="mb-2 flex justify-between">
                   <ActionButton onClick={updateClick}>更新</ActionButton>
                   <ActionButton onClick={deleteClick}>削除</ActionButton>
@@ -73,7 +74,7 @@ export const BookmarkManager = () => {
                     }}
                   />
                 </div>
-              </>
+              </div>
             )}
           </div>
         </div>

@@ -5,6 +5,7 @@ import { fireEvent, screen, waitFor } from "@testing-library/react";
 
 import { TITLE_ROLE_NAME, URL_ROLE_NAME } from "./constants";
 import { Bookmark } from "../types/Bookmark";
+import { FORM_BOOKMARK_DETAIL } from "./constants";
 
 export const assertBookmarkIsSelected = async (bookmark: Bookmark) => {
   await waitFor(() => {
@@ -20,10 +21,7 @@ export const assertBookmarkIsSelected = async (bookmark: Bookmark) => {
 export const assertNoBookmarkIsSelected = async () => {
   await waitFor(() => {
     expect(
-      screen.queryByRole("textbox", { name: URL_ROLE_NAME })
-    ).not.toBeInTheDocument();
-    expect(
-      screen.queryByRole("textbox", { name: TITLE_ROLE_NAME })
+      screen.queryByRole("form", { name: FORM_BOOKMARK_DETAIL })
     ).not.toBeInTheDocument();
   });
 };
