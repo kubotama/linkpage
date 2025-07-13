@@ -13,7 +13,7 @@ import {
 
 import { fireEvent, render, screen, waitFor } from "@testing-library/react";
 
-import { clickBookmark } from "../../test-utils/click.test";
+import { clickBookmark } from "../../test-utils/bookmarkTestUtils";
 import { URL_ROLE_NAME } from "../../test-utils/constants";
 import { mockBookmarks } from "../../types/Bookmark";
 import { BookmarkManager } from "../BookmarkManager";
