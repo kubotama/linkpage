@@ -4,31 +4,19 @@ export const useErrorMessage = () => {
   const [textMessage, setTextMessage] = useState("");
   const [isError, setIsError] = useState(false);
 
-  const setErrorMessage = useCallback((message: string) => {
+  const setMessage = useCallback((message = "", isError = false) => {
     setTextMessage(message);
-    setIsError(true);
-  }, []);
-
-  const setLoadingMessage = useCallback((message: string) => {
-    setTextMessage(message);
-    setIsError(false);
-  }, []);
-
-  const clearMessage = useCallback(() => {
-    setTextMessage("");
-    setIsError(false);
+    setIsError(isError);
   }, []);
 
   const handleErrorClose = useCallback(() => {
-    clearMessage();
-  }, [clearMessage]);
+    setMessage();
+  }, [setMessage]);
 
   return {
     textMessage,
-    setErrorMessage,
-    setLoadingMessage,
     isError,
     handleErrorClose,
-    clearMessage,
+    setMessage,
   };
 };

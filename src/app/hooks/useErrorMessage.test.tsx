@@ -9,20 +9,17 @@ import { useErrorMessage } from "./useErrorMessage";
 describe("useErrorMessage", () => {
   // useErrorMessage フックをテストするためのヘルパーコンポーネント
   const TestComponent = () => {
-    const {
-      textMessage,
-      setErrorMessage,
-      setLoadingMessage,
-      isError,
-      handleErrorClose,
-    } = useErrorMessage();
+    const { textMessage, setMessage, isError, handleErrorClose } =
+      useErrorMessage();
 
     return (
       <div>
         <div data-testid="text-message">{textMessage}</div>
         <div data-testid="error-state">{isError.toString()}</div>
-        <button onClick={() => setErrorMessage("Test Error")}>Set Error</button>
-        <button onClick={() => setLoadingMessage("Test Loading")}>
+        <button onClick={() => setMessage("Test Error", true)}>
+          Set Error
+        </button>
+        <button onClick={() => setMessage("Test Loading", false)}>
           Set Loading
         </button>
         <button onClick={handleErrorClose}>Close Error</button>
