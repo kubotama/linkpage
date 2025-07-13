@@ -5,10 +5,13 @@ import { beforeEach, describe, expect, it, vi } from "vitest";
 
 import { fireEvent, render, screen, waitFor } from "@testing-library/react";
 
-import { clickBookmark } from "../../test-utils/bookmarkTestUtils";
+import {
+  assertNoBookmarkIsSelected,
+  clickBookmark,
+} from "../../test-utils/bookmarkTestUtils";
 import { Bookmark, mockBookmarks } from "../../types/Bookmark";
 import { BookmarkManager } from "../BookmarkManager";
-import { URL_ROLE_NAME, TITLE_ROLE_NAME } from "../../test-utils/constants";
+
 const mockFetch = vi.fn();
 
 describe("ブックマークの選択", () => {
@@ -27,15 +30,7 @@ describe("ブックマークの選択", () => {
       render(<BookmarkManager />);
     });
 
-    const urlInput = screen.queryAllByRole("textbox", { name: URL_ROLE_NAME });
-    const titleInput = screen.queryAllByRole("textbox", {
-      name: TITLE_ROLE_NAME,
-    });
-
-    await waitFor(() => {
-      expect(urlInput).toHaveLength(0);
-      expect(titleInput).toHaveLength(0);
-    });
+    await assertNoBookmarkIsSelected();
   });
 
   it("選択解除のボタンをクリックすると、URLとタイトルのテキストボックスがクリアされる。選択解除のボタンが表示されていない。", async () => {
@@ -60,17 +55,7 @@ describe("ブックマークの選択", () => {
       fireEvent.keyDown(document.body, { key: "Escape", code: "Escape" });
     });
 
-    await waitFor(() => {
-      const urlInput = screen.queryAllByRole("textbox", {
-        name: URL_ROLE_NAME,
-      });
-      const titleInput = screen.queryAllByRole("textbox", {
-        name: TITLE_ROLE_NAME,
-      });
-
-      expect(urlInput).toHaveLength(0);
-      expect(titleInput).toHaveLength(0);
-    });
+    await assertNoBookmarkIsSelected();
   });
 
   it("表示されていないタイトルが指定された場合", async () => {

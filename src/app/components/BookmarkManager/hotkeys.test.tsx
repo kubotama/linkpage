@@ -13,9 +13,13 @@ import {
 
 import { fireEvent, render, screen, waitFor } from "@testing-library/react";
 
-import { clickBookmark } from "../../test-utils/bookmarkTestUtils";
-import { TITLE_ROLE_NAME, URL_ROLE_NAME } from "../../test-utils/constants";
-import { Bookmark, mockBookmarks } from "../../types/Bookmark";
+import {
+  assertBookmarkIsSelected,
+  assertNoBookmarkIsSelected,
+  clickBookmark,
+} from "../../test-utils/bookmarkTestUtils";
+import { URL_ROLE_NAME } from "../../test-utils/constants";
+import { mockBookmarks } from "../../types/Bookmark";
 import { BookmarkManager } from "../BookmarkManager";
 
 const mockFetch = vi.fn();
@@ -29,26 +33,6 @@ let originalLocation: Location;
 interface MockedLocation {
   href: string;
 }
-
-const assertBookmarkIsSelected = async (bookmark: Bookmark) => {
-  await waitFor(() => {
-    const urlInput = screen.getByRole("textbox", { name: URL_ROLE_NAME });
-    const titleInput = screen.getByRole("textbox", { name: TITLE_ROLE_NAME });
-    expect(urlInput).toHaveValue(bookmark.url);
-    expect(titleInput).toHaveValue(bookmark.title);
-  });
-};
-
-const assertNoBookmarkIsSelected = async () => {
-  await waitFor(() => {
-    expect(
-      screen.queryByRole("textbox", { name: URL_ROLE_NAME })
-    ).not.toBeInTheDocument();
-    expect(
-      screen.queryByRole("textbox", { name: TITLE_ROLE_NAME })
-    ).not.toBeInTheDocument();
-  });
-};
 
 const keyDown = async (key: string) => {
   await act(async () => {
