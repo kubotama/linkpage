@@ -3,7 +3,7 @@ import { expect } from "vitest";
 
 import { fireEvent, screen, waitFor } from "@testing-library/react";
 
-import { URL_ROLE_NAME } from "../test-utils/constants";
+import { TITLE_ROLE_NAME, URL_ROLE_NAME } from "../test-utils/constants";
 import { Bookmark } from "../types/Bookmark";
 
 export const clickBookmark = async (bookmark: Bookmark) => {
@@ -22,6 +22,9 @@ export const clickBookmark = async (bookmark: Bookmark) => {
       expect(screen.getByRole("textbox", { name: URL_ROLE_NAME })).toHaveValue(
         bookmark.url
       );
+      expect(
+        screen.getByRole("textbox", { name: TITLE_ROLE_NAME })
+      ).toHaveValue(bookmark.title);
     });
   } catch (error) {
     // エラーメッセージに元のエラーを含めるとデバッグが容易になります
