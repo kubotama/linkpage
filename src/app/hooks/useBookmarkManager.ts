@@ -91,7 +91,6 @@ export const useBookmarkManager = () => {
     clearMessage,
     deleteBookmark,
     selectedBookmark,
-    // setSelectedBookmarkIndex,
     setErrorMessage,
     setLoadingMessage,
   ]);
@@ -183,9 +182,6 @@ export const useBookmarkManager = () => {
   useEffect(() => {
     selectedBookmarkRef.current = selectedBookmark;
   }, [selectedBookmark]);
-  const isBookmarkSelected = useCallback(() => {
-    return selectedBookmarkRef.current !== undefined;
-  }, []); // selectedBookmarkRef.current を使用するため、依存配列は空にできる
 
   // getSelectedBookmarkIndex は useHotkeys の内部で定義し、ref を使用する
   useHotkeys(
@@ -232,7 +228,8 @@ export const useBookmarkManager = () => {
         return false; // Prevent default scroll
       }
       // 以降のキー操作はブックマーク選択中のみ有効
-      if (!isBookmarkSelected()) {
+      // if (!isBookmarkSelected()) {
+      if (selectedBookmarkRef.current === undefined) {
         return true;
       }
       switch (key) {
@@ -247,11 +244,11 @@ export const useBookmarkManager = () => {
       }
     },
     [
-      isBookmarkSelected,
       openBookmark,
       setSelectedBookmark,
       // bookmarks, selectedBookmark, textUrl は ref を介してアクセスされるため、
       // 依存配列から除外しています。
+      // isBookmarkSelected もインライン化されたため、依存配列から削除されます。
     ]
   );
 
@@ -261,7 +258,6 @@ export const useBookmarkManager = () => {
     textTitle,
     selectedBookmark,
     setSelectedBookmark,
-    isBookmarkSelected,
     textMessage,
     isError,
     setTextUrl,
