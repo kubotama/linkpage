@@ -9,7 +9,7 @@ import { clickBookmark } from "../../test-utils/bookmarkTestUtils";
 import {
   ARROW_BUTTON_ROLE_NAME,
   URL_ROLE_NAME,
-} from "../../test-utils/constants";
+} from "../../constants/constants";
 import { mockBookmarks } from "../../types/Bookmark";
 import { BookmarkManager } from "../BookmarkManager";
 

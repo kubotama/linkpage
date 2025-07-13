@@ -3,9 +3,9 @@ import { expect } from "vitest";
 
 import { fireEvent, screen, waitFor } from "@testing-library/react";
 
-import { TITLE_ROLE_NAME, URL_ROLE_NAME } from "./constants";
+import { TITLE_ROLE_NAME, URL_ROLE_NAME } from "../constants/constants";
 import { Bookmark } from "../types/Bookmark";
-import { FORM_BOOKMARK_DETAIL } from "./constants";
+import { FORM_BOOKMARK_DETAIL } from "../constants/constants";
 
 export const assertBookmarkIsSelected = async (bookmark: Bookmark) => {
   await waitFor(() => {

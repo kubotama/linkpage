@@ -18,7 +18,7 @@ import {
   assertNoBookmarkIsSelected,
   clickBookmark,
 } from "../../test-utils/bookmarkTestUtils";
-import { URL_ROLE_NAME } from "../../test-utils/constants";
+import { URL_ROLE_NAME } from "../../constants/constants";
 import { mockBookmarks } from "../../types/Bookmark";
 import { BookmarkManager } from "../BookmarkManager";
 

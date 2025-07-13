@@ -5,7 +5,7 @@ import { ActionButton } from "./ActionButton";
 import { BookmarkInputField } from "./BookmarkInputField";
 import { BookmarkTable } from "./BookmarkTable";
 import { ErrorMessage } from "./ErrorMessage";
-import { FORM_BOOKMARK_DETAIL } from "../test-utils/constants";
+import { FORM_BOOKMARK_DETAIL } from "../constants/constants";
 
 export const BookmarkManager = () => {
   const {
