@@ -362,13 +362,15 @@ linkpage はリンクデータを SQLite のデータベースで管理します
 
 ## 技術スタック
 
-- [Next.js](https://nextjs.org/)
-- [React](https://reactjs.org/)
-- [TypeScript](https://www.typescriptlang.org/)
-- [Tailwind CSS](https://tailwindcss.com/)
-- [SQLite](https://www.sqlite.org/index.html)
-- [vitest](https://vitest.dev)
-- [MaterialUI](https://mui.com)
+| ツール名                                      | バージョン |
+| --------------------------------------------- | ---------- |
+| [Node.js](https://nodejs.org/)                | 22.15.1    |
+| [Next.js](https://nextjs.org/)                | 15.3.3     |
+| [React](https://reactjs.org/)                 | 19.0.0     |
+| [TypeScript](https://www.typescriptlang.org/) | 5.8.2      |
+| [Tailwind CSS](https://tailwindcss.com/)      | 3.4.17     |
+| [SQLite](https://www.sqlite.org/index.html)   | 3.37.2     |
+| [vitest](https://vitest.dev)                  | 3.2.3      |
 
 ## ライセンス
 
