@@ -1,11 +1,17 @@
 import React from "react";
 
+import {
+  ARROW_BUTTON_ROLE_NAME,
+  DELETE_BUTTON_ROLE_NAME,
+  FORM_BOOKMARK_DETAIL,
+  PARAMETER_BUTTON_ROLE_NAME,
+  UPDATE_BUTTON_ROLE_NAME,
+} from "../constants/constants";
 import { useBookmarkManager } from "../hooks/useBookmarkManager";
 import { ActionButton } from "./ActionButton";
 import { BookmarkInputField } from "./BookmarkInputField";
 import { BookmarkTable } from "./BookmarkTable";
 import { ErrorMessage } from "./ErrorMessage";
-import { FORM_BOOKMARK_DETAIL } from "../constants/constants";
 
 export const BookmarkManager = () => {
   const {
@@ -45,15 +51,12 @@ export const BookmarkManager = () => {
               />
             </div>
             {selectedBookmark && (
-              <form
-                aria-label={FORM_BOOKMARK_DETAIL}
-                onSubmit={(e) => e.preventDefault()}
-              >
+              <form aria-label={FORM_BOOKMARK_DETAIL} onSubmit={(e) => e.preventDefault()}>
                 <div className="mb-2 flex justify-between">
-                  <ActionButton onClick={updateClick}>更新</ActionButton>
-                  <ActionButton onClick={deleteClick}>削除</ActionButton>
-                  <ActionButton onClick={urlClick}>パラメータ</ActionButton>
-                  <ActionButton onClick={pathClick}>←</ActionButton>
+                  <ActionButton onClick={updateClick}>{UPDATE_BUTTON_ROLE_NAME}</ActionButton>
+                  <ActionButton onClick={deleteClick}>{DELETE_BUTTON_ROLE_NAME}</ActionButton>
+                  <ActionButton onClick={urlClick}>{PARAMETER_BUTTON_ROLE_NAME}</ActionButton>
+                  <ActionButton onClick={pathClick}>{ARROW_BUTTON_ROLE_NAME}</ActionButton>
                 </div>
                 <div className="mb-1 flex justify-center">
                   <BookmarkInputField
