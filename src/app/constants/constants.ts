@@ -6,3 +6,6 @@ export const ARROW_BUTTON_ROLE_NAME = "←";
 export const DELETE_BUTTON_ROLE_NAME = "削除";
 export const UPDATE_BUTTON_ROLE_NAME = "更新";
 export const FORM_BOOKMARK_DETAIL = "ブックマーク詳細フォーム";
+export const FORM_KEYWORD_DETAIL = "キーワード詳細フォーム";
+export const KEYWORD_ROLE_NAME = "キーワード";
+export const ADD_BUTTON_ROLE_NAME = "追加";

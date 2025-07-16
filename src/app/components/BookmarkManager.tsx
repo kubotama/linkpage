@@ -1,9 +1,11 @@
 import React from "react";
 
 import {
+  ADD_BUTTON_ROLE_NAME,
   ARROW_BUTTON_ROLE_NAME,
   DELETE_BUTTON_ROLE_NAME,
   FORM_BOOKMARK_DETAIL,
+  FORM_KEYWORD_DETAIL,
   PARAMETER_BUTTON_ROLE_NAME,
   UPDATE_BUTTON_ROLE_NAME,
 } from "../constants/constants";
@@ -19,11 +21,13 @@ export const BookmarkManager = () => {
     isError,
     textUrl,
     textTitle,
+    textKeyword,
     textMessage,
     selectedBookmark,
     setSelectedBookmark,
     setTextUrl,
     setTextTitle,
+    setTextKeyword,
     deleteClick,
     urlClick,
     pathClick,
@@ -79,6 +83,25 @@ export const BookmarkManager = () => {
                       setTextTitle(e.target.value);
                     }}
                   />
+                </div>
+                <div
+                  role="form"
+                  aria-label={FORM_KEYWORD_DETAIL}
+                  className="mb-1 flex items-end justify-left"
+                >
+                  <BookmarkInputField
+                    id="keyword"
+                    placeholder="キーワードを入力してください"
+                    label="キーワード"
+                    value={textKeyword}
+                    minWidthClass="min-w-keyword-input"
+                    onChange={(e) => {
+                      setTextKeyword(e.target.value);
+                    }}
+                  />
+                  <div className="ml-2">
+                    <ActionButton onClick={() => {}}>{ADD_BUTTON_ROLE_NAME}</ActionButton>
+                  </div>
                 </div>
               </form>
             )}
