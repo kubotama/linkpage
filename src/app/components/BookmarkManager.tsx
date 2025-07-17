@@ -86,7 +86,7 @@ export const BookmarkManager = () => {
                 </div>
                 <fieldset
                   aria-label={FORM_KEYWORD_DETAIL}
-                  className="mb-1 flex items-end justify-left border-none p-0"
+                  className="mt-5 flex items-end justify-start border-none p-0"
                 >
                   <BookmarkInputField
                     id="keyword"
