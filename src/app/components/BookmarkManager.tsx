@@ -8,6 +8,7 @@ import {
   FIELDSET_KEYWORD_LABEL,
   PARAMETER_BUTTON_ROLE_NAME,
   UPDATE_BUTTON_ROLE_NAME,
+  KEYWORD_ROLE_NAME,
 } from "../constants/constants";
 import { useBookmarkManager } from "../hooks/useBookmarkManager";
 import { ActionButton } from "./ActionButton";
@@ -87,13 +88,15 @@ export const BookmarkManager = () => {
                   <BookmarkInputField
                     id="keyword"
                     placeholder="キーワードを入力してください"
-                    label="キーワード"
+                    label={KEYWORD_ROLE_NAME}
                     value={textKeyword}
                     minWidthClass="min-w-keyword-input"
                     onChange={(e) => setTextKeyword(e.target.value)}
                   />
                   <div className="ml-2">
-                    <ActionButton onClick={() => {}}>{ADD_BUTTON_ROLE_NAME}</ActionButton>
+                    <ActionButton onClick={() => {}} widthClass="w-auto">
+                      {ADD_BUTTON_ROLE_NAME}
+                    </ActionButton>
                   </div>
                 </fieldset>
               </form>
