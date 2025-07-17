@@ -46,7 +46,7 @@ describe("キーワード詳細フォームの表示のテスト", () => {
     await clickBookmark(mockBookmarks[1]);
 
     await waitFor(() => {
-      expect(screen.getByRole("form", { name: FORM_KEYWORD_DETAIL })).toBeInTheDocument();
+      expect(screen.getByRole("group", { name: FORM_KEYWORD_DETAIL })).toBeInTheDocument();
       expect(screen.getByRole("textbox", { name: KEYWORD_ROLE_NAME })).toBeInTheDocument();
       expect(screen.getByRole("button", { name: ADD_BUTTON_ROLE_NAME })).toBeInTheDocument();
     });

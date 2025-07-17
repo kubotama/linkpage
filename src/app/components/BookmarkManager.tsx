@@ -84,10 +84,9 @@ export const BookmarkManager = () => {
                     }}
                   />
                 </div>
-                <div
-                  role="form"
+                <fieldset
                   aria-label={FORM_KEYWORD_DETAIL}
-                  className="mb-1 flex items-end justify-left"
+                  className="mb-1 flex items-end justify-left border-none p-0"
                 >
                   <BookmarkInputField
                     id="keyword"
@@ -102,7 +101,7 @@ export const BookmarkManager = () => {
                   <div className="ml-2">
                     <ActionButton onClick={() => {}}>{ADD_BUTTON_ROLE_NAME}</ActionButton>
                   </div>
-                </div>
+                </fieldset>
               </form>
             )}
           </div>
