@@ -59,6 +59,7 @@ export const useBookmarkManager = () => {
     if (selectedBookmark === undefined) {
       setTextUrl("");
       setTextTitle("");
+      setTextKeyword("");
     } else {
       setTextUrl(selectedBookmark.url);
       setTextTitle(selectedBookmark.title);
