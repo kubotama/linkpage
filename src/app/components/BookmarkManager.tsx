@@ -68,9 +68,7 @@ export const BookmarkManager = () => {
                     placeholder="URL"
                     label="URL"
                     value={textUrl}
-                    onChange={(e) => {
-                      setTextUrl(e.target.value);
-                    }}
+                    onChange={(e) => setTextUrl(e.target.value)}
                   />
                 </div>
                 <div className="mb-1 flex justify-center">
@@ -79,9 +77,7 @@ export const BookmarkManager = () => {
                     placeholder="タイトル"
                     label="タイトル"
                     value={textTitle}
-                    onChange={(e) => {
-                      setTextTitle(e.target.value);
-                    }}
+                    onChange={(e) => setTextTitle(e.target.value)}
                   />
                 </div>
                 <fieldset
@@ -94,9 +90,7 @@ export const BookmarkManager = () => {
                     label="キーワード"
                     value={textKeyword}
                     minWidthClass="min-w-keyword-input"
-                    onChange={(e) => {
-                      setTextKeyword(e.target.value);
-                    }}
+                    onChange={(e) => setTextKeyword(e.target.value)}
                   />
                   <div className="ml-2">
                     <ActionButton onClick={() => {}}>{ADD_BUTTON_ROLE_NAME}</ActionButton>
