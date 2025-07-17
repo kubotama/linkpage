@@ -34,7 +34,7 @@ describe("キーワード詳細フォームの表示のテスト", () => {
     });
 
     await waitFor(() => {
-      expect(screen.queryByRole("form", { name: FORM_KEYWORD_DETAIL })).not.toBeInTheDocument();
+      expect(screen.queryByRole("group", { name: FORM_KEYWORD_DETAIL })).not.toBeInTheDocument();
     });
   });
 
