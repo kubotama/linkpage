@@ -56,10 +56,10 @@ export const useBookmarkManager = () => {
   }, [loadBookmarks]);
 
   useEffect(() => {
+    setTextKeyword("");
     if (selectedBookmark === undefined) {
       setTextUrl("");
       setTextTitle("");
-      setTextKeyword("");
     } else {
       setTextUrl(selectedBookmark.url);
       setTextTitle(selectedBookmark.title);
