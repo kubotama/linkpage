@@ -5,7 +5,7 @@ import {
   ARROW_BUTTON_ROLE_NAME,
   DELETE_BUTTON_ROLE_NAME,
   FORM_BOOKMARK_DETAIL,
-  FORM_KEYWORD_DETAIL,
+  FIELDSET_KEYWORD_LABEL,
   PARAMETER_BUTTON_ROLE_NAME,
   UPDATE_BUTTON_ROLE_NAME,
 } from "../constants/constants";
@@ -81,7 +81,7 @@ export const BookmarkManager = () => {
                   />
                 </div>
                 <fieldset
-                  aria-label={FORM_KEYWORD_DETAIL}
+                  aria-label={FIELDSET_KEYWORD_LABEL}
                   className="mt-5 flex items-end justify-start border-none p-0"
                 >
                   <BookmarkInputField

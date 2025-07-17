@@ -7,7 +7,7 @@ import { render, screen, waitFor } from "@testing-library/react";
 
 import {
   ADD_BUTTON_ROLE_NAME,
-  FORM_KEYWORD_DETAIL,
+  FIELDSET_KEYWORD_LABEL,
   KEYWORD_ROLE_NAME,
 } from "../../constants/constants";
 import { clickBookmark } from "../../test-utils/bookmarkTestUtils";
@@ -34,7 +34,7 @@ describe("キーワード詳細フォームの表示のテスト", () => {
     });
 
     await waitFor(() => {
-      expect(screen.queryByRole("group", { name: FORM_KEYWORD_DETAIL })).not.toBeInTheDocument();
+      expect(screen.queryByRole("group", { name: FIELDSET_KEYWORD_LABEL })).not.toBeInTheDocument();
     });
   });
 
@@ -46,7 +46,7 @@ describe("キーワード詳細フォームの表示のテスト", () => {
     await clickBookmark(mockBookmarks[1]);
 
     await waitFor(() => {
-      expect(screen.getByRole("group", { name: FORM_KEYWORD_DETAIL })).toBeInTheDocument();
+      expect(screen.getByRole("group", { name: FIELDSET_KEYWORD_LABEL })).toBeInTheDocument();
       expect(screen.getByRole("textbox", { name: KEYWORD_ROLE_NAME })).toBeInTheDocument();
       expect(screen.getByRole("button", { name: ADD_BUTTON_ROLE_NAME })).toBeInTheDocument();
     });
