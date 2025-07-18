@@ -81,8 +81,8 @@ export const BookmarkManager = () => {
                     onChange={(e) => setTextTitle(e.target.value)}
                   />
                 </div>
-                <legend className="sr-only">{FIELDSET_KEYWORD_LABEL}</legend>
                 <fieldset className="mt-5 flex items-end justify-start border-none p-0">
+                  <legend className="sr-only">{FIELDSET_KEYWORD_LABEL}</legend>
                   <BookmarkInputField
                     id="keyword"
                     placeholder="キーワードを入力してください"
