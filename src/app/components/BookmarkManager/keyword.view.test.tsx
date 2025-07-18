@@ -16,6 +16,11 @@ import { BookmarkManager } from "../BookmarkManager";
 
 const mockFetch = vi.fn();
 
+const queryFieldsetKeywordLabel = () =>
+  screen.queryAllByRole("group", { name: FIELDSET_KEYWORD_LABEL });
+const queryKeywordInput = () => screen.queryAllByRole("textbox", { name: KEYWORD_ROLE_NAME });
+const queryAddButton = () => screen.queryAllByRole("button", { name: ADD_BUTTON_ROLE_NAME });
+
 describe("キーワード詳細フォームの表示のテスト", () => {
   beforeEach(() => {
     mockFetch.mockReset();
@@ -34,7 +39,9 @@ describe("キーワード詳細フォームの表示のテスト", () => {
     });
 
     await waitFor(() => {
-      expect(screen.queryByRole("group", { name: FIELDSET_KEYWORD_LABEL })).not.toBeInTheDocument();
+      expect(queryFieldsetKeywordLabel()).toHaveLength(0);
+      expect(queryKeywordInput()).toHaveLength(0);
+      expect(queryAddButton()).toHaveLength(0);
     });
   });
 
@@ -46,9 +53,15 @@ describe("キーワード詳細フォームの表示のテスト", () => {
     await clickBookmark(mockBookmarks[1]);
 
     await waitFor(() => {
-      expect(screen.getByRole("group", { name: FIELDSET_KEYWORD_LABEL })).toBeInTheDocument();
-      expect(screen.getByRole("textbox", { name: KEYWORD_ROLE_NAME })).toBeInTheDocument();
-      expect(screen.getByRole("button", { name: ADD_BUTTON_ROLE_NAME })).toBeInTheDocument();
+      expect(queryFieldsetKeywordLabel()).toHaveLength(1);
+
+      const keywordInput = queryKeywordInput();
+      expect(keywordInput).toHaveLength(1);
+      expect(keywordInput[0]).toHaveValue("");
+
+      const addButton = queryAddButton();
+      expect(addButton).toHaveLength(1);
+      expect(addButton[0]).toBeEnabled();
     });
   });
 });
