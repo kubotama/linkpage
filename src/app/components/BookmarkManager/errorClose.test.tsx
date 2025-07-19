@@ -5,13 +5,8 @@ import { beforeEach, describe, expect, it, vi } from "vitest";
 
 import { fireEvent, render, screen, waitFor } from "@testing-library/react";
 
-import { clickBookmark } from "../../test-utils/bookmarkTestUtils";
-import {
-  CLOSE_BUTTON_ROLE_NAME,
-  TITLE_ROLE_NAME,
-  URL_ROLE_NAME,
-} from "../../constants/constants";
-import { mockBookmarks } from "../../types/Bookmark";
+import { clickBookmark, mockBookmarks } from "../../test-utils/bookmarkTestUtils";
+import { CLOSE_BUTTON_ROLE_NAME, TITLE_ROLE_NAME, URL_ROLE_NAME } from "../../constants/constants";
 import { BookmarkManager } from "../BookmarkManager";
 
 const mockFetch = vi.fn();
@@ -47,9 +42,7 @@ describe("BookmarkManager", () => {
 
     await waitFor(() => {
       const errorSpan = screen.getByTestId("bookmark-message");
-      expect(errorSpan).toHaveTextContent(
-        "URLが無効です。正しいURLを入力してください。"
-      );
+      expect(errorSpan).toHaveTextContent("URLが無効です。正しいURLを入力してください。");
       expect(errorSpan).toHaveStyle("color: rgb(255, 0, 0)");
     });
 

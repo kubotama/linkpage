@@ -1,8 +1,8 @@
 import ActualDatabase from "better-sqlite3"; // Import the actual library
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 
+import { mockBookmarks } from "../../test-utils/bookmarkTestUtils";
 import { setupInMemoryDb } from "../../test-utils/db-setup";
-import { mockBookmarks } from "../../types/Bookmark";
 import { getDb } from "./database";
 import { GET } from "./route";
 

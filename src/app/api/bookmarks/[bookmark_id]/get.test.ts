@@ -1,8 +1,8 @@
 import ActualDatabase from "better-sqlite3"; // Import the actual library
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 
+import { mockBookmarks } from "../../../test-utils/bookmarkTestUtils";
 import { setupInMemoryDb } from "../../../test-utils/db-setup";
-import { mockBookmarks } from "../../../types/Bookmark";
 import { API_BOOKMARKS_URL } from "../../utils/constants";
 import { getDb } from "../database";
 import { GET } from "./route";
@@ -81,11 +81,9 @@ describe("ブックマークを1件取得するAPIのテスト", () => {
   it("GET: クエリエラー時に500エラーを返す", async () => {
     const queryError = new Error("Failed to execute query");
     // prepareメソッドをモックしてクエリエラーを発生させる
-    const prepareSpy = vi
-      .spyOn(inMemoryDbInstance, "prepare")
-      .mockImplementation(() => {
-        throw queryError;
-      });
+    const prepareSpy = vi.spyOn(inMemoryDbInstance, "prepare").mockImplementation(() => {
+      throw queryError;
+    });
 
     const [request, context] = createGetRequest("1");
     const response = await GET(request, context);

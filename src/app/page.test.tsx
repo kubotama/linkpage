@@ -5,7 +5,7 @@ import { beforeEach, describe, expect, it, vi } from "vitest";
 import { render, screen } from "@testing-library/react";
 
 import Home from "./page";
-import { mockBookmarks } from "./types/Bookmark";
+import { mockBookmarks } from "./test-utils/bookmarkTestUtils";
 
 const mockFetch = vi.fn();
 

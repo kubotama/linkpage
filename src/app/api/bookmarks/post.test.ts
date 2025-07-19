@@ -1,8 +1,9 @@
 import ActualDatabase from "better-sqlite3"; // Import the actual library
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 
+import { createBookmark, mockBookmarks } from "../../test-utils/bookmarkTestUtils";
 import { setupInMemoryDb } from "../../test-utils/db-setup";
-import { Bookmark, createBookmark, mockBookmarks } from "../../types/Bookmark";
+import { Bookmark } from "../../types/Bookmark";
 import { API_BOOKMARKS_URL } from "../utils/constants";
 import { getDb } from "./database";
 import { OPTIONS, POST } from "./route";
@@ -96,11 +97,9 @@ describe("ブックマーク追加APIのテスト (オンメモリDB)", () => {
   it("POST: クエリエラー時に500エラーを返す", async () => {
     const queryError = new Error("Failed to execute query");
     // prepareメソッドをモックしてクエリエラーを発生させる
-    const prepareSpy = vi
-      .spyOn(inMemoryDbInstance, "prepare")
-      .mockImplementation(() => {
-        throw queryError;
-      });
+    const prepareSpy = vi.spyOn(inMemoryDbInstance, "prepare").mockImplementation(() => {
+      throw queryError;
+    });
 
     const bookmark: Bookmark = createBookmark({
       url: "https://www2.example.com",
@@ -125,9 +124,7 @@ describe("ブックマーク追加APIのテスト (オンメモリDB)", () => {
 
     expect(response.status).toBe(409);
     const json = await response.json();
-    expect(json.message).toEqual(
-      "指定されたURLのブックマークは既に登録されています。"
-    );
+    expect(json.message).toEqual("指定されたURLのブックマークは既に登録されています。");
   });
 
   it("POST: URLが空文字の場合にエラーを返す", async () => {
@@ -162,11 +159,7 @@ describe("ブックマーク追加APIのテスト (オンメモリDB)", () => {
     expect(response.headers.get("Access-Control-Allow-Origin")).toBe(
       "chrome-extension://jonckoigjppkhajocdbgfbgjdgffhebf"
     );
-    expect(response.headers.get("Access-Control-Allow-Methods")).toBe(
-      "POST, OPTIONS"
-    );
-    expect(response.headers.get("Access-Control-Allow-Headers")).toBe(
-      "Content-Type"
-    );
+    expect(response.headers.get("Access-Control-Allow-Methods")).toBe("POST, OPTIONS");
+    expect(response.headers.get("Access-Control-Allow-Headers")).toBe("Content-Type");
   });
 });

@@ -5,12 +5,8 @@ import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 
 import { fireEvent, render, screen, waitFor } from "@testing-library/react";
 
-import { clickBookmark } from "../../test-utils/bookmarkTestUtils";
-import {
-  PARAMETER_BUTTON_ROLE_NAME,
-  URL_ROLE_NAME,
-} from "../../constants/constants";
-import { mockBookmarks } from "../../types/Bookmark";
+import { PARAMETER_BUTTON_ROLE_NAME, URL_ROLE_NAME } from "../../constants/constants";
+import { clickBookmark, mockBookmarks } from "../../test-utils/bookmarkTestUtils";
 import { BookmarkManager } from "../BookmarkManager";
 
 const mockFetch = vi.fn();

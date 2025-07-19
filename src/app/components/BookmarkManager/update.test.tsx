@@ -6,13 +6,8 @@ import { beforeEach, describe, expect, it, vi } from "vitest";
 import { fireEvent, render, screen, waitFor } from "@testing-library/react";
 
 import { BOOKMARKS_ENDPOINT } from "../../constants/apiEndpoints";
-import { clickBookmark } from "../../test-utils/bookmarkTestUtils";
-import {
-  TITLE_ROLE_NAME,
-  UPDATE_BUTTON_ROLE_NAME,
-  URL_ROLE_NAME,
-} from "../../constants/constants";
-import { mockBookmarks } from "../../types/Bookmark";
+import { TITLE_ROLE_NAME, UPDATE_BUTTON_ROLE_NAME, URL_ROLE_NAME } from "../../constants/constants";
+import { clickBookmark, mockBookmarks } from "../../test-utils/bookmarkTestUtils";
 import { BookmarkManager } from "../BookmarkManager";
 
 const mockFetch = vi.fn();
@@ -190,9 +185,7 @@ describe("タイトルの更新ボタン", () => {
       );
       // 更新操作のコンテキストが依然として表示されていることを確認
       expect(screen.getByText(bookmarkToSelect.title)).toBeInTheDocument();
-      expect(
-        screen.getByRole("button", { name: UPDATE_BUTTON_ROLE_NAME })
-      ).toBeInTheDocument();
+      expect(screen.getByRole("button", { name: UPDATE_BUTTON_ROLE_NAME })).toBeInTheDocument();
     });
   });
 
@@ -235,9 +228,7 @@ describe("タイトルの更新ボタン", () => {
       );
       // 更新操作のコンテキストが依然として表示されていることを確認
       expect(screen.getByText(bookmarkToSelect.title)).toBeInTheDocument();
-      expect(
-        screen.getByRole("button", { name: UPDATE_BUTTON_ROLE_NAME })
-      ).toBeInTheDocument();
+      expect(screen.getByRole("button", { name: UPDATE_BUTTON_ROLE_NAME })).toBeInTheDocument();
     });
   });
 
@@ -281,9 +272,7 @@ describe("タイトルの更新ボタン", () => {
       );
       // 更新操作のコンテキストが依然として表示されていることを確認
       expect(screen.getByText(bookmarkToSelect.title)).toBeInTheDocument();
-      expect(
-        screen.getByRole("button", { name: UPDATE_BUTTON_ROLE_NAME })
-      ).toBeInTheDocument();
+      expect(screen.getByRole("button", { name: UPDATE_BUTTON_ROLE_NAME })).toBeInTheDocument();
     });
   });
 
@@ -326,9 +315,7 @@ describe("タイトルの更新ボタン", () => {
       );
       // 更新操作のコンテキストが依然として表示されていることを確認
       expect(screen.getByText(bookmarkToSelect.title)).toBeInTheDocument();
-      expect(
-        screen.getByRole("button", { name: UPDATE_BUTTON_ROLE_NAME })
-      ).toBeInTheDocument();
+      expect(screen.getByRole("button", { name: UPDATE_BUTTON_ROLE_NAME })).toBeInTheDocument();
     });
   });
 
@@ -371,9 +358,7 @@ describe("タイトルの更新ボタン", () => {
       );
       // 更新操作のコンテキストが依然として表示されていることを確認
       expect(screen.getByText(bookmarkToSelect.title)).toBeInTheDocument();
-      expect(
-        screen.getByRole("button", { name: UPDATE_BUTTON_ROLE_NAME })
-      ).toBeInTheDocument();
+      expect(screen.getByRole("button", { name: UPDATE_BUTTON_ROLE_NAME })).toBeInTheDocument();
     });
   });
 
@@ -416,9 +401,7 @@ describe("タイトルの更新ボタン", () => {
       );
       // 更新操作のコンテキストが依然として表示されていることを確認
       expect(screen.getByText(bookmarkToSelect.title)).toBeInTheDocument();
-      expect(
-        screen.getByRole("button", { name: UPDATE_BUTTON_ROLE_NAME })
-      ).toBeInTheDocument();
+      expect(screen.getByRole("button", { name: UPDATE_BUTTON_ROLE_NAME })).toBeInTheDocument();
     });
   });
 });

@@ -1,8 +1,8 @@
 import ActualDatabase from "better-sqlite3"; // Import the actual library
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 
+import { mockBookmarks } from "../../../test-utils/bookmarkTestUtils";
 import { setupInMemoryDb } from "../../../test-utils/db-setup";
-import { mockBookmarks } from "../../../types/Bookmark";
 import { API_BOOKMARKS_URL } from "../../utils/constants";
 import { getDb } from "../database";
 import { DELETE } from "./route";
@@ -52,16 +52,14 @@ describe("ブックマーク削除APIのテスト (オンメモリDB)", () => {
 
     // 削除前の件数を確認
     const countBefore = (
-      inMemoryDbInstance
-        .prepare("SELECT COUNT(*) as count FROM bookmarks")
-        .get() as { count: number }
+      inMemoryDbInstance.prepare("SELECT COUNT(*) as count FROM bookmarks").get() as {
+        count: number;
+      }
     ).count;
     expect(countBefore).toBe(mockBookmarks.length);
 
     // 削除リクエストを作成
-    const [request, context] = createDeleteRequest(
-      bookmarkToDelete.bookmark_id.toString()
-    );
+    const [request, context] = createDeleteRequest(bookmarkToDelete.bookmark_id.toString());
     const response = await DELETE(request, context);
 
     // レスポンスステータスを確認 (204 No Content)
@@ -73,9 +71,9 @@ describe("ブックマーク削除APIのテスト (オンメモリDB)", () => {
 
     // 削除後の件数を確認
     const countAfter = (
-      inMemoryDbInstance
-        .prepare("SELECT COUNT(*) as count FROM bookmarks")
-        .get() as { count: number }
+      inMemoryDbInstance.prepare("SELECT COUNT(*) as count FROM bookmarks").get() as {
+        count: number;
+      }
     ).count;
     expect(countAfter).toBe(mockBookmarks.length - 1);
   });
@@ -91,9 +89,9 @@ describe("ブックマーク削除APIのテスト (オンメモリDB)", () => {
 
     // ブックマーク数が変わっていないことを確認
     const count = (
-      inMemoryDbInstance
-        .prepare("SELECT COUNT(*) as count FROM bookmarks")
-        .get() as { count: number }
+      inMemoryDbInstance.prepare("SELECT COUNT(*) as count FROM bookmarks").get() as {
+        count: number;
+      }
     ).count;
     expect(count).toBe(mockBookmarks.length);
   });

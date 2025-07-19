@@ -1,21 +1,12 @@
 import "@testing-library/jest-dom";
 
 import { act } from "react";
-import {
-  afterAll,
-  beforeAll,
-  beforeEach,
-  describe,
-  expect,
-  it,
-  vi,
-} from "vitest";
+import { afterAll, beforeAll, beforeEach, describe, expect, it, vi } from "vitest";
 
 import { fireEvent, render, screen, waitFor } from "@testing-library/react";
 
-import { clickBookmark } from "../../test-utils/bookmarkTestUtils";
 import { URL_ROLE_NAME } from "../../constants/constants";
-import { mockBookmarks } from "../../types/Bookmark";
+import { clickBookmark, mockBookmarks } from "../../test-utils/bookmarkTestUtils";
 import { BookmarkManager } from "../BookmarkManager";
 
 // Mock for window.open to test the 'Open' button functionality
@@ -98,11 +89,7 @@ describe("「開く」ボタン: 入力されたURLを新しいタブで開く",
     });
 
     await waitFor(() => {
-      expect(mockOpen).toHaveBeenCalledWith(
-        url,
-        "_blank",
-        "noopener,noreferrer"
-      );
+      expect(mockOpen).toHaveBeenCalledWith(url, "_blank", "noopener,noreferrer");
     });
   });
 
