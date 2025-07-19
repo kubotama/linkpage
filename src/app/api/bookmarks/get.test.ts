@@ -44,7 +44,12 @@ describe("ブックマークのAPIのテスト", () => {
         .map((bk) => bk.keyword_id);
       return associatedKeywordIds.map((id) => {
         const keyword = mockKeywords.find((k) => k.keyword_id === id);
-        return keyword ? keyword : `Unknown Keyword ID: ${id}`;
+        if (!keyword) {
+          throw new Error(
+            `Test data inconsistency: Keyword with id ${id} not found in mockKeywords.`
+          );
+        }
+        return keyword;
       });
     };
     const expectedBookmarks = mockBookmarks.map((bookmark) => ({
