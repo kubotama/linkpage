@@ -18,6 +18,7 @@ export default {
       },
       minWidth: {
         "bookmark-details": "500px",
+        "keyword-input": "450px",
       },
     },
   },

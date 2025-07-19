@@ -10,14 +10,12 @@ import { useErrorMessage } from "./useErrorMessage";
 export const useBookmarkManager = () => {
   const [textUrl, setTextUrl] = useState("");
   const [textTitle, setTextTitle] = useState("");
-  const [selectedBookmark, setSelectedBookmark] =
-    useState<SelectedBookmark>(undefined);
+  const [textKeyword, setTextKeyword] = useState("");
+  const [selectedBookmark, setSelectedBookmark] = useState<SelectedBookmark>(undefined);
 
-  const { bookmarks, getBookmarks, deleteBookmark, updateBookmark } =
-    useBookmarks();
+  const { bookmarks, getBookmarks, deleteBookmark, updateBookmark } = useBookmarks();
 
-  const { textMessage, setMessage, isError, handleErrorClose } =
-    useErrorMessage();
+  const { textMessage, setMessage, isError, handleErrorClose } = useErrorMessage();
 
   const loadBookmarks = useCallback(async () => {
     setMessage("ブックマークをロード中...", false);
@@ -58,6 +56,7 @@ export const useBookmarkManager = () => {
   }, [loadBookmarks]);
 
   useEffect(() => {
+    setTextKeyword("");
     if (selectedBookmark === undefined) {
       setTextUrl("");
       setTextTitle("");
@@ -179,8 +178,7 @@ export const useBookmarkManager = () => {
           return undefined;
         }
         const currentIndex = currentBookmarks.findIndex(
-          (bookmark) =>
-            bookmark.bookmark_id === currentSelectedBookmark.bookmark_id
+          (bookmark) => bookmark.bookmark_id === currentSelectedBookmark.bookmark_id
         );
         if (currentIndex === -1) {
           return undefined;
@@ -200,9 +198,7 @@ export const useBookmarkManager = () => {
           newIndex = increment === 1 ? 0 : currentBookmarks.length - 1;
         } else {
           // ブックマークを循環
-          newIndex =
-            (currentIndex + increment + currentBookmarks.length) %
-            currentBookmarks.length;
+          newIndex = (currentIndex + increment + currentBookmarks.length) % currentBookmarks.length;
         }
         setSelectedBookmark(currentBookmarks[newIndex]);
         return false; // Prevent default scroll
@@ -236,12 +232,14 @@ export const useBookmarkManager = () => {
     bookmarks,
     textUrl,
     textTitle,
+    textKeyword,
     selectedBookmark,
     setSelectedBookmark,
     textMessage,
     isError,
     setTextUrl,
     setTextTitle,
+    setTextKeyword,
     deleteClick,
     urlClick,
     pathClick,

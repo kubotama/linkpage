@@ -1,11 +1,14 @@
 import React from "react";
 
 import {
+  ADD_BUTTON_ROLE_NAME,
   ARROW_BUTTON_ROLE_NAME,
   DELETE_BUTTON_ROLE_NAME,
   FORM_BOOKMARK_DETAIL,
+  FIELDSET_KEYWORD_LABEL,
   PARAMETER_BUTTON_ROLE_NAME,
   UPDATE_BUTTON_ROLE_NAME,
+  KEYWORD_ROLE_NAME,
 } from "../constants/constants";
 import { useBookmarkManager } from "../hooks/useBookmarkManager";
 import { ActionButton } from "./ActionButton";
@@ -19,11 +22,13 @@ export const BookmarkManager = () => {
     isError,
     textUrl,
     textTitle,
+    textKeyword,
     textMessage,
     selectedBookmark,
     setSelectedBookmark,
     setTextUrl,
     setTextTitle,
+    setTextKeyword,
     deleteClick,
     urlClick,
     pathClick,
@@ -64,9 +69,7 @@ export const BookmarkManager = () => {
                     placeholder="URL"
                     label="URL"
                     value={textUrl}
-                    onChange={(e) => {
-                      setTextUrl(e.target.value);
-                    }}
+                    onChange={(e) => setTextUrl(e.target.value)}
                   />
                 </div>
                 <div className="mb-1 flex justify-center">
@@ -75,11 +78,25 @@ export const BookmarkManager = () => {
                     placeholder="タイトル"
                     label="タイトル"
                     value={textTitle}
-                    onChange={(e) => {
-                      setTextTitle(e.target.value);
-                    }}
+                    onChange={(e) => setTextTitle(e.target.value)}
                   />
                 </div>
+                <fieldset className="mt-5 flex items-end justify-start border-none p-0">
+                  <legend className="sr-only">{FIELDSET_KEYWORD_LABEL}</legend>
+                  <BookmarkInputField
+                    id="keyword"
+                    placeholder="キーワードを入力してください"
+                    label={KEYWORD_ROLE_NAME}
+                    value={textKeyword}
+                    minWidthClass="min-w-keyword-input"
+                    onChange={(e) => setTextKeyword(e.target.value)}
+                  />
+                  <div className="ml-2">
+                    <ActionButton onClick={() => {}} widthClass="w-auto">
+                      {ADD_BUTTON_ROLE_NAME}
+                    </ActionButton>
+                  </div>
+                </fieldset>
               </form>
             )}
           </div>
