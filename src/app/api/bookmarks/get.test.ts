@@ -1,7 +1,11 @@
 import ActualDatabase from "better-sqlite3"; // Import the actual library
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 
-import { mockBookmarks } from "../../test-utils/bookmarkTestUtils";
+import {
+  mockBookmarks,
+  mockBookmarkKeywords,
+  mockKeywords,
+} from "../../test-utils/bookmarkTestUtils";
 import { setupInMemoryDb } from "../../test-utils/db-setup";
 import { getDb } from "./database";
 import { GET } from "./route";
@@ -32,42 +36,40 @@ describe("ブックマークのAPIのテスト", () => {
     expect(response.status).toBe(200);
     const json = await response.json();
 
-    expect(json).toHaveLength(4);
-
-    const bookmark1 = json.find((b: { bookmark_id: number }) => b.bookmark_id === 1);
-    expect(bookmark1).toEqual(expect.objectContaining({ ...mockBookmarks[0], keywords: [] }));
-
-    const bookmark2 = json.find((b: { bookmark_id: number }) => b.bookmark_id === 2);
-    expect(bookmark2).toEqual(expect.objectContaining({ ...mockBookmarks[1] }));
-    expect(bookmark2.keywords).toHaveLength(2);
-    expect(bookmark2.keywords).toEqual(
-      expect.arrayContaining([
-        {
-          keyword_id: 1,
-          keyword_name: "キーワード1",
-        },
-        {
-          keyword_id: 2,
-          keyword_name: "キーワード2",
-        },
-      ])
+    expect(json).toHaveLength(mockBookmarks.length);
+    // Helper to construct expected keywords for each bookmark
+    const getExpectedKeywords = (bookmarkId: number) => {
+      const associatedKeywordIds = mockBookmarkKeywords
+        .filter((bk) => bk.bookmark_id === bookmarkId)
+        .map((bk) => bk.keyword_id);
+      return associatedKeywordIds.map((id) => {
+        const keyword = mockKeywords.find((k) => k.keyword_id === id);
+        return keyword ? keyword : `Unknown Keyword ID: ${id}`;
+      });
+    };
+    const expectedBookmarks = mockBookmarks.map((bookmark) => ({
+      ...bookmark,
+      keywords: getExpectedKeywords(bookmark.bookmark_id),
+    }));
+    // Sort both actual and expected arrays by bookmark_id for consistent comparison
+    const sortedJson = [...json].sort(
+      (a: { bookmark_id: number }, b: { bookmark_id: number }) => a.bookmark_id - b.bookmark_id
     );
-
-    const bookmark3 = json.find((b: { bookmark_id: number }) => b.bookmark_id === 3);
-    expect(bookmark3).toEqual(
-      expect.objectContaining({
-        ...mockBookmarks[2],
-        keywords: [
-          {
-            keyword_id: 3,
-            keyword_name: "キーワード3",
-          },
-        ],
-      })
+    const sortedExpected = [...expectedBookmarks].sort(
+      (a: { bookmark_id: number }, b: { bookmark_id: number }) => a.bookmark_id - b.bookmark_id
     );
-
-    const bookmark4 = json.find((b: { bookmark_id: number }) => b.bookmark_id === 4);
-    expect(bookmark4).toEqual(expect.objectContaining({ ...mockBookmarks[3], keywords: [] }));
+    sortedExpected.forEach((expectedBookmark, index) => {
+      const actualBookmark = sortedJson[index];
+      expect(actualBookmark).toEqual(
+        expect.objectContaining({
+          bookmark_id: expectedBookmark.bookmark_id,
+          url: expectedBookmark.url,
+          title: expectedBookmark.title,
+        })
+      );
+      expect(actualBookmark.keywords).toEqual(expect.arrayContaining(expectedBookmark.keywords));
+      expect(actualBookmark.keywords).toHaveLength(expectedBookmark.keywords.length);
+    });
   });
 
   it("GET: データベースエラー時に500エラーを返す", async () => {
