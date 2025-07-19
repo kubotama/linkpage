@@ -2,7 +2,7 @@ import ActualDatabase from "better-sqlite3"; // Import the actual library
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 
 import { setupInMemoryDb } from "../../test-utils/db-setup";
-import { mockKeywords } from "../../types/Keywords";
+import { mockKeywords } from "../../test-utils/bookmarkTestUtils";
 import { getDb } from "../bookmarks/database";
 import { GET } from "./route";
 
@@ -49,11 +49,9 @@ describe("キーワードGET APIのテスト", () => {
   it("GET: クエリエラー時に500エラーを返す", async () => {
     const queryError = new Error("Failed to execute query");
     // prepareメソッドをモックしてクエリエラーを発生させる
-    const prepareSpy = vi
-      .spyOn(inMemoryDbInstance, "prepare")
-      .mockImplementation(() => {
-        throw queryError;
-      });
+    const prepareSpy = vi.spyOn(inMemoryDbInstance, "prepare").mockImplementation(() => {
+      throw queryError;
+    });
 
     const response = await GET();
     expect(response.status).toBe(500);
