@@ -1,36 +1,35 @@
 import ActualDatabase from "better-sqlite3"; // Import the actual library
 
 import { DB_SCHEMA } from "../api/bookmarks/schema";
-import { Bookmark, mockBookmarks } from "../types/Bookmark";
-import { Keyword, mockKeywords } from "../types/Keywords";
+import { mockBookmarks } from "../types/Bookmark";
+import { mockKeywords } from "../types/Keywords";
 
 export const setupInMemoryDb = () => {
   // Create a new in-memory database for each test
   const inMemoryDbInstance = new ActualDatabase(":memory:");
   inMemoryDbInstance.exec(DB_SCHEMA);
-  const insertKeyword = inMemoryDbInstance.prepare(`
-                      INSERT INTO keywords (keyword_id, keyword_name) VALUES (?, ?)
-                  `);
-  const insertKeywordMany = inMemoryDbInstance.transaction(
-    (keywords: Keyword[]) => {
-      for (const keyword of keywords) {
-        insertKeyword.run(keyword.keyword_id, keyword.keyword_name);
-      }
-    }
-  );
-  insertKeywordMany(mockKeywords);
 
-  const insertBookmark = inMemoryDbInstance.prepare(`
-                INSERT INTO bookmarks (url, title) VALUES (?, ?)
-            `);
-  const insertBookmarkMany = inMemoryDbInstance.transaction(
-    (bookmarks: Bookmark[]) => {
-      for (const bookmark of bookmarks) {
-        insertBookmark.run(bookmark.url, bookmark.title);
-      }
-    }
+  const bookmark_keywords = [
+    { bookmark_id: 2, keyword_id: 1 },
+    { bookmark_id: 2, keyword_id: 2 },
+    { bookmark_id: 3, keyword_id: 3 },
+  ];
+
+  const insertBookmark = inMemoryDbInstance.prepare(
+    "INSERT INTO bookmarks (bookmark_id, url, title) VALUES (@bookmark_id, @url, @title)"
   );
-  insertBookmarkMany(mockBookmarks);
+  const insertKeyword = inMemoryDbInstance.prepare(
+    "INSERT INTO keywords (keyword_id, keyword_name) VALUES (@keyword_id, @keyword_name)"
+  );
+  const insertBookmarkKeyword = inMemoryDbInstance.prepare(
+    "INSERT INTO bookmark_keywords (bookmark_id, keyword_id) VALUES (@bookmark_id, @keyword_id)"
+  );
+
+  inMemoryDbInstance.transaction(() => {
+    for (const bookmark of mockBookmarks) insertBookmark.run(bookmark);
+    for (const keyword of mockKeywords) insertKeyword.run(keyword);
+    for (const bk of bookmark_keywords) insertBookmarkKeyword.run(bk);
+  })();
 
   return inMemoryDbInstance;
 };
