@@ -40,11 +40,30 @@ describe("ブックマークのAPIのテスト", () => {
     const bookmark2 = json.find((b: { bookmark_id: number }) => b.bookmark_id === 2);
     expect(bookmark2).toEqual(expect.objectContaining({ ...mockBookmarks[1] }));
     expect(bookmark2.keywords).toHaveLength(2);
-    expect(bookmark2.keywords).toEqual(expect.arrayContaining(["キーワード1", "キーワード2"]));
+    expect(bookmark2.keywords).toEqual(
+      expect.arrayContaining([
+        {
+          keyword_id: 1,
+          keyword_name: "キーワード1",
+        },
+        {
+          keyword_id: 2,
+          keyword_name: "キーワード2",
+        },
+      ])
+    );
 
     const bookmark3 = json.find((b: { bookmark_id: number }) => b.bookmark_id === 3);
     expect(bookmark3).toEqual(
-      expect.objectContaining({ ...mockBookmarks[2], keywords: ["キーワード3"] })
+      expect.objectContaining({
+        ...mockBookmarks[2],
+        keywords: [
+          {
+            keyword_id: 3,
+            keyword_name: "キーワード3",
+          },
+        ],
+      })
     );
 
     const bookmark4 = json.find((b: { bookmark_id: number }) => b.bookmark_id === 4);

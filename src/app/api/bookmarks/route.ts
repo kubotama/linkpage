@@ -23,7 +23,7 @@ export async function GET() {
         b.bookmark_id,
         b.url,
         b.title,
-        JSON_GROUP_ARRAY(k.keyword_name) FILTER (WHERE k.keyword_name IS NOT NULL) AS keywords
+        JSON_GROUP_ARRAY(JSON_OBJECT('keyword_id', k.keyword_id, 'keyword_name', k.keyword_name)) FILTER (WHERE k.keyword_id IS NOT NULL) AS keywords
       FROM
         bookmarks AS b
       LEFT JOIN
@@ -35,7 +35,12 @@ export async function GET() {
       ORDER BY
         b.bookmark_id
     `);
-    const bookmarksFromDb = stmt.all() as (Bookmark & { keywords: string | null })[];
+    const bookmarksFromDb = stmt.all() as {
+      bookmark_id: number;
+      url: string;
+      title: string;
+      keywords: string | null;
+    }[];
 
     const bookmarks = bookmarksFromDb.map((b) => ({
       ...b,
