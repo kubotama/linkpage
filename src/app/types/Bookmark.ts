@@ -1,7 +1,10 @@
+import { Keyword } from "./Keywords";
+
 export type Bookmark = {
   bookmark_id: number;
   url: string;
   title: string;
+  keywords?: Keyword[];
 };
 
 export function createBookmark({
