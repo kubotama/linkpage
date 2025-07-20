@@ -14,6 +14,7 @@ export const DB_SCHEMA = `
     keyword_id INTEGER,
     FOREIGN KEY (bookmark_id) REFERENCES bookmarks(bookmark_id) ON DELETE CASCADE,
     FOREIGN KEY (keyword_id) REFERENCES keywords(keyword_id) ON DELETE CASCADE
+    UNIQUE (bookmark_id, keyword_id)
   );
 
   CREATE INDEX IF NOT EXISTS idx_bookmark_keywords_bookmark_id ON bookmark_keywords(bookmark_id);
