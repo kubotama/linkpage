@@ -2,8 +2,8 @@
 
 import { SqliteError } from "better-sqlite3";
 
-import { getDb } from "@/app/api/bookmarks/database";
-import { getBookmarkIdAsync, InvalidIdError } from "@/app/api/utils/id";
+import { getDb } from "../database";
+import { getBookmarkIdAsync, InvalidIdError } from "../../utils/id";
 import {
   createDuplicateBookmarkError,
   createInternalError,
@@ -12,7 +12,7 @@ import {
   createNotFoundBookmarkError,
   createNoTitleError,
   createNoUrlError,
-} from "@/app/api/utils/response";
+} from "../../utils/response";
 import { BookmarkFromDb } from "@/app/types/database";
 
 // 1件取得

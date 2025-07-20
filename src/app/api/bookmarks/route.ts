@@ -1,19 +1,20 @@
 "use server";
 import { SqliteError } from "better-sqlite3";
 
-import { getDb } from "@/app/api/bookmarks/database";
-import { API_BOOKMARKS_URL } from "@/app/api/utils/constants";
+import { Bookmark } from "@/app/types/Bookmark";
+import { BookmarkFromDb } from "@/app/types/database";
+
+import eventEmitter from "../../../lib/event-emitter";
+import { ALLOWED_CORS_ORIGIN } from "../../constants/apiEndpoints";
+import { API_BOOKMARKS_URL } from "../utils/constants";
 import {
   createDuplicateBookmarkError,
   createInternalError,
   createInvalidBodyError,
   createNoTitleError,
   createNoUrlError,
-} from "@/app/api/utils/response";
-import { ALLOWED_CORS_ORIGIN } from "@/app/constants/apiEndpoints";
-import { Bookmark } from "@/app/types/Bookmark";
-import { BookmarkFromDb } from "@/app/types/database";
-import eventEmitter from "@/lib/event-emitter";
+} from "../utils/response";
+import { getDb } from "./database";
 
 export async function GET() {
   try {
