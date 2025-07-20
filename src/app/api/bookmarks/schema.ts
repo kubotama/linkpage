@@ -17,7 +17,6 @@ export const DB_SCHEMA = `
     UNIQUE (bookmark_id, keyword_id)
   );
 
-  CREATE INDEX IF NOT EXISTS idx_bookmark_keywords_bookmark_id ON bookmark_keywords(bookmark_id);
   CREATE INDEX IF NOT EXISTS idx_bookmark_keywords_keyword_id ON bookmark_keywords(keyword_id);
   CREATE INDEX IF NOT EXISTS idx_bookmark_keywords_bookmark_id_keyword_id ON bookmark_keywords(bookmark_id, keyword_id);
   `;
