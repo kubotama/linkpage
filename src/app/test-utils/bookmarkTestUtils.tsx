@@ -99,3 +99,16 @@ export const mockBookmarkKeywords = [
   { bookmark_id: 2, keyword_id: 2 },
   { bookmark_id: 3, keyword_id: 3 },
 ];
+
+export const expectEqualBookmark = (bookmark1: Bookmark, bookmark2: Bookmark) => {
+  expect(bookmark1).toEqual(
+    expect.objectContaining({
+      bookmark_id: bookmark2.bookmark_id,
+      url: bookmark2.url,
+      title: bookmark2.title,
+    })
+  );
+  expect(bookmark2.keywords).not.toBeUndefined();
+  expect(bookmark1.keywords).toHaveLength(bookmark2.keywords!.length);
+  expect(bookmark1.keywords).toEqual(expect.arrayContaining(bookmark2.keywords!));
+};

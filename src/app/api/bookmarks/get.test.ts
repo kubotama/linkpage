@@ -2,6 +2,7 @@ import ActualDatabase from "better-sqlite3"; // Import the actual library
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 
 import {
+  expectEqualBookmark,
   mockBookmarks,
   mockBookmarkKeywords,
   mockKeywords,
@@ -64,16 +65,7 @@ describe("ブックマークのAPIのテスト", () => {
       (a: { bookmark_id: number }, b: { bookmark_id: number }) => a.bookmark_id - b.bookmark_id
     );
     sortedExpected.forEach((expectedBookmark, index) => {
-      const actualBookmark = sortedJson[index];
-      expect(actualBookmark).toEqual(
-        expect.objectContaining({
-          bookmark_id: expectedBookmark.bookmark_id,
-          url: expectedBookmark.url,
-          title: expectedBookmark.title,
-        })
-      );
-      expect(actualBookmark.keywords).toEqual(expect.arrayContaining(expectedBookmark.keywords));
-      expect(actualBookmark.keywords).toHaveLength(expectedBookmark.keywords.length);
+      expectEqualBookmark(sortedJson[index], expectedBookmark);
     });
   });
 

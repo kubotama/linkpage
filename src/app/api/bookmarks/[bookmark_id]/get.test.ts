@@ -2,6 +2,7 @@ import ActualDatabase from "better-sqlite3"; // Import the actual library
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 
 import {
+  expectEqualBookmark,
   mockBookmarkKeywords,
   mockBookmarks,
   mockKeywords,
@@ -57,12 +58,7 @@ describe("ブックマークを1件取得するAPIのテスト", () => {
         return keyword;
       });
 
-    const expectedBookmark = {
-      ...targetBookmark,
-      keywords: expectedKeywords,
-    };
-
-    expect(json).toEqual(expectedBookmark);
+    expectEqualBookmark(json, { ...targetBookmark, keywords: expectedKeywords });
   });
 
   it("GET: 不正なIDの場合400エラーを返す", async () => {
