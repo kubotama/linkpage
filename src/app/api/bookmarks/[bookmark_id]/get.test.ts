@@ -1,7 +1,11 @@
 import ActualDatabase from "better-sqlite3"; // Import the actual library
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 
-import { mockBookmarks } from "../../../test-utils/bookmarkTestUtils";
+import {
+  mockBookmarkKeywords,
+  mockBookmarks,
+  mockKeywords,
+} from "../../../test-utils/bookmarkTestUtils";
 import { setupInMemoryDb } from "../../../test-utils/db-setup";
 import { API_BOOKMARKS_URL } from "../../utils/constants";
 import { getDb } from "../database";
@@ -39,12 +43,26 @@ describe("ブックマークを1件取得するAPIのテスト", () => {
   });
 
   it("GET: ブックマークのデータが取得できる", async () => {
-    const [request, context] = createGetRequest("1");
+    const targetBookmark = mockBookmarks[1];
+    const [request, context] = createGetRequest(targetBookmark.bookmark_id.toString());
     const response = await GET(request, context);
 
     expect(response.status).toBe(200);
     const json = await response.json();
-    expect(json).toEqual(mockBookmarks[0]);
+    const expectedKeywords = mockBookmarkKeywords
+      .filter((bk) => bk.bookmark_id === targetBookmark.bookmark_id)
+      .map((bk) => {
+        const keyword = mockKeywords.find((k) => k.keyword_id === bk.keyword_id);
+        if (!keyword) throw new Error("Test data inconsistency");
+        return keyword;
+      });
+
+    const expectedBookmark = {
+      ...targetBookmark,
+      keywords: expectedKeywords,
+    };
+
+    expect(json).toEqual(expectedBookmark);
   });
 
   it("GET: 不正なIDの場合400エラーを返す", async () => {
