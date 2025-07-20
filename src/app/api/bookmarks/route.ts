@@ -3,6 +3,7 @@ import { SqliteError } from "better-sqlite3";
 
 import { Bookmark } from "@/app/types/Bookmark";
 import { BookmarkFromDb } from "@/app/types/database";
+import { Keyword } from "@/app/types/Keyword";
 
 import eventEmitter from "../../../lib/event-emitter";
 import { ALLOWED_CORS_ORIGIN } from "../../constants/apiEndpoints";
@@ -41,10 +42,12 @@ export async function GET() {
     `);
     const bookmarksFromDb = stmt.all() as BookmarkFromDb[];
 
-    const bookmarks = bookmarksFromDb.map((b) => ({
-      ...b,
-      keywords: JSON.parse(b.keywords),
-    }));
+    const bookmarks = bookmarksFromDb.map(
+      (b): Bookmark => ({
+        ...b,
+        keywords: JSON.parse(b.keywords) as Keyword[],
+      })
+    );
     return new Response(JSON.stringify(bookmarks), {
       status: 200,
       headers: { "Content-Type": "application/json" },
