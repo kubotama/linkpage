@@ -49,7 +49,7 @@ export async function GET(
     }
     const bookmark = {
       ...bookmarkFromDb,
-      keywords: JSON.parse(bookmarkFromDb.keywords!),
+      keywords: JSON.parse(bookmarkFromDb.keywords),
     };
     return new Response(JSON.stringify(bookmark), {
       status: 200,
