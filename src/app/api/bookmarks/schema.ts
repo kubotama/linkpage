@@ -13,7 +13,7 @@ export const DB_SCHEMA = `
     bookmark_id INTEGER,
     keyword_id INTEGER,
     FOREIGN KEY (bookmark_id) REFERENCES bookmarks(bookmark_id) ON DELETE CASCADE,
-    FOREIGN KEY (keyword_id) REFERENCES keywords(keyword_id) ON DELETE CASCADE
+    FOREIGN KEY (keyword_id) REFERENCES keywords(keyword_id) ON DELETE CASCADE,
     UNIQUE (bookmark_id, keyword_id)
   );
 
