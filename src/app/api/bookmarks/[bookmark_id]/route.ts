@@ -2,7 +2,8 @@
 
 import { SqliteError } from "better-sqlite3";
 
-import { getBookmarkIdAsync, InvalidIdError } from "../../utils/id";
+import { getDb } from "@/app/api/bookmarks/database";
+import { getBookmarkIdAsync, InvalidIdError } from "@/app/api/utils/id";
 import {
   createDuplicateBookmarkError,
   createInternalError,
@@ -11,8 +12,8 @@ import {
   createNotFoundBookmarkError,
   createNoTitleError,
   createNoUrlError,
-} from "../../utils/response";
-import { getDb } from "../database";
+} from "@/app/api/utils/response";
+import { BookmarkFromDb } from "@/app/types/database";
 
 // 1件取得
 export async function GET(
@@ -39,14 +40,7 @@ export async function GET(
       GROUP BY
         b.bookmark_id
     `);
-    const bookmarkFromDb = stmt.get(bookmark_id) as
-      | {
-          bookmark_id: number;
-          url: string;
-          title: string;
-          keywords: string | null;
-        }
-      | undefined;
+    const bookmarkFromDb = stmt.get(bookmark_id) as BookmarkFromDb | undefined;
     if (!bookmarkFromDb) {
       return createNotFoundBookmarkError(bookmark_id);
     }

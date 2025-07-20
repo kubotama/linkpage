@@ -1,19 +1,19 @@
 "use server";
 import { SqliteError } from "better-sqlite3";
 
-import { Bookmark } from "@/app/types/Bookmark";
-import eventEmitter from "../../../lib/event-emitter";
-
-import { ALLOWED_CORS_ORIGIN } from "../../constants/apiEndpoints";
-import { API_BOOKMARKS_URL } from "../utils/constants";
+import { getDb } from "@/app/api/bookmarks/database";
+import { API_BOOKMARKS_URL } from "@/app/api/utils/constants";
 import {
   createDuplicateBookmarkError,
   createInternalError,
   createInvalidBodyError,
   createNoTitleError,
   createNoUrlError,
-} from "../utils/response";
-import { getDb } from "./database";
+} from "@/app/api/utils/response";
+import { ALLOWED_CORS_ORIGIN } from "@/app/constants/apiEndpoints";
+import { Bookmark } from "@/app/types/Bookmark";
+import { BookmarkFromDb } from "@/app/types/database";
+import eventEmitter from "@/lib/event-emitter";
 
 export async function GET() {
   try {
@@ -35,12 +35,7 @@ export async function GET() {
       ORDER BY
         b.bookmark_id
     `);
-    const bookmarksFromDb = stmt.all() as {
-      bookmark_id: number;
-      url: string;
-      title: string;
-      keywords: string | null;
-    }[];
+    const bookmarksFromDb = stmt.all() as BookmarkFromDb[];
 
     const bookmarks = bookmarksFromDb.map((b) => ({
       ...b,
