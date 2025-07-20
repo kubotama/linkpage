@@ -28,7 +28,10 @@ export async function GET(
         b.bookmark_id,
         b.url,
         b.title,
-        JSON_GROUP_ARRAY(JSON_OBJECT('keyword_id', k.keyword_id, 'keyword_name', k.keyword_name)) FILTER (WHERE k.keyword_id IS NOT NULL) AS keywords
+        COALESCE(
+          JSON_GROUP_ARRAY(JSON_OBJECT('keyword_id', k.keyword_id, 'keyword_name', k.keyword_name)) FILTER (WHERE k.keyword_id IS NOT NULL),
+          '[]'
+        ) AS keywords
       FROM
         bookmarks AS b
       LEFT JOIN
@@ -40,13 +43,13 @@ export async function GET(
       GROUP BY
         b.bookmark_id
     `);
-    const bookmarkFromDb = stmt.get(bookmark_id) as BookmarkFromDb | undefined;
+    const bookmarkFromDb = stmt.get(bookmark_id) as BookmarkFromDb;
     if (!bookmarkFromDb) {
       return createNotFoundBookmarkError(bookmark_id);
     }
     const bookmark = {
       ...bookmarkFromDb,
-      keywords: bookmarkFromDb.keywords ? JSON.parse(bookmarkFromDb.keywords) : [],
+      keywords: JSON.parse(bookmarkFromDb.keywords!),
     };
     return new Response(JSON.stringify(bookmark), {
       status: 200,
