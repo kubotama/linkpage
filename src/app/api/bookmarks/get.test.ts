@@ -57,15 +57,8 @@ describe("ブックマークのAPIのテスト", () => {
       ...bookmark,
       keywords: getExpectedKeywords(bookmark.bookmark_id),
     }));
-    // Sort both actual and expected arrays by bookmark_id for consistent comparison
-    const sortedJson = [...json].sort(
-      (a: { bookmark_id: number }, b: { bookmark_id: number }) => a.bookmark_id - b.bookmark_id
-    );
-    const sortedExpected = [...expectedBookmarks].sort(
-      (a: { bookmark_id: number }, b: { bookmark_id: number }) => a.bookmark_id - b.bookmark_id
-    );
-    sortedExpected.forEach((expectedBookmark, index) => {
-      expectEqualBookmark(sortedJson[index], expectedBookmark);
+    expectedBookmarks.forEach((expectedBookmark, index) => {
+      expectEqualBookmark(json[index], expectedBookmark);
     });
   });
 
