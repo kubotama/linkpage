@@ -4,8 +4,9 @@ import { SqliteError } from "better-sqlite3";
 
 import { Bookmark } from "@/app/types/Bookmark";
 import { BookmarkFromDb } from "@/app/types/database";
-import { Keyword } from "@/app/types/Keyword";
 
+import { parseAndValidateKeywords } from "../../../test-utils/bookmarkTestUtils";
+// import { Keyword } from "@/app/types/Keyword";
 import { getBookmarkIdAsync, InvalidIdError } from "../../utils/id";
 import {
   createDuplicateBookmarkError,
@@ -52,7 +53,7 @@ export async function GET(
     }
     const bookmark: Bookmark = {
       ...bookmarkFromDb,
-      keywords: JSON.parse(bookmarkFromDb.keywords) as Keyword[],
+      keywords: parseAndValidateKeywords(bookmarkFromDb.keywords),
     };
     return new Response(JSON.stringify(bookmark), {
       status: 200,

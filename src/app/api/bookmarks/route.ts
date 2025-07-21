@@ -3,10 +3,10 @@ import { SqliteError } from "better-sqlite3";
 
 import { Bookmark } from "@/app/types/Bookmark";
 import { BookmarkFromDb } from "@/app/types/database";
-import { Keyword } from "@/app/types/Keyword";
 
 import eventEmitter from "../../../lib/event-emitter";
 import { ALLOWED_CORS_ORIGIN } from "../../constants/apiEndpoints";
+import { parseAndValidateKeywords } from "../../test-utils/bookmarkTestUtils";
 import { API_BOOKMARKS_URL } from "../utils/constants";
 import {
   createDuplicateBookmarkError,
@@ -45,7 +45,7 @@ export async function GET() {
     const bookmarks = bookmarksFromDb.map(
       (b): Bookmark => ({
         ...b,
-        keywords: JSON.parse(b.keywords) as Keyword[],
+        keywords: parseAndValidateKeywords(b.keywords),
       })
     );
     return new Response(JSON.stringify(bookmarks), {
