@@ -5,7 +5,7 @@ import { beforeEach, describe, expect, it, vi } from "vitest";
 
 import { render, screen, waitFor } from "@testing-library/react";
 
-import { mockBookmarks } from "../../types/Bookmark";
+import { mockBookmarks } from "../../test-utils/bookmarkTestUtils";
 import { BookmarkManager } from "../BookmarkManager";
 
 const mockFetch = vi.fn();
@@ -42,9 +42,7 @@ describe("BookmarkManagerの表示を確認", () => {
 
     render(<BookmarkManager />);
 
-    expect(screen.getByTestId("bookmark-message")).toHaveTextContent(
-      /^ブックマークをロード中...$/
-    );
+    expect(screen.getByTestId("bookmark-message")).toHaveTextContent(/^ブックマークをロード中...$/);
   });
 
   it("HTTPステータス500でfetchした場合、エラーメッセージが表示される", async () => {
@@ -60,8 +58,6 @@ describe("BookmarkManagerの表示を確認", () => {
     });
 
     const errorMessage = await screen.findByTestId("bookmark-message");
-    expect(errorMessage).toHaveTextContent(
-      /ブックマークのロード中にエラーが発生しました。/
-    );
+    expect(errorMessage).toHaveTextContent(/ブックマークのロード中にエラーが発生しました。/);
   });
 });

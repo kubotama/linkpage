@@ -8,8 +8,9 @@ import { fireEvent, render, screen, waitFor } from "@testing-library/react";
 import {
   assertNoBookmarkIsSelected,
   clickBookmark,
+  mockBookmarks,
 } from "../../test-utils/bookmarkTestUtils";
-import { Bookmark, mockBookmarks } from "../../types/Bookmark";
+import { Bookmark } from "../../types/Bookmark";
 import { BookmarkManager } from "../BookmarkManager";
 
 const mockFetch = vi.fn();

@@ -1,8 +1,8 @@
 import ActualDatabase from "better-sqlite3"; // Import the actual library
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 
+import { mockBookmarks } from "../../../test-utils/bookmarkTestUtils";
 import { setupInMemoryDb } from "../../../test-utils/db-setup";
-import { mockBookmarks } from "../../../types/Bookmark";
 import { API_BOOKMARKS_URL } from "../../utils/constants";
 import { getDb } from "../database";
 import { PUT } from "./route";
@@ -69,9 +69,9 @@ describe("ブックマーク更新APIのテスト (オンメモリDB)", () => {
     expect(updatedEntry.title).toEqual("Updated Title");
     // 更新後の件数を確認
     const countAfter = (
-      inMemoryDbInstance
-        .prepare("SELECT COUNT(*) as count FROM bookmarks")
-        .get() as { count: number }
+      inMemoryDbInstance.prepare("SELECT COUNT(*) as count FROM bookmarks").get() as {
+        count: number;
+      }
     ).count;
     expect(countAfter).toBe(mockBookmarks.length);
   });
@@ -105,9 +105,9 @@ describe("ブックマーク更新APIのテスト (オンメモリDB)", () => {
 
     // 更新後の件数を確認
     const countAfter = (
-      inMemoryDbInstance
-        .prepare("SELECT COUNT(*) as count FROM bookmarks")
-        .get() as { count: number }
+      inMemoryDbInstance.prepare("SELECT COUNT(*) as count FROM bookmarks").get() as {
+        count: number;
+      }
     ).count;
     expect(countAfter).toBe(mockBookmarks.length);
   });
@@ -232,10 +232,7 @@ describe("ブックマーク更新APIのテスト (オンメモリDB)", () => {
       title: "Example Title",
     };
 
-    const [request, context] = createPutRequest(
-      "invalid json data",
-      bookmarkToUpdate.bookmark_id
-    );
+    const [request, context] = createPutRequest("invalid json data", bookmarkToUpdate.bookmark_id);
     const response = await PUT(request, context);
 
     expect(response.status).toEqual(400);
@@ -246,11 +243,9 @@ describe("ブックマーク更新APIのテスト (オンメモリDB)", () => {
   it("PUT: クエリエラー時に500エラーを返す", async () => {
     const queryError = new Error("Failed to execute query");
     // prepareメソッドをモックしてクエリエラーを発生させる
-    const prepareSpy = vi
-      .spyOn(inMemoryDbInstance, "prepare")
-      .mockImplementation(() => {
-        throw queryError;
-      });
+    const prepareSpy = vi.spyOn(inMemoryDbInstance, "prepare").mockImplementation(() => {
+      throw queryError;
+    });
 
     const bookmarkToUpdate = {
       bookmark_id: 1,
@@ -293,8 +288,6 @@ describe("ブックマーク更新APIのテスト (オンメモリDB)", () => {
     // レスポンスステータスを確認 (409: Conflict
     expect(response.status).toEqual(409);
     const json = await response.json();
-    expect(json.message).toEqual(
-      "指定されたURLのブックマークは既に登録されています。"
-    );
+    expect(json.message).toEqual("指定されたURLのブックマークは既に登録されています。");
   });
 });

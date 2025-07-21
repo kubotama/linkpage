@@ -10,8 +10,7 @@ import {
   FIELDSET_KEYWORD_LABEL,
   KEYWORD_ROLE_NAME,
 } from "../../constants/constants";
-import { clickBookmark } from "../../test-utils/bookmarkTestUtils";
-import { mockBookmarks } from "../../types/Bookmark";
+import { clickBookmark, mockBookmarks } from "../../test-utils/bookmarkTestUtils";
 import { BookmarkManager } from "../BookmarkManager";
 
 const mockFetch = vi.fn();

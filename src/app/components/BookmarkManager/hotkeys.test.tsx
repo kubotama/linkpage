@@ -1,25 +1,17 @@
 import "@testing-library/jest-dom";
 
 import { act } from "react";
-import {
-  afterAll,
-  beforeAll,
-  beforeEach,
-  describe,
-  expect,
-  it,
-  vi,
-} from "vitest";
+import { afterAll, beforeAll, beforeEach, describe, expect, it, vi } from "vitest";
 
 import { fireEvent, render, screen, waitFor } from "@testing-library/react";
 
+import { URL_ROLE_NAME } from "../../constants/constants";
 import {
   assertBookmarkIsSelected,
   assertNoBookmarkIsSelected,
   clickBookmark,
+  mockBookmarks,
 } from "../../test-utils/bookmarkTestUtils";
-import { URL_ROLE_NAME } from "../../constants/constants";
-import { mockBookmarks } from "../../types/Bookmark";
 import { BookmarkManager } from "../BookmarkManager";
 
 const mockFetch = vi.fn();
@@ -100,11 +92,7 @@ describe("BookmarkManager Hotkeys", () => {
 
     // window.openが正しいURLで呼び出されたことを検証
     await waitFor(() => {
-      expect(mockOpen).toHaveBeenCalledWith(
-        bookmarkToSelect.url,
-        "_blank",
-        "noopener,noreferrer"
-      );
+      expect(mockOpen).toHaveBeenCalledWith(bookmarkToSelect.url, "_blank", "noopener,noreferrer");
     });
   });
 

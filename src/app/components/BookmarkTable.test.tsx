@@ -3,7 +3,8 @@ import "@testing-library/jest-dom";
 import { describe, expect, it, vi } from "vitest";
 
 import { render, screen, within } from "@testing-library/react";
-import { mockBookmarks, SelectedBookmark } from "../types/Bookmark";
+import { SelectedBookmark } from "../types/Bookmark";
+import { mockBookmarks } from "../test-utils/bookmarkTestUtils";
 
 import { BookmarkTable } from "./BookmarkTable";
 

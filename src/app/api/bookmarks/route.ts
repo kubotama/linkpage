@@ -1,9 +1,10 @@
 "use server";
 import { SqliteError } from "better-sqlite3";
 
-import { Bookmark } from "@/app/types/Bookmark";
-import eventEmitter from "../../../lib/event-emitter";
+import { Bookmark, parseAndValidateKeywords } from "../../types/Bookmark";
+import { BookmarkFromDb } from "@/app/types/database";
 
+import eventEmitter from "../../../lib/event-emitter";
 import { ALLOWED_CORS_ORIGIN } from "../../constants/apiEndpoints";
 import { API_BOOKMARKS_URL } from "../utils/constants";
 import {
@@ -18,8 +19,34 @@ import { getDb } from "./database";
 export async function GET() {
   try {
     const db = getDb();
-    const stmt = db.prepare("SELECT bookmark_id, url, title FROM bookmarks");
-    const bookmarks = stmt.all();
+    const stmt = db.prepare(`
+      SELECT
+        b.bookmark_id,
+        b.url,
+        b.title,
+        COALESCE(
+          JSON_GROUP_ARRAY(JSON_OBJECT('keyword_id', k.keyword_id, 'keyword_name', k.keyword_name) ORDER BY k.keyword_id) FILTER (WHERE k.keyword_id IS NOT NULL),
+          '[]'
+        ) AS keywords
+      FROM
+        bookmarks AS b
+      LEFT JOIN
+        bookmark_keywords AS bk ON b.bookmark_id = bk.bookmark_id
+      LEFT JOIN
+        keywords AS k ON bk.keyword_id = k.keyword_id
+      GROUP BY
+        b.bookmark_id
+      ORDER BY
+        b.bookmark_id
+    `);
+    const bookmarksFromDb = stmt.all() as BookmarkFromDb[];
+
+    const bookmarks = bookmarksFromDb.map(
+      (b): Bookmark => ({
+        ...b,
+        keywords: parseAndValidateKeywords(b.keywords),
+      })
+    );
     return new Response(JSON.stringify(bookmarks), {
       status: 200,
       headers: { "Content-Type": "application/json" },
@@ -57,9 +84,7 @@ export async function POST(request: Request) {
     }
 
     const db = getDb();
-    const insertStmt = db.prepare(
-      "INSERT INTO bookmarks (url, title) VALUES (?, ?)"
-    );
+    const insertStmt = db.prepare("INSERT INTO bookmarks (url, title) VALUES (?, ?)");
     const result = insertStmt.run(bookmark.url, bookmark.title);
 
     // ブックマークが更新されたことを通知
@@ -84,10 +109,7 @@ export async function POST(request: Request) {
     if (error instanceof SyntaxError) {
       return createInvalidBodyError(error, commonHeaders);
     }
-    if (
-      error instanceof SqliteError &&
-      error.code === "SQLITE_CONSTRAINT_UNIQUE"
-    ) {
+    if (error instanceof SqliteError && error.code === "SQLITE_CONSTRAINT_UNIQUE") {
       return createDuplicateBookmarkError(bookmark.url, commonHeaders);
     }
     return createInternalError(error, commonHeaders);

@@ -2,6 +2,9 @@
 
 import { SqliteError } from "better-sqlite3";
 
+import { Bookmark, parseAndValidateKeywords } from "../../../types/Bookmark";
+import { BookmarkFromDb } from "@/app/types/database";
+
 import { getBookmarkIdAsync, InvalidIdError } from "../../utils/id";
 import {
   createDuplicateBookmarkError,
@@ -22,13 +25,34 @@ export async function GET(
   try {
     const bookmark_id = await getBookmarkIdAsync({ params });
     const db = getDb();
-    const stmt = db.prepare(
-      "SELECT bookmark_id, url, title FROM bookmarks WHERE bookmark_id = ?"
-    );
-    const bookmark = stmt.get(bookmark_id);
-    if (!bookmark) {
+    const stmt = db.prepare(`
+      SELECT
+        b.bookmark_id,
+        b.url,
+        b.title,
+        COALESCE(
+         JSON_GROUP_ARRAY(JSON_OBJECT('keyword_id', k.keyword_id, 'keyword_name', k.keyword_name) ORDER BY k.keyword_id) FILTER (WHERE k.keyword_id IS NOT NULL),
+          '[]'
+        ) AS keywords
+      FROM
+        bookmarks AS b
+      LEFT JOIN
+        bookmark_keywords AS bk ON b.bookmark_id = bk.bookmark_id
+      LEFT JOIN
+        keywords AS k ON bk.keyword_id = k.keyword_id
+      WHERE
+        b.bookmark_id = ?
+      GROUP BY
+        b.bookmark_id
+    `);
+    const bookmarkFromDb = stmt.get(bookmark_id) as BookmarkFromDb;
+    if (!bookmarkFromDb) {
       return createNotFoundBookmarkError(bookmark_id);
     }
+    const bookmark: Bookmark = {
+      ...bookmarkFromDb,
+      keywords: parseAndValidateKeywords(bookmarkFromDb.keywords),
+    };
     return new Response(JSON.stringify(bookmark), {
       status: 200,
       headers: { "Content-Type": "application/json" },
@@ -58,9 +82,7 @@ export async function PUT(
     }
 
     const db = getDb();
-    const prepare = db.prepare(
-      "UPDATE bookmarks SET title = ?, url = ? WHERE bookmark_id = ?"
-    );
+    const prepare = db.prepare("UPDATE bookmarks SET title = ?, url = ? WHERE bookmark_id = ?");
     const info = prepare.run(bookmark.title, bookmark.url, bookmark_id);
     if (info.changes === 0) {
       return createNotFoundBookmarkError(bookmark_id);
@@ -70,10 +92,7 @@ export async function PUT(
     if (error instanceof SyntaxError) {
       return createInvalidBodyError(error);
     }
-    if (
-      error instanceof SqliteError &&
-      error.code === "SQLITE_CONSTRAINT_UNIQUE"
-    ) {
+    if (error instanceof SqliteError && error.code === "SQLITE_CONSTRAINT_UNIQUE") {
       return createDuplicateBookmarkError(bookmark.url);
     }
     if (error instanceof InvalidIdError) {

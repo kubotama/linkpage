@@ -5,12 +5,8 @@ import { beforeEach, describe, expect, it, vi } from "vitest";
 
 import { fireEvent, render, screen, waitFor } from "@testing-library/react";
 
-import { clickBookmark } from "../../test-utils/bookmarkTestUtils";
-import {
-  ARROW_BUTTON_ROLE_NAME,
-  URL_ROLE_NAME,
-} from "../../constants/constants";
-import { mockBookmarks } from "../../types/Bookmark";
+import { ARROW_BUTTON_ROLE_NAME, URL_ROLE_NAME } from "../../constants/constants";
+import { clickBookmark, mockBookmarks } from "../../test-utils/bookmarkTestUtils";
 import { BookmarkManager } from "../BookmarkManager";
 
 const mockFetch = vi.fn();
@@ -71,9 +67,7 @@ describe("「←」ボタン: URLから、/の階層を一段、削除する", (
     });
 
     await waitFor(() => {
-      expect(urlInput).toHaveValue(
-        "https://xtech.nikkei.com/atcl/nxt/column/18/00148/"
-      );
+      expect(urlInput).toHaveValue("https://xtech.nikkei.com/atcl/nxt/column/18/00148/");
     });
   });
 
@@ -99,9 +93,7 @@ describe("「←」ボタン: URLから、/の階層を一段、削除する", (
     });
 
     await waitFor(() => {
-      expect(urlInput).toHaveValue(
-        "https://xtech.nikkei.com/atcl/nxt/column/18/00148/"
-      );
+      expect(urlInput).toHaveValue("https://xtech.nikkei.com/atcl/nxt/column/18/00148/");
     });
   });
 

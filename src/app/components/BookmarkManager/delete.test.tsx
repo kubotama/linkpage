@@ -6,9 +6,8 @@ import { beforeEach, describe, expect, it, vi } from "vitest";
 import { fireEvent, render, screen, waitFor } from "@testing-library/react";
 
 import { BOOKMARKS_ENDPOINT } from "../../constants/apiEndpoints";
-import { clickBookmark } from "../../test-utils/bookmarkTestUtils";
+import { clickBookmark, mockBookmarks } from "../../test-utils/bookmarkTestUtils";
 import { DELETE_BUTTON_ROLE_NAME } from "../../constants/constants";
-import { mockBookmarks } from "../../types/Bookmark";
 import { BookmarkManager } from "../BookmarkManager";
 
 const mockFetch = vi.fn();
@@ -107,9 +106,7 @@ describe("削除ボタン", () => {
       });
 
       // 画面の更新の確認
-      expect(
-        screen.queryByText(bookmarkToSelect.title)
-      ).not.toBeInTheDocument();
+      expect(screen.queryByText(bookmarkToSelect.title)).not.toBeInTheDocument();
       expect(
         screen.queryByRole("button", { name: DELETE_BUTTON_ROLE_NAME })
       ).not.toBeInTheDocument();
@@ -159,9 +156,7 @@ describe("削除ボタン", () => {
       );
       // 削除操作のコンテキスト（選択されたブックマークのタイトルや削除ボタン）が依然として表示されていることを確認
       expect(screen.getByText(bookmarkToSelect.title)).toBeInTheDocument();
-      expect(
-        screen.getByRole("button", { name: DELETE_BUTTON_ROLE_NAME })
-      ).toBeInTheDocument();
+      expect(screen.getByRole("button", { name: DELETE_BUTTON_ROLE_NAME })).toBeInTheDocument();
     });
   });
 
@@ -208,9 +203,7 @@ describe("削除ボタン", () => {
       );
       // 削除操作のコンテキスト（選択されたブックマークのタイトルや削除ボタン）が依然として表示されていることを確認
       expect(screen.getByText(bookmarkToSelect.title)).toBeInTheDocument();
-      expect(
-        screen.getByRole("button", { name: DELETE_BUTTON_ROLE_NAME })
-      ).toBeInTheDocument();
+      expect(screen.getByRole("button", { name: DELETE_BUTTON_ROLE_NAME })).toBeInTheDocument();
     });
   });
 
@@ -257,9 +250,7 @@ describe("削除ボタン", () => {
       );
       // 削除操作のコンテキスト（選択されたブックマークのタイトルや削除ボタン）が依然として表示されていることを確認
       expect(screen.getByText(bookmarkToSelect.title)).toBeInTheDocument();
-      expect(
-        screen.getByRole("button", { name: DELETE_BUTTON_ROLE_NAME })
-      ).toBeInTheDocument();
+      expect(screen.getByRole("button", { name: DELETE_BUTTON_ROLE_NAME })).toBeInTheDocument();
     });
   });
 });

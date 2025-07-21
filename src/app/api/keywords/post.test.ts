@@ -1,8 +1,8 @@
 import ActualDatabase from "better-sqlite3"; // Import the actual library
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 
+import { mockKeywords } from "../../test-utils/bookmarkTestUtils";
 import { setupInMemoryDb } from "../../test-utils/db-setup";
-import { mockKeywords } from "../../types/Keywords";
 import { getDb } from "../bookmarks/database";
 import { API_KEYWORDS_URL } from "../utils/constants";
 import { POST } from "./route";
@@ -100,25 +100,19 @@ describe("キーワードAPIのテスト", () => {
   });
 
   it("POST: 重複したキーワードを追加時に409 Conflictを返す", async () => {
-    const response = await POST(
-      createPostRequest(mockKeywords[0].keyword_name)
-    );
+    const response = await POST(createPostRequest(mockKeywords[0].keyword_name));
 
     expect(response.status).toBe(409);
     const text = await response.json();
-    expect(text.message).toEqual(
-      "指定されたキーワードは既に登録されています。"
-    );
+    expect(text.message).toEqual("指定されたキーワードは既に登録されています。");
   });
 
   it("POST: データベースエラー時に500エラーを返す", async () => {
     const queryError = new Error("Failed to execute query");
     // prepareメソッドをモックしてクエリエラーを発生させる
-    const prepareSpy = vi
-      .spyOn(inMemoryDbInstance, "prepare")
-      .mockImplementation(() => {
-        throw queryError;
-      });
+    const prepareSpy = vi.spyOn(inMemoryDbInstance, "prepare").mockImplementation(() => {
+      throw queryError;
+    });
 
     const response = await POST(createPostRequest("テスト"));
     expect(response.status).toBe(500);
