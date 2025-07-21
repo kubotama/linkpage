@@ -100,6 +100,20 @@ export const mockBookmarkKeywords = [
   { bookmark_id: 3, keyword_id: 3 },
 ];
 
+// Helper to construct expected keywords for each bookmark
+const getExpectedKeywords = (bookmarkId: number) => {
+  const associatedKeywordIds = mockBookmarkKeywords
+    .filter((bk) => bk.bookmark_id === bookmarkId)
+    .map((bk) => bk.keyword_id);
+  return associatedKeywordIds.map((id) => {
+    const keyword = mockKeywords.find((k) => k.keyword_id === id);
+    if (!keyword) {
+      throw new Error(`Test data inconsistency: Keyword with id ${id} not found in mockKeywords.`);
+    }
+    return keyword;
+  });
+};
+
 export const expectEqualBookmark = (bookmark1: Bookmark, bookmark2: Bookmark) => {
   expect(bookmark1).toEqual(
     expect.objectContaining({
@@ -108,7 +122,8 @@ export const expectEqualBookmark = (bookmark1: Bookmark, bookmark2: Bookmark) =>
       title: bookmark2.title,
     })
   );
-  expect(bookmark2.keywords).not.toBeUndefined();
-  expect(bookmark1.keywords).toHaveLength(bookmark2.keywords!.length);
-  expect(bookmark1.keywords).toEqual(expect.arrayContaining(bookmark2.keywords!));
+  const keywords = getExpectedKeywords(bookmark2.bookmark_id);
+  expect(keywords).not.toBeUndefined();
+  expect(bookmark1.keywords).toHaveLength(keywords.length);
+  expect(bookmark1.keywords).toEqual(expect.arrayContaining(keywords));
 };

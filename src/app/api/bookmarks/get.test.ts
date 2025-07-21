@@ -1,12 +1,7 @@
 import ActualDatabase from "better-sqlite3"; // Import the actual library
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 
-import {
-  expectEqualBookmark,
-  mockBookmarks,
-  mockBookmarkKeywords,
-  mockKeywords,
-} from "../../test-utils/bookmarkTestUtils";
+import { expectEqualBookmark, mockBookmarks } from "../../test-utils/bookmarkTestUtils";
 import { setupInMemoryDb } from "../../test-utils/db-setup";
 import { getDb } from "./database";
 import { GET } from "./route";
@@ -38,27 +33,9 @@ describe("ブックマークのAPIのテスト", () => {
     const json = await response.json();
 
     expect(json).toHaveLength(mockBookmarks.length);
-    // Helper to construct expected keywords for each bookmark
-    const getExpectedKeywords = (bookmarkId: number) => {
-      const associatedKeywordIds = mockBookmarkKeywords
-        .filter((bk) => bk.bookmark_id === bookmarkId)
-        .map((bk) => bk.keyword_id);
-      return associatedKeywordIds.map((id) => {
-        const keyword = mockKeywords.find((k) => k.keyword_id === id);
-        if (!keyword) {
-          throw new Error(
-            `Test data inconsistency: Keyword with id ${id} not found in mockKeywords.`
-          );
-        }
-        return keyword;
-      });
-    };
-    const expectedBookmarks = mockBookmarks.map((bookmark) => ({
-      ...bookmark,
-      keywords: getExpectedKeywords(bookmark.bookmark_id),
-    }));
-    expectedBookmarks.forEach((expectedBookmark, index) => {
-      expectEqualBookmark(json[index], expectedBookmark);
+
+    mockBookmarks.forEach((bookmark, index) => {
+      expectEqualBookmark(json[index], bookmark);
     });
   });
 
