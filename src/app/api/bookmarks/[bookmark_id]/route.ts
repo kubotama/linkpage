@@ -2,11 +2,9 @@
 
 import { SqliteError } from "better-sqlite3";
 
-import { Bookmark } from "@/app/types/Bookmark";
+import { Bookmark, parseAndValidateKeywords } from "../../../types/Bookmark";
 import { BookmarkFromDb } from "@/app/types/database";
 
-import { parseAndValidateKeywords } from "../../../test-utils/bookmarkTestUtils";
-// import { Keyword } from "@/app/types/Keyword";
 import { getBookmarkIdAsync, InvalidIdError } from "../../utils/id";
 import {
   createDuplicateBookmarkError,
