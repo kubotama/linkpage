@@ -31,7 +31,7 @@ export async function GET(
         b.url,
         b.title,
         COALESCE(
-          JSON_GROUP_ARRAY(JSON_OBJECT('keyword_id', k.keyword_id, 'keyword_name', k.keyword_name)) FILTER (WHERE k.keyword_id IS NOT NULL),
+         JSON_GROUP_ARRAY(JSON_OBJECT('keyword_id', k.keyword_id, 'keyword_name', k.keyword_name) ORDER BY k.keyword_id) FILTER (WHERE k.keyword_id IS NOT NULL),
           '[]'
         ) AS keywords
       FROM
