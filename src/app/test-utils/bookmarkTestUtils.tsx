@@ -127,3 +127,10 @@ export const expectEqualBookmark = (bookmark1: Bookmark, bookmark2: Bookmark) =>
   expect(bookmark1.keywords).toHaveLength(keywords.length);
   expect(bookmark1.keywords).toEqual(expect.arrayContaining(keywords));
 };
+
+export const buildMockBookmarksWithKeywords = (): Bookmark[] => {
+  return mockBookmarks.map((bookmark) => {
+    const keywords = getExpectedKeywords(bookmark.bookmark_id);
+    return { ...bookmark, keywords };
+  });
+};

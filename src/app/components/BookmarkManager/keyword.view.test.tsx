@@ -1,7 +1,7 @@
 import "@testing-library/jest-dom";
 
 import { act } from "react";
-import { beforeEach, describe, expect, it, vi } from "vitest";
+import { beforeAll, beforeEach, describe, expect, it, vi } from "vitest";
 
 import { render, screen, waitFor } from "@testing-library/react";
 
@@ -10,7 +10,8 @@ import {
   FIELDSET_KEYWORD_LABEL,
   KEYWORD_ROLE_NAME,
 } from "../../constants/constants";
-import { clickBookmark, mockBookmarks } from "../../test-utils/bookmarkTestUtils";
+import { buildMockBookmarksWithKeywords, clickBookmark } from "../../test-utils/bookmarkTestUtils";
+import { Bookmark } from "../../types/Bookmark";
 import { BookmarkManager } from "../BookmarkManager";
 
 const mockFetch = vi.fn();
@@ -21,6 +22,12 @@ const queryKeywordInput = () => screen.queryAllByRole("textbox", { name: KEYWORD
 const queryAddButton = () => screen.queryAllByRole("button", { name: ADD_BUTTON_ROLE_NAME });
 
 describe("キーワード詳細フォームの表示のテスト", () => {
+  let mockBookmarksWithKeywords: Bookmark[];
+
+  beforeAll(() => {
+    mockBookmarksWithKeywords = buildMockBookmarksWithKeywords();
+  });
+
   beforeEach(() => {
     mockFetch.mockReset();
     global.fetch = mockFetch;
@@ -28,7 +35,7 @@ describe("キーワード詳細フォームの表示のテスト", () => {
     mockFetch.mockResolvedValueOnce({
       ok: true,
       status: 200,
-      json: async () => mockBookmarks,
+      json: async () => mockBookmarksWithKeywords,
     });
   });
 
@@ -49,7 +56,7 @@ describe("キーワード詳細フォームの表示のテスト", () => {
       render(<BookmarkManager />);
     });
 
-    await clickBookmark(mockBookmarks[1]);
+    await clickBookmark(mockBookmarksWithKeywords[1]);
 
     await waitFor(() => {
       expect(queryFieldsetKeywordLabel()).toHaveLength(1);
