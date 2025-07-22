@@ -83,10 +83,11 @@ describe("キーワード詳細フォームの表示のテスト", () => {
       expect(addButton).toBeEnabled();
     });
 
-    it("選択されたブックマークに設定されたキーワードが一覧で表示される", async () => {
-      for (const bookmark of mockBookmarksWithKeywords) {
-        await clickBookmarkAndAssertKeywords(bookmark);
+    it.each(buildMockBookmarksWithKeywords())(
+      "選択されたブックマーク「$title」に設定されたキーワードが一覧で表示される",
+      (bookmark) => {
+        clickBookmarkAndAssertKeywords(bookmark);
       }
-    });
+    );
   });
 });
