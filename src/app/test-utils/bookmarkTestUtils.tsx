@@ -11,8 +11,9 @@ export function createBookmark({
   bookmark_id = 0,
   url = "",
   title = "",
+  keywords = [],
 }: Partial<Bookmark>): Bookmark {
-  return { bookmark_id, url, title };
+  return { bookmark_id, url, title, keywords };
 }
 
 export function createBookmarkList(bookmarkList: Partial<Bookmark>[]) {
