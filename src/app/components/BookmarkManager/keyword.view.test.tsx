@@ -25,10 +25,12 @@ const clickBookmarkAndAssertKeywords = async (bookmark: Bookmark) => {
     const keywordTable = screen.getByRole("table", { name: "キーワードのテーブル" });
     // そのテーブルのスコープ内でrowをクエリします
     const rows = within(keywordTable).queryAllByRole("row");
-    expect(rows).toHaveLength(keywords.length);
+    // ヘッダ行の1行を追加する
+    expect(rows).toHaveLength(keywords.length + 1);
 
     keywords.forEach((keyword, index) => {
-      const row = rows[index];
+      // ヘッダ行の1行を考慮する
+      const row = rows[index + 1];
       // そのrowのスコープ内でcellをクエリします
       const cell = within(row).getByRole("cell");
       expect(cell).toHaveTextContent(keyword.keyword_name);

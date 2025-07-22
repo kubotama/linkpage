@@ -14,7 +14,7 @@ describe("KeywordTableのテスト", () => {
     expect(keywordTable).toBeInTheDocument();
 
     const rows = screen.queryAllByRole("row");
-    expect(rows).toHaveLength(0);
+    expect(rows).toHaveLength(1);
   });
 
   it("キーワードのリストが渡された場合、すべてのキーワードが正しく表示される", () => {
@@ -25,10 +25,10 @@ describe("KeywordTableのテスト", () => {
 
     // `getAllByRole` is used here as we expect rows to be present.
     const rows = screen.getAllByRole("row");
-    expect(rows).toHaveLength(keywords.length);
+    expect(rows).toHaveLength(keywords.length + 1);
 
     keywords.forEach((keyword, index) => {
-      const row = rows[index];
+      const row = rows[index + 1];
       const cell = within(row).getByRole("cell");
       expect(cell).toHaveTextContent(keyword.keyword_name);
     });
