@@ -6,11 +6,11 @@ export const KeywordTable: React.FC<{
   keywords: Keyword[];
 }> = ({ keywords }) => {
   return (
-    <div role="table" className="flex flex-col " aria-label="キーワードのテーブル">
+    <div role="keyword-table" className="flex flex-col " aria-label="キーワードのテーブル">
       {keywords.map((keyword) => {
         return (
-          <div role="row" key={keyword.keyword_id}>
-            <div role="cell">{keyword.keyword_name}</div>
+          <div role="keyword-row" key={keyword.keyword_id}>
+            <div role="keyword-cell">{keyword.keyword_name}</div>
           </div>
         );
       })}
