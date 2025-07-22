@@ -69,7 +69,10 @@ describe("キーワード詳細フォームの表示のテスト", () => {
 
   describe("ブックマークが選択されている場合", () => {
     it("キーワード設定フォーム（入力欄と追加ボタン）が表示される", async () => {
-      const bookmarkToSelect = mockBookmarksWithKeywords[1];
+      const bookmarkToSelect = mockBookmarksWithKeywords.find((b) => b.title === "Google");
+      if (!bookmarkToSelect) {
+        throw new Error("Test data is missing 'Google' bookmark.");
+      }
       await clickBookmark(bookmarkToSelect);
 
       expect(screen.getByRole("group", { name: FIELDSET_KEYWORD_LABEL })).toBeInTheDocument();

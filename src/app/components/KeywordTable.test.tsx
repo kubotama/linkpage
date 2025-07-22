@@ -18,11 +18,18 @@ describe("KeywordTableのテスト", () => {
   });
 
   it("キーワードのリストが渡された場合、すべてのキーワードが正しく表示される", () => {
-    const keywords = buildMockBookmarksWithKeywords()[1].keywords; // e.g., Google, which has 2 keywords
+    const allBookmarks = buildMockBookmarksWithKeywords();
+    const googleBookmark = allBookmarks.find((b) => b.title === "Google");
+
+    // テストデータに 'Google' が存在することを確認
+    if (!googleBookmark) {
+      throw new Error("Mock data is missing the 'Google' bookmark.");
+    }
+
+    const keywords = googleBookmark.keywords;
     expect(keywords.length).toBeGreaterThan(0); // Ensure test data is valid
 
     render(<KeywordTable keywords={keywords} />);
-
     // `getAllByRole` is used here as we expect rows to be present.
     const rows = screen.getAllByRole("row");
     expect(rows).toHaveLength(keywords.length + 1);
