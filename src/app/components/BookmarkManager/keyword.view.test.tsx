@@ -26,12 +26,16 @@ const clickBookmarkAndAssertKeywords = async (bookmark: Bookmark) => {
   await clickBookmark(bookmark);
 
   await waitFor(() => {
-    const rows = screen.queryAllByRole("keyword-row");
+    // まず、特定のキーワードテーブルをaria-labelで取得します
+    const keywordTable = screen.getByRole("table", { name: "キーワードのテーブル" });
+    // そのテーブルのスコープ内でrowをクエリします
+    const rows = within(keywordTable).queryAllByRole("row");
     expect(rows).toHaveLength(keywords.length);
 
     keywords.forEach((keyword, index) => {
       const row = rows[index];
-      const cell = within(row).getByRole("keyword-cell");
+      // そのrowのスコープ内でcellをクエリします
+      const cell = within(row).getByRole("cell");
       expect(cell).toHaveTextContent(keyword.keyword_name);
     });
   });

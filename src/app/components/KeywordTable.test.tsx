@@ -10,10 +10,10 @@ import { KeywordTable } from "./KeywordTable";
 describe("KeywordTableのテスト", () => {
   it("キーワードのリストが空の場合でもテーブルは表示されるが、行は表示されない", () => {
     render(<KeywordTable keywords={[]} />);
-    const keywordTable = screen.getByRole("keyword-table", { name: "キーワードのテーブル" });
+    const keywordTable = screen.getByRole("table", { name: "キーワードのテーブル" });
     expect(keywordTable).toBeInTheDocument();
 
-    const rows = screen.queryAllByRole("keyword-row");
+    const rows = screen.queryAllByRole("row");
     expect(rows).toHaveLength(0);
   });
 
@@ -25,12 +25,12 @@ describe("KeywordTableのテスト", () => {
 
       render(<KeywordTable keywords={keywords} />);
 
-      const rows = screen.queryAllByRole("keyword-row");
+      const rows = screen.queryAllByRole("row");
       expect(rows).toHaveLength(keywords.length);
 
       keywords.forEach((keyword, index) => {
         const row = rows[index];
-        const cell = within(row).getByRole("keyword-cell");
+        const cell = within(row).getByRole("cell");
         expect(cell).toHaveTextContent(keyword.keyword_name);
       });
       cleanup();
