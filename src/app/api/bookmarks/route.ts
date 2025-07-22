@@ -73,7 +73,7 @@ export async function POST(request: Request) {
     "Access-Control-Allow-Origin": ALLOWED_CORS_ORIGIN,
   };
 
-  let bookmark: Bookmark = { bookmark_id: 0, url: "", title: "" };
+  let bookmark: Bookmark = { bookmark_id: 0, url: "", title: "", keywords: [] };
   try {
     bookmark = await request.json();
     if (!bookmark.url || bookmark.url.trim() === "") {
