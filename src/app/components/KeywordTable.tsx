@@ -7,6 +7,11 @@ export const KeywordTable: React.FC<{
 }> = ({ keywords }) => {
   return (
     <table aria-label="キーワードのテーブル">
+      <thead className="sr-only">
+        <tr>
+          <th scope="col">キーワード</th>
+        </tr>
+      </thead>
       <tbody>
         {keywords.map((keyword) => (
           <tr key={keyword.keyword_id}>
