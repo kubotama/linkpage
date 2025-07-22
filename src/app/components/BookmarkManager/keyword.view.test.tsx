@@ -2,7 +2,7 @@ import "@testing-library/jest-dom";
 
 import { beforeAll, beforeEach, describe, expect, it, vi } from "vitest";
 
-import { act, render, screen, waitFor, within } from "@testing-library/react";
+import { render, screen, waitFor, within } from "@testing-library/react";
 
 import {
   ADD_BUTTON_ROLE_NAME,
@@ -14,11 +14,6 @@ import { Bookmark } from "../../types/Bookmark";
 import { BookmarkManager } from "../BookmarkManager";
 
 const mockFetch = vi.fn();
-
-const queryFieldsetKeywordLabel = () =>
-  screen.queryAllByRole("group", { name: FIELDSET_KEYWORD_LABEL });
-const queryKeywordInput = () => screen.queryAllByRole("textbox", { name: KEYWORD_ROLE_NAME });
-const queryAddButton = () => screen.queryAllByRole("button", { name: ADD_BUTTON_ROLE_NAME });
 
 const clickBookmarkAndAssertKeywords = async (bookmark: Bookmark) => {
   const keywords = bookmark.keywords;
@@ -71,12 +66,10 @@ describe("キーワード詳細フォームの表示のテスト", () => {
   });
 
   describe("ブックマークが選択されている場合", () => {
-    beforeEach(async () => {
+    it("キーワード設定フォーム（入力欄と追加ボタン）が表示される", async () => {
       const bookmarkToSelect = mockBookmarksWithKeywords[1];
       await clickBookmark(bookmarkToSelect);
-    });
 
-    it("キーワード設定フォーム（入力欄と追加ボタン）が表示される", () => {
       expect(screen.getByRole("group", { name: FIELDSET_KEYWORD_LABEL })).toBeInTheDocument();
 
       const keywordInput = screen.getByRole("textbox", { name: KEYWORD_ROLE_NAME });
@@ -88,25 +81,7 @@ describe("キーワード詳細フォームの表示のテスト", () => {
       expect(addButton).toBeEnabled();
     });
 
-    it("ブックマークを選択すると、キーワード設定フォーム(キーワードを入力するテキストボックスと「追加」ボタン)が表示される。", async () => {
-      await act(async () => {
-        render(<BookmarkManager />);
-      });
-
-      await clickBookmark(mockBookmarksWithKeywords[1]);
-
-      await waitFor(() => {
-        expect(queryFieldsetKeywordLabel()).toHaveLength(1);
-
-        const keywordInput = queryKeywordInput();
-        expect(keywordInput).toHaveLength(1);
-        expect(keywordInput[0]).toHaveValue("");
-
-        const addButton = queryAddButton();
-        expect(addButton).toHaveLength(1);
-        expect(addButton[0]).toBeEnabled();
-      });
-
+    it("選択されたブックマークに設定されたキーワードが一覧で表示される", async () => {
       for (const bookmark of mockBookmarksWithKeywords) {
         await clickBookmarkAndAssertKeywords(bookmark);
       }
