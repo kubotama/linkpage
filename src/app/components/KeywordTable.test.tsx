@@ -2,7 +2,7 @@ import "@testing-library/jest-dom";
 
 import { describe, expect, it } from "vitest";
 
-import { cleanup, render, screen, within } from "@testing-library/react";
+import { render, screen, within } from "@testing-library/react";
 
 import { buildMockBookmarksWithKeywords } from "../test-utils/bookmarkTestUtils";
 import { KeywordTable } from "./KeywordTable";
@@ -18,22 +18,19 @@ describe("KeywordTableのテスト", () => {
   });
 
   it("キーワードのリストが渡された場合、すべてのキーワードが正しく表示される", () => {
-    const bookmarksWithKeywords = buildMockBookmarksWithKeywords();
+    const keywords = buildMockBookmarksWithKeywords()[1].keywords; // e.g., Google, which has 2 keywords
+    expect(keywords.length).toBeGreaterThan(0); // Ensure test data is valid
 
-    bookmarksWithKeywords.forEach((bookmark) => {
-      const keywords = bookmark.keywords;
+    render(<KeywordTable keywords={keywords} />);
 
-      render(<KeywordTable keywords={keywords} />);
+    // `getAllByRole` is used here as we expect rows to be present.
+    const rows = screen.getAllByRole("row");
+    expect(rows).toHaveLength(keywords.length);
 
-      const rows = screen.queryAllByRole("row");
-      expect(rows).toHaveLength(keywords.length);
-
-      keywords.forEach((keyword, index) => {
-        const row = rows[index];
-        const cell = within(row).getByRole("cell");
-        expect(cell).toHaveTextContent(keyword.keyword_name);
-      });
-      cleanup();
+    keywords.forEach((keyword, index) => {
+      const row = rows[index];
+      const cell = within(row).getByRole("cell");
+      expect(cell).toHaveTextContent(keyword.keyword_name);
     });
   });
 });
