@@ -85,8 +85,8 @@ describe("キーワード詳細フォームの表示のテスト", () => {
 
     it.each(buildMockBookmarksWithKeywords())(
       "選択されたブックマーク「$title」に設定されたキーワードが一覧で表示される",
-      (bookmark) => {
-        clickBookmarkAndAssertKeywords(bookmark);
+      async (bookmark) => {
+        await clickBookmarkAndAssertKeywords(bookmark);
       }
     );
   });
