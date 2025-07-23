@@ -80,10 +80,7 @@ export async function POST(request: Request) {
   } catch (error) {
     // JSONパースエラーのハンドリング
     console.error(error);
-    return new Response(JSON.stringify({ message: "リクエストボディのJSONが不正です。" }), {
-      status: 400,
-      headers: { "Content-Type": "application/json", ...commonHeaders },
-    });
+    return createInvalidBodyError(new Error("リクエストボディのJSONが不正です。"), commonHeaders);
   }
   try {
     // incomingDataがオブジェクトでない場合(例: JSONが "null" だった場合)を考慮します
