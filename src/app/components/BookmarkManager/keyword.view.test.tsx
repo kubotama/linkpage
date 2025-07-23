@@ -9,7 +9,11 @@ import {
   FIELDSET_KEYWORD_LABEL,
   KEYWORD_ROLE_NAME,
 } from "../../constants/constants";
-import { buildMockBookmarksWithKeywords, clickBookmark } from "../../test-utils/bookmarkTestUtils";
+import {
+  buildMockBookmarksWithKeywords,
+  clickBookmark,
+  getBookmarkByKeywords,
+} from "../../test-utils/bookmarkTestUtils";
 import { Bookmark } from "../../types/Bookmark";
 import { BookmarkManager } from "../BookmarkManager";
 
@@ -69,10 +73,7 @@ describe("キーワード詳細フォームの表示のテスト", () => {
 
   describe("ブックマークが選択されている場合", () => {
     it("キーワード設定フォーム（入力欄と追加ボタン）が表示される", async () => {
-      const bookmarkToSelect = mockBookmarksWithKeywords.find((b) => b.title === "Google");
-      if (!bookmarkToSelect) {
-        throw new Error("Test data is missing 'Google' bookmark.");
-      }
+      const bookmarkToSelect = getBookmarkByKeywords(mockBookmarksWithKeywords);
       await clickBookmark(bookmarkToSelect);
 
       expect(screen.getByRole("group", { name: FIELDSET_KEYWORD_LABEL })).toBeInTheDocument();

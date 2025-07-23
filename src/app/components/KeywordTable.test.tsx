@@ -4,7 +4,10 @@ import { describe, expect, it } from "vitest";
 
 import { render, screen, within } from "@testing-library/react";
 
-import { buildMockBookmarksWithKeywords } from "../test-utils/bookmarkTestUtils";
+import {
+  buildMockBookmarksWithKeywords,
+  getBookmarkByKeywords,
+} from "../test-utils/bookmarkTestUtils";
 import { KeywordTable } from "./KeywordTable";
 
 describe("KeywordTableのテスト", () => {
@@ -21,15 +24,8 @@ describe("KeywordTableのテスト", () => {
   });
 
   it("キーワードのリストが渡された場合、すべてのキーワードが正しく表示される", () => {
-    const allBookmarks = buildMockBookmarksWithKeywords();
-    const googleBookmark = allBookmarks.find((b) => b.title === "Google");
-
-    // テストデータに 'Google' が存在することを確認
-    if (!googleBookmark) {
-      throw new Error("Mock data is missing the 'Google' bookmark.");
-    }
-
-    const keywords = googleBookmark.keywords;
+    const bookmarkToSelect = getBookmarkByKeywords(buildMockBookmarksWithKeywords());
+    const keywords = bookmarkToSelect.keywords;
     expect(keywords.length).toBeGreaterThan(0); // Ensure test data is valid
 
     render(<KeywordTable keywords={keywords} />);

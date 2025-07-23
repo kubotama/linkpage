@@ -135,3 +135,11 @@ export const buildMockBookmarksWithKeywords = (): Bookmark[] => {
     return { ...bookmark, keywords };
   });
 };
+
+export const getBookmarkByKeywords = (bookmarks: Bookmark[], numKeywords: number = 1): Bookmark => {
+  const bookmarkToSelect = bookmarks.find((b) => b.keywords.length > numKeywords);
+  if (!bookmarkToSelect) {
+    throw new Error("Test data is missing 'Google' bookmark.");
+  }
+  return bookmarkToSelect;
+};
