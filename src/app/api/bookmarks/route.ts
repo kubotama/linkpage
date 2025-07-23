@@ -1,7 +1,7 @@
 "use server";
 import { SqliteError } from "better-sqlite3";
 
-import { Bookmark, parseAndValidateKeywords } from "../../types/Bookmark";
+import { Bookmark, IncomingBookmarkPayload, parseAndValidateKeywords } from "../../types/Bookmark";
 import { BookmarkFromDb } from "@/app/types/database";
 
 import eventEmitter from "../../../lib/event-emitter";
@@ -73,15 +73,33 @@ export async function POST(request: Request) {
     "Access-Control-Allow-Origin": ALLOWED_CORS_ORIGIN,
   };
 
-  let bookmark: Bookmark = { bookmark_id: 0, url: "", title: "", keywords: [] };
+  // let bookmark: Bookmark = { bookmark_id: 0, url: "", title: "", keywords: [] };
+  let incomingData: IncomingBookmarkPayload;
   try {
-    bookmark = await request.json();
-    if (!bookmark.url || bookmark.url.trim() === "") {
+    incomingData = await request.json();
+  } catch {
+    // JSONパースエラーのハンドリング
+    return new Response(JSON.stringify({ message: "リクエストボディのJSONが不正です。" }), {
+      status: 400,
+      headers: { "Content-Type": "application/json", ...commonHeaders },
+    });
+  }
+  try {
+    if (!incomingData.url || incomingData.url.trim() === "") {
       return createNoUrlError(commonHeaders);
     }
-    if (!bookmark.title || bookmark.title.trim() === "") {
+    if (!incomingData.title || incomingData.title.trim() === "") {
       return createNoTitleError(commonHeaders);
     }
+
+    // Bookmark型に適合するようにオブジェクトを構築
+    // bookmark_idは新規作成の場合は0、データベースで自動生成されることを想定
+    const bookmark: Bookmark = {
+      bookmark_id: 0,
+      url: incomingData.url,
+      title: incomingData.title,
+      keywords: incomingData.keywords || [], // クライアントからkeywordsが提供されない場合を考慮
+    };
 
     const db = getDb();
     const insertStmt = db.prepare("INSERT INTO bookmarks (url, title) VALUES (?, ?)");
@@ -110,7 +128,7 @@ export async function POST(request: Request) {
       return createInvalidBodyError(error, commonHeaders);
     }
     if (error instanceof SqliteError && error.code === "SQLITE_CONSTRAINT_UNIQUE") {
-      return createDuplicateBookmarkError(bookmark.url, commonHeaders);
+      return createDuplicateBookmarkError(incomingData.url, commonHeaders);
     }
     return createInternalError(error, commonHeaders);
   }
