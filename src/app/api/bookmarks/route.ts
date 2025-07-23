@@ -98,7 +98,7 @@ export async function POST(request: Request) {
       bookmark_id: 0,
       url: incomingData.url,
       title: incomingData.title,
-      keywords: incomingData.keywords || [], // クライアントからkeywordsが提供されない場合を考慮
+      keywords: [], // 現在はブックマークの追加は拡張機能からのみのためキーワードを設定されることはない。
     };
 
     const db = getDb();

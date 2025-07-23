@@ -10,7 +10,7 @@ export type Bookmark = {
 export type IncomingBookmarkPayload = {
   url: string;
   title: string;
-  keywords?: Keyword[]; // クライアントからはkeywordsがオプションであるため、? を付けます
+  keywords?: string[]; // クライアントからはkeywordsがオプションであるため、? を付けます
 };
 
 export type SelectedBookmarkIndex = number | undefined;
