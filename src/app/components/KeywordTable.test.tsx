@@ -8,13 +8,16 @@ import { buildMockBookmarksWithKeywords } from "../test-utils/bookmarkTestUtils"
 import { KeywordTable } from "./KeywordTable";
 
 describe("KeywordTableのテスト", () => {
-  it("キーワードのリストが空の場合でもテーブルは表示されるが、行は表示されない", () => {
+  it("キーワードのリストが空の場合、ヘッダー行のみ表示されデータ行は表示されない", () => {
     render(<KeywordTable keywords={[]} />);
     const keywordTable = screen.getByRole("table", { name: "キーワードのテーブル" });
     expect(keywordTable).toBeInTheDocument();
 
     const rows = screen.queryAllByRole("row");
-    expect(rows).toHaveLength(1);
+    expect(rows).toHaveLength(1); // ヘッダー行のみ
+
+    const cells = screen.queryAllByRole("cell");
+    expect(cells).toHaveLength(0); // データセルは存在しない
   });
 
   it("キーワードのリストが渡された場合、すべてのキーワードが正しく表示される", () => {
