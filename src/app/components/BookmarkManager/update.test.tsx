@@ -9,6 +9,7 @@ import { BOOKMARKS_ENDPOINT } from "../../constants/apiEndpoints";
 import { TITLE_ROLE_NAME, UPDATE_BUTTON_ROLE_NAME, URL_ROLE_NAME } from "../../constants/constants";
 import { clickBookmark, mockBookmarks } from "../../test-utils/bookmarkTestUtils";
 import { BookmarkManager } from "../BookmarkManager";
+import { Bookmark } from "../../types/Bookmark";
 
 const mockFetch = vi.fn();
 
@@ -126,10 +127,11 @@ describe("タイトルの更新ボタン", () => {
       expect(updateButton).toBeInTheDocument();
     });
 
-    const updatedBookmark = {
+    const updatedBookmark: Bookmark = {
       bookmark_id: bookmarkToSelect.bookmark_id,
       url: updateUrl,
       title: updateTitle,
+      keywords: bookmarkToSelect.keywords,
     };
     clickBookmark(updatedBookmark);
     await waitFor(() => {
