@@ -1,66 +1,97 @@
 import "@testing-library/jest-dom";
 
-import { act } from "react";
-import { beforeEach, describe, expect, it, vi } from "vitest";
+import { beforeAll, beforeEach, describe, expect, it, vi } from "vitest";
 
-import { render, screen, waitFor } from "@testing-library/react";
+import { render, screen, waitFor, within } from "@testing-library/react";
 
 import {
   ADD_BUTTON_ROLE_NAME,
   FIELDSET_KEYWORD_LABEL,
   KEYWORD_ROLE_NAME,
 } from "../../constants/constants";
-import { clickBookmark, mockBookmarks } from "../../test-utils/bookmarkTestUtils";
+import {
+  buildMockBookmarksWithKeywords,
+  clickBookmark,
+  findBookmarkWithAtLeastNKeywords,
+} from "../../test-utils/bookmarkTestUtils";
+import { Bookmark } from "../../types/Bookmark";
 import { BookmarkManager } from "../BookmarkManager";
 
 const mockFetch = vi.fn();
 
-const queryFieldsetKeywordLabel = () =>
-  screen.queryAllByRole("group", { name: FIELDSET_KEYWORD_LABEL });
-const queryKeywordInput = () => screen.queryAllByRole("textbox", { name: KEYWORD_ROLE_NAME });
-const queryAddButton = () => screen.queryAllByRole("button", { name: ADD_BUTTON_ROLE_NAME });
+const clickBookmarkAndAssertKeywords = async (bookmark: Bookmark) => {
+  const keywords = bookmark.keywords;
+
+  await clickBookmark(bookmark);
+
+  await waitFor(() => {
+    // まず、特定のキーワードテーブルをaria-labelで取得します
+    const keywordTable = screen.getByRole("table", { name: "キーワードのテーブル" });
+    // そのテーブルのスコープ内でrowをクエリします
+    const rows = within(keywordTable).queryAllByRole("row");
+    // ヘッダ行の1行を追加する
+    expect(rows).toHaveLength(keywords.length + 1);
+
+    keywords.forEach((keyword, index) => {
+      // ヘッダ行の1行を考慮する
+      const row = rows[index + 1];
+      // そのrowのスコープ内でcellをクエリします
+      const cell = within(row).getByRole("cell");
+      expect(cell).toHaveTextContent(keyword.keyword_name);
+    });
+  });
+};
 
 describe("キーワード詳細フォームの表示のテスト", () => {
-  beforeEach(() => {
+  let mockBookmarksWithKeywords: Bookmark[];
+
+  beforeAll(() => {
+    mockBookmarksWithKeywords = buildMockBookmarksWithKeywords();
+  });
+
+  beforeEach(async () => {
     mockFetch.mockReset();
     global.fetch = mockFetch;
-
     mockFetch.mockResolvedValueOnce({
       ok: true,
       status: 200,
-      json: async () => mockBookmarks,
+      json: async () => mockBookmarksWithKeywords,
+    });
+    render(<BookmarkManager />);
+    await waitFor(() => {
+      expect(screen.getByText(mockBookmarksWithKeywords[0].title)).toBeInTheDocument();
     });
   });
 
-  it("ブックマークを選択していないと、キーワード設定フォームが表示されていない。", async () => {
-    await act(async () => {
-      render(<BookmarkManager />);
-    });
-
-    await waitFor(() => {
-      expect(queryFieldsetKeywordLabel()).toHaveLength(0);
-      expect(queryKeywordInput()).toHaveLength(0);
-      expect(queryAddButton()).toHaveLength(0);
+  describe("ブックマークが選択されていない場合", () => {
+    it("キーワード設定フォームは表示されない", () => {
+      expect(screen.queryByRole("group", { name: FIELDSET_KEYWORD_LABEL })).not.toBeInTheDocument();
+      expect(screen.queryByRole("textbox", { name: KEYWORD_ROLE_NAME })).not.toBeInTheDocument();
+      expect(screen.queryByRole("button", { name: ADD_BUTTON_ROLE_NAME })).not.toBeInTheDocument();
     });
   });
 
-  it("ブックマークを選択すると、キーワード設定フォーム(キーワードを入力するテキストボックスと「追加」ボタン)が表示される。", async () => {
-    await act(async () => {
-      render(<BookmarkManager />);
+  describe("ブックマークが選択されている場合", () => {
+    it("キーワード設定フォーム（入力欄と追加ボタン）が表示される", async () => {
+      const bookmarkToSelect = findBookmarkWithAtLeastNKeywords(mockBookmarksWithKeywords);
+      await clickBookmark(bookmarkToSelect);
+
+      expect(screen.getByRole("group", { name: FIELDSET_KEYWORD_LABEL })).toBeInTheDocument();
+
+      const keywordInput = screen.getByRole("textbox", { name: KEYWORD_ROLE_NAME });
+      expect(keywordInput).toBeInTheDocument();
+      expect(keywordInput).toHaveValue("");
+
+      const addButton = screen.getByRole("button", { name: ADD_BUTTON_ROLE_NAME });
+      expect(addButton).toBeInTheDocument();
+      expect(addButton).toBeEnabled();
     });
 
-    await clickBookmark(mockBookmarks[1]);
-
-    await waitFor(() => {
-      expect(queryFieldsetKeywordLabel()).toHaveLength(1);
-
-      const keywordInput = queryKeywordInput();
-      expect(keywordInput).toHaveLength(1);
-      expect(keywordInput[0]).toHaveValue("");
-
-      const addButton = queryAddButton();
-      expect(addButton).toHaveLength(1);
-      expect(addButton[0]).toBeEnabled();
-    });
+    it.each(buildMockBookmarksWithKeywords())(
+      "選択されたブックマーク「$title」に設定されたキーワードが一覧で表示される",
+      async (bookmark) => {
+        await clickBookmarkAndAssertKeywords(bookmark);
+      }
+    );
   });
 });

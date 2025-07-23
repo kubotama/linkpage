@@ -4,17 +4,18 @@ import {
   ADD_BUTTON_ROLE_NAME,
   ARROW_BUTTON_ROLE_NAME,
   DELETE_BUTTON_ROLE_NAME,
-  FORM_BOOKMARK_DETAIL,
   FIELDSET_KEYWORD_LABEL,
+  FORM_BOOKMARK_DETAIL,
+  KEYWORD_ROLE_NAME,
   PARAMETER_BUTTON_ROLE_NAME,
   UPDATE_BUTTON_ROLE_NAME,
-  KEYWORD_ROLE_NAME,
 } from "../constants/constants";
 import { useBookmarkManager } from "../hooks/useBookmarkManager";
 import { ActionButton } from "./ActionButton";
 import { BookmarkInputField } from "./BookmarkInputField";
 import { BookmarkTable } from "./BookmarkTable";
 import { ErrorMessage } from "./ErrorMessage";
+import { KeywordTable } from "./KeywordTable";
 
 export const BookmarkManager = () => {
   const {
@@ -97,6 +98,7 @@ export const BookmarkManager = () => {
                     </ActionButton>
                   </div>
                 </fieldset>
+                <KeywordTable keywords={selectedBookmark.keywords} />
               </form>
             )}
           </div>

@@ -11,8 +11,9 @@ export function createBookmark({
   bookmark_id = 0,
   url = "",
   title = "",
+  keywords = [],
 }: Partial<Bookmark>): Bookmark {
-  return { bookmark_id, url, title };
+  return { bookmark_id, url, title, keywords };
 }
 
 export function createBookmarkList(bookmarkList: Partial<Bookmark>[]) {
@@ -126,4 +127,22 @@ export const expectEqualBookmark = (bookmark1: Bookmark, bookmark2: Bookmark) =>
   expect(keywords).not.toBeUndefined();
   expect(bookmark1.keywords).toHaveLength(keywords.length);
   expect(bookmark1.keywords).toEqual(expect.arrayContaining(keywords));
+};
+
+export const buildMockBookmarksWithKeywords = (): Bookmark[] => {
+  return mockBookmarks.map((bookmark) => {
+    const keywords = getExpectedKeywords(bookmark.bookmark_id);
+    return { ...bookmark, keywords };
+  });
+};
+
+export const findBookmarkWithAtLeastNKeywords = (
+  bookmarks: Bookmark[],
+  minKeywords: number = 1
+): Bookmark => {
+  const bookmarkToSelect = bookmarks.find((b) => b.keywords.length >= minKeywords);
+  if (!bookmarkToSelect) {
+    throw new Error(`No bookmark found with at least ${minKeywords} keywords.`);
+  }
+  return bookmarkToSelect;
 };

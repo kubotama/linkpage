@@ -4,7 +4,13 @@ export type Bookmark = {
   bookmark_id: number;
   url: string;
   title: string;
-  keywords?: Keyword[];
+  keywords: Keyword[];
+};
+
+export type IncomingBookmarkPayload = {
+  url: string;
+  title: string;
+  keywords?: string[]; // クライアントからはkeywordsがオプションであるため、? を付けます
 };
 
 export type SelectedBookmarkIndex = number | undefined;
