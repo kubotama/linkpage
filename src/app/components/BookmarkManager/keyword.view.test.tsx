@@ -12,7 +12,7 @@ import {
 import {
   buildMockBookmarksWithKeywords,
   clickBookmark,
-  getBookmarkByKeywords,
+  findBookmarkWithAtLeastNKeywords,
 } from "../../test-utils/bookmarkTestUtils";
 import { Bookmark } from "../../types/Bookmark";
 import { BookmarkManager } from "../BookmarkManager";
@@ -73,7 +73,7 @@ describe("キーワード詳細フォームの表示のテスト", () => {
 
   describe("ブックマークが選択されている場合", () => {
     it("キーワード設定フォーム（入力欄と追加ボタン）が表示される", async () => {
-      const bookmarkToSelect = getBookmarkByKeywords(mockBookmarksWithKeywords);
+      const bookmarkToSelect = findBookmarkWithAtLeastNKeywords(mockBookmarksWithKeywords);
       await clickBookmark(bookmarkToSelect);
 
       expect(screen.getByRole("group", { name: FIELDSET_KEYWORD_LABEL })).toBeInTheDocument();

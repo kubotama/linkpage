@@ -136,10 +136,21 @@ export const buildMockBookmarksWithKeywords = (): Bookmark[] => {
   });
 };
 
-export const getBookmarkByKeywords = (bookmarks: Bookmark[], numKeywords: number = 1): Bookmark => {
-  const bookmarkToSelect = bookmarks.find((b) => b.keywords.length > numKeywords);
+// export const getBookmarkByKeywords = (bookmarks: Bookmark[], numKeywords: number = 1): Bookmark => {
+//   const bookmarkToSelect = bookmarks.find((b) => b.keywords.length > numKeywords);
+//   if (!bookmarkToSelect) {
+//     throw new Error(`No bookmark found with more than ${numKeywords} keywords.`);
+//   }
+//   return bookmarkToSelect;
+// };
+
+export const findBookmarkWithAtLeastNKeywords = (
+  bookmarks: Bookmark[],
+  minKeywords: number = 1
+): Bookmark => {
+  const bookmarkToSelect = bookmarks.find((b) => b.keywords.length >= minKeywords);
   if (!bookmarkToSelect) {
-    throw new Error(`No bookmark found with more than ${numKeywords} keywords.`);
+    throw new Error(`No bookmark found with at least ${minKeywords} keywords.`);
   }
   return bookmarkToSelect;
 };

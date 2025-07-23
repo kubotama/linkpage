@@ -6,7 +6,7 @@ import { render, screen, within } from "@testing-library/react";
 
 import {
   buildMockBookmarksWithKeywords,
-  getBookmarkByKeywords,
+  findBookmarkWithAtLeastNKeywords,
 } from "../test-utils/bookmarkTestUtils";
 import { KeywordTable } from "./KeywordTable";
 
@@ -24,7 +24,7 @@ describe("KeywordTableのテスト", () => {
   });
 
   it("キーワードのリストが渡された場合、すべてのキーワードが正しく表示される", () => {
-    const bookmarkToSelect = getBookmarkByKeywords(buildMockBookmarksWithKeywords());
+    const bookmarkToSelect = findBookmarkWithAtLeastNKeywords(buildMockBookmarksWithKeywords());
     const keywords = bookmarkToSelect.keywords;
     expect(keywords.length).toBeGreaterThan(0); // Ensure test data is valid
 
