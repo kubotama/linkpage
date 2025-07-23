@@ -77,8 +77,9 @@ export async function POST(request: Request) {
   let incomingData: IncomingBookmarkPayload;
   try {
     incomingData = await request.json();
-  } catch {
+  } catch (error) {
     // JSONパースエラーのハンドリング
+    console.error(error);
     return new Response(JSON.stringify({ message: "リクエストボディのJSONが不正です。" }), {
       status: 400,
       headers: { "Content-Type": "application/json", ...commonHeaders },
