@@ -85,6 +85,13 @@ export async function POST(request: Request) {
     });
   }
   try {
+    // incomingDataがオブジェクトでない場合(例: JSONが "null" だった場合)を考慮します
+    if (!incomingData || typeof incomingData !== "object") {
+      return createInvalidBodyError(
+        new Error("リクエストボディはJSONオブジェクトである必要があります。"),
+        commonHeaders
+      );
+    }
     if (!incomingData.url || incomingData.url.trim() === "") {
       return createNoUrlError(commonHeaders);
     }
