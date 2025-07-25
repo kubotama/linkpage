@@ -17,6 +17,7 @@ import { BookmarkInputField } from "./BookmarkInputField";
 import { BookmarkTable } from "./BookmarkTable";
 import { ErrorMessage } from "./ErrorMessage";
 import { KeywordTable } from "./KeywordTable";
+import { Keyword } from "../types/Keyword";
 
 export const BookmarkManager = () => {
   const {
@@ -38,18 +39,32 @@ export const BookmarkManager = () => {
     updateClick,
   } = useBookmarkManager();
 
+  const [keywords, setKeywords] = React.useState<Keyword[]>([]);
+
+  React.useEffect(() => {
+    if (selectedBookmark) {
+      setKeywords(selectedBookmark.keywords);
+    }
+  }, [selectedBookmark]);
+
   const addKeywordClick = async () => {
     if (!textKeyword) {
       return;
     }
     try {
-      await fetch(`${KEYWORDS_ENDPOINT}/`, {
+      const response = await fetch(`${KEYWORDS_ENDPOINT}/`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
         },
         body: JSON.stringify({ keyword_name: textKeyword }),
       });
+      if (!response.ok) {
+        throw new Error("キーワードの追加に失敗しました。");
+      }
+      const newKeyword = await response.json();
+      setKeywords([...keywords, newKeyword]);
+      setTextKeyword("");
     } catch (error: unknown) {
       console.error("キーワードの追加エラー:", (error as Error).message); // 詳細なエラーはコンソールへ
       throw error;
@@ -117,7 +132,7 @@ export const BookmarkManager = () => {
                     </ActionButton>
                   </div>
                 </fieldset>
-                <KeywordTable keywords={selectedBookmark.keywords} />
+                <KeywordTable keywords={keywords} />
               </form>
             )}
           </div>

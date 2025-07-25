@@ -41,7 +41,8 @@ describe("選択されたブックマークにキーワードを追加", () => {
     mockFetch.mockReset();
     mockFetch.mockResolvedValueOnce({
       ok: true,
-      status: 204,
+      status: 200,
+      json: async () => ({ keyword_id: "1", keyword_name: "テストキーワード" }),
     });
     // キーワードが設定されていないブックマークを選択
     const bookmarkToSelect = findBookmarkWithAtLeastNKeywords(mockBookmarksWithKeywords, 0);
@@ -71,6 +72,12 @@ describe("選択されたブックマークにキーワードを追加", () => {
   });
 
   it("テキストボックスにキーワードを入力して「追加」ボタンをクリックするとキーワードのテーブルに表示される", async () => {
+    mockFetch.mockReset();
+    mockFetch.mockResolvedValueOnce({
+      ok: true,
+      status: 200,
+      json: async () => ({ keyword_id: "1", keyword_name: "テストキーワード" }),
+    });
     // キーワードが設定されていないブックマークを選択
     const bookmarkToSelect = findBookmarkWithAtLeastNKeywords(mockBookmarksWithKeywords, 0);
     await clickBookmark(bookmarkToSelect);
@@ -92,10 +99,11 @@ describe("選択されたブックマークにキーワードを追加", () => {
 
     await waitFor(() => {
       expect(keywordTable).toBeInTheDocument();
-      // const rows = within(keywordTable).queryAllByRole("row");
-      // expect(rows).toHaveLength(2);
-      // const cell = within(rows[1]).getByRole("cell");
-      // expect(cell).toHaveTextContent("テストキーワード");
+      const rows = within(keywordTable).queryAllByRole("row");
+      expect(rows).toHaveLength(2);
+      const cell = within(rows[1]).getByRole("cell");
+      expect(cell).toHaveTextContent("テストキーワード");
+      expect(keywordInput).toHaveValue("");
     });
   });
 });
