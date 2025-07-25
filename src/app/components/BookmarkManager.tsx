@@ -1,5 +1,6 @@
 import React from "react";
 
+import { KEYWORDS_ENDPOINT } from "../constants/apiEndpoints";
 import {
   ADD_BUTTON_ROLE_NAME,
   ARROW_BUTTON_ROLE_NAME,
@@ -36,6 +37,24 @@ export const BookmarkManager = () => {
     handleErrorClose,
     updateClick,
   } = useBookmarkManager();
+
+  const addKeywordClick = async () => {
+    if (!textKeyword) {
+      return;
+    }
+    try {
+      await fetch(`${KEYWORDS_ENDPOINT}/`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ keyword_name: textKeyword }),
+      });
+    } catch (error: unknown) {
+      console.error("キーワードの追加エラー:", (error as Error).message); // 詳細なエラーはコンソールへ
+      throw error;
+    }
+  };
 
   return (
     <>
@@ -93,7 +112,7 @@ export const BookmarkManager = () => {
                     onChange={(e) => setTextKeyword(e.target.value)}
                   />
                   <div className="ml-2">
-                    <ActionButton onClick={() => {}} widthClass="w-auto">
+                    <ActionButton onClick={addKeywordClick} widthClass="w-auto">
                       {ADD_BUTTON_ROLE_NAME}
                     </ActionButton>
                   </div>
