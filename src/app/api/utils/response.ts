@@ -25,10 +25,7 @@ export function createInvalidIdError(params: { id: string }) {
   );
 }
 
-export const createInternalError = (
-  error: unknown,
-  headers: Record<string, string> = {}
-) => {
+export const createInternalError = (error: unknown, headers: Record<string, string> = {}) => {
   return createErrorResponse(
     "サーバー内部でエラーが発生しました。",
     500,
@@ -46,12 +43,7 @@ export const createNotFoundKeywordError = (keyword_id: string) => {
 };
 
 export const createNoUrlError = (headers: Record<string, string> = {}) => {
-  return createErrorResponse(
-    "URLを指定してください。",
-    400,
-    "URLが指定されていません。",
-    headers
-  );
+  return createErrorResponse("URLを指定してください。", 400, "URLが指定されていません。", headers);
 };
 
 export const createNoTitleError = (headers: Record<string, string> = {}) => {
@@ -63,10 +55,7 @@ export const createNoTitleError = (headers: Record<string, string> = {}) => {
   );
 };
 
-export const createDuplicateBookmarkError = (
-  url: string,
-  headers: Record<string, string> = {}
-) => {
+export const createDuplicateBookmarkError = (url: string, headers: Record<string, string> = {}) => {
   return createErrorResponse(
     "指定されたURLのブックマークは既に登録されています。",
     409,
@@ -87,10 +76,7 @@ export const createDuplicateKeywordError = (
   );
 };
 
-export const createInvalidBodyError = (
-  error: unknown,
-  headers: Record<string, string> = {}
-) => {
+export const createInvalidBodyError = (error: unknown, headers: Record<string, string> = {}) => {
   return createErrorResponse(
     "リクエストボディのJSONが不正です。",
     400,
