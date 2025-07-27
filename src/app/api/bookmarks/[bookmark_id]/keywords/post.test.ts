@@ -51,9 +51,9 @@ describe("POST /api/bookmarks/[bookmark_id]/keywords", () => {
 
       expect(response.status).toBe(201);
       expect(responseBody.message).toBe("キーワードをブックマークに追加しました。");
-      // テストデータとして、キーワードを4件登録しているため、追加したキーワードのIDは5
+      // 既存のキーワード数に1を加えたIDになることを確認
       expect(responseBody.keyword_id).toBe(countKeywords + 1);
-      // テストデータとして、ブックマークに設定しているキーワードが3件あるため、追加したIDは4
+      // 既存のブックマークキーワード数に1を加えたIDになることを確認
       expect(responseBody.bookmark_keyword_id).toBe(countBookmarksKeywords + 1);
       expect(responseBody.keyword_name).toBe(newKeyword.trim());
 
@@ -83,7 +83,7 @@ describe("POST /api/bookmarks/[bookmark_id]/keywords", () => {
         .prepare("INSERT INTO keywords (keyword_name) VALUES (?)")
         .run(existingKeyword);
 
-      // テストデータとして、キーワードを4件登録しているため、追加したキーワードのIDは5
+      // 既存のキーワード数に1を加えたIDになることを確認
       expect(keywordId).toEqual(countKeywordsBefore + 1);
       // データベースに登録されているキーワードの件数を確認
       expect(countItemOfTable("keywords")).toEqual(countKeywordsBefore + 1);
