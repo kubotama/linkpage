@@ -100,3 +100,11 @@ export const createNoKeywordError = () => {
     "キーワードが指定されていません。"
   );
 };
+
+export const createDuplicateKeywordAssociationError = (bookmarkId: number, keywordName: string) => {
+  return createErrorResponse(
+    "指定されたキーワードは既にこのブックマークに登録されています。",
+    409,
+    `Keyword "${keywordName}" is already associated with bookmark id: ${bookmarkId}.`
+  );
+};

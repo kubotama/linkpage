@@ -17,15 +17,7 @@ type PostParams = {
   };
 };
 
-const createDuplicateKeywordAssociationError = (bookmarkId: number, keywordName: string) => {
-  return createErrorResponse(
-    "指定されたキーワードは既にこのブックマークに登録されています。",
-    409,
-    `Keyword "${keywordName}" is already associated with bookmark id: ${bookmarkId}.`
-  );
-};
-
-export async function POST(request: NextRequest, { params }: PostParams) {
+export async function POST(request: Request, { params }: PostParams) {
   let bookmarkId: number;
   try {
     bookmarkId = validateId(params.bookmark_id);

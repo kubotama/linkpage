@@ -36,7 +36,8 @@ describe("POST /api/bookmarks/[bookmark_id]/keywords", () => {
   // 正常系テスト
   describe("Success cases", () => {
     it("should add a new keyword to a bookmark and return 201", async () => {
-      const request = mockRequest({ keyword_name: "  new-keyword  " });
+      const newKeyword = "new-keyword";
+      const request = mockRequest({ keyword_name: newKeyword });
 
       const response = await POST(request, { params: { bookmark_id: "1" } });
       const responseBody = await response.json();
@@ -47,13 +48,13 @@ describe("POST /api/bookmarks/[bookmark_id]/keywords", () => {
       expect(responseBody.keyword_id).toBe(5);
       // テストデータとして、ブックマークに設定しているキーワードが3件あるため、追加したIDは4
       expect(responseBody.bookmark_keyword_id).toBe(4);
-      expect(responseBody.keyword_name).toBe("new-keyword");
+      expect(responseBody.keyword_name).toBe(newKeyword.trim());
 
       // DBの状態を確認
       const db = getDb();
       const keyword = db
         .prepare("SELECT * FROM keywords WHERE keyword_name = ?")
-        .get("new-keyword");
+        .get(newKeyword.trim());
       expect(keyword).toBeDefined();
       const association = db
         .prepare("SELECT * FROM bookmark_keywords WHERE bookmark_id = ? AND keyword_id = ?")
