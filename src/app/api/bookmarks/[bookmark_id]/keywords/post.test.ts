@@ -33,11 +33,18 @@ describe("POST /api/bookmarks/[bookmark_id]/keywords", () => {
     } as NextRequest;
   };
 
+  const countItemOfTable = (tableName: string) => {
+    return inMemoryDbInstance.prepare(`SELECT * FROM ${tableName}`).all().length;
+  };
+
   // 正常系テスト
   describe("Success cases", () => {
     it("should add a new keyword to a bookmark and return 201", async () => {
       const newKeyword = "new-keyword";
       const request = mockRequest({ keyword_name: newKeyword });
+
+      const countKeywords = countItemOfTable("keywords");
+      const countBookmarksKeywords = countItemOfTable("bookmark_keywords");
 
       const response = await POST(request, { params: { bookmark_id: "1" } });
       const responseBody = await response.json();
@@ -45,9 +52,9 @@ describe("POST /api/bookmarks/[bookmark_id]/keywords", () => {
       expect(response.status).toBe(201);
       expect(responseBody.message).toBe("キーワードをブックマークに追加しました。");
       // テストデータとして、キーワードを4件登録しているため、追加したキーワードのIDは5
-      expect(responseBody.keyword_id).toBe(5);
+      expect(responseBody.keyword_id).toBe(countKeywords + 1);
       // テストデータとして、ブックマークに設定しているキーワードが3件あるため、追加したIDは4
-      expect(responseBody.bookmark_keyword_id).toBe(4);
+      expect(responseBody.bookmark_keyword_id).toBe(countBookmarksKeywords + 1);
       expect(responseBody.keyword_name).toBe(newKeyword.trim());
 
       // DBの状態を確認
@@ -71,7 +78,7 @@ describe("POST /api/bookmarks/[bookmark_id]/keywords", () => {
       // テストデータとして、キーワードを4件登録しているため、追加したキーワードのIDは5
       expect(keywordId).toEqual(5);
       // データベースに登録されているキーワードの件数を確認
-      expect(db.prepare("SELECT * FROM keywords").all().length).toBe(5);
+      expect(countItemOfTable("keywords")).toEqual(5);
 
       const request = mockRequest({ keyword_name: "existing-keyword" });
 
@@ -84,7 +91,8 @@ describe("POST /api/bookmarks/[bookmark_id]/keywords", () => {
       expect(responseBody.bookmark_keyword_id).toBe(4);
 
       // DBの状態を確認
-      expect(db.prepare("SELECT * FROM keywords").all().length).toBe(5);
+      // expect(db.prepare("SELECT * FROM keywords").all().length).toBe(5);
+      expect(countItemOfTable("keywords")).toEqual(5);
       const association = db
         .prepare("SELECT * FROM bookmark_keywords WHERE bookmark_id = ? AND keyword_id = ?")
         .get(1, keywordId);

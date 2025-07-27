@@ -11,6 +11,8 @@ import {
 import { validateId } from "../../../utils/validator";
 import { getDb } from "../../database";
 
+class BookmarkNotFoundError extends Error {}
+
 type PostParams = {
   params: {
     bookmark_id: string;
@@ -44,14 +46,17 @@ export async function POST(request: Request, { params }: PostParams) {
   const db = getDb();
 
   try {
-    const bookmark = db
-      .prepare("SELECT bookmark_id FROM bookmarks WHERE bookmark_id = ?")
-      .get(bookmarkId);
-    if (!bookmark) {
-      return createNotFoundBookmarkError(bookmarkId.toString());
-    }
+    // トランザクション内で見つからない場合にスローするカスタムエラー
 
     const runInTransaction = db.transaction(() => {
+      const bookmark = db
+        .prepare("SELECT bookmark_id FROM bookmarks WHERE bookmark_id = ?")
+        .get(bookmarkId);
+      if (!bookmark) {
+        // ブックマークが見つからない場合はエラーをスローしてトランザクションをロールバック
+        throw new BookmarkNotFoundError();
+      }
+
       const keyword: { keyword_id: number } | undefined = db
         .prepare("SELECT keyword_id FROM keywords WHERE keyword_name = ?")
         .get(keywordName) as { keyword_id: number } | undefined;
@@ -85,6 +90,10 @@ export async function POST(request: Request, { params }: PostParams) {
       { status: 201, headers: { "Content-Type": "application/json" } }
     );
   } catch (error: unknown) {
+    // BookmarkNotFoundErrorはカスタムエラーなので、他のエラーより先にチェック
+    if (error instanceof BookmarkNotFoundError) {
+      return createNotFoundBookmarkError(bookmarkId.toString());
+    }
     if (error instanceof SqliteError && error.code === "SQLITE_CONSTRAINT_UNIQUE") {
       return createDuplicateKeywordAssociationError(bookmarkId, keywordName);
     }
