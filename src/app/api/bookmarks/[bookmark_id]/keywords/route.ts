@@ -40,34 +40,69 @@ export async function POST(request: Request, { params }: PostParams) {
   const keywordName = payload.keyword_name.trim();
   const db = getDb();
 
+  // try {
+  // トランザクション内で見つからない場合にスローするカスタムエラー
+
+  // const runInTransaction = db.transaction(() => {
+  //   const bookmark = db.prepare("SELECT 1 FROM bookmarks WHERE bookmark_id = ?").get(bookmarkId);
+  //   if (!bookmark) {
+  //     // ブックマークが見つからない場合はエラーをスローしてトランザクションをロールバック
+  //     throw new BookmarkNotFoundError();
+  //   }
+
+  //   const keyword = db
+  //     .prepare("SELECT keyword_id FROM keywords WHERE keyword_name = ?")
+  //     .get(keywordName) as { keyword_id: number } | undefined;
+
+  //   let keywordId: number;
+
+  //   if (keyword) {
+  //     keywordId = keyword.keyword_id;
+  //   } else {
+  //     const result = db
+  //       .prepare("INSERT INTO keywords (keyword_name) VALUES (?)")
+  //       .run(keywordName);
+  //     keywordId = Number(result.lastInsertRowid);
+  //   }
+
+  //   const insertResult = db
+  //     .prepare("INSERT INTO bookmark_keywords (bookmark_id, keyword_id) VALUES (?, ?)")
+  //     .run(bookmarkId, keywordId);
+
+  //   return {
+  //     keyword_id: keywordId,
+  //     bookmark_keyword_id: Number(insertResult.lastInsertRowid),
+  //     keyword_name: keywordName,
+  //   };
+  // });
+
+  // const result = runInTransaction();
   try {
-    // トランザクション内で見つからない場合にスローするカスタムエラー
+    const selectBookmarkStmt = db.prepare("SELECT 1 FROM bookmarks WHERE bookmark_id = ?");
+    const selectKeywordStmt = db.prepare("SELECT keyword_id FROM keywords WHERE keyword_name = ?");
+    const insertKeywordStmt = db.prepare("INSERT INTO keywords (keyword_name) VALUES (?)");
+    const insertBookmarkKeywordStmt = db.prepare(
+      "INSERT INTO bookmark_keywords (bookmark_id, keyword_id) VALUES (?, ?)"
+    );
 
     const runInTransaction = db.transaction(() => {
-      const bookmark = db.prepare("SELECT 1 FROM bookmarks WHERE bookmark_id = ?").get(bookmarkId);
+      const bookmark = selectBookmarkStmt.get(bookmarkId);
       if (!bookmark) {
-        // ブックマークが見つからない場合はエラーをスローしてトランザクションをロールバック
         throw new BookmarkNotFoundError();
       }
 
-      const keyword = db
-        .prepare("SELECT keyword_id FROM keywords WHERE keyword_name = ?")
-        .get(keywordName) as { keyword_id: number } | undefined;
+      const keyword = selectKeywordStmt.get(keywordName) as { keyword_id: number } | undefined;
 
       let keywordId: number;
 
       if (keyword) {
         keywordId = keyword.keyword_id;
       } else {
-        const result = db
-          .prepare("INSERT INTO keywords (keyword_name) VALUES (?)")
-          .run(keywordName);
+        const result = insertKeywordStmt.run(keywordName);
         keywordId = Number(result.lastInsertRowid);
       }
 
-      const insertResult = db
-        .prepare("INSERT INTO bookmark_keywords (bookmark_id, keyword_id) VALUES (?, ?)")
-        .run(bookmarkId, keywordId);
+      const insertResult = insertBookmarkKeywordStmt.run(bookmarkId, keywordId);
 
       return {
         keyword_id: keywordId,
@@ -77,7 +112,6 @@ export async function POST(request: Request, { params }: PostParams) {
     });
 
     const result = runInTransaction();
-
     return new Response(
       JSON.stringify({ message: "キーワードをブックマークに追加しました。", ...result }),
       { status: 201, headers: { "Content-Type": "application/json" } }
