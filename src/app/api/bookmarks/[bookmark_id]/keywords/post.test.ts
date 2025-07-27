@@ -1,11 +1,11 @@
 import ActualDatabase from "better-sqlite3"; // Import the actual library
-import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import { NextRequest } from "next/server";
+import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 
-import { getDb } from "../../database";
-import { POST } from "./route";
 import { setupInMemoryDb } from "../../../../test-utils/db-setup";
 import { Keyword } from "../../../../types/Keyword";
+import { getDb } from "../../database";
+import { POST } from "./route";
 
 vi.mock("../../database");
 

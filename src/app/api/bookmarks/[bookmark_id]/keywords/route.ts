@@ -1,16 +1,15 @@
 import { SqliteError } from "better-sqlite3";
-import { NextRequest } from "next/server";
 
-import { getDb } from "../../database";
 import {
-  createNotFoundBookmarkError,
-  createErrorResponse,
+  createDuplicateKeywordAssociationError,
   createInternalError,
   createInvalidBodyError,
   createInvalidIdError,
   createNoKeywordError,
+  createNotFoundBookmarkError,
 } from "../../../utils/response";
 import { validateId } from "../../../utils/validator";
+import { getDb } from "../../database";
 
 type PostParams = {
   params: {
