@@ -31,17 +31,12 @@ export async function POST(request: Request, { params }: PostParams) {
   let payload: { keyword_name: string };
   try {
     payload = await request.json();
-    if (
-      !payload.keyword_name ||
-      typeof payload.keyword_name !== "string" ||
-      payload.keyword_name.trim() === ""
-    ) {
+    if (typeof payload?.keyword_name !== "string" || payload.keyword_name.trim() === "") {
       return createNoKeywordError();
     }
   } catch (error) {
     return createInvalidBodyError(error as Error);
   }
-
   const keywordName = payload.keyword_name.trim();
   const db = getDb();
 
