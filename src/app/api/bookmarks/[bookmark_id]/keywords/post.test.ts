@@ -71,17 +71,20 @@ describe("POST /api/bookmarks/[bookmark_id]/keywords", () => {
     });
 
     it("should add an existing keyword to a bookmark and return 201", async () => {
+      const existingKeyword = "existing-keyword";
       const db = getDb();
       const { lastInsertRowid: keywordId } = db
         .prepare("INSERT INTO keywords (keyword_name) VALUES (?)")
-        .run("existing-keyword");
+        .run(existingKeyword);
 
       // テストデータとして、キーワードを4件登録しているため、追加したキーワードのIDは5
       expect(keywordId).toEqual(5);
       // データベースに登録されているキーワードの件数を確認
       expect(countItemOfTable("keywords")).toEqual(5);
 
-      const request = mockRequest({ keyword_name: "existing-keyword" });
+      const countKeywords = countItemOfTable("keywords");
+
+      const request = mockRequest({ keyword_name: existingKeyword });
 
       const response = await POST(request, { params: { bookmark_id: "1" } });
       const responseBody = await response.json();
@@ -92,8 +95,7 @@ describe("POST /api/bookmarks/[bookmark_id]/keywords", () => {
       expect(responseBody.bookmark_keyword_id).toBe(4);
 
       // DBの状態を確認
-      // expect(db.prepare("SELECT * FROM keywords").all().length).toBe(5);
-      expect(countItemOfTable("keywords")).toEqual(5);
+      expect(countItemOfTable("keywords")).toEqual(countKeywords);
       const association = db
         .prepare("SELECT * FROM bookmark_keywords WHERE bookmark_id = ? AND keyword_id = ?")
         .get(1, keywordId);
