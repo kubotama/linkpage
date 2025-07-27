@@ -50,7 +50,7 @@ export async function POST(request: Request, { params }: PostParams) {
         throw new BookmarkNotFoundError();
       }
 
-      const keyword: { keyword_id: number } | undefined = db
+      const keyword = db
         .prepare("SELECT keyword_id FROM keywords WHERE keyword_name = ?")
         .get(keywordName) as { keyword_id: number } | undefined;
 
