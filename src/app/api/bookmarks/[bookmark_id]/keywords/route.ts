@@ -67,7 +67,7 @@ export async function POST(request: Request, { params }: PostParams) {
         const result = db
           .prepare("INSERT INTO keywords (keyword_name) VALUES (?)")
           .run(keywordName);
-        keywordId = result.lastInsertRowid as number;
+        keywordId = Number(result.lastInsertRowid);
       }
 
       const insertResult = db
@@ -76,7 +76,7 @@ export async function POST(request: Request, { params }: PostParams) {
 
       return {
         keyword_id: keywordId,
-        bookmark_keyword_id: insertResult.lastInsertRowid,
+        bookmark_keyword_id: Number(insertResult.lastInsertRowid),
         keyword_name: keywordName,
       };
     });
