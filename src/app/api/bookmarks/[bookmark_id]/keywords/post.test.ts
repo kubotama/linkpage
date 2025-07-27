@@ -61,11 +61,12 @@ describe("POST /api/bookmarks/[bookmark_id]/keywords", () => {
       const db = getDb();
       const keyword = db
         .prepare("SELECT * FROM keywords WHERE keyword_name = ?")
-        .get(newKeyword.trim());
+        .get(newKeyword.trim()) as Keyword | undefined;
       expect(keyword).toBeDefined();
+
       const association = db
         .prepare("SELECT * FROM bookmark_keywords WHERE bookmark_id = ? AND keyword_id = ?")
-        .get(1, (keyword as Keyword).keyword_id);
+        .get(1, keyword!.keyword_id);
       expect(association).toBeDefined();
     });
 
