@@ -49,9 +49,7 @@ export async function POST(request: Request, { params }: PostParams) {
     // トランザクション内で見つからない場合にスローするカスタムエラー
 
     const runInTransaction = db.transaction(() => {
-      const bookmark = db
-        .prepare("SELECT bookmark_id FROM bookmarks WHERE bookmark_id = ?")
-        .get(bookmarkId);
+      const bookmark = db.prepare("SELECT 1 FROM bookmarks WHERE bookmark_id = ?").get(bookmarkId);
       if (!bookmark) {
         // ブックマークが見つからない場合はエラーをスローしてトランザクションをロールバック
         throw new BookmarkNotFoundError();
