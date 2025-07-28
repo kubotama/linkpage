@@ -53,13 +53,13 @@ export async function POST(request: Request, { params }: PostParams) {
         throw new BookmarkNotFoundError();
       }
 
-      const keyword = selectKeywordStmt.get(keywordName) as { keyword_id: number } | undefined;
-
+      const keywordResult = selectKeywordStmt.get(keywordName);
       let keywordId: number;
-
-      if (keyword) {
-        keywordId = keyword.keyword_id;
+      // Check if a result was found and if it has the expected property
+      if (keywordResult && typeof keywordResult === "object" && "keyword_id" in keywordResult) {
+        keywordId = (keywordResult as { keyword_id: number }).keyword_id;
       } else {
+        // If no keyword found or it doesn't have the expected shape, insert a new one
         const result = insertKeywordStmt.run(keywordName);
         keywordId = Number(result.lastInsertRowid);
       }

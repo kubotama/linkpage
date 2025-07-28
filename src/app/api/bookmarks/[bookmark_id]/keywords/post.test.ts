@@ -3,7 +3,7 @@ import { NextRequest } from "next/server";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 
 import { setupInMemoryDb } from "../../../../test-utils/db-setup";
-import { isKeyword, Keyword } from "../../../../types/Keyword";
+import { isKeyword } from "../../../../types/Keyword";
 import { getDb } from "../../database";
 import { POST } from "./route";
 
@@ -65,12 +65,11 @@ describe("POST /api/bookmarks/[bookmark_id]/keywords", () => {
       if (!isKeyword(rawKeywordResult)) {
         throw new Error("Keyword not found or has unexpected structure in test.");
       }
-      const keyword: Keyword = rawKeywordResult;
-      expect(keyword).toBeDefined();
+      expect(rawKeywordResult).toBeDefined();
 
       const association = db
         .prepare("SELECT * FROM bookmark_keywords WHERE bookmark_id = ? AND keyword_id = ?")
-        .get(1, keyword!.keyword_id);
+        .get(1, rawKeywordResult.keyword_id);
       expect(association).toBeDefined();
     });
 
