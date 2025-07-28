@@ -13,6 +13,14 @@ import { getDb } from "../../database";
 
 class BookmarkNotFoundError extends Error {}
 
+const db = getDb();
+const selectBookmarkStmt = db.prepare("SELECT 1 FROM bookmarks WHERE bookmark_id = ?");
+const selectKeywordStmt = db.prepare("SELECT keyword_id FROM keywords WHERE keyword_name = ?");
+const insertKeywordStmt = db.prepare("INSERT INTO keywords (keyword_name) VALUES (?)");
+const insertBookmarkKeywordStmt = db.prepare(
+  "INSERT INTO bookmark_keywords (bookmark_id, keyword_id) VALUES (?, ?)"
+);
+
 type PostParams = {
   params: {
     bookmark_id: string;
@@ -37,16 +45,8 @@ export async function POST(request: Request, { params }: PostParams) {
     return createInvalidBodyError(error as Error);
   }
   const keywordName = payload.keyword_name.trim();
-  const db = getDb();
 
   try {
-    const selectBookmarkStmt = db.prepare("SELECT 1 FROM bookmarks WHERE bookmark_id = ?");
-    const selectKeywordStmt = db.prepare("SELECT keyword_id FROM keywords WHERE keyword_name = ?");
-    const insertKeywordStmt = db.prepare("INSERT INTO keywords (keyword_name) VALUES (?)");
-    const insertBookmarkKeywordStmt = db.prepare(
-      "INSERT INTO bookmark_keywords (bookmark_id, keyword_id) VALUES (?, ?)"
-    );
-
     const runInTransaction = db.transaction(() => {
       const bookmark = selectBookmarkStmt.get(bookmarkId);
       if (!bookmark) {
