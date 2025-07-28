@@ -23,8 +23,7 @@ export async function POST(request: Request, { params }: PostParams) {
   let bookmarkId: number;
   try {
     bookmarkId = validateId(params.bookmark_id);
-  } catch (error) {
-    console.error(error);
+  } catch {
     return createInvalidIdError({ id: params.bookmark_id });
   }
 
