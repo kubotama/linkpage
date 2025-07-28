@@ -34,7 +34,12 @@ describe("POST /api/bookmarks/[bookmark_id]/keywords", () => {
   };
 
   const countItemOfTable = (tableName: string) => {
-    return inMemoryDbInstance.prepare(`SELECT * FROM ${tableName}`).all().length;
+    // return inMemoryDbInstance.prepare(`SELECT * FROM ${tableName}`).all().length;
+    return (
+      inMemoryDbInstance.prepare(`SELECT COUNT(*) as count FROM ${tableName}`).get() as {
+        count: number;
+      }
+    ).count;
   };
 
   // 正常系テスト
