@@ -3,7 +3,7 @@ import { NextRequest } from "next/server";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 
 import { setupInMemoryDb } from "../../../../test-utils/db-setup";
-import { Keyword } from "../../../../types/Keyword";
+import { isKeyword, Keyword } from "../../../../types/Keyword";
 import { getDb } from "../../database";
 import { POST } from "./route";
 
@@ -59,9 +59,13 @@ describe("POST /api/bookmarks/[bookmark_id]/keywords", () => {
 
       // DBの状態を確認
       const db = getDb();
-      const keyword = db
+      const rawKeywordResult = db
         .prepare("SELECT * FROM keywords WHERE keyword_name = ?")
-        .get(newKeyword.trim()) as Keyword | undefined;
+        .get(newKeyword.trim());
+      if (!isKeyword(rawKeywordResult)) {
+        throw new Error("Keyword not found or has unexpected structure in test.");
+      }
+      const keyword: Keyword = rawKeywordResult;
       expect(keyword).toBeDefined();
 
       const association = db
