@@ -104,7 +104,6 @@ describe("POST /api/bookmarks/[bookmark_id]/keywords", () => {
       expect(response.status).toBe(201);
       expect(responseBody.keyword_id).toBe(keywordId);
       expect(responseBody.keyword_name).toBe(existingKeyword);
-      // テストデータとして、ブックマークに設定しているキーワードが3件あるため、追加したIDは4
       expect(responseBody.bookmark_keyword_id).toBe(countBookmarksKeywordsBefore + 1);
 
       // DBの状態を確認
