@@ -1,6 +1,6 @@
 import ActualDatabase from "better-sqlite3"; // Import the actual library
 import { NextRequest } from "next/server";
-import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
+import { afterEach, assert, beforeEach, describe, expect, it, vi } from "vitest";
 
 import { setupInMemoryDb } from "../../../../test-utils/db-setup";
 import { isKeyword } from "../../../../types/Keyword";
@@ -75,10 +75,13 @@ describe("POST /api/bookmarks/[bookmark_id]/keywords", () => {
       expect(isKeyword(rawKeywordResult)).toBe(true);
       expect(rawKeywordResult).toBeDefined();
 
-      // 上のexpectのisKeywordでrawKeywordResultがKeyword型であることを確認済み
+      if (!isKeyword(rawKeywordResult)) {
+        assert.fail("rawKeywordResult is not of type Keyword");
+        return;
+      }
       const association = db
         .prepare("SELECT * FROM bookmark_keywords WHERE bookmark_id = ? AND keyword_id = ?")
-        .get(1, (rawKeywordResult as { keyword_id: number }).keyword_id);
+        .get(1, rawKeywordResult.keyword_id);
       expect(association).toBeDefined();
     });
 
