@@ -67,14 +67,13 @@ describe("POST /api/bookmarks/[bookmark_id]/keywords", () => {
       const rawKeywordResult = db
         .prepare("SELECT * FROM keywords WHERE keyword_name = ?")
         .get(newKeyword.trim());
-      if (!isKeyword(rawKeywordResult)) {
-        throw new Error("Keyword not found or has unexpected structure in test.");
-      }
+      expect(isKeyword(rawKeywordResult)).toBe(true);
       expect(rawKeywordResult).toBeDefined();
 
+      // 上のexpectのisKeywordでrawKeywordResultがKeyword型であることを確認済み
       const association = db
         .prepare("SELECT * FROM bookmark_keywords WHERE bookmark_id = ? AND keyword_id = ?")
-        .get(1, rawKeywordResult.keyword_id);
+        .get(1, (rawKeywordResult as { keyword_id: number }).keyword_id);
       expect(association).toBeDefined();
     });
 
