@@ -35,17 +35,17 @@ export async function POST(request: Request, { params }: PostParams) {
     return createInvalidIdError({ id: params.bookmark_id });
   }
 
-  let payload: { keyword_name: string };
+  let keywordName: string;
   try {
-    payload = await request.json();
-    if (typeof payload?.keyword_name !== "string" || payload.keyword_name.trim() === "") {
+    const payload = await request.json();
+    const rawKeyword = payload?.keyword_name;
+    if (typeof rawKeyword !== "string" || rawKeyword.trim() === "") {
       return createNoKeywordError();
     }
+    keywordName = rawKeyword.trim();
   } catch (error) {
     return createInvalidBodyError(error as Error);
   }
-  const keywordName = payload.keyword_name.trim();
-
   try {
     const runInTransaction = db.transaction(() => {
       const bookmark = selectBookmarkStmt.get(bookmarkId);
