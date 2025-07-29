@@ -8,8 +8,8 @@ export const isKeyword = (obj: unknown): obj is Keyword => {
     obj !== null &&
     typeof obj === "object" &&
     "keyword_id" in obj &&
-    typeof (obj as Keyword).keyword_id === "number" &&
+    typeof obj.keyword_id === "number" &&
     "keyword_name" in obj &&
-    typeof (obj as Keyword).keyword_name === "string"
+    typeof obj.keyword_name === "string"
   );
 };
