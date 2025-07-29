@@ -181,15 +181,25 @@ describe("POST /api/bookmarks/[bookmark_id]/keywords", () => {
     });
 
     it("should return 409 if the keyword is already associated with the bookmark", async () => {
-      // 最初にキーワードを登録
-      const initialRequest = mockRequest({ keyword_name: "duplicate-keyword" });
-      await POST(initialRequest, { params: { bookmark_id: "1" } });
+      const db = getDb();
+      const keywordName = "duplicate-keyword";
+      const bookmarkId = 1;
 
-      // 同じキーワードを再度登録しようとする
-      const duplicateRequest = mockRequest({ keyword_name: "duplicate-keyword" });
-      const response = await POST(duplicateRequest, { params: { bookmark_id: "1" } });
+      // Arrange: DBを直接操作して、キーワードとブックマークの関連付けをセットアップ
+      const { lastInsertRowid: keywordId } = db
+        .prepare("INSERT INTO keywords (keyword_name) VALUES (?)")
+        .run(keywordName);
+      db.prepare("INSERT INTO bookmark_keywords (bookmark_id, keyword_id) VALUES (?, ?)").run(
+        bookmarkId,
+        keywordId
+      );
+
+      // Act: 同じキーワードを再度登録しようとする
+      const request = mockRequest({ keyword_name: keywordName });
+      const response = await POST(request, { params: { bookmark_id: String(bookmarkId) } });
       const responseBody = await response.json();
 
+      // Assert
       expect(response.status).toBe(409);
       expect(responseBody.message).toBe(
         "指定されたキーワードは既にこのブックマークに登録されています。"
