@@ -5,23 +5,28 @@ import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import { setupInMemoryDb } from "../../../../test-utils/db-setup";
 import { isKeyword } from "../../../../types/Keyword";
 import { getDb } from "../../database";
-import { POST } from "./route";
 
 vi.mock("../../database");
+let POST: typeof import("./route").POST; // POST関数の型を宣言
 
 let inMemoryDbInstance: ActualDatabase.Database;
 
 describe("POST /api/bookmarks/[bookmark_id]/keywords", () => {
-  beforeEach(() => {
+  beforeEach(async () => {
     vi.resetAllMocks();
+    vi.resetModules();
 
     inMemoryDbInstance = setupInMemoryDb();
 
     vi.mocked(getDb).mockReturnValue(inMemoryDbInstance);
+
+    // route.tsを動的にインポートし、POST関数を取得
+    // これにより、route.tsがインポートされる時点でgetDbのモックが有効になります
+    const routeModule = await import("./route");
+    POST = routeModule.POST;
   });
 
   afterEach(() => {
-    vi.restoreAllMocks();
     if (inMemoryDbInstance) {
       inMemoryDbInstance.close();
     }
