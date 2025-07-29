@@ -10,12 +10,15 @@ import {
 } from "../../../utils/response";
 import { validateId } from "../../../utils/validator";
 import { getDb } from "../../database";
+import { isKeyword } from "../../../../types/Keyword";
 
 class BookmarkNotFoundError extends Error {}
 
 const db = getDb();
 const selectBookmarkStmt = db.prepare("SELECT 1 FROM bookmarks WHERE bookmark_id = ?");
-const selectKeywordStmt = db.prepare("SELECT keyword_id FROM keywords WHERE keyword_name = ?");
+const selectKeywordStmt = db.prepare(
+  "SELECT keyword_id, keyword_name FROM keywords WHERE keyword_name = ?"
+);
 const insertKeywordStmt = db.prepare("INSERT INTO keywords (keyword_name) VALUES (?)");
 const insertBookmarkKeywordStmt = db.prepare(
   "INSERT INTO bookmark_keywords (bookmark_id, keyword_id) VALUES (?, ?)"
@@ -53,11 +56,9 @@ export async function POST(request: Request, { params }: PostParams) {
         throw new BookmarkNotFoundError();
       }
 
-      const keywordResult = selectKeywordStmt.get(keywordName) as
-        | { keyword_id: number }
-        | undefined;
+      const keywordResult = selectKeywordStmt.get(keywordName);
       let keywordId: number;
-      if (keywordResult) {
+      if (isKeyword(keywordResult)) {
         keywordId = keywordResult.keyword_id;
       } else {
         const result = insertKeywordStmt.run(keywordName);
