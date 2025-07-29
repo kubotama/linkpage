@@ -47,7 +47,7 @@ export async function POST(request: Request, { params }: PostParams) {
     }
     keywordName = rawKeyword.trim();
   } catch (error) {
-    return createInvalidBodyError(error as Error);
+    return createInvalidBodyError(error instanceof Error ? error : new Error(String(error)));
   }
   try {
     const runInTransaction = db.transaction(() => {
