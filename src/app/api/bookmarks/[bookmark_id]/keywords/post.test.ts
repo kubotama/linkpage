@@ -72,13 +72,7 @@ describe("POST /api/bookmarks/[bookmark_id]/keywords", () => {
       const rawKeywordResult = db
         .prepare("SELECT * FROM keywords WHERE keyword_name = ?")
         .get(newKeyword.trim());
-      expect(isKeyword(rawKeywordResult)).toBe(true);
-      expect(rawKeywordResult).toBeDefined();
-
-      if (!isKeyword(rawKeywordResult)) {
-        assert.fail("rawKeywordResult is not of type Keyword");
-        return;
-      }
+      assert(isKeyword(rawKeywordResult), "rawKeywordResult should be of type Keyword");
       const association = db
         .prepare("SELECT * FROM bookmark_keywords WHERE bookmark_id = ? AND keyword_id = ?")
         .get(1, rawKeywordResult.keyword_id);
