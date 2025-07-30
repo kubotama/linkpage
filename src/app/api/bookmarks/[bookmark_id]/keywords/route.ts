@@ -1,6 +1,5 @@
 import { SqliteError } from "better-sqlite3";
 
-import { isKeyword } from "../../../../types/Keyword";
 import { getId, InvalidIdError } from "../../../utils/id";
 import {
   createDuplicateKeywordAssociationError,
@@ -16,12 +15,11 @@ class BookmarkNotFoundError extends Error {}
 
 const db = getDb();
 const selectBookmarkStmt = db.prepare("SELECT 1 FROM bookmarks WHERE bookmark_id = ?");
-const selectKeywordStmt = db.prepare(
-  "SELECT keyword_id, keyword_name FROM keywords WHERE keyword_name = ?"
-);
-const insertKeywordStmt = db.prepare("INSERT OR IGNORE INTO keywords (keyword_name) VALUES (?)");
 const insertBookmarkKeywordStmt = db.prepare(
   "INSERT INTO bookmark_keywords (bookmark_id, keyword_id) VALUES (?, ?)"
+);
+const upsertKeywordStmt = db.prepare(
+  "INSERT INTO keywords (keyword_name) VALUES (?) ON CONFLICT(keyword_name) DO UPDATE SET keyword_name = excluded.keyword_name RETURNING keyword_id"
 );
 
 type PostParams = {
@@ -31,18 +29,17 @@ type PostParams = {
 };
 
 const getOrCreateKeyword = (name: string): number => {
-  // キーワードが存在しない場合のみ挿入する。存在する場合は何もしない。
-  insertKeywordStmt.run(name);
+  // upsert文は、新規・既存両方のキーワードに対してkeyword_idを返すため、
+  // この処理は単一のアトミックなDB呼び出しで完結します。
+  const result = upsertKeywordStmt.get(name) as { keyword_id: number } | undefined;
 
-  // この時点でキーワードは確実に存在するため、SELECTで取得する。
-  const keyword = selectKeywordStmt.get(name);
-
-  if (isKeyword(keyword)) {
-    return keyword.keyword_id;
+  if (result) {
+    return result.keyword_id;
   }
 
-  // 通常このパスには到達しないはず。到達した場合は予期せぬエラーとしてスローする。
-  throw new Error(`Failed to retrieve keyword '${name}' after insert-or-ignore.`);
+  // クエリが正しく、RETURNINGがサポートされていれば、このパスには到達しないはずです。
+  // 安全策として残しています。
+  throw new Error(`Failed to get or create keyword '${name}'.`);
 };
 
 export async function POST(request: Request, { params }: PostParams) {
