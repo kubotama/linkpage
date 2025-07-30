@@ -19,7 +19,7 @@ const selectBookmarkStmt = db.prepare("SELECT 1 FROM bookmarks WHERE bookmark_id
 const selectKeywordStmt = db.prepare(
   "SELECT keyword_id, keyword_name FROM keywords WHERE keyword_name = ?"
 );
-const insertKeywordStmt = db.prepare("INSERT INTO keywords (keyword_name) VALUES (?)");
+const insertKeywordStmt = db.prepare("INSERT OR IGNORE INTO keywords (keyword_name) VALUES (?)");
 const insertBookmarkKeywordStmt = db.prepare(
   "INSERT INTO bookmark_keywords (bookmark_id, keyword_id) VALUES (?, ?)"
 );
@@ -31,33 +31,18 @@ type PostParams = {
 };
 
 const getOrCreateKeyword = (name: string): number => {
-  // 最初にキーワードを検索
-  const existingKeyword = selectKeywordStmt.get(name);
-  if (isKeyword(existingKeyword)) {
-    return existingKeyword.keyword_id;
+  // キーワードが存在しない場合のみ挿入する。存在する場合は何もしない。
+  insertKeywordStmt.run(name);
+
+  // この時点でキーワードは確実に存在するため、SELECTで取得する。
+  const keyword = selectKeywordStmt.get(name);
+
+  if (isKeyword(keyword)) {
+    return keyword.keyword_id;
   }
 
-  // 見つからなければ挿入を試みる
-  try {
-    const result = insertKeywordStmt.run(name);
-    return Number(result.lastInsertRowid);
-  } catch (error) {
-    // Handle the case where another request has already inserted the keyword due to a race condition
-    if (!(error instanceof SqliteError && error.code === "SQLITE_CONSTRAINT_UNIQUE")) {
-      // If it's not a SQLITE_CONSTRAINT_UNIQUE error, it's an unexpected error, so re-throw it
-      throw error;
-    }
-
-    // If a conflict occurred during INSERT, another request should have already inserted the keyword, so retrieve the ID again
-    const keywordAfterRace = selectKeywordStmt.get(name);
-    if (isKeyword(keywordAfterRace)) {
-      return keywordAfterRace.keyword_id;
-    }
-
-    // The keyword that should have been inserted due to the race condition wasn't found.
-    // This is an unexpected state, so throw a new error instead of the original to trigger a 500 error.
-    throw new Error(`Failed to retrieve keyword '${name}' after insert race condition.`);
-  }
+  // 通常このパスには到達しないはず。到達した場合は予期せぬエラーとしてスローする。
+  throw new Error(`Failed to retrieve keyword '${name}' after insert-or-ignore.`);
 };
 
 export async function POST(request: Request, { params }: PostParams) {
