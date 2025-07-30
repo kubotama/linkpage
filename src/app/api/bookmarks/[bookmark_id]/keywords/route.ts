@@ -56,14 +56,25 @@ export async function POST(request: Request, { params }: PostParams) {
         throw new BookmarkNotFoundError();
       }
 
+      const insertKeyword = (keywordName: string): number => {
+        try {
+          const result = insertKeywordStmt.run(keywordName);
+          const keywordId = Number(result.lastInsertRowid);
+          return keywordId;
+        } catch (error) {
+          if (error instanceof SqliteError && error.code === "SQLITE_CONSTRAINT_UNIQUE") {
+            return insertKeyword(keywordName);
+          } else {
+            throw error;
+          }
+        }
+      };
+
       const keywordResult = selectKeywordStmt.get(keywordName);
-      let keywordId: number;
-      if (isKeyword(keywordResult)) {
-        keywordId = keywordResult.keyword_id;
-      } else {
-        const result = insertKeywordStmt.run(keywordName);
-        keywordId = Number(result.lastInsertRowid);
-      }
+      const keywordId = isKeyword(keywordResult)
+        ? keywordResult.keyword_id
+        : insertKeyword(keywordName);
+
       const insertResult = insertBookmarkKeywordStmt.run(bookmarkId, keywordId);
 
       return {
