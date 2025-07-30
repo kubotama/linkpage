@@ -33,6 +33,9 @@ const getOrCreateKeyword = (name: string): number => {
       if (isKeyword(keywordAfterRace)) {
         return keywordAfterRace.keyword_id;
       }
+      // レースコンディションで挿入されたはずのキーワードが見つからない。
+      // これは予期せぬ状態なので、元のエラーではなく新しいエラーをスローして500エラーを誘発する。
+      throw new Error(`Failed to retrieve keyword '${name}' after insert race condition.`);
     }
     // その他のエラー、または極めて稀なケース（挿入失敗後、再検索でも見つからない）
     throw error;
