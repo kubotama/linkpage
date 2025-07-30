@@ -1,5 +1,7 @@
 import { SqliteError } from "better-sqlite3";
 
+import { isKeyword } from "../../../../types/Keyword";
+import { getId, InvalidIdError } from "../../../utils/id";
 import {
   createDuplicateKeywordAssociationError,
   createInternalError,
@@ -8,9 +10,7 @@ import {
   createNoKeywordError,
   createNotFoundBookmarkError,
 } from "../../../utils/response";
-import { validateId } from "../../../utils/validator";
 import { getDb } from "../../database";
-import { isKeyword } from "../../../../types/Keyword";
 
 class BookmarkNotFoundError extends Error {}
 
@@ -61,9 +61,12 @@ type PostParams = {
 export async function POST(request: Request, { params }: PostParams) {
   let bookmarkId: number;
   try {
-    bookmarkId = validateId(params.bookmark_id);
-  } catch {
-    return createInvalidIdError({ id: params.bookmark_id });
+    bookmarkId = Number(getId({ id: params.bookmark_id }));
+  } catch (error) {
+    if (error instanceof InvalidIdError) {
+      return createInvalidIdError({ id: params.bookmark_id });
+    }
+    return createInternalError(error instanceof Error ? error : new Error(String(error)));
   }
 
   let keywordName: string;
