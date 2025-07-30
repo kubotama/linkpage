@@ -86,7 +86,6 @@ export async function POST(request: Request, { params }: PostParams) {
     if (error instanceof SqliteError && error.code === "SQLITE_CONSTRAINT_UNIQUE") {
       return createDuplicateKeywordAssociationError(bookmarkId, keywordName);
     }
-    // return createInternalError(error);
     return createInternalError(error instanceof Error ? error : new Error(String(error)));
   }
 }
