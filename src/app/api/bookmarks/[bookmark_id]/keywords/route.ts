@@ -1,5 +1,6 @@
 import { SqliteError } from "better-sqlite3";
 
+import { isKeyword } from "../../../../types/Keyword";
 import { getId, InvalidIdError } from "../../../utils/id";
 import {
   createDuplicateKeywordAssociationError,
@@ -19,7 +20,8 @@ const insertBookmarkKeywordStmt = db.prepare(
   "INSERT INTO bookmark_keywords (bookmark_id, keyword_id) VALUES (?, ?)"
 );
 const upsertKeywordStmt = db.prepare(
-  "INSERT INTO keywords (keyword_name) VALUES (?) ON CONFLICT(keyword_name) DO UPDATE SET keyword_name = excluded.keyword_name RETURNING keyword_id"
+  "INSERT INTO keywords (keyword_name) VALUES (?) ON CONFLICT(keyword_name) " +
+    " DO UPDATE SET keyword_name = excluded.keyword_name RETURNING keyword_id, keyword_name"
 );
 
 type PostParams = {
@@ -31,12 +33,10 @@ type PostParams = {
 const getOrCreateKeyword = (name: string): number => {
   // upsert文は、新規・既存両方のキーワードに対してkeyword_idを返すため、
   // この処理は単一のアトミックなDB呼び出しで完結します。
-  const result = upsertKeywordStmt.get(name) as { keyword_id: number } | undefined;
-
-  if (result) {
+  const result: unknown = upsertKeywordStmt.get(name);
+  if (isKeyword(result)) {
     return result.keyword_id;
   }
-
   // クエリが正しく、RETURNINGがサポートされていれば、このパスには到達しないはずです。
   // 安全策として残しています。
   throw new Error(`Failed to get or create keyword '${name}'.`);
