@@ -30,6 +30,9 @@ type PostParams = {
   };
 };
 
+const ensureError = (error: unknown): Error =>
+  error instanceof Error ? error : new Error(String(error));
+
 const getOrCreateKeyword = (name: string): number => {
   // 最初にキーワードを検索
   const existingKeyword = selectKeywordStmt.get(name);
@@ -53,7 +56,7 @@ const getOrCreateKeyword = (name: string): number => {
       // これは予期せぬ状態なので、元のエラーではなく新しいエラーをスローして500エラーを誘発する。
       throw new Error(`Failed to retrieve keyword '${name}' after insert race condition.`);
     }
-    // その他のエラー、または極めて稀なケース（挿入失敗後、再検索でも見つからない）
+    // SQLITE_CONSTRAINT_UNIQUE以外のデータベースエラーや、その他の予期せぬエラー
     throw error;
   }
 };
@@ -66,7 +69,7 @@ export async function POST(request: Request, { params }: PostParams) {
     if (error instanceof InvalidIdError) {
       return createInvalidIdError({ id: params.bookmark_id });
     }
-    return createInternalError(error instanceof Error ? error : new Error(String(error)));
+    return createInternalError(ensureError(error));
   }
 
   let keywordName: string;
@@ -78,7 +81,7 @@ export async function POST(request: Request, { params }: PostParams) {
     }
     keywordName = rawKeyword.trim();
   } catch (error) {
-    return createInvalidBodyError(error instanceof Error ? error : new Error(String(error)));
+    return createInvalidBodyError(ensureError(error));
   }
   try {
     const runInTransaction = db.transaction(() => {
@@ -110,6 +113,6 @@ export async function POST(request: Request, { params }: PostParams) {
     if (error instanceof SqliteError && error.code === "SQLITE_CONSTRAINT_UNIQUE") {
       return createDuplicateKeywordAssociationError(bookmarkId, keywordName);
     }
-    return createInternalError(error instanceof Error ? error : new Error(String(error)));
+    return createInternalError(ensureError(error));
   }
 }
