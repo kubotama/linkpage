@@ -63,10 +63,14 @@ export async function POST(request: Request, { params }: PostParams) {
           return keywordId;
         } catch (error) {
           if (error instanceof SqliteError && error.code === "SQLITE_CONSTRAINT_UNIQUE") {
-            return insertKeyword(keywordName);
-          } else {
-            throw error;
+            // レースコンディションを処理するため、キーワードを再度SELECTしてIDを取得します。
+            const existingKeyword = selectKeywordStmt.get(keywordName);
+            if (isKeyword(existingKeyword)) {
+              return existingKeyword.keyword_id;
+            }
           }
+          // 他のエラー、またはキーワードが見つからない場合は再スロー
+          throw error;
         }
       };
 
