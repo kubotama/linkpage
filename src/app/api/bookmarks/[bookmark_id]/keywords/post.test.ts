@@ -203,9 +203,11 @@ describe("POST /api/bookmarks/[bookmark_id]/keywords", () => {
     });
 
     it("should handle internal server errors gracefully", async () => {
-      // DBを閉じてエラーを意図的に発生させる
+      // db.transactionがエラーをスローするようにモックする
       const db = getDb();
-      db.close();
+      vi.spyOn(db, "transaction").mockImplementation(() => {
+        throw new Error("Database error");
+      });
 
       const request = mockRequest({ keyword_name: "test-keyword" });
       const response = await POST(request, { params: { bookmark_id: "1" } });
