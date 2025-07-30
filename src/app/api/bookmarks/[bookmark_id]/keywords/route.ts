@@ -14,6 +14,31 @@ import { isKeyword } from "../../../../types/Keyword";
 
 class BookmarkNotFoundError extends Error {}
 
+const getOrCreateKeyword = (name: string): number => {
+  // 最初にキーワードを検索
+  const existingKeyword = selectKeywordStmt.get(name);
+  if (isKeyword(existingKeyword)) {
+    return existingKeyword.keyword_id;
+  }
+
+  // 見つからなければ挿入を試みる
+  try {
+    const result = insertKeywordStmt.run(name);
+    return Number(result.lastInsertRowid);
+  } catch (error) {
+    // レースコンディションで他のリクエストが先に挿入した場合
+    if (error instanceof SqliteError && error.code === "SQLITE_CONSTRAINT_UNIQUE") {
+      // 再度検索してIDを取得
+      const keywordAfterRace = selectKeywordStmt.get(name);
+      if (isKeyword(keywordAfterRace)) {
+        return keywordAfterRace.keyword_id;
+      }
+    }
+    // その他のエラー、または極めて稀なケース（挿入失敗後、再検索でも見つからない）
+    throw error;
+  }
+};
+
 const db = getDb();
 const selectBookmarkStmt = db.prepare("SELECT 1 FROM bookmarks WHERE bookmark_id = ?");
 const selectKeywordStmt = db.prepare(
@@ -56,29 +81,7 @@ export async function POST(request: Request, { params }: PostParams) {
         throw new BookmarkNotFoundError();
       }
 
-      const insertKeyword = (keywordName: string): number => {
-        try {
-          const result = insertKeywordStmt.run(keywordName);
-          const keywordId = Number(result.lastInsertRowid);
-          return keywordId;
-        } catch (error) {
-          if (error instanceof SqliteError && error.code === "SQLITE_CONSTRAINT_UNIQUE") {
-            // レースコンディションを処理するため、キーワードを再度SELECTしてIDを取得します。
-            const existingKeyword = selectKeywordStmt.get(keywordName);
-            if (isKeyword(existingKeyword)) {
-              return existingKeyword.keyword_id;
-            }
-          }
-          // 他のエラー、またはキーワードが見つからない場合は再スロー
-          throw error;
-        }
-      };
-
-      const keywordResult = selectKeywordStmt.get(keywordName);
-      const keywordId = isKeyword(keywordResult)
-        ? keywordResult.keyword_id
-        : insertKeyword(keywordName);
-
+      const keywordId = getOrCreateKeyword(keywordName);
       const insertResult = insertBookmarkKeywordStmt.run(bookmarkId, keywordId);
 
       return {
