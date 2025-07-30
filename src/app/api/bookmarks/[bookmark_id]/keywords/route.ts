@@ -42,19 +42,21 @@ const getOrCreateKeyword = (name: string): number => {
     const result = insertKeywordStmt.run(name);
     return Number(result.lastInsertRowid);
   } catch (error) {
-    // レースコンディションで他のリクエストが先に挿入した場合
-    if (error instanceof SqliteError && error.code === "SQLITE_CONSTRAINT_UNIQUE") {
-      // 再度検索してIDを取得
-      const keywordAfterRace = selectKeywordStmt.get(name);
-      if (isKeyword(keywordAfterRace)) {
-        return keywordAfterRace.keyword_id;
-      }
-      // レースコンディションで挿入されたはずのキーワードが見つからない。
-      // これは予期せぬ状態なので、元のエラーではなく新しいエラーをスローして500エラーを誘発する。
-      throw new Error(`Failed to retrieve keyword '${name}' after insert race condition.`);
+    // Handle the case where another request has already inserted the keyword due to a race condition
+    if (!(error instanceof SqliteError && error.code === "SQLITE_CONSTRAINT_UNIQUE")) {
+      // If it's not a SQLITE_CONSTRAINT_UNIQUE error, it's an unexpected error, so re-throw it
+      throw error;
     }
-    // SQLITE_CONSTRAINT_UNIQUE以外のデータベースエラーや、その他の予期せぬエラー
-    throw error;
+
+    // If a conflict occurred during INSERT, another request should have already inserted the keyword, so retrieve the ID again
+    const keywordAfterRace = selectKeywordStmt.get(name);
+    if (isKeyword(keywordAfterRace)) {
+      return keywordAfterRace.keyword_id;
+    }
+
+    // The keyword that should have been inserted due to the race condition wasn't found.
+    // This is an unexpected state, so throw a new error instead of the original to trigger a 500 error.
+    throw new Error(`Failed to retrieve keyword '${name}' after insert race condition.`);
   }
 };
 
