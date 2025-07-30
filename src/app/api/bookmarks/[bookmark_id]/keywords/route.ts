@@ -14,6 +14,22 @@ import { getDb } from "../../database";
 
 class BookmarkNotFoundError extends Error {}
 
+const db = getDb();
+const selectBookmarkStmt = db.prepare("SELECT 1 FROM bookmarks WHERE bookmark_id = ?");
+const selectKeywordStmt = db.prepare(
+  "SELECT keyword_id, keyword_name FROM keywords WHERE keyword_name = ?"
+);
+const insertKeywordStmt = db.prepare("INSERT INTO keywords (keyword_name) VALUES (?)");
+const insertBookmarkKeywordStmt = db.prepare(
+  "INSERT INTO bookmark_keywords (bookmark_id, keyword_id) VALUES (?, ?)"
+);
+
+type PostParams = {
+  params: {
+    bookmark_id: string;
+  };
+};
+
 const getOrCreateKeyword = (name: string): number => {
   // 最初にキーワードを検索
   const existingKeyword = selectKeywordStmt.get(name);
@@ -40,22 +56,6 @@ const getOrCreateKeyword = (name: string): number => {
     // その他のエラー、または極めて稀なケース（挿入失敗後、再検索でも見つからない）
     throw error;
   }
-};
-
-const db = getDb();
-const selectBookmarkStmt = db.prepare("SELECT 1 FROM bookmarks WHERE bookmark_id = ?");
-const selectKeywordStmt = db.prepare(
-  "SELECT keyword_id, keyword_name FROM keywords WHERE keyword_name = ?"
-);
-const insertKeywordStmt = db.prepare("INSERT INTO keywords (keyword_name) VALUES (?)");
-const insertBookmarkKeywordStmt = db.prepare(
-  "INSERT INTO bookmark_keywords (bookmark_id, keyword_id) VALUES (?, ?)"
-);
-
-type PostParams = {
-  params: {
-    bookmark_id: string;
-  };
 };
 
 export async function POST(request: Request, { params }: PostParams) {
