@@ -1,3 +1,6 @@
+const ensureError = (error: unknown): Error =>
+  error instanceof Error ? error : new Error(String(error));
+
 export const createErrorResponse = (
   message: string,
   status: number,
@@ -29,7 +32,7 @@ export const createInternalError = (error: unknown, headers: Record<string, stri
   return createErrorResponse(
     "サーバー内部でエラーが発生しました。",
     500,
-    `Internal Server Error: ${(error as Error).message}`,
+    `Internal Server Error: ${ensureError(error).message}`,
     headers
   );
 };
@@ -80,7 +83,7 @@ export const createInvalidBodyError = (error: unknown, headers: Record<string, s
   return createErrorResponse(
     "リクエストボディのJSONが不正です。",
     400,
-    `Invalid JSON format: ${(error as Error).message}`,
+    `Invalid JSON format: ${ensureError(error).message}`,
     headers
   );
 };

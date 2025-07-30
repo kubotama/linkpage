@@ -30,9 +30,6 @@ type PostParams = {
   };
 };
 
-const ensureError = (error: unknown): Error =>
-  error instanceof Error ? error : new Error(String(error));
-
 const getOrCreateKeyword = (name: string): number => {
   // 最初にキーワードを検索
   const existingKeyword = selectKeywordStmt.get(name);
@@ -69,7 +66,7 @@ export async function POST(request: Request, { params }: PostParams) {
     if (error instanceof InvalidIdError) {
       return createInvalidIdError({ id: params.bookmark_id });
     }
-    return createInternalError(ensureError(error));
+    return createInternalError(error);
   }
 
   let keywordName: string;
@@ -81,7 +78,7 @@ export async function POST(request: Request, { params }: PostParams) {
     }
     keywordName = rawKeyword.trim();
   } catch (error) {
-    return createInvalidBodyError(ensureError(error));
+    return createInvalidBodyError(error);
   }
   try {
     const runInTransaction = db.transaction(() => {
@@ -113,6 +110,6 @@ export async function POST(request: Request, { params }: PostParams) {
     if (error instanceof SqliteError && error.code === "SQLITE_CONSTRAINT_UNIQUE") {
       return createDuplicateKeywordAssociationError(bookmarkId, keywordName);
     }
-    return createInternalError(ensureError(error));
+    return createInternalError(error);
   }
 }
