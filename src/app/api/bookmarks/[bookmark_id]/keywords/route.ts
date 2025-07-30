@@ -73,7 +73,7 @@ export async function POST(request: Request, { params }: PostParams) {
       };
     });
 
-    const result = runInTransaction();
+    const result = runInTransaction.immediate();
     return new Response(
       JSON.stringify({ message: "キーワードをブックマークに追加しました。", ...result }),
       { status: 201, headers: { "Content-Type": "application/json" } }
