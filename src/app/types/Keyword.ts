@@ -4,12 +4,22 @@ export type Keyword = {
 };
 
 export const isKeyword = (obj: unknown): obj is Keyword => {
-  return (
-    obj !== null &&
-    typeof obj === "object" &&
-    "keyword_id" in obj &&
-    typeof obj.keyword_id === "number" &&
-    "keyword_name" in obj &&
-    typeof obj.keyword_name === "string"
-  );
+  if (obj === null || typeof obj !== "object") {
+    return false;
+  }
+  const maybeKeyword = obj as Record<string, unknown>;
+  if (!("keyword_id" in maybeKeyword)) {
+    return false;
+  }
+  const maybeKeywordId = maybeKeyword.keyword_id;
+  if (typeof maybeKeywordId !== "number" && typeof maybeKeywordId !== "bigint") {
+    return false;
+  }
+  if (maybeKeywordId > BigInt(Number.MAX_SAFE_INTEGER)) {
+    // JSONはbigintをサポートしておらず、このIDはnumberとして安全に表現するには大きすぎます。
+    // 破損したIDを返すよりも、エラーをスローする方が安全です。
+    throw new Error(`Generated bookmark_keyword_id is too large: ${maybeKeyword.keyword_id}`);
+  }
+
+  return "keyword_name" in maybeKeyword && typeof maybeKeyword.keyword_name === "string";
 };

@@ -71,10 +71,15 @@ export async function POST(request: Request, { params }: PostParams) {
 
       const keywordId = getOrCreateKeyword(keywordName);
       const insertResult = insertBookmarkKeywordStmt.run(bookmarkId, keywordId);
-
+      const bookmarkKeywordRowid = insertResult.lastInsertRowid;
+      if (bookmarkKeywordRowid > BigInt(Number.MAX_SAFE_INTEGER)) {
+        // JSONはbigintをサポートしておらず、このIDはnumberとして安全に表現するには大きすぎます。
+        // 破損したIDを返すよりも、エラーをスローする方が安全です。
+        throw new Error(`Generated bookmark_keyword_id is too large: ${bookmarkKeywordRowid}`);
+      }
       return {
         keyword_id: keywordId,
-        bookmark_keyword_id: Number(insertResult.lastInsertRowid),
+        bookmark_keyword_id: Number(bookmarkKeywordRowid),
         keyword_name: keywordName,
       };
     });
