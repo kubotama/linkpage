@@ -20,8 +20,9 @@ const insertBookmarkKeywordStmt = db.prepare(
   "INSERT INTO bookmark_keywords (bookmark_id, keyword_id) VALUES (?, ?)"
 );
 const upsertKeywordStmt = db.prepare(
-  "INSERT INTO keywords (keyword_name) VALUES (?) ON CONFLICT(keyword_name) " +
-    " DO UPDATE SET keyword_name = excluded.keyword_name RETURNING keyword_id, keyword_name"
+  `INSERT INTO keywords (keyword_name) VALUES (?)
+   ON CONFLICT(keyword_name) DO UPDATE SET keyword_name = excluded.keyword_name
+   RETURNING keyword_id, keyword_name`
 );
 
 type PostParams = {
