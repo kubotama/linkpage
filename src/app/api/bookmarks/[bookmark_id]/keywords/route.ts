@@ -1,7 +1,7 @@
 import { SqliteError } from "better-sqlite3";
 
 import { isKeyword } from "../../../../types/Keyword";
-import { getId, InvalidIdError } from "../../../utils/id";
+import { getId } from "../../../utils/id";
 import {
   createDuplicateKeywordAssociationError,
   createInternalError,
