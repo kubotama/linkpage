@@ -337,6 +337,8 @@ npm run start
 | ブックマークにキーワードを設定                   | 201 Created      | { "message": "キーワードをブックマークに追加しました。", "keyword_id": 10, "keyword_name": "プログラミング", "bookmark_keyword_id": 1 } |
 | 指定されたブックマークがない                     | 404 Not Found    | { "message": "指定されたブックマークがありません。" }                                                                                   |
 | キーワードが既にこのブックマークに登録されている | 409 Conflict     | { "message": "指定されたキーワードは既にこのブックマークに登録されています。" }                                                         |
+| `keyword_name` が未指定、または空                | 400 Bad Request  | { "message": "キーワードを指定してください。 }                                                                                          |
+| `bookmark_id` が不正な値                         | 400 Bad Request  | { "message": "ID は正の整数である必要があります。" }                                                                                    |
 
 #### エラーハンドリングの共通仕様:
 
