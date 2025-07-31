@@ -46,11 +46,8 @@ export async function POST(request: Request, { params }: PostParams) {
   let bookmarkId: number;
   try {
     bookmarkId = Number(getId({ id: params.bookmark_id }));
-  } catch (error) {
-    if (error instanceof InvalidIdError) {
-      return createInvalidIdError({ id: params.bookmark_id });
-    }
-    return createInternalError(error);
+  } catch {
+    return createInvalidIdError({ id: params.bookmark_id });
   }
 
   let keywordName: string;
