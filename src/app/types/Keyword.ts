@@ -17,8 +17,7 @@ export const isKeyword = (obj: unknown): obj is Keyword => {
   }
   if (maybeKeywordId > BigInt(Number.MAX_SAFE_INTEGER)) {
     // JSONはbigintをサポートしておらず、このIDはnumberとして安全に表現するには大きすぎます。
-    // 破損したIDを返すよりも、エラーをスローする方が安全です。
-    console.error(`Keyword ID is too large to be a safe integer: ${maybeKeyword.keyword_id}`);
+    // false を返すことで、破損している可能性のある ID で続行しないことが保証されます。
     return false;
   }
 
