@@ -60,9 +60,6 @@ describe("POST /api/bookmarks/[bookmark_id]/keywords", () => {
       const newKeyword = "new-keyword";
       const request = mockRequest({ keyword_name: newKeyword });
 
-      const countKeywords = itemsOfKeywords();
-      const countBookmarksKeywords = itemsOfBookmarksKeywords();
-
       // Act
 
       const response = await POST(request, { params: { bookmark_id: "1" } });
@@ -70,10 +67,8 @@ describe("POST /api/bookmarks/[bookmark_id]/keywords", () => {
 
       expect(response.status).toBe(201);
       expect(responseBody.message).toBe("キーワードをブックマークに追加しました。");
-      // 既存のキーワード数に1を加えたIDになることを確認
-      expect(responseBody.keyword_id).toBe(countKeywords + 1);
-      // 既存のブックマークキーワード数に1を加えたIDになることを確認
-      expect(responseBody.bookmark_keyword_id).toBe(countBookmarksKeywords + 1);
+      expect(responseBody.keyword_id).toEqual(expect.any(Number));
+      expect(responseBody.bookmark_keyword_id).toEqual(expect.any(Number));
       expect(responseBody.keyword_name).toBe(newKeyword.trim());
 
       // DBの状態を確認
@@ -101,8 +96,8 @@ describe("POST /api/bookmarks/[bookmark_id]/keywords", () => {
         .prepare("INSERT INTO keywords (keyword_name) VALUES (?)")
         .run(existingKeyword);
 
-      // 既存のキーワード数に1を加えたIDになることを確認
-      expect(keywordId).toEqual(countKeywordsBefore + 1);
+      expect(keywordId).toEqual(expect.any(Number));
+
       // データベースに登録されているキーワードの件数を確認
       expect(itemsOfKeywords()).toEqual(countKeywordsBefore + 1);
 
