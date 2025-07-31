@@ -38,9 +38,17 @@ describe("POST /api/bookmarks/[bookmark_id]/keywords", () => {
     } as NextRequest;
   };
 
-  const countItemOfTable = (tableName: string) => {
+  const itemsOfKeywords = () => {
     return (
-      inMemoryDbInstance.prepare(`SELECT COUNT(*) as count FROM ${tableName}`).get() as {
+      inMemoryDbInstance.prepare("SELECT COUNT(*) as count FROM keywords").get() as {
+        count: number;
+      }
+    ).count;
+  };
+
+  const itemsOfBookmarksKeywords = () => {
+    return (
+      inMemoryDbInstance.prepare("SELECT COUNT(*) as count FROM bookmark_keywords").get() as {
         count: number;
       }
     ).count;
@@ -52,8 +60,10 @@ describe("POST /api/bookmarks/[bookmark_id]/keywords", () => {
       const newKeyword = "new-keyword";
       const request = mockRequest({ keyword_name: newKeyword });
 
-      const countKeywords = countItemOfTable("keywords");
-      const countBookmarksKeywords = countItemOfTable("bookmark_keywords");
+      const countKeywords = itemsOfKeywords();
+      const countBookmarksKeywords = itemsOfBookmarksKeywords();
+
+      // Act
 
       const response = await POST(request, { params: { bookmark_id: "1" } });
       const responseBody = await response.json();
@@ -82,8 +92,8 @@ describe("POST /api/bookmarks/[bookmark_id]/keywords", () => {
       const existingKeyword = "existing-keyword";
       const db = getDb();
 
-      const countKeywordsBefore = countItemOfTable("keywords");
-      const countBookmarksKeywordsBefore = countItemOfTable("bookmark_keywords");
+      const countKeywordsBefore = itemsOfKeywords();
+      const countBookmarksKeywordsBefore = itemsOfBookmarksKeywords();
 
       // 最初にキーワードを登録
 
@@ -94,7 +104,9 @@ describe("POST /api/bookmarks/[bookmark_id]/keywords", () => {
       // 既存のキーワード数に1を加えたIDになることを確認
       expect(keywordId).toEqual(countKeywordsBefore + 1);
       // データベースに登録されているキーワードの件数を確認
-      expect(countItemOfTable("keywords")).toEqual(countKeywordsBefore + 1);
+      expect(itemsOfKeywords()).toEqual(countKeywordsBefore + 1);
+
+      // Act
 
       const request = mockRequest({ keyword_name: existingKeyword });
 
@@ -107,7 +119,7 @@ describe("POST /api/bookmarks/[bookmark_id]/keywords", () => {
       expect(responseBody.bookmark_keyword_id).toBe(countBookmarksKeywordsBefore + 1);
 
       // DBの状態を確認
-      expect(countItemOfTable("keywords")).toEqual(countKeywordsBefore + 1);
+      expect(itemsOfKeywords()).toEqual(countKeywordsBefore + 1);
       const association = db
         .prepare("SELECT * FROM bookmark_keywords WHERE bookmark_id = ? AND keyword_id = ?")
         .get(1, keywordId);
