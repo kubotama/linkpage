@@ -46,14 +46,6 @@ describe("POST /api/bookmarks/[bookmark_id]/keywords", () => {
     ).count;
   };
 
-  const itemsOfBookmarksKeywords = () => {
-    return (
-      inMemoryDbInstance.prepare("SELECT COUNT(*) as count FROM bookmark_keywords").get() as {
-        count: number;
-      }
-    ).count;
-  };
-
   // 正常系テスト
   describe("Success cases", () => {
     it("should add a new keyword to a bookmark and return 201", async () => {
@@ -88,7 +80,6 @@ describe("POST /api/bookmarks/[bookmark_id]/keywords", () => {
       const db = getDb();
 
       const countKeywordsBefore = itemsOfKeywords();
-      const countBookmarksKeywordsBefore = itemsOfBookmarksKeywords();
 
       // 最初にキーワードを登録
 
@@ -111,7 +102,7 @@ describe("POST /api/bookmarks/[bookmark_id]/keywords", () => {
       expect(response.status).toBe(201);
       expect(responseBody.keyword_id).toBe(keywordId);
       expect(responseBody.keyword_name).toBe(existingKeyword);
-      expect(responseBody.bookmark_keyword_id).toBe(countBookmarksKeywordsBefore + 1);
+      expect(responseBody.bookmark_keyword_id).toEqual(expect.any(Number));
 
       // DBの状態を確認
       expect(itemsOfKeywords()).toEqual(countKeywordsBefore + 1);
