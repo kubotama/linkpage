@@ -1,4 +1,4 @@
-import ActualDatabase from "better-sqlite3"; // Import the actual library
+import ActualDatabase from "better-sqlite3"; // 実際のライブラリをインポート
 import { NextRequest } from "next/server";
 import { afterEach, assert, beforeEach, describe, expect, it, vi } from "vitest";
 
