@@ -147,26 +147,12 @@ describe("POST /api/bookmarks/[bookmark_id]/keywords", () => {
       expect(responseBody.message).toBe("リクエストボディのJSONが不正です。");
     });
 
-    it("should return 400 if keyword_name is missing", async () => {
-      const request = mockRequest({});
-      const response = await POST(request, { params: { bookmark_id: "1" } });
-      const responseBody = await response.json();
-
-      expect(response.status).toBe(400);
-      expect(responseBody.message).toBe("キーワードを指定してください。");
-    });
-
-    it("should return 400 if keyword_name is an empty string", async () => {
-      const request = mockRequest({ keyword_name: "   " });
-      const response = await POST(request, { params: { bookmark_id: "1" } });
-      const responseBody = await response.json();
-
-      expect(response.status).toBe(400);
-      expect(responseBody.message).toBe("キーワードを指定してください。");
-    });
-
-    it("should return 400 if keyword_name is not a string", async () => {
-      const request = mockRequest({ keyword_name: 123 });
+    it.each([
+      { case: "is missing", body: {} },
+      { case: "is an empty string", body: { keyword_name: "   " } },
+      { case: "is not a string", body: { keyword_name: 123 } },
+    ])("should return 400 if keyword_name $case", async ({ body }) => {
+      const request = mockRequest(body);
       const response = await POST(request, { params: { bookmark_id: "1" } });
       const responseBody = await response.json();
 
