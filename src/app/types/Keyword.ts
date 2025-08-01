@@ -8,14 +8,6 @@ export const isKeyword = (obj: unknown): obj is Keyword => {
   if (obj === null || typeof obj !== "object") {
     return false;
   }
-  const maybeKeyword = obj as Record<string, unknown>;
-  if (!("keyword_id" in maybeKeyword)) {
-    return false;
-  }
-  const maybeKeywordId = maybeKeyword.keyword_id;
-  if (typeof maybeKeywordId !== "number") {
-    return false;
-  }
-
-  return "keyword_name" in maybeKeyword && typeof maybeKeyword.keyword_name === "string";
+  const rec = obj as Record<string, unknown>;
+  return typeof rec.keyword_id === "number" && typeof rec.keyword_name === "string";
 };
