@@ -36,7 +36,7 @@ const getOrCreateKeyword = (name: string): number => {
   // この処理は単一のアトミックなDB呼び出しで完結します。
   const result: unknown = upsertKeywordStmt.get(name);
   if (isKeyword(result)) {
-    return result.keyword_id;
+    return Number(result.keyword_id);
   }
   // クエリが正しく、RETURNINGがサポートされていれば、このパスには到達しないはずです。
   // 安全策として残しています。
