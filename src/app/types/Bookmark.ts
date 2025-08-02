@@ -1,4 +1,4 @@
-import { Keyword } from "./Keyword";
+import { Keyword, isKeyword } from "./Keyword";
 
 export type Bookmark = {
   bookmark_id: number;
@@ -15,17 +15,6 @@ export type IncomingBookmarkPayload = {
 
 export type SelectedBookmarkIndex = number | undefined;
 export type SelectedBookmark = Bookmark | undefined;
-
-function isKeyword(obj: unknown): obj is Keyword {
-  return (
-    typeof obj === "object" &&
-    obj !== null &&
-    "keyword_id" in obj &&
-    "keyword_name" in obj &&
-    typeof obj.keyword_id === "number" &&
-    typeof obj.keyword_name === "string"
-  );
-}
 
 function isKeywordArray(arr: unknown): arr is Keyword[] {
   return Array.isArray(arr) && arr.every(isKeyword);
