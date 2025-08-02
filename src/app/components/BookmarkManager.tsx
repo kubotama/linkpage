@@ -72,6 +72,7 @@ export const BookmarkManager = () => {
       const newKeyword = await response.json();
       setKeywords([...keywords, newKeyword]);
       setTextKeyword("");
+      selectedBookmark.keywords.push(newKeyword);
     } catch (error: unknown) {
       console.error("キーワードの追加エラー:", (error as Error).message); // 詳細なエラーはコンソールへ
       throw error;
