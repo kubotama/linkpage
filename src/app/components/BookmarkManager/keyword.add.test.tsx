@@ -108,4 +108,132 @@ describe("選択されたブックマークにキーワードを追加", () => {
       expect(keywordInput).toHaveValue("");
     });
   });
+
+  it("キーワードを追加した後にブックマークの選択を解除して、再度ブックマークを選択すると、追加したキーワードが表示される", async () => {
+    mockFetch.mockResolvedValueOnce({
+      ok: true,
+      status: 200,
+      json: async () => ({ keyword_id: "1", keyword_name: "テストキーワード" }),
+    });
+    // キーワードが設定されていないブックマークを選択
+    const bookmarkToSelect = findBookmarkWithAtLeastNKeywords(mockBookmarksWithKeywords, 0);
+    await clickBookmark(bookmarkToSelect);
+
+    const keywordInput = screen.getByRole("textbox", { name: KEYWORD_ROLE_NAME });
+    const addButton = screen.getByRole("button", { name: ADD_BUTTON_ROLE_NAME });
+    const keywordTable = screen.getByRole("table", { name: "キーワードのテーブル" });
+
+    await waitFor(() => {
+      expect(keywordTable).toBeInTheDocument();
+      const rows = within(keywordTable).queryAllByRole("row");
+      expect(rows).toHaveLength(1);
+    });
+
+    // 実行
+    // ブックマークにキーワードを追加
+    await act(async () => {
+      fireEvent.change(keywordInput, { target: { value: "テストキーワード" } });
+      fireEvent.click(addButton);
+    });
+
+    // ブックマークの選択を解除
+    await act(async () => {
+      fireEvent.keyDown(document.body, { key: "Escape", code: "Escape" });
+    });
+
+    // 同じブックマークを選択
+    await clickBookmark(bookmarkToSelect);
+
+    // 検証
+    await waitFor(() => {
+      expect(keywordTable).toBeInTheDocument();
+      const rows = within(keywordTable).queryAllByRole("row");
+      expect(rows).toHaveLength(2);
+      const cell = within(rows[1]).getByRole("cell");
+      expect(cell).toHaveTextContent("テストキーワード");
+      expect(keywordInput).toHaveValue("");
+    });
+  });
+
+  describe("キーワード追加後の状態遷移", () => {
+    const addNewKeyword = async () => {
+      const keywordInput = screen.getByRole("textbox", { name: KEYWORD_ROLE_NAME });
+      const addButton = screen.getByRole("button", { name: ADD_BUTTON_ROLE_NAME });
+      await act(async () => {
+        fireEvent.change(keywordInput, { target: { value: "テストキーワード" } });
+        fireEvent.click(addButton);
+      });
+    };
+
+    const deselectBookmark = async () => {
+      await act(async () => {
+        fireEvent.keyDown(document.body, { key: "Escape", code: "Escape" });
+      });
+    };
+
+    it("キーワードを追加した後にブックマークの選択を解除すると、キーワードのテーブルが表示されなくなる", async () => {
+      // 準備
+      mockFetch.mockResolvedValueOnce({
+        ok: true,
+        status: 200,
+        json: async () => ({ keyword_id: "1", keyword_name: "テストキーワード" }),
+      });
+      // キーワードが設定されていないブックマークを選択
+      const bookmarkToSelect = findBookmarkWithAtLeastNKeywords(mockBookmarksWithKeywords, 0);
+      await clickBookmark(bookmarkToSelect);
+
+      // 事前のキーワードのテーブルに表示されている件数を確認
+      const keywordTable = screen.getByRole("table", { name: "キーワードのテーブル" });
+      await waitFor(() => {
+        expect(within(keywordTable).queryAllByRole("row")).toHaveLength(1);
+      });
+
+      // 実行
+      // ブックマークにキーワードを追加
+      await addNewKeyword();
+      // ブックマークの選択を解除
+      await deselectBookmark();
+
+      // 検証
+      // キーワードのテーブルが表示されていないことを確認
+      await waitFor(() => {
+        expect(keywordTable).not.toBeInTheDocument();
+      });
+    });
+
+    it("キーワードを追加した後にブックマークの選択を解除して、再度ブックマークを選択すると、追加したキーワードが表示される", async () => {
+      // 準備
+      mockFetch.mockResolvedValueOnce({
+        ok: true,
+        status: 200,
+        json: async () => ({ keyword_id: "1", keyword_name: "テストキーワード" }),
+      });
+      // キーワードが設定されていないブックマークを選択
+      const bookmarkToSelect = findBookmarkWithAtLeastNKeywords(mockBookmarksWithKeywords, 0);
+      await clickBookmark(bookmarkToSelect);
+
+      // 事前のキーワードのテーブルに表示されている件数を確認
+      const keywordTable = screen.getByRole("table", { name: "キーワードのテーブル" });
+      const keywordInput = screen.getByRole("textbox", { name: KEYWORD_ROLE_NAME });
+      await waitFor(() => {
+        expect(within(keywordTable).queryAllByRole("row")).toHaveLength(1);
+      });
+
+      // 実行
+      // ブックマークにキーワードを追加
+      await addNewKeyword();
+      // ブックマークの選択を解除
+      await deselectBookmark();
+      // 同じブックマークを選択
+      await clickBookmark(bookmarkToSelect);
+
+      await waitFor(() => {
+        expect(keywordTable).toBeInTheDocument();
+        const rows = within(keywordTable).queryAllByRole("row");
+        expect(rows).toHaveLength(2);
+        expect(within(rows[1]).getByRole("cell")).toHaveTextContent("テストキーワード");
+        expect(keywordInput).toHaveValue("");
+      });
+    });
+  });
 });
