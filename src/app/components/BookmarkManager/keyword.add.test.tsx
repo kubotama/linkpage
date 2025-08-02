@@ -1,6 +1,6 @@
 import "@testing-library/jest-dom";
 
-import { beforeAll, beforeEach, describe, expect, it, vi } from "vitest";
+import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 
 import { act, fireEvent, render, screen, waitFor, within } from "@testing-library/react";
 
@@ -19,13 +19,11 @@ const mockFetch = vi.fn();
 describe("選択されたブックマークにキーワードを追加", () => {
   let mockBookmarksWithKeywords: Bookmark[];
 
-  beforeAll(() => {
-    mockBookmarksWithKeywords = buildMockBookmarksWithKeywords();
-  });
-
   beforeEach(async () => {
     mockFetch.mockReset();
     global.fetch = mockFetch;
+
+    mockBookmarksWithKeywords = buildMockBookmarksWithKeywords();
     mockFetch.mockResolvedValueOnce({
       ok: true,
       status: 200,
@@ -35,6 +33,10 @@ describe("選択されたブックマークにキーワードを追加", () => {
     await waitFor(() => {
       expect(screen.getByText(mockBookmarksWithKeywords[0].title)).toBeInTheDocument();
     });
+  });
+
+  afterEach(() => {
+    vi.restoreAllMocks();
   });
 
   it("テキストボックスにキーワードを入力して「追加」ボタンをクリックするとAPIが呼び出される", async () => {
