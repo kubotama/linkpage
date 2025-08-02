@@ -1,3 +1,6 @@
+const ensureError = (error: unknown): Error =>
+  error instanceof Error ? error : new Error(String(error));
+
 export const createErrorResponse = (
   message: string,
   status: number,
@@ -25,14 +28,11 @@ export function createInvalidIdError(params: { id: string }) {
   );
 }
 
-export const createInternalError = (
-  error: unknown,
-  headers: Record<string, string> = {}
-) => {
+export const createInternalError = (error: unknown, headers: Record<string, string> = {}) => {
   return createErrorResponse(
     "サーバー内部でエラーが発生しました。",
     500,
-    `Internal Server Error: ${(error as Error).message}`,
+    `Internal Server Error: ${ensureError(error).message}`,
     headers
   );
 };
@@ -46,12 +46,7 @@ export const createNotFoundKeywordError = (keyword_id: string) => {
 };
 
 export const createNoUrlError = (headers: Record<string, string> = {}) => {
-  return createErrorResponse(
-    "URLを指定してください。",
-    400,
-    "URLが指定されていません。",
-    headers
-  );
+  return createErrorResponse("URLを指定してください。", 400, "URLが指定されていません。", headers);
 };
 
 export const createNoTitleError = (headers: Record<string, string> = {}) => {
@@ -63,10 +58,7 @@ export const createNoTitleError = (headers: Record<string, string> = {}) => {
   );
 };
 
-export const createDuplicateBookmarkError = (
-  url: string,
-  headers: Record<string, string> = {}
-) => {
+export const createDuplicateBookmarkError = (url: string, headers: Record<string, string> = {}) => {
   return createErrorResponse(
     "指定されたURLのブックマークは既に登録されています。",
     409,
@@ -87,14 +79,11 @@ export const createDuplicateKeywordError = (
   );
 };
 
-export const createInvalidBodyError = (
-  error: unknown,
-  headers: Record<string, string> = {}
-) => {
+export const createInvalidBodyError = (error: unknown, headers: Record<string, string> = {}) => {
   return createErrorResponse(
     "リクエストボディのJSONが不正です。",
     400,
-    `Invalid JSON format: ${(error as Error).message}`,
+    `Invalid JSON format: ${ensureError(error).message}`,
     headers
   );
 };
@@ -112,5 +101,13 @@ export const createNoKeywordError = () => {
     "キーワードを指定してください。",
     400,
     "キーワードが指定されていません。"
+  );
+};
+
+export const createDuplicateKeywordAssociationError = (bookmarkId: number, keywordName: string) => {
+  return createErrorResponse(
+    "指定されたキーワードは既にこのブックマークに登録されています。",
+    409,
+    `Keyword "${keywordName}" is already associated with bookmark id: ${bookmarkId}.`
   );
 };
