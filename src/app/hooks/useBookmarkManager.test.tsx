@@ -2,7 +2,7 @@ import { beforeEach, describe, expect, it, vi } from "vitest";
 import { renderHook, act, waitFor } from "@testing-library/react";
 
 import { useBookmarkManager } from "./useBookmarkManager";
-import { mockBookmarks } from "../types/Bookmark";
+import { mockBookmarks } from "../test-utils/bookmarkTestUtils";
 
 const mockFetch = vi.fn();
 
@@ -20,8 +20,7 @@ describe("useBookmarkManager", () => {
   it("ブックマークを選択しないで「削除」ボタンを押すとエラーメッセージが表示される", async () => {
     const { result } = renderHook(() => useBookmarkManager());
 
-    vi.resetAllMocks();
-
+    mockFetch.mockReset();
     act(() => {
       result.current.setSelectedBookmark(undefined);
       result.current.deleteClick();
@@ -35,8 +34,7 @@ describe("useBookmarkManager", () => {
   it("ブックマークを選択しないで「タイトル更新」ボタンを押すとエラーメッセージが表示される", async () => {
     const { result } = renderHook(() => useBookmarkManager());
 
-    vi.resetAllMocks();
-
+    mockFetch.mockReset();
     act(() => {
       result.current.setSelectedBookmark(undefined);
       result.current.updateClick();
