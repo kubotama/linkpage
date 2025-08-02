@@ -69,7 +69,13 @@ export const BookmarkManager = () => {
       if (!response.ok) {
         throw new Error("キーワードの追加に失敗しました。");
       }
-      const newKeyword = await response.json();
+      // const newKeyword = await response.json();
+      // setKeywords([...keywords, newKeyword]);
+      const responseData = await response.json();
+      const newKeyword: Keyword = {
+        keyword_id: responseData.keyword_id,
+        keyword_name: responseData.keyword_name,
+      };
       setKeywords([...keywords, newKeyword]);
       setTextKeyword("");
       selectedBookmark.keywords.push(newKeyword);
