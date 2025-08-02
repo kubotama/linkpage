@@ -1,6 +1,5 @@
 import React from "react";
 
-import { KEYWORDS_ENDPOINT } from "../constants/apiEndpoints";
 import {
   ADD_BUTTON_ROLE_NAME,
   ARROW_BUTTON_ROLE_NAME,
@@ -18,6 +17,8 @@ import { BookmarkTable } from "./BookmarkTable";
 import { ErrorMessage } from "./ErrorMessage";
 import { KeywordTable } from "./KeywordTable";
 import { Keyword } from "../types/Keyword";
+
+import { BOOKMARKS_ENDPOINT } from "../constants/apiEndpoints";
 
 export const BookmarkManager = () => {
   const {
@@ -52,13 +53,19 @@ export const BookmarkManager = () => {
       return;
     }
     try {
-      const response = await fetch(`${KEYWORDS_ENDPOINT}/`, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({ keyword_name: textKeyword }),
-      });
+      if (!selectedBookmark) {
+        return;
+      }
+      const response = await fetch(
+        `${BOOKMARKS_ENDPOINT}/${selectedBookmark.bookmark_id}/keywords`,
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({ keyword_name: textKeyword }),
+        }
+      );
       if (!response.ok) {
         throw new Error("キーワードの追加に失敗しました。");
       }

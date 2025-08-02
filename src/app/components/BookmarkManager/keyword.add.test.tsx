@@ -4,7 +4,7 @@ import { beforeAll, beforeEach, describe, expect, it, vi } from "vitest";
 
 import { act, fireEvent, render, screen, waitFor, within } from "@testing-library/react";
 
-import { KEYWORDS_ENDPOINT } from "../../constants/apiEndpoints";
+import { BOOKMARKS_ENDPOINT } from "../../constants/apiEndpoints";
 import { ADD_BUTTON_ROLE_NAME, KEYWORD_ROLE_NAME } from "../../constants/constants";
 import {
   buildMockBookmarksWithKeywords,
@@ -58,7 +58,9 @@ describe("選択されたブックマークにキーワードを追加", () => {
 
     await waitFor(() => {
       expect(mockFetch).toHaveBeenCalledTimes(1);
-      expect(mockFetch.mock.calls[0][0]).toEqual(`${KEYWORDS_ENDPOINT}/`);
+      expect(mockFetch.mock.calls[0][0]).toEqual(
+        `${BOOKMARKS_ENDPOINT}/${bookmarkToSelect.bookmark_id}/keywords`
+      );
       expect(mockFetch.mock.calls[0][1]).toEqual({
         method: "POST",
         headers: {
