@@ -21,6 +21,7 @@ describe("選択されたブックマークにキーワードを追加", () => {
 
   beforeEach(async () => {
     mockFetch.mockReset();
+
     global.fetch = mockFetch;
 
     mockBookmarksWithKeywords = buildMockBookmarksWithKeywords();
@@ -43,8 +44,13 @@ describe("選択されたブックマークにキーワードを追加", () => {
     mockFetch.mockReset();
     mockFetch.mockResolvedValueOnce({
       ok: true,
-      status: 200,
-      json: async () => ({ keyword_id: "1", keyword_name: "テストキーワード" }),
+      status: 201,
+      json: async () => ({
+        message: "キーワードをブックマークに追加しました。",
+        keyword_id: 1,
+        bookmark_keyword_id: 123,
+        keyword_name: "テストキーワード",
+      }),
     });
     // キーワードが設定されていないブックマークを選択
     const bookmarkToSelect = findBookmarkWithAtLeastNKeywords(mockBookmarksWithKeywords, 0);
@@ -79,8 +85,13 @@ describe("選択されたブックマークにキーワードを追加", () => {
     mockFetch.mockReset();
     mockFetch.mockResolvedValueOnce({
       ok: true,
-      status: 200,
-      json: async () => ({ keyword_id: "1", keyword_name: "テストキーワード" }),
+      status: 201,
+      json: async () => ({
+        message: "キーワードをブックマークに追加しました。",
+        keyword_id: 1,
+        bookmark_keyword_id: 123,
+        keyword_name: "テストキーワード",
+      }),
     });
     // キーワードが設定されていないブックマークを選択
     const bookmarkToSelect = findBookmarkWithAtLeastNKeywords(mockBookmarksWithKeywords, 0);
@@ -131,8 +142,13 @@ describe("選択されたブックマークにキーワードを追加", () => {
       // 準備
       mockFetch.mockResolvedValueOnce({
         ok: true,
-        status: 200,
-        json: async () => ({ keyword_id: "1", keyword_name: "テストキーワード" }),
+        status: 201,
+        json: async () => ({
+          message: "キーワードをブックマークに追加しました。",
+          keyword_id: 1,
+          bookmark_keyword_id: 123,
+          keyword_name: "テストキーワード",
+        }),
       });
       // キーワードが設定されていないブックマークを選択
       const bookmarkToSelect = findBookmarkWithAtLeastNKeywords(mockBookmarksWithKeywords, 0);
@@ -158,11 +174,15 @@ describe("選択されたブックマークにキーワードを追加", () => {
     });
 
     it("キーワードを追加した後にブックマークの選択を解除して、再度ブックマークを選択すると、追加したキーワードが表示される", async () => {
-      // 準備
       mockFetch.mockResolvedValueOnce({
         ok: true,
-        status: 200,
-        json: async () => ({ keyword_id: "1", keyword_name: "テストキーワード" }),
+        status: 201,
+        json: async () => ({
+          message: "キーワードをブックマークに追加しました。",
+          keyword_id: 1,
+          bookmark_keyword_id: 123,
+          keyword_name: "テストキーワード",
+        }),
       });
       // キーワードが設定されていないブックマークを選択
       const bookmarkToSelect = findBookmarkWithAtLeastNKeywords(mockBookmarksWithKeywords, 0);
