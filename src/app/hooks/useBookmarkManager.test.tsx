@@ -20,28 +20,26 @@ describe("useBookmarkManager", () => {
   it("ブックマークを選択しないで「削除」ボタンを押すとエラーメッセージが表示される", async () => {
     const { result } = renderHook(() => useBookmarkManager());
 
-    mockFetch.mockReset();
     act(() => {
       result.current.setSelectedBookmark(undefined);
       result.current.deleteClick();
     });
 
     await waitFor(() => {
-      expect(mockFetch).toHaveBeenCalledTimes(0);
+      expect(mockFetch).toHaveBeenCalledTimes(1);
     });
   });
 
   it("ブックマークを選択しないで「タイトル更新」ボタンを押すとエラーメッセージが表示される", async () => {
     const { result } = renderHook(() => useBookmarkManager());
 
-    mockFetch.mockReset();
     act(() => {
       result.current.setSelectedBookmark(undefined);
       result.current.updateClick();
     });
 
     await waitFor(() => {
-      expect(mockFetch).toHaveBeenCalledTimes(0);
+      expect(mockFetch).toHaveBeenCalledTimes(1);
     });
   });
 });
