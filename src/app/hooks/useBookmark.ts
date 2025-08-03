@@ -106,7 +106,7 @@ export const useBookmarks = () => {
             : bookmark
         )
       );
-      return newKeyword;
+      return;
     } catch (error: unknown) {
       console.error("キーワードの追加エラー:", (error as Error).message); // 詳細なエラーはコンソールへ
       throw error;

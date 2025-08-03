@@ -3,7 +3,7 @@ import React from "react";
 import { Keyword } from "../types/Keyword";
 
 export const KeywordTable: React.FC<{
-  keywords: Keyword[];
+  keywords?: Keyword[];
 }> = ({ keywords }) => {
   return (
     <table aria-label="キーワードのテーブル">
@@ -13,7 +13,7 @@ export const KeywordTable: React.FC<{
         </tr>
       </thead>
       <tbody>
-        {keywords.map((keyword) => (
+        {(keywords || []).map((keyword) => (
           <tr key={keyword.keyword_id}>
             <td>{keyword.keyword_name}</td>
           </tr>

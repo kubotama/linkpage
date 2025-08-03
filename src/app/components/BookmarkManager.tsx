@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useMemo } from "react";
 
 import {
   ADD_BUTTON_ROLE_NAME,
@@ -20,14 +20,13 @@ import { KeywordTable } from "./KeywordTable";
 export const BookmarkManager = () => {
   const {
     bookmarks,
-    keywords,
     isError,
     textUrl,
     textTitle,
     textKeyword,
     textMessage,
-    selectedBookmark,
-    setSelectedBookmark,
+    selectedBookmarkId,
+    setSelectedBookmarkId,
     setTextUrl,
     setTextTitle,
     setTextKeyword,
@@ -39,6 +38,11 @@ export const BookmarkManager = () => {
     addKeywordClick,
   } = useBookmarkManager();
 
+  const selectedBookmark = useMemo(
+    () => bookmarks.find((b) => b.bookmark_id === selectedBookmarkId),
+    [bookmarks, selectedBookmarkId]
+  );
+
   return (
     <>
       <div className="mt-5 mb-5">
@@ -46,8 +50,8 @@ export const BookmarkManager = () => {
           <div className="w-bookmark-list">
             <BookmarkTable
               bookmarks={bookmarks}
-              selectedBookmark={selectedBookmark}
-              onSelectBookmark={setSelectedBookmark}
+              selectedBookmarkId={selectedBookmarkId}
+              onSelectBookmarkId={setSelectedBookmarkId}
             />
           </div>
           <div className="w-bookmark-details">
@@ -100,7 +104,7 @@ export const BookmarkManager = () => {
                     </ActionButton>
                   </div>
                 </fieldset>
-                <KeywordTable keywords={keywords} />
+                <KeywordTable keywords={selectedBookmark.keywords} />
               </form>
             )}
           </div>

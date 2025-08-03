@@ -3,8 +3,6 @@
 import { useCallback, useEffect, useRef, useState } from "react";
 import { useHotkeys } from "react-hotkeys-hook";
 
-import { SelectedBookmark } from "../types/Bookmark";
-import { Keyword } from "../types/Keyword";
 import { DuplicatedUrlError, useBookmarks } from "./useBookmark";
 import { useErrorMessage } from "./useErrorMessage";
 
@@ -12,8 +10,7 @@ export const useBookmarkManager = () => {
   const [textUrl, setTextUrl] = useState("");
   const [textTitle, setTextTitle] = useState("");
   const [textKeyword, setTextKeyword] = useState("");
-  const [selectedBookmark, setSelectedBookmark] = useState<SelectedBookmark>(undefined);
-  const [keywords, setKeywords] = useState<Keyword[]>([]);
+  const [selectedBookmarkId, setSelectedBookmarkId] = useState<number | undefined>(undefined);
 
   const { bookmarks, getBookmarks, deleteBookmark, updateBookmark, addKeyword } = useBookmarks();
 
@@ -58,9 +55,13 @@ export const useBookmarkManager = () => {
   }, [loadBookmarks]);
 
   useEffect(() => {
-    if (selectedBookmark) {
-      setKeywords(selectedBookmark.keywords);
-    }
+    const selectedBookmark = bookmarks.find(
+      (bookmark) => bookmark.bookmark_id === selectedBookmarkId
+    );
+
+    // if (selectedBookmark !== undefined) {
+    //   setKeywords(selectedBookmark.keywords);
+    // }
 
     setTextKeyword("");
     if (selectedBookmark === undefined) {
@@ -70,23 +71,23 @@ export const useBookmarkManager = () => {
       setTextUrl(selectedBookmark.url);
       setTextTitle(selectedBookmark.title);
     }
-  }, [selectedBookmark]);
+  }, [selectedBookmarkId, bookmarks]);
 
   // deleteClick deletes the selected bookmark
   const deleteClick = useCallback(async () => {
-    if (selectedBookmark === undefined) {
+    if (selectedBookmarkId === undefined) {
       return;
     }
 
     setMessage("ブックマークの削除処理中...", false);
     try {
-      await deleteBookmark(selectedBookmark.bookmark_id);
-      setSelectedBookmark(undefined);
+      await deleteBookmark(selectedBookmarkId);
+      setSelectedBookmarkId(undefined);
       setMessage();
     } catch {
       setMessage("ブックマークの削除中にエラーが発生しました。", true);
     }
-  }, [deleteBookmark, selectedBookmark, setMessage]);
+  }, [deleteBookmark, selectedBookmarkId, setMessage]);
 
   // urlClick delete the parameter of URL
   const urlClick = useCallback(() => {
@@ -125,12 +126,12 @@ export const useBookmarkManager = () => {
 
   // updateClick updates the selected bookmark
   const updateClick = useCallback(async () => {
-    if (selectedBookmark === undefined) {
+    if (selectedBookmarkId === undefined) {
       return;
     }
     setMessage("ブックマークの更新中...", false);
     try {
-      await updateBookmark(selectedBookmark.bookmark_id, textUrl, textTitle);
+      await updateBookmark(selectedBookmarkId, textUrl, textTitle);
       setMessage();
     } catch (error: unknown) {
       if (error instanceof DuplicatedUrlError) {
@@ -139,7 +140,7 @@ export const useBookmarkManager = () => {
         setMessage("ブックマークの更新中にエラーが発生しました。", true);
       }
     }
-  }, [selectedBookmark, setMessage, textTitle, textUrl, updateBookmark]);
+  }, [selectedBookmarkId, setMessage, textTitle, textUrl, updateBookmark]);
 
   // openBookmarkコールバック内で最新のtextUrlを参照しつつ、
   // textUrlの変更でコールバックが再生成されるのを防ぐためのref。
@@ -163,10 +164,10 @@ export const useBookmarkManager = () => {
   useEffect(() => {
     bookmarksRef.current = bookmarks;
   }, [bookmarks]);
-  const selectedBookmarkRef = useRef(selectedBookmark);
+  const selectedBookmarkIdRef = useRef(selectedBookmarkId);
   useEffect(() => {
-    selectedBookmarkRef.current = selectedBookmark;
-  }, [selectedBookmark]);
+    selectedBookmarkIdRef.current = selectedBookmarkId;
+  }, [selectedBookmarkId]);
 
   // getSelectedBookmarkIndex は useHotkeys の内部で定義し、ref を使用する
   useHotkeys(
@@ -178,13 +179,13 @@ export const useBookmarkManager = () => {
       }
       // ホットキーハンドラ内で最新のブックマークと選択状態を参照するためのヘルパー関数
       const getSelectedBookmarkIndexInternal = () => {
-        const currentSelectedBookmark = selectedBookmarkRef.current;
+        const currentSelectedBookmarkId = selectedBookmarkIdRef.current;
         const currentBookmarks = bookmarksRef.current;
-        if (currentSelectedBookmark === undefined) {
+        if (currentSelectedBookmarkId === undefined) {
           return undefined;
         }
         const currentIndex = currentBookmarks.findIndex(
-          (bookmark) => bookmark.bookmark_id === currentSelectedBookmark.bookmark_id
+          (bookmark) => bookmark.bookmark_id === currentSelectedBookmarkId
         );
         if (currentIndex === -1) {
           return undefined;
@@ -206,12 +207,11 @@ export const useBookmarkManager = () => {
           // ブックマークを循環
           newIndex = (currentIndex + increment + currentBookmarks.length) % currentBookmarks.length;
         }
-        setSelectedBookmark(currentBookmarks[newIndex]);
+        setSelectedBookmarkId(currentBookmarks[newIndex].bookmark_id);
         return false; // Prevent default scroll
       }
       // 以降のキー操作はブックマーク選択中のみ有効
-      // if (!isBookmarkSelected()) {
-      if (selectedBookmarkRef.current === undefined) {
+      if (selectedBookmarkIdRef.current === undefined) {
         return true;
       }
       switch (key) {
@@ -219,7 +219,7 @@ export const useBookmarkManager = () => {
           openBookmark();
           return false; // Prevent default
         case "escape":
-          setSelectedBookmark(undefined);
+          setSelectedBookmarkId(undefined);
           return false; // Prevent default
         default:
           return true;
@@ -227,7 +227,7 @@ export const useBookmarkManager = () => {
     },
     [
       openBookmark,
-      setSelectedBookmark,
+      setSelectedBookmarkId,
       // bookmarks, selectedBookmark, textUrl は ref を介してアクセスされるため、
       // 依存配列から除外しています。
       // isBookmarkSelected もインライン化されたため、依存配列から削除されます。
@@ -235,27 +235,26 @@ export const useBookmarkManager = () => {
   );
 
   const addKeywordClick = useCallback(async () => {
-    if (!textKeyword || !selectedBookmark) {
+    if (!textKeyword || !selectedBookmarkId) {
       return;
     }
     try {
-      const newKeyword = await addKeyword(selectedBookmark.bookmark_id, textKeyword);
-      setKeywords((currentKeywords) => [...currentKeywords, newKeyword]);
+      await addKeyword(selectedBookmarkId, textKeyword);
       setTextKeyword("");
       setMessage();
     } catch {
       setMessage("キーワードの追加中にエラーが発生しました。", true);
     }
-  }, [addKeyword, selectedBookmark, textKeyword, setTextKeyword, setMessage]);
+  }, [textKeyword, selectedBookmarkId, addKeyword, setMessage, setTextKeyword]);
 
   return {
     bookmarks,
-    keywords,
+    // keywords,
     textUrl,
     textTitle,
     textKeyword,
-    selectedBookmark,
-    setSelectedBookmark,
+    selectedBookmarkId,
+    setSelectedBookmarkId,
     textMessage,
     isError,
     setTextUrl,

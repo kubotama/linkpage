@@ -149,15 +149,23 @@ describe("BookmarkManager Hotkeys", () => {
   });
 
   it("ブックマークが選択されていないときに↓キーを押した。→ 一番上のブックマークが選択される。", async () => {
-    await keyDown("ArrowDown");
+    await act(async () => {
+      keyDown("ArrowDown");
+    });
 
-    await assertBookmarkIsSelected(mockBookmarks[0]);
+    await waitFor(async () => {
+      assertBookmarkIsSelected(mockBookmarks[0]);
+    });
   });
 
   it("ブックマークが選択されていないときに↑キーを押した。→ 一番下のブックマークが選択される。", async () => {
-    await keyDown("ArrowUp");
+    await act(async () => {
+      await keyDown("ArrowUp");
+    });
 
-    await assertBookmarkIsSelected(mockBookmarks[mockBookmarks.length - 1]);
+    await waitFor(async () => {
+      await assertBookmarkIsSelected(mockBookmarks[mockBookmarks.length - 1]);
+    });
   });
 
   it("一番下のブックマークが選択されているときに↓キーを押した。→ 一番上のブックマークが選択される。", async () => {

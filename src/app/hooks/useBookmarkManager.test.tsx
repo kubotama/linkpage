@@ -22,7 +22,7 @@ describe("useBookmarkManager", () => {
     const { result } = renderHook(() => useBookmarkManager());
 
     act(() => {
-      result.current.setSelectedBookmark(undefined);
+      result.current.setSelectedBookmarkId(undefined);
       result.current.deleteClick();
     });
 
@@ -35,7 +35,7 @@ describe("useBookmarkManager", () => {
     const { result } = renderHook(() => useBookmarkManager());
 
     act(() => {
-      result.current.setSelectedBookmark(undefined);
+      result.current.setSelectedBookmarkId(undefined);
       result.current.updateClick();
     });
 
@@ -63,7 +63,7 @@ describe("useBookmarkManager", () => {
 
     // 3. ブックマークを選択する
     act(() => {
-      result.current.setSelectedBookmark(mockBookmarks[0]);
+      result.current.setSelectedBookmarkId(mockBookmarks[0].bookmark_id);
     });
 
     // 4. ブックマーク選択による副作用(useEffect)が完了し、フォームが更新されるのを待つ
@@ -84,8 +84,11 @@ describe("useBookmarkManager", () => {
       // ブックマークの初期読み込みの1回とキーワードを設定する1回の合計2回
       expect(mockFetch).toHaveBeenCalledTimes(2);
 
-      // keywords ステートに新しいキーワードが追加されていることを確認
-      expect(result.current.keywords).toContainEqual(newKeywordResponse);
+      // bookmarks ステートが更新され、新しいキーワードが追加されていることを確認
+      const updatedBookmark = result.current.bookmarks.find(
+        (b) => b.bookmark_id === mockBookmarks[0].bookmark_id
+      );
+      expect(updatedBookmark?.keywords).toContainEqual(newKeywordResponse);
     });
   });
 });
