@@ -59,10 +59,6 @@ export const useBookmarkManager = () => {
       (bookmark) => bookmark.bookmark_id === selectedBookmarkId
     );
 
-    // if (selectedBookmark !== undefined) {
-    //   setKeywords(selectedBookmark.keywords);
-    // }
-
     setTextKeyword("");
     if (selectedBookmark === undefined) {
       setTextUrl("");
