@@ -26,9 +26,7 @@ const upsertKeywordStmt = db.prepare(
 );
 
 type PostParams = {
-  params: {
-    bookmark_id: string;
-  };
+  params: Promise<{ bookmark_id: string }>;
 };
 
 const getOrCreateKeyword = (name: string): number => {
@@ -45,10 +43,11 @@ const getOrCreateKeyword = (name: string): number => {
 
 export async function POST(request: Request, { params }: PostParams) {
   let bookmarkId: number;
+  const { bookmark_id } = await params;
   try {
-    bookmarkId = Number(getId({ id: params.bookmark_id }));
+    bookmarkId = Number(getId({ id: bookmark_id }));
   } catch {
-    return createInvalidIdError({ id: params.bookmark_id });
+    return createInvalidIdError({ id: bookmark_id });
   }
 
   let keywordName: string;
