@@ -182,7 +182,6 @@ describe("POST /api/bookmarks/[bookmark_id]/keywords", () => {
 
       // Act: 同じキーワードを再度登録しようとする
       const request = mockRequest({ keyword_name: keywordName });
-      // const response = await POST(request, { params: { bookmark_id: String(bookmarkId) } });
       const response = await POST(request, getPostParams(String(bookmarkId)));
       const responseBody = await response.json();
 
