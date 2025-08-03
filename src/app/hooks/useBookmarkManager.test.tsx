@@ -1,8 +1,9 @@
 import { beforeEach, describe, expect, it, vi } from "vitest";
-import { renderHook, act, waitFor } from "@testing-library/react";
 
-import { useBookmarkManager } from "./useBookmarkManager";
+import { act, renderHook, waitFor } from "@testing-library/react";
+
 import { mockBookmarks } from "../test-utils/bookmarkTestUtils";
+import { useBookmarkManager } from "./useBookmarkManager";
 
 const mockFetch = vi.fn();
 
@@ -40,6 +41,51 @@ describe("useBookmarkManager", () => {
 
     await waitFor(() => {
       expect(mockFetch).toHaveBeenCalledTimes(1);
+    });
+  });
+
+  it("ブックマークにキーワードを設定する", async () => {
+    const newKeyword = "new keyword";
+    const newKeywordResponse = { keyword_id: 99, keyword_name: newKeyword };
+    const { result } = renderHook(() => useBookmarkManager());
+
+    // 1. 初期データがロードされるのを待つ
+    await waitFor(() => {
+      expect(result.current.bookmarks).toHaveLength(mockBookmarks.length);
+    });
+
+    // 2. キーワード追加APIのレスポンスをモックする
+    mockFetch.mockResolvedValueOnce({
+      ok: true,
+      status: 201,
+      json: async () => newKeywordResponse,
+    });
+
+    // 3. ブックマークを選択する
+    act(() => {
+      result.current.setSelectedBookmark(mockBookmarks[0]);
+    });
+
+    // 4. ブックマーク選択による副作用(useEffect)が完了し、フォームが更新されるのを待つ
+    await waitFor(() => {
+      expect(result.current.textUrl).toBe(mockBookmarks[0].url);
+    });
+
+    // 5. キーワードを入力し、追加アクションを実行する
+    act(() => {
+      result.current.setTextKeyword(newKeyword);
+    });
+    act(() => {
+      result.current.addKeywordClick();
+    });
+
+    // 6. 結果を検証する
+    await waitFor(() => {
+      // ブックマークの初期読み込みの1回とキーワードを設定する1回の合計2回
+      expect(mockFetch).toHaveBeenCalledTimes(2);
+
+      // keywords ステートに新しいキーワードが追加されていることを確認
+      expect(result.current.keywords).toContainEqual(newKeywordResponse);
     });
   });
 });

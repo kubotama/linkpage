@@ -4,6 +4,7 @@ import { useCallback, useEffect, useRef, useState } from "react";
 import { useHotkeys } from "react-hotkeys-hook";
 
 import { SelectedBookmark } from "../types/Bookmark";
+import { Keyword } from "../types/Keyword";
 import { DuplicatedUrlError, useBookmarks } from "./useBookmark";
 import { useErrorMessage } from "./useErrorMessage";
 
@@ -12,8 +13,9 @@ export const useBookmarkManager = () => {
   const [textTitle, setTextTitle] = useState("");
   const [textKeyword, setTextKeyword] = useState("");
   const [selectedBookmark, setSelectedBookmark] = useState<SelectedBookmark>(undefined);
+  const [keywords, setKeywords] = useState<Keyword[]>([]);
 
-  const { bookmarks, getBookmarks, deleteBookmark, updateBookmark } = useBookmarks();
+  const { bookmarks, getBookmarks, deleteBookmark, updateBookmark, addKeyword } = useBookmarks();
 
   const { textMessage, setMessage, isError, handleErrorClose } = useErrorMessage();
 
@@ -56,6 +58,10 @@ export const useBookmarkManager = () => {
   }, [loadBookmarks]);
 
   useEffect(() => {
+    if (selectedBookmark) {
+      setKeywords(selectedBookmark.keywords);
+    }
+
     setTextKeyword("");
     if (selectedBookmark === undefined) {
       setTextUrl("");
@@ -228,8 +234,23 @@ export const useBookmarkManager = () => {
     ]
   );
 
+  const addKeywordClick = useCallback(async () => {
+    if (!textKeyword || !selectedBookmark) {
+      return;
+    }
+    try {
+      const newKeyword = await addKeyword(selectedBookmark.bookmark_id, textKeyword);
+      setKeywords((currentKeywords) => [...currentKeywords, newKeyword]);
+      setTextKeyword("");
+      setMessage();
+    } catch {
+      setMessage("キーワードの追加中にエラーが発生しました。", true);
+    }
+  }, [addKeyword, selectedBookmark, textKeyword, setTextKeyword, setMessage]);
+
   return {
     bookmarks,
+    keywords,
     textUrl,
     textTitle,
     textKeyword,
@@ -245,5 +266,6 @@ export const useBookmarkManager = () => {
     pathClick,
     handleErrorClose,
     updateClick,
+    addKeywordClick,
   };
 };

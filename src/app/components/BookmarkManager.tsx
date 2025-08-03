@@ -16,13 +16,11 @@ import { BookmarkInputField } from "./BookmarkInputField";
 import { BookmarkTable } from "./BookmarkTable";
 import { ErrorMessage } from "./ErrorMessage";
 import { KeywordTable } from "./KeywordTable";
-import { Keyword } from "../types/Keyword";
-
-import { BOOKMARKS_ENDPOINT } from "../constants/apiEndpoints";
 
 export const BookmarkManager = () => {
   const {
     bookmarks,
+    keywords,
     isError,
     textUrl,
     textTitle,
@@ -38,52 +36,8 @@ export const BookmarkManager = () => {
     pathClick,
     handleErrorClose,
     updateClick,
+    addKeywordClick,
   } = useBookmarkManager();
-
-  const [keywords, setKeywords] = React.useState<Keyword[]>([]);
-
-  React.useEffect(() => {
-    if (selectedBookmark) {
-      setKeywords(selectedBookmark.keywords);
-    }
-  }, [selectedBookmark]);
-
-  const addKeywordClick = async () => {
-    if (!textKeyword) {
-      return;
-    }
-    try {
-      if (!selectedBookmark) {
-        return;
-      }
-      const response = await fetch(
-        `${BOOKMARKS_ENDPOINT}/${selectedBookmark.bookmark_id}/keywords`,
-        {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({ keyword_name: textKeyword }),
-        }
-      );
-      if (!response.ok) {
-        throw new Error("キーワードの追加に失敗しました。");
-      }
-      // const newKeyword = await response.json();
-      // setKeywords([...keywords, newKeyword]);
-      const responseData = await response.json();
-      const newKeyword: Keyword = {
-        keyword_id: responseData.keyword_id,
-        keyword_name: responseData.keyword_name,
-      };
-      setKeywords([...keywords, newKeyword]);
-      setTextKeyword("");
-      selectedBookmark.keywords.push(newKeyword);
-    } catch (error: unknown) {
-      console.error("キーワードの追加エラー:", (error as Error).message); // 詳細なエラーはコンソールへ
-      throw error;
-    }
-  };
 
   return (
     <>
