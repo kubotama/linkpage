@@ -92,7 +92,10 @@ export const useBookmarks = () => {
         body: JSON.stringify({ keyword_name: keyword_name }),
       });
       if (!response.ok) {
-        throw new Error("キーワードの追加に失敗しました。");
+        const json = await response.json();
+        throw new Error(
+          json.message || `キーワードの追加に失敗しました。 Status: ${response.status}`
+        );
       }
       const responseData = await response.json();
       const newKeyword: Keyword = {

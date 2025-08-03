@@ -242,14 +242,15 @@ export const useBookmarkManager = () => {
       await addKeyword(selectedBookmarkId, textKeyword);
       setTextKeyword("");
       setMessage();
-    } catch {
-      setMessage("キーワードの追加中にエラーが発生しました。", true);
+    } catch (error: unknown) {
+      const message =
+        error instanceof Error ? error.message : "キーワードの追加中にエラーが発生しました。";
+      setMessage(message, true);
     }
   }, [textKeyword, selectedBookmarkId, addKeyword, setMessage, setTextKeyword]);
 
   return {
     bookmarks,
-    // keywords,
     textUrl,
     textTitle,
     textKeyword,
