@@ -89,7 +89,7 @@ export const useBookmarks = () => {
         headers: {
           "Content-Type": "application/json",
         },
-        body: JSON.stringify({ keyword_name: keyword_name }),
+        body: JSON.stringify({ keyword_name }),
       });
       if (!response.ok) {
         const json = await response.json();
