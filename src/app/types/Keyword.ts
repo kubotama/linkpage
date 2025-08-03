@@ -11,3 +11,7 @@ export const isKeyword = (obj: unknown): obj is Keyword => {
   const rec = obj as Record<string, unknown>;
   return typeof rec.keyword_id === "number" && typeof rec.keyword_name === "string";
 };
+
+export type KeywordPostParams = {
+  params: Promise<{ bookmark_id: string }>;
+};

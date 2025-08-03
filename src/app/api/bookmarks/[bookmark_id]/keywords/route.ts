@@ -1,6 +1,6 @@
 import { SqliteError } from "better-sqlite3";
 
-import { isKeyword } from "../../../../types/Keyword";
+import { isKeyword, KeywordPostParams } from "../../../../types/Keyword";
 import { getId } from "../../../utils/id";
 import {
   createDuplicateKeywordAssociationError,
@@ -25,10 +25,6 @@ const upsertKeywordStmt = db.prepare(
    RETURNING keyword_id, keyword_name`
 );
 
-type PostParams = {
-  params: Promise<{ bookmark_id: string }>;
-};
-
 const getOrCreateKeyword = (name: string): number => {
   // upsert文は、新規・既存両方のキーワードに対してkeyword_idを返すため、
   // この処理は単一のアトミックなDB呼び出しで完結します。
@@ -41,7 +37,7 @@ const getOrCreateKeyword = (name: string): number => {
   throw new Error(`Failed to get or create keyword '${name}'.`);
 };
 
-export async function POST(request: Request, { params }: PostParams) {
+export async function POST(request: Request, { params }: KeywordPostParams) {
   let bookmarkId: number;
   const { bookmark_id } = await params;
   try {
