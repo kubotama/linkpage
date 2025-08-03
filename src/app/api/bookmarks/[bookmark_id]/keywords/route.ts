@@ -39,15 +39,14 @@ const getOrCreateKeyword = (name: string): number => {
 
 export async function POST(request: Request, { params }: KeywordPostParams) {
   let bookmarkId: number;
-  const { bookmark_id } = await params;
-  try {
-    bookmarkId = Number(getId({ id: bookmark_id }));
-  } catch {
-    return createInvalidIdError({ id: bookmark_id });
-  }
-
   let keywordName: string;
   try {
+    const { bookmark_id } = await params;
+    try {
+      bookmarkId = Number(getId({ id: bookmark_id }));
+    } catch {
+      return createInvalidIdError({ id: bookmark_id });
+    }
     const payload = await request.json();
     const rawKeyword = payload?.keyword_name;
     if (typeof rawKeyword !== "string" || rawKeyword.trim() === "") {
