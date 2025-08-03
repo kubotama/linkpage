@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useMemo } from "react";
 
 import {
   ADD_BUTTON_ROLE_NAME,
@@ -16,9 +16,6 @@ import { BookmarkInputField } from "./BookmarkInputField";
 import { BookmarkTable } from "./BookmarkTable";
 import { ErrorMessage } from "./ErrorMessage";
 import { KeywordTable } from "./KeywordTable";
-import { Keyword } from "../types/Keyword";
-
-import { BOOKMARKS_ENDPOINT } from "../constants/apiEndpoints";
 
 export const BookmarkManager = () => {
   const {
@@ -28,8 +25,8 @@ export const BookmarkManager = () => {
     textTitle,
     textKeyword,
     textMessage,
-    selectedBookmark,
-    setSelectedBookmark,
+    selectedBookmarkId,
+    setSelectedBookmarkId,
     setTextUrl,
     setTextTitle,
     setTextKeyword,
@@ -38,52 +35,13 @@ export const BookmarkManager = () => {
     pathClick,
     handleErrorClose,
     updateClick,
+    addKeywordClick,
   } = useBookmarkManager();
 
-  const [keywords, setKeywords] = React.useState<Keyword[]>([]);
-
-  React.useEffect(() => {
-    if (selectedBookmark) {
-      setKeywords(selectedBookmark.keywords);
-    }
-  }, [selectedBookmark]);
-
-  const addKeywordClick = async () => {
-    if (!textKeyword) {
-      return;
-    }
-    try {
-      if (!selectedBookmark) {
-        return;
-      }
-      const response = await fetch(
-        `${BOOKMARKS_ENDPOINT}/${selectedBookmark.bookmark_id}/keywords`,
-        {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({ keyword_name: textKeyword }),
-        }
-      );
-      if (!response.ok) {
-        throw new Error("キーワードの追加に失敗しました。");
-      }
-      // const newKeyword = await response.json();
-      // setKeywords([...keywords, newKeyword]);
-      const responseData = await response.json();
-      const newKeyword: Keyword = {
-        keyword_id: responseData.keyword_id,
-        keyword_name: responseData.keyword_name,
-      };
-      setKeywords([...keywords, newKeyword]);
-      setTextKeyword("");
-      selectedBookmark.keywords.push(newKeyword);
-    } catch (error: unknown) {
-      console.error("キーワードの追加エラー:", (error as Error).message); // 詳細なエラーはコンソールへ
-      throw error;
-    }
-  };
+  const selectedBookmark = useMemo(
+    () => bookmarks.find((b) => b.bookmark_id === selectedBookmarkId),
+    [bookmarks, selectedBookmarkId]
+  );
 
   return (
     <>
@@ -92,8 +50,8 @@ export const BookmarkManager = () => {
           <div className="w-bookmark-list">
             <BookmarkTable
               bookmarks={bookmarks}
-              selectedBookmark={selectedBookmark}
-              onSelectBookmark={setSelectedBookmark}
+              selectedBookmarkId={selectedBookmarkId}
+              onSelectBookmarkId={setSelectedBookmarkId}
             />
           </div>
           <div className="w-bookmark-details">
@@ -146,7 +104,7 @@ export const BookmarkManager = () => {
                     </ActionButton>
                   </div>
                 </fieldset>
-                <KeywordTable keywords={keywords} />
+                <KeywordTable keywords={selectedBookmark.keywords} />
               </form>
             )}
           </div>

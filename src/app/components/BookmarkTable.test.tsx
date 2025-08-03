@@ -3,19 +3,18 @@ import "@testing-library/jest-dom";
 import { describe, expect, it, vi } from "vitest";
 
 import { render, screen, within } from "@testing-library/react";
-import { SelectedBookmark } from "../types/Bookmark";
-import { mockBookmarks } from "../test-utils/bookmarkTestUtils";
 
+import { mockBookmarks } from "../test-utils/bookmarkTestUtils";
 import { BookmarkTable } from "./BookmarkTable";
 
 describe("BookmarkTableのテスト", () => {
   it("テーブルとヘッダーが正しく表示される", () => {
-    const mockOnSelectBookmark: React.Dispatch<SelectedBookmark> = vi.fn();
+    const mockOnSelectBookmark: React.Dispatch<number> = vi.fn();
     render(
       <BookmarkTable
         bookmarks={mockBookmarks}
-        selectedBookmark={undefined}
-        onSelectBookmark={mockOnSelectBookmark}
+        selectedBookmarkId={undefined}
+        onSelectBookmarkId={mockOnSelectBookmark}
       />
     );
 
@@ -30,12 +29,12 @@ describe("BookmarkTableのテスト", () => {
   });
 
   it("ブックマークデータが正しく表示される", () => {
-    const mockOnSelectBookmark: React.Dispatch<SelectedBookmark> = vi.fn();
+    const mockOnSelectBookmark: React.Dispatch<number> = vi.fn();
     render(
       <BookmarkTable
         bookmarks={mockBookmarks}
-        selectedBookmark={undefined}
-        onSelectBookmark={mockOnSelectBookmark}
+        selectedBookmarkId={undefined}
+        onSelectBookmarkId={mockOnSelectBookmark}
       />
     );
 
@@ -51,12 +50,12 @@ describe("BookmarkTableのテスト", () => {
   });
 
   it("空のブックマークリストでテーブルが表示される", () => {
-    const mockOnSelectBookmark: React.Dispatch<SelectedBookmark> = vi.fn();
+    const mockOnSelectBookmark: React.Dispatch<number> = vi.fn();
     render(
       <BookmarkTable
         bookmarks={[]}
-        selectedBookmark={undefined}
-        onSelectBookmark={mockOnSelectBookmark}
+        selectedBookmarkId={undefined}
+        onSelectBookmarkId={mockOnSelectBookmark}
       />
     );
 
@@ -76,8 +75,8 @@ describe("BookmarkTableのテスト", () => {
     render(
       <BookmarkTable
         bookmarks={mockBookmarks}
-        selectedBookmark={selected}
-        onSelectBookmark={mockOnSelectBookmark}
+        selectedBookmarkId={selected.bookmark_id}
+        onSelectBookmarkId={mockOnSelectBookmark}
       />
     );
 
