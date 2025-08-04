@@ -3,13 +3,19 @@ import { NextRequest } from "next/server";
 import { afterEach, assert, beforeEach, describe, expect, it, vi } from "vitest";
 
 import { setupInMemoryDb } from "../../../../test-utils/db-setup";
-import { isKeyword } from "../../../../types/Keyword";
+import { isKeyword, KeywordPostParams } from "../../../../types/Keyword";
 import { getDb } from "../../database";
 
 vi.mock("../../database");
 let POST: typeof import("./route").POST; // POST関数の型を宣言
 
 let inMemoryDbInstance: ActualDatabase.Database;
+
+const getPostParams = (bookmark_id: string): KeywordPostParams => {
+  return {
+    params: Promise.resolve({ bookmark_id }),
+  };
+};
 
 describe("POST /api/bookmarks/[bookmark_id]/keywords", () => {
   beforeEach(async () => {
@@ -54,7 +60,7 @@ describe("POST /api/bookmarks/[bookmark_id]/keywords", () => {
 
       // Act
 
-      const response = await POST(request, { params: { bookmark_id: "1" } });
+      const response = await POST(request, getPostParams("1"));
       const responseBody = await response.json();
 
       expect(response.status).toBe(201);
@@ -96,7 +102,7 @@ describe("POST /api/bookmarks/[bookmark_id]/keywords", () => {
 
       const request = mockRequest({ keyword_name: existingKeyword });
 
-      const response = await POST(request, { params: { bookmark_id: "1" } });
+      const response = await POST(request, getPostParams("1"));
       const responseBody = await response.json();
 
       expect(response.status).toBe(201);
@@ -117,7 +123,7 @@ describe("POST /api/bookmarks/[bookmark_id]/keywords", () => {
   describe("Error cases", () => {
     it("should return 404 if bookmark_id does not exist", async () => {
       const request = mockRequest({ keyword_name: "test-keyword" });
-      const response = await POST(request, { params: { bookmark_id: "999" } });
+      const response = await POST(request, getPostParams("999"));
       const responseBody = await response.json();
 
       expect(response.status).toBe(404);
@@ -126,7 +132,7 @@ describe("POST /api/bookmarks/[bookmark_id]/keywords", () => {
 
     it("should return 400 if bookmark_id is invalid", async () => {
       const request = mockRequest({ keyword_name: "test-keyword" });
-      const response = await POST(request, { params: { bookmark_id: "invalid" } });
+      const response = await POST(request, getPostParams("invalid"));
       const responseBody = await response.json();
 
       expect(response.status).toBe(400);
@@ -140,7 +146,7 @@ describe("POST /api/bookmarks/[bookmark_id]/keywords", () => {
         },
       } as unknown as NextRequest;
 
-      const response = await POST(request, { params: { bookmark_id: "1" } });
+      const response = await POST(request, getPostParams("1"));
       const responseBody = await response.json();
 
       expect(response.status).toBe(400);
@@ -153,7 +159,7 @@ describe("POST /api/bookmarks/[bookmark_id]/keywords", () => {
       { case: "is not a string", body: { keyword_name: 123 } },
     ])("should return 400 if keyword_name $case", async ({ body }) => {
       const request = mockRequest(body);
-      const response = await POST(request, { params: { bookmark_id: "1" } });
+      const response = await POST(request, getPostParams("1"));
       const responseBody = await response.json();
 
       expect(response.status).toBe(400);
@@ -176,7 +182,7 @@ describe("POST /api/bookmarks/[bookmark_id]/keywords", () => {
 
       // Act: 同じキーワードを再度登録しようとする
       const request = mockRequest({ keyword_name: keywordName });
-      const response = await POST(request, { params: { bookmark_id: String(bookmarkId) } });
+      const response = await POST(request, getPostParams(String(bookmarkId)));
       const responseBody = await response.json();
 
       // Assert
@@ -194,7 +200,7 @@ describe("POST /api/bookmarks/[bookmark_id]/keywords", () => {
       });
 
       const request = mockRequest({ keyword_name: "test-keyword" });
-      const response = await POST(request, { params: { bookmark_id: "1" } });
+      const response = await POST(request, getPostParams("1"));
       const responseBody = await response.json();
 
       expect(response.status).toBe(500);
