@@ -37,7 +37,7 @@ export const createInternalError = (error: unknown, headers: Record<string, stri
   );
 };
 
-export const createNotFoundKeywordError = (keyword_id: string) => {
+export const createNotFoundKeywordError = (keyword_id: number) => {
   return createErrorResponse(
     "指定されたキーワードが見つかりません。",
     404,
@@ -88,7 +88,7 @@ export const createInvalidBodyError = (error: unknown, headers: Record<string, s
   );
 };
 
-export const createNotFoundBookmarkError = (bookmark_id: string) => {
+export const createNotFoundBookmarkError = (bookmark_id: number) => {
   return createErrorResponse(
     "指定されたブックマークがありません。",
     404,

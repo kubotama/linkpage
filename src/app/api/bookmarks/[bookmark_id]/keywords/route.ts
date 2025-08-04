@@ -1,7 +1,7 @@
 import { SqliteError } from "better-sqlite3";
 
 import { isKeyword, KeywordPostParams } from "../../../../types/Keyword";
-import { getId } from "../../../utils/id";
+import { getId, InvalidIdError } from "../../../utils/id";
 import {
   createDuplicateKeywordAssociationError,
   createInternalError,
@@ -40,13 +40,10 @@ const getOrCreateKeyword = (name: string): number => {
 export async function POST(request: Request, { params }: KeywordPostParams) {
   let bookmarkId: number;
   let keywordName: string;
+  const { bookmark_id } = await params;
   try {
-    const { bookmark_id } = await params;
-    try {
-      bookmarkId = Number(getId({ id: bookmark_id }));
-    } catch {
-      return createInvalidIdError({ id: bookmark_id });
-    }
+    bookmarkId = getId({ id: bookmark_id });
+
     const payload = await request.json();
     const rawKeyword = payload?.keyword_name;
     if (typeof rawKeyword !== "string" || rawKeyword.trim() === "") {
@@ -54,6 +51,9 @@ export async function POST(request: Request, { params }: KeywordPostParams) {
     }
     keywordName = rawKeyword.trim();
   } catch (error) {
+    if (error instanceof InvalidIdError) {
+      return createInvalidIdError({ id: bookmark_id });
+    }
     return createInvalidBodyError(error);
   }
   try {
@@ -86,7 +86,7 @@ export async function POST(request: Request, { params }: KeywordPostParams) {
   } catch (error: unknown) {
     // BookmarkNotFoundErrorはカスタムエラーなので、他のエラーより先にチェック
     if (error instanceof BookmarkNotFoundError) {
-      return createNotFoundBookmarkError(bookmarkId.toString());
+      return createNotFoundBookmarkError(bookmarkId);
     }
     if (error instanceof SqliteError && error.code === "SQLITE_CONSTRAINT_UNIQUE") {
       return createDuplicateKeywordAssociationError(bookmarkId, keywordName);
