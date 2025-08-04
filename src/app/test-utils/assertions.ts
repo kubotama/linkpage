@@ -7,6 +7,6 @@ export const assertErrorResponse = async (
   expectedMessage: string
 ) => {
   expect(response.status).toBe(expectedStatus);
-  const responseBody: { message: string } = await response.json();
+  const responseBody = (await response.json()) as { message: string };
   expect(responseBody.message).toBe(expectedMessage);
 };
