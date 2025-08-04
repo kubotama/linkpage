@@ -1,6 +1,7 @@
 import ActualDatabase from "better-sqlite3"; // Import the actual library
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 
+import { assertErrorResponse } from "../../../test-utils/assertions";
 import { mockBookmarks } from "../../../test-utils/bookmarkTestUtils";
 import { setupInMemoryDb } from "../../../test-utils/db-setup";
 import { API_BOOKMARKS_URL } from "../../utils/constants";
@@ -83,9 +84,7 @@ describe("ブックマーク削除APIのテスト (オンメモリDB)", () => {
     const [request, context] = createDeleteRequest(nonExistentId.toString());
     const response = await DELETE(request, context);
 
-    expect(response.status).toEqual(404);
-    const json = await response.json();
-    expect(json.message).toEqual("指定されたブックマークがありません。");
+    await assertErrorResponse(response, 404, "指定されたブックマークがありません。");
 
     // ブックマーク数が変わっていないことを確認
     const count = (
@@ -104,9 +103,7 @@ describe("ブックマーク削除APIのテスト (オンメモリDB)", () => {
     const [request, context] = createDeleteRequest(anyValidId.toString());
     const response = await DELETE(request, context);
 
-    expect(response.status).toEqual(500);
-    const json = await response.json();
-    expect(json.message).toEqual("サーバー内部でエラーが発生しました。");
+    await assertErrorResponse(response, 500, "サーバー内部でエラーが発生しました。");
   });
 
   it("DELETE: 不正なIDの場合には400エラーを返す", async () => {
@@ -114,8 +111,6 @@ describe("ブックマーク削除APIのテスト (オンメモリDB)", () => {
     const [request, context] = createDeleteRequest(nonExistentId.toString());
     const response = await DELETE(request, context);
 
-    expect(response.status).toEqual(400);
-    const json = await response.json();
-    expect(json.message).toEqual("IDは正の整数である必要があります。");
+    await assertErrorResponse(response, 400, "IDは正の整数である必要があります。");
   });
 });

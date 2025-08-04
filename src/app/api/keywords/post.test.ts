@@ -1,6 +1,7 @@
 import ActualDatabase from "better-sqlite3"; // Import the actual library
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 
+import { assertErrorResponse } from "../../test-utils/assertions";
 import { mockKeywords } from "../../test-utils/bookmarkTestUtils";
 import { setupInMemoryDb } from "../../test-utils/db-setup";
 import { getDb } from "../bookmarks/database";
@@ -64,9 +65,7 @@ describe("キーワードAPIのテスト", () => {
   it("POST: キーワードが空文字の場合は400を返す", async () => {
     const response = await POST(createPostRequest(""));
 
-    expect(response.status).toBe(400);
-    const text = await response.json();
-    expect(text.message).toEqual("キーワードを指定してください。");
+    await assertErrorResponse(response, 400, "キーワードを指定してください。");
   });
 
   it("POST: 不正なJSONデータ(JSON.parseエラー)の場合は400を返す", async () => {
@@ -79,9 +78,7 @@ describe("キーワードAPIのテスト", () => {
         body: "invalid json",
       })
     );
-    expect(response.status).toBe(400);
-    const text = await response.json();
-    expect(text.message).toEqual("リクエストボディのJSONが不正です。");
+    await assertErrorResponse(response, 400, "リクエストボディのJSONが不正です。");
   });
 
   it("POST: 不正なJSONデータ(null)の場合は400を返す", async () => {
@@ -94,17 +91,13 @@ describe("キーワードAPIのテスト", () => {
         body: JSON.stringify(null),
       })
     );
-    expect(response.status).toBe(400);
-    const text = await response.json();
-    expect(text.message).toEqual("リクエストボディのJSONが不正です。");
+    await assertErrorResponse(response, 400, "リクエストボディのJSONが不正です。");
   });
 
   it("POST: 重複したキーワードを追加時に409 Conflictを返す", async () => {
     const response = await POST(createPostRequest(mockKeywords[0].keyword_name));
 
-    expect(response.status).toBe(409);
-    const text = await response.json();
-    expect(text.message).toEqual("指定されたキーワードは既に登録されています。");
+    await assertErrorResponse(response, 409, "指定されたキーワードは既に登録されています。");
   });
 
   it("POST: データベースエラー時に500エラーを返す", async () => {
@@ -115,9 +108,7 @@ describe("キーワードAPIのテスト", () => {
     });
 
     const response = await POST(createPostRequest("テスト"));
-    expect(response.status).toBe(500);
-    const text = await response.json();
-    expect(text.message).toEqual("サーバー内部でエラーが発生しました。");
+    await assertErrorResponse(response, 500, "サーバー内部でエラーが発生しました。");
 
     prepareSpy.mockRestore();
   });

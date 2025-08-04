@@ -1,8 +1,9 @@
 import ActualDatabase from "better-sqlite3"; // Import the actual library
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 
-import { setupInMemoryDb } from "../../test-utils/db-setup";
+import { assertErrorResponse } from "../../test-utils/assertions";
 import { mockKeywords } from "../../test-utils/bookmarkTestUtils";
+import { setupInMemoryDb } from "../../test-utils/db-setup";
 import { getDb } from "../bookmarks/database";
 import { GET } from "./route";
 
@@ -41,9 +42,7 @@ describe("キーワードGET APIのテスト", () => {
     });
 
     const response = await GET();
-    expect(response.status).toBe(500);
-    const text = await response.json();
-    expect(text.message).toEqual("サーバー内部でエラーが発生しました。");
+    await assertErrorResponse(response, 500, "サーバー内部でエラーが発生しました。");
   });
 
   it("GET: クエリエラー時に500エラーを返す", async () => {
@@ -54,9 +53,7 @@ describe("キーワードGET APIのテスト", () => {
     });
 
     const response = await GET();
-    expect(response.status).toBe(500);
-    const text = await response.json();
-    expect(text.message).toEqual("サーバー内部でエラーが発生しました。");
+    await assertErrorResponse(response, 500, "サーバー内部でエラーが発生しました。");
 
     prepareSpy.mockRestore();
   });
