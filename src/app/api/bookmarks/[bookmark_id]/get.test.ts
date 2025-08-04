@@ -1,6 +1,7 @@
 import ActualDatabase from "better-sqlite3"; // Import the actual library
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 
+import { assertErrorResponse } from "../../../test-utils/assertions";
 import { expectEqualBookmark, mockBookmarks } from "../../../test-utils/bookmarkTestUtils";
 import { setupInMemoryDb } from "../../../test-utils/db-setup";
 import { API_BOOKMARKS_URL } from "../../utils/constants";
@@ -53,18 +54,14 @@ describe("ブックマークを1件取得するAPIのテスト", () => {
     const [request, context] = createGetRequest("abc");
     const response = await GET(request, context);
 
-    expect(response.status).toBe(400);
-    const json = await response.json();
-    expect(json.message).toEqual("IDは正の整数である必要があります。");
+    await assertErrorResponse(response, 400, "IDは正の整数である必要があります。");
   });
 
   it("GET: 存在しないIDの場合404エラーを返す", async () => {
     const [request, context] = createGetRequest("100");
     const response = await GET(request, context);
 
-    expect(response.status).toBe(404);
-    const json = await response.json();
-    expect(json.message).toEqual("指定されたブックマークがありません。");
+    await assertErrorResponse(response, 404, "指定されたブックマークがありません。");
   });
 
   it("GET: データベースエラー時に500エラーを返す", async () => {
@@ -75,9 +72,7 @@ describe("ブックマークを1件取得するAPIのテスト", () => {
 
     const [request, context] = createGetRequest("1");
     const response = await GET(request, context);
-    expect(response.status).toBe(500);
-    const text = await response.json();
-    expect(text.message).toEqual("サーバー内部でエラーが発生しました。");
+    await assertErrorResponse(response, 500, "サーバー内部でエラーが発生しました。");
   });
 
   it("GET: クエリエラー時に500エラーを返す", async () => {
@@ -89,9 +84,7 @@ describe("ブックマークを1件取得するAPIのテスト", () => {
 
     const [request, context] = createGetRequest("1");
     const response = await GET(request, context);
-    expect(response.status).toBe(500);
-    const text = await response.json();
-    expect(text.message).toEqual("サーバー内部でエラーが発生しました。");
+    await assertErrorResponse(response, 500, "サーバー内部でエラーが発生しました。");
 
     prepareSpy.mockRestore();
   });

@@ -2,6 +2,7 @@ import ActualDatabase from "better-sqlite3"; // 実際のライブラリをイ�
 import { NextRequest } from "next/server";
 import { afterEach, assert, beforeEach, describe, expect, it, vi } from "vitest";
 
+import { assertErrorResponse } from "../../../../test-utils/assertions";
 import { setupInMemoryDb } from "../../../../test-utils/db-setup";
 import { isKeyword, KeywordPostParams } from "../../../../types/Keyword";
 import { getDb } from "../../database";
@@ -124,19 +125,13 @@ describe("POST /api/bookmarks/[bookmark_id]/keywords", () => {
     it("should return 404 if bookmark_id does not exist", async () => {
       const request = mockRequest({ keyword_name: "test-keyword" });
       const response = await POST(request, getPostParams("999"));
-      const responseBody = await response.json();
-
-      expect(response.status).toBe(404);
-      expect(responseBody.message).toBe("指定されたブックマークがありません。");
+      await assertErrorResponse(response, 404, "指定されたブックマークがありません。");
     });
 
     it("should return 400 if bookmark_id is invalid", async () => {
       const request = mockRequest({ keyword_name: "test-keyword" });
       const response = await POST(request, getPostParams("invalid"));
-      const responseBody = await response.json();
-
-      expect(response.status).toBe(400);
-      expect(responseBody.message).toBe("IDは正の整数である必要があります。");
+      await assertErrorResponse(response, 400, "IDは正の整数である必要があります。");
     });
 
     it("should return 400 if request body is not valid JSON", async () => {
@@ -147,10 +142,7 @@ describe("POST /api/bookmarks/[bookmark_id]/keywords", () => {
       } as unknown as NextRequest;
 
       const response = await POST(request, getPostParams("1"));
-      const responseBody = await response.json();
-
-      expect(response.status).toBe(400);
-      expect(responseBody.message).toBe("リクエストボディのJSONが不正です。");
+      await assertErrorResponse(response, 400, "リクエストボディのJSONが不正です。");
     });
 
     it.each([
@@ -160,10 +152,7 @@ describe("POST /api/bookmarks/[bookmark_id]/keywords", () => {
     ])("should return 400 if keyword_name $case", async ({ body }) => {
       const request = mockRequest(body);
       const response = await POST(request, getPostParams("1"));
-      const responseBody = await response.json();
-
-      expect(response.status).toBe(400);
-      expect(responseBody.message).toBe("キーワードを指定してください。");
+      await assertErrorResponse(response, 400, "キーワードを指定してください。");
     });
 
     it("should return 409 if the keyword is already associated with the bookmark", async () => {
@@ -183,11 +172,11 @@ describe("POST /api/bookmarks/[bookmark_id]/keywords", () => {
       // Act: 同じキーワードを再度登録しようとする
       const request = mockRequest({ keyword_name: keywordName });
       const response = await POST(request, getPostParams(String(bookmarkId)));
-      const responseBody = await response.json();
 
       // Assert
-      expect(response.status).toBe(409);
-      expect(responseBody.message).toBe(
+      await assertErrorResponse(
+        response,
+        409,
         "指定されたキーワードは既にこのブックマークに登録されています。"
       );
     });
@@ -201,10 +190,7 @@ describe("POST /api/bookmarks/[bookmark_id]/keywords", () => {
 
       const request = mockRequest({ keyword_name: "test-keyword" });
       const response = await POST(request, getPostParams("1"));
-      const responseBody = await response.json();
-
-      expect(response.status).toBe(500);
-      expect(responseBody.message).toBe("サーバー内部でエラーが発生しました。");
+      await assertErrorResponse(response, 500, "サーバー内部でエラーが発生しました。");
     });
   });
 });

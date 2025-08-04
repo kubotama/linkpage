@@ -2,6 +2,7 @@ import ActualDatabase from "better-sqlite3"; // Import the actual library
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 
 import { createBookmark, mockBookmarks } from "../../test-utils/bookmarkTestUtils";
+import { assertErrorResponse } from "../../test-utils/assertions";
 import { setupInMemoryDb } from "../../test-utils/db-setup";
 import { Bookmark } from "../../types/Bookmark";
 import { API_BOOKMARKS_URL } from "../utils/constants";
@@ -89,9 +90,7 @@ describe("ブックマーク追加APIのテスト (オンメモリDB)", () => {
   it("POST: 不正なJSONデータの場合はエラーを返す", async () => {
     const response = await POST(createPostRequest("invalid json"));
 
-    expect(response.status).toBe(400);
-    const json = await response.json();
-    expect(json.message).toEqual("リクエストボディのJSONが不正です。");
+    await assertErrorResponse(response, 400, "リクエストボディのJSONが不正です。");
   });
 
   it("POST: クエリエラー時に500エラーを返す", async () => {
@@ -107,9 +106,7 @@ describe("ブックマーク追加APIのテスト (オンメモリDB)", () => {
     });
 
     const response = await POST(createPostRequest(JSON.stringify(bookmark)));
-    expect(response.status).toBe(500);
-    const text = await response.json();
-    expect(text.message).toEqual("サーバー内部でエラーが発生しました。");
+    await assertErrorResponse(response, 500, "サーバー内部でエラーが発生しました。");
 
     prepareSpy.mockRestore();
   });
@@ -122,9 +119,7 @@ describe("ブックマーク追加APIのテスト (オンメモリDB)", () => {
 
     const response = await POST(createPostRequest(JSON.stringify(bookmark)));
 
-    expect(response.status).toBe(409);
-    const json = await response.json();
-    expect(json.message).toEqual("指定されたURLのブックマークは既に登録されています。");
+    await assertErrorResponse(response, 409, "指定されたURLのブックマークは既に登録されています。");
   });
 
   it("POST: URLが空文字の場合にエラーを返す", async () => {
@@ -134,9 +129,7 @@ describe("ブックマーク追加APIのテスト (オンメモリDB)", () => {
 
     const response = await POST(createPostRequest(JSON.stringify(bookmark)));
 
-    expect(response.status).toBe(400);
-    const json = await response.json();
-    expect(json.message).toEqual("URLを指定してください。");
+    await assertErrorResponse(response, 400, "URLを指定してください。");
   });
 
   it("POST: タイトルが空文字の場合にエラーを返す", async () => {
@@ -146,9 +139,7 @@ describe("ブックマーク追加APIのテスト (オンメモリDB)", () => {
 
     const response = await POST(createPostRequest(JSON.stringify(bookmark)));
 
-    expect(response.status).toBe(400);
-    const json = await response.json();
-    expect(json.message).toEqual("タイトルを指定してください。");
+    await assertErrorResponse(response, 400, "タイトルを指定してください。");
   });
 
   // --- OPTIONS Tests ---

@@ -1,6 +1,7 @@
 import ActualDatabase from "better-sqlite3"; // Import the actual library
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 
+import { assertErrorResponse } from "../../../test-utils/assertions";
 import { mockBookmarks } from "../../../test-utils/bookmarkTestUtils";
 import { setupInMemoryDb } from "../../../test-utils/db-setup";
 import { API_BOOKMARKS_URL } from "../../utils/constants";
@@ -129,9 +130,7 @@ describe("ブックマーク更新APIのテスト (オンメモリDB)", () => {
     const response = await PUT(request, context);
 
     // レスポンスステータスを確認 (404 Not Found)
-    expect(response.status).toBe(404);
-    const json = await response.json();
-    expect(json.message).toEqual("指定されたブックマークがありません。");
+    await assertErrorResponse(response, 404, "指定されたブックマークがありません。");
   });
 
   it("PUT: タイトルが指定されていない場合には400を返す。", async () => {
@@ -151,9 +150,7 @@ describe("ブックマーク更新APIのテスト (オンメモリDB)", () => {
     const response = await PUT(request, context);
 
     // レスポンスステータスを確認 (400: Bad Request)
-    expect(response.status).toBe(400);
-    const json = await response.json();
-    expect(json.message).toEqual("タイトルを指定してください。");
+    await assertErrorResponse(response, 400, "タイトルを指定してください。");
   });
 
   it("PUT: URLが指定されていない場合には400を返す。", async () => {
@@ -173,9 +170,7 @@ describe("ブックマーク更新APIのテスト (オンメモリDB)", () => {
     const response = await PUT(request, context);
 
     // レスポンスステータスを確認 (400: Bad Request)
-    expect(response.status).toBe(400);
-    const json = await response.json();
-    expect(json.message).toEqual("URLを指定してください。");
+    await assertErrorResponse(response, 400, "URLを指定してください。");
   });
 
   it("PUT: IDが指定されていない場合には400を返す。", async () => {
@@ -196,9 +191,7 @@ describe("ブックマーク更新APIのテスト (オンメモリDB)", () => {
     });
 
     // レスポンスステータスを確認 (400: Bad Request)
-    expect(response.status).toBe(400);
-    const json = await response.json();
-    expect(json.message).toEqual("IDは正の整数である必要があります。");
+    await assertErrorResponse(response, 400, "IDは正の整数である必要があります。");
   });
 
   it("PUT: 不正な形式(文字列)のIDが指定された場合には400を返す。", async () => {
@@ -220,9 +213,7 @@ describe("ブックマーク更新APIのテスト (オンメモリDB)", () => {
     });
 
     // レスポンスステータスを確認 (400: Bad Request)
-    expect(response.status).toEqual(400);
-    const json = await response.json();
-    expect(json.message).toEqual("IDは正の整数である必要があります。");
+    await assertErrorResponse(response, 400, "IDは正の整数である必要があります。");
   });
 
   it("PUT: 不正なJSONデータの場合は400を返す。", async () => {
@@ -235,9 +226,7 @@ describe("ブックマーク更新APIのテスト (オンメモリDB)", () => {
     const [request, context] = createPutRequest("invalid json data", bookmarkToUpdate.bookmark_id);
     const response = await PUT(request, context);
 
-    expect(response.status).toEqual(400);
-    const json = await response.json();
-    expect(json.message).toEqual("リクエストボディのJSONが不正です。");
+    await assertErrorResponse(response, 400, "リクエストボディのJSONが不正です。");
   });
 
   it("PUT: クエリエラー時に500エラーを返す", async () => {
@@ -262,9 +251,7 @@ describe("ブックマーク更新APIのテスト (オンメモリDB)", () => {
     );
     const response = await PUT(request, context);
 
-    expect(response.status).toBe(500);
-    const text = await response.json();
-    expect(text.message).toEqual("サーバー内部でエラーが発生しました。");
+    await assertErrorResponse(response, 500, "サーバー内部でエラーが発生しました。");
 
     prepareSpy.mockRestore();
   });
@@ -286,8 +273,6 @@ describe("ブックマーク更新APIのテスト (オンメモリDB)", () => {
     const response = await PUT(request, context);
 
     // レスポンスステータスを確認 (409: Conflict
-    expect(response.status).toEqual(409);
-    const json = await response.json();
-    expect(json.message).toEqual("指定されたURLのブックマークは既に登録されています。");
+    await assertErrorResponse(response, 409, "指定されたURLのブックマークは既に登録されています。");
   });
 });

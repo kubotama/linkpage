@@ -1,6 +1,7 @@
 import ActualDatabase from "better-sqlite3";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 
+import { assertErrorResponse } from "../../../test-utils/assertions";
 import { setupInMemoryDb } from "../../../test-utils/db-setup";
 import { getDb } from "../../bookmarks/database";
 import { API_KEYWORDS_URL } from "../../utils/constants";
@@ -38,19 +39,19 @@ describe("キーワードDELETE APIのテスト", () => {
     expect(response.status).toBe(204);
     // 削除後にもう一度削除を試みると404になることを確認
     const response2 = await DELETE(req, ctx);
-    expect(response2.status).toBe(404);
+    await assertErrorResponse(response2, 404, "指定されたキーワードが見つかりません。");
   });
 
   it("DELETE: 存在しないIDの場合404を返す", async () => {
     const [req, ctx] = createDeleteRequest("9999");
     const response = await DELETE(req, ctx);
-    expect(response.status).toBe(404);
+    await assertErrorResponse(response, 404, "指定されたキーワードが見つかりません。");
   });
 
   it("DELETE: 不正なIDの場合400を返す", async () => {
     const [req, ctx] = createDeleteRequest("abc");
     const response = await DELETE(req, ctx);
-    expect(response.status).toBe(400);
+    await assertErrorResponse(response, 400, "IDは正の整数である必要があります。");
   });
 
   it("DELETE: DBエラー時は500を返す", async () => {
@@ -59,6 +60,6 @@ describe("キーワードDELETE APIのテスト", () => {
     });
     const [req, ctx] = createDeleteRequest("1");
     const response = await DELETE(req, ctx);
-    expect(response.status).toBe(500);
+    await assertErrorResponse(response, 500, "サーバー内部でエラーが発生しました。");
   });
 });
