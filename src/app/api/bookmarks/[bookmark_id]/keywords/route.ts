@@ -1,7 +1,7 @@
 import { SqliteError } from "better-sqlite3";
 
 import { isKeyword, KeywordPostParams } from "../../../../types/Keyword";
-import { getId } from "../../../utils/id";
+import { getId, InvalidIdError } from "../../../utils/id";
 import {
   createDuplicateKeywordAssociationError,
   createInternalError,
@@ -38,15 +38,30 @@ const getOrCreateKeyword = (name: string): number => {
 };
 
 export async function POST(request: Request, { params }: KeywordPostParams) {
-  let bookmarkId: number;
-  let keywordName: string;
+  let bookmark_id: string;
   try {
-    const { bookmark_id } = await params;
-    try {
-      bookmarkId = Number(getId({ id: bookmark_id }));
-    } catch {
+    // Next.jsが提供するparamsのPromiseを解決する
+    ({ bookmark_id } = await params);
+  } catch (error) {
+    // paramsのPromiseがリジェクトされるという稀なケースをハンドル
+    console.error("Failed to resolve route params:", error);
+    return createInternalError(new Error("Failed to resolve route params"));
+  }
+
+  let bookmarkId: number;
+  try {
+    // IDの検証
+    bookmarkId = getId({ id: bookmark_id });
+  } catch (error) {
+    if (error instanceof InvalidIdError) {
       return createInvalidIdError({ id: bookmark_id });
     }
+    return createInternalError(error);
+  }
+
+  let keywordName: string;
+  try {
+    // リクエストボディの検証
     const payload = await request.json();
     const rawKeyword = payload?.keyword_name;
     if (typeof rawKeyword !== "string" || rawKeyword.trim() === "") {
@@ -54,21 +69,21 @@ export async function POST(request: Request, { params }: KeywordPostParams) {
     }
     keywordName = rawKeyword.trim();
   } catch (error) {
+    // JSONパースエラーなど
     return createInvalidBodyError(error);
   }
+
+  // DB操作
   try {
     const runInTransaction = db.transaction(() => {
       const bookmark = selectBookmarkStmt.get(bookmarkId);
       if (!bookmark) {
         throw new BookmarkNotFoundError();
       }
-
       const keywordId = getOrCreateKeyword(keywordName);
       const insertResult = insertBookmarkKeywordStmt.run(bookmarkId, keywordId);
       const bookmarkKeywordRowid = insertResult.lastInsertRowid;
       if (bookmarkKeywordRowid > BigInt(Number.MAX_SAFE_INTEGER)) {
-        // JSONはbigintをサポートしておらず、このIDはnumberとして安全に表現するには大きすぎます。
-        // 破損したIDを返すよりも、エラーをスローする方が安全です。
         throw new Error(`Generated bookmark_keyword_id is too large: ${bookmarkKeywordRowid}`);
       }
       return {
@@ -77,16 +92,14 @@ export async function POST(request: Request, { params }: KeywordPostParams) {
         keyword_name: keywordName,
       };
     });
-
     const result = runInTransaction.immediate();
     return new Response(
       JSON.stringify({ message: "キーワードをブックマークに追加しました。", ...result }),
       { status: 201, headers: { "Content-Type": "application/json" } }
     );
   } catch (error: unknown) {
-    // BookmarkNotFoundErrorはカスタムエラーなので、他のエラーより先にチェック
     if (error instanceof BookmarkNotFoundError) {
-      return createNotFoundBookmarkError(bookmarkId.toString());
+      return createNotFoundBookmarkError(bookmarkId);
     }
     if (error instanceof SqliteError && error.code === "SQLITE_CONSTRAINT_UNIQUE") {
       return createDuplicateKeywordAssociationError(bookmarkId, keywordName);
