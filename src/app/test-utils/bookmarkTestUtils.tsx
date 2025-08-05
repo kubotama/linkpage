@@ -10,9 +10,9 @@ import { Keyword } from "../types/Keyword";
 /** モックレスポンスのJSONボディの型 */
 interface MockResponseJson {
   message: string;
-  keyword_id: number;
-  bookmark_keyword_id: number;
-  keyword_name: string;
+  keyword_id?: number;
+  bookmark_keyword_id?: number;
+  keyword_name?: string;
 }
 
 export function createBookmark({
