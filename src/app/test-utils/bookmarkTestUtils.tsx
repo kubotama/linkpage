@@ -172,6 +172,8 @@ export const createMockResponse = ({
   keyword_id,
   bookmark_keyword_id,
 }: CreateMockResponseOptions = {}) => {
+  const DEFAULT_KEYWORD_ID = 1;
+  const DEFAULT_BOOKMARK_KEYWORD_ID = 123;
   const responseStatus = status ?? 201;
   const response: {
     ok: boolean;
@@ -191,8 +193,8 @@ export const createMockResponse = ({
     // キーワード成功応答の場合のみ、関連フィールドを追加
     if (keyword_name !== undefined) {
       body.keyword_name = keyword_name;
-      body.keyword_id = keyword_id ?? 1;
-      body.bookmark_keyword_id = bookmark_keyword_id ?? 123;
+      body.keyword_id = keyword_id ?? DEFAULT_KEYWORD_ID;
+      body.bookmark_keyword_id = bookmark_keyword_id ?? DEFAULT_BOOKMARK_KEYWORD_ID;
     }
     response.json = async () => body;
   }
