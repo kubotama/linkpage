@@ -9,9 +9,14 @@ export const BookmarkTable: React.FC<{
 }> = ({ bookmarks, selectedBookmarkId, onSelectBookmarkId }) => {
   return (
     <table aria-label="bookmarks">
-      <thead className="p-1 text-base font-bold border border-gray-700 bg-slate-700 text-gray-200">
+      <thead>
         <tr>
-          <th scope="col">タイトル</th>
+          <th
+            className="p-1 text-base font-bold border border-gray-700 bg-slate-700 text-gray-200"
+            scope="col"
+          >
+            タイトル
+          </th>
         </tr>
       </thead>
       <tbody>
