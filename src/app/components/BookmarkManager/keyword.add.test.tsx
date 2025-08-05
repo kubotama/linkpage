@@ -9,8 +9,8 @@ import { ADD_BUTTON_ROLE_NAME, KEYWORD_ROLE_NAME } from "../../constants/constan
 import {
   buildMockBookmarksWithKeywords,
   clickBookmark,
-  findBookmarkWithAtLeastNKeywords,
   createMockResponse,
+  findBookmarkWithAtLeastNKeywords,
 } from "../../test-utils/bookmarkTestUtils";
 import { Bookmark } from "../../types/Bookmark";
 import { BookmarkManager } from "../BookmarkManager";
@@ -45,7 +45,10 @@ describe("選択されたブックマークにキーワードを追加", () => {
     beforeEach(async () => {
       mockFetch.mockReset();
       mockFetch.mockResolvedValueOnce(
-        createMockResponse("キーワードをブックマークに追加しました。", "テストキーワード")
+        createMockResponse({
+          message: "キーワードをブックマークに追加しました。",
+          keywordName: "テストキーワード",
+        })
       );
     });
 

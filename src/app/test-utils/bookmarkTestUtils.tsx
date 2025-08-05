@@ -7,6 +7,14 @@ import { FORM_BOOKMARK_DETAIL, TITLE_ROLE_NAME, URL_ROLE_NAME } from "../constan
 import { Bookmark } from "../types/Bookmark";
 import { Keyword } from "../types/Keyword";
 
+/** モックレスポンスのJSONボディの型 */
+interface MockResponseJson {
+  message: string;
+  keyword_id: number;
+  bookmark_keyword_id: number;
+  keyword_name: string;
+}
+
 export function createBookmark({
   bookmark_id = 0,
   url = "",
@@ -147,20 +155,42 @@ export const findBookmarkWithAtLeastNKeywords = (
   return bookmarkToSelect;
 };
 
-export const createMockResponse = (
-  message: string,
-  keywordName: string,
-  options: {
-    keyword_id?: number;
-    bookmark_keyword_id?: number;
-  } = {}
-) => ({
-  ok: true,
-  status: 201,
-  json: async () => ({
-    message: message,
-    keyword_id: options.keyword_id ?? 1,
-    bookmark_keyword_id: options.bookmark_keyword_id ?? 123,
-    keyword_name: keywordName,
-  }),
-});
+interface CreateMockResponseOptions {
+  message?: string;
+  keywordName?: string;
+  isOk?: boolean;
+  status?: number;
+  keyword_id?: number;
+  bookmark_keyword_id?: number;
+}
+
+export const createMockResponse = ({
+  message,
+  keywordName,
+  isOk,
+  status,
+  keyword_id,
+  bookmark_keyword_id,
+}: CreateMockResponseOptions = {}) => {
+  const responseStatus = status ?? 201;
+  const response: {
+    ok: boolean;
+    status: number;
+    json?: () => Promise<MockResponseJson>;
+  } = {
+    ok: isOk ?? true,
+    status: responseStatus,
+  };
+
+  // 204 No Contentのようなボディを持たないレスポンスを考慮
+  if (responseStatus !== 204) {
+    response.json = async (): Promise<MockResponseJson> => ({
+      message: message ?? "",
+      keyword_id: keyword_id ?? 1,
+      bookmark_keyword_id: bookmark_keyword_id ?? 123,
+      keyword_name: keywordName ?? "",
+    });
+  }
+
+  return response;
+};
