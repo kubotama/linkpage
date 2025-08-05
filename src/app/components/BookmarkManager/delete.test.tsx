@@ -6,8 +6,12 @@ import { beforeEach, describe, expect, it, vi } from "vitest";
 import { fireEvent, render, screen, waitFor } from "@testing-library/react";
 
 import { BOOKMARKS_ENDPOINT } from "../../constants/apiEndpoints";
-import { clickBookmark, mockBookmarks } from "../../test-utils/bookmarkTestUtils";
 import { DELETE_BUTTON_ROLE_NAME } from "../../constants/constants";
+import {
+  clickBookmark,
+  createMockResponse,
+  mockBookmarks,
+} from "../../test-utils/bookmarkTestUtils";
 import { BookmarkManager } from "../BookmarkManager";
 
 const mockFetch = vi.fn();
@@ -82,10 +86,7 @@ describe("削除ボタン", () => {
     // fetchMock.resetMocks();
     // fetchMock.mockResponseOnce("", { status: 204 });
     mockFetch.mockReset();
-    mockFetch.mockResolvedValueOnce({
-      ok: true,
-      status: 204,
-    });
+    mockFetch.mockResolvedValueOnce(createMockResponse({ isOk: true, status: 204 }));
 
     const deleteButton = screen.getByRole("button", {
       name: DELETE_BUTTON_ROLE_NAME,
@@ -132,14 +133,13 @@ describe("削除ボタン", () => {
     await clickBookmark(bookmarkToSelect);
 
     mockFetch.mockReset();
-    mockFetch.mockResolvedValueOnce({
-      ok: false, // 404の場合は false
-      status: 404,
-      headers: { "Content-Type": "application/json" },
-      json: async () => ({
+    mockFetch.mockResolvedValueOnce(
+      createMockResponse({
         message: "指定されたブックマークがありません。",
-      }),
-    });
+        isOk: false,
+        status: 404,
+      })
+    );
 
     const deleteButton = screen.getByRole("button", {
       name: DELETE_BUTTON_ROLE_NAME,
@@ -179,14 +179,13 @@ describe("削除ボタン", () => {
     await clickBookmark(bookmarkToSelect);
 
     mockFetch.mockReset();
-    mockFetch.mockResolvedValueOnce({
-      ok: false, // 400の場合は false
-      status: 400,
-      headers: { "Content-Type": "application/json" },
-      json: async () => ({
+    mockFetch.mockResolvedValueOnce(
+      createMockResponse({
         message: "リクエストにIDがありませんでした。",
-      }),
-    });
+        isOk: false,
+        status: 400,
+      })
+    );
 
     const deleteButton = screen.getByRole("button", {
       name: DELETE_BUTTON_ROLE_NAME,
@@ -222,14 +221,13 @@ describe("削除ボタン", () => {
     });
 
     mockFetch.mockReset();
-    mockFetch.mockResolvedValueOnce({
-      ok: false, // 500の場合は false
-      status: 500,
-      headers: { "Content-Type": "application/json" },
-      json: async () => ({
+    mockFetch.mockResolvedValueOnce(
+      createMockResponse({
         message: "サーバーで予期せぬエラーが発生しました。",
-      }),
-    });
+        isOk: false,
+        status: 500,
+      })
+    );
 
     // クリックするブックマークを選択（例：2番目のブックマーク）
     const bookmarkToSelect = mockBookmarks[1]; // Google

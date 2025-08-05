@@ -7,6 +7,14 @@ import { FORM_BOOKMARK_DETAIL, TITLE_ROLE_NAME, URL_ROLE_NAME } from "../constan
 import { Bookmark } from "../types/Bookmark";
 import { Keyword } from "../types/Keyword";
 
+/** モックレスポンスのJSONボディの型 */
+interface MockResponseJson {
+  message: string;
+  keyword_id?: number;
+  bookmark_keyword_id?: number;
+  keyword_name?: string;
+}
+
 export function createBookmark({
   bookmark_id = 0,
   url = "",
@@ -145,4 +153,51 @@ export const findBookmarkWithAtLeastNKeywords = (
     throw new Error(`No bookmark found with at least ${minKeywords} keywords.`);
   }
   return bookmarkToSelect;
+};
+
+interface CreateMockResponseOptions {
+  message?: string;
+  keyword_name?: string;
+  isOk?: boolean;
+  status?: number;
+  keyword_id?: number;
+  bookmark_keyword_id?: number;
+}
+
+export const createMockResponse = ({
+  message,
+  keyword_name,
+  isOk,
+  status,
+  keyword_id,
+  bookmark_keyword_id,
+}: CreateMockResponseOptions = {}) => {
+  const DEFAULT_KEYWORD_ID = 1;
+  const DEFAULT_BOOKMARK_KEYWORD_ID = 123;
+  const responseStatus = status ?? 201;
+  const response: {
+    ok: boolean;
+    status: number;
+    json?: () => Promise<Partial<MockResponseJson>>;
+  } = {
+    ok: isOk ?? (responseStatus >= 200 && responseStatus < 300),
+    status: responseStatus,
+  };
+
+  // 204 No Contentのようなボディを持たないレスポンスを考慮
+  if (responseStatus !== 204) {
+    const body: Partial<MockResponseJson> = {};
+    if (message !== undefined) {
+      body.message = message;
+    }
+    // キーワード成功応答の場合のみ、関連フィールドを追加
+    if (keyword_name !== undefined) {
+      body.keyword_name = keyword_name;
+      body.keyword_id = keyword_id ?? DEFAULT_KEYWORD_ID;
+      body.bookmark_keyword_id = bookmark_keyword_id ?? DEFAULT_BOOKMARK_KEYWORD_ID;
+    }
+    response.json = async () => body;
+  }
+
+  return response;
 };
