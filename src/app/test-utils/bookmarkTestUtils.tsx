@@ -146,3 +146,21 @@ export const findBookmarkWithAtLeastNKeywords = (
   }
   return bookmarkToSelect;
 };
+
+export const createMockResponse = (
+  message: string,
+  keywordName: string,
+  options: {
+    keyword_id?: number;
+    bookmark_keyword_id?: number;
+  } = {}
+) => ({
+  ok: true,
+  status: 201,
+  json: async () => ({
+    message: message,
+    keyword_id: options.keyword_id ?? 1,
+    bookmark_keyword_id: options.bookmark_keyword_id ?? 123,
+    keyword_name: keywordName,
+  }),
+});
