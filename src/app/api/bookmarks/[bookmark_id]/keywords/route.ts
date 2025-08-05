@@ -51,7 +51,7 @@ export async function POST(request: Request, { params }: KeywordPostParams) {
   let bookmarkId: number;
   try {
     // IDの検証
-    bookmarkId = Number(getId({ id: bookmark_id }));
+    bookmarkId = getId({ id: bookmark_id });
   } catch (error) {
     if (error instanceof InvalidIdError) {
       return createInvalidIdError({ id: bookmark_id });
