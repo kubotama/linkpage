@@ -157,7 +157,7 @@ export const findBookmarkWithAtLeastNKeywords = (
 
 interface CreateMockResponseOptions {
   message?: string;
-  keywordName?: string;
+  keyword_name?: string;
   isOk?: boolean;
   status?: number;
   keyword_id?: number;
@@ -166,7 +166,7 @@ interface CreateMockResponseOptions {
 
 export const createMockResponse = ({
   message,
-  keywordName,
+  keyword_name,
   isOk,
   status,
   keyword_id,
@@ -176,20 +176,25 @@ export const createMockResponse = ({
   const response: {
     ok: boolean;
     status: number;
-    json?: () => Promise<MockResponseJson>;
+    json?: () => Promise<Partial<MockResponseJson>>;
   } = {
-    ok: isOk ?? true,
+    ok: isOk ?? (responseStatus >= 200 && responseStatus < 300),
     status: responseStatus,
   };
 
   // 204 No Contentのようなボディを持たないレスポンスを考慮
   if (responseStatus !== 204) {
-    response.json = async (): Promise<MockResponseJson> => ({
-      message: message ?? "",
-      keyword_id: keyword_id ?? 1,
-      bookmark_keyword_id: bookmark_keyword_id ?? 123,
-      keyword_name: keywordName ?? "",
-    });
+    const body: Partial<MockResponseJson> = {};
+    if (message !== undefined) {
+      body.message = message;
+    }
+    // キーワード成功応答の場合のみ、関連フィールドを追加
+    if (keyword_name !== undefined) {
+      body.keyword_name = keyword_name;
+      body.keyword_id = keyword_id ?? 1;
+      body.bookmark_keyword_id = bookmark_keyword_id ?? 123;
+    }
+    response.json = async () => body;
   }
 
   return response;

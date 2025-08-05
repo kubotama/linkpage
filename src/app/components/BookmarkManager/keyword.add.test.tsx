@@ -47,7 +47,7 @@ describe("選択されたブックマークにキーワードを追加", () => {
       mockFetch.mockResolvedValueOnce(
         createMockResponse({
           message: "キーワードをブックマークに追加しました。",
-          keywordName: "テストキーワード",
+          keyword_name: "テストキーワード",
         })
       );
     });
