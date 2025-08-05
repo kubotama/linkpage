@@ -7,7 +7,11 @@ import { fireEvent, render, screen, waitFor } from "@testing-library/react";
 
 import { BOOKMARKS_ENDPOINT } from "../../constants/apiEndpoints";
 import { TITLE_ROLE_NAME, UPDATE_BUTTON_ROLE_NAME, URL_ROLE_NAME } from "../../constants/constants";
-import { clickBookmark, mockBookmarks } from "../../test-utils/bookmarkTestUtils";
+import {
+  clickBookmark,
+  createMockResponse,
+  mockBookmarks,
+} from "../../test-utils/bookmarkTestUtils";
 import { BookmarkManager } from "../BookmarkManager";
 import { Bookmark } from "../../types/Bookmark";
 
@@ -88,10 +92,12 @@ describe("タイトルの更新ボタン", () => {
 
     const updateUrl = "https://www.google.com/mail";
     const updateTitle = "更新されたタイトル";
-    mockFetch.mockResolvedValueOnce({
-      ok: true,
-      status: 204,
-    });
+    mockFetch.mockResolvedValueOnce(
+      createMockResponse({
+        isOk: true,
+        status: 204,
+      })
+    );
 
     await act(async () => {
       fireEvent.change(urlInput, { target: { value: updateUrl } });
@@ -167,13 +173,13 @@ describe("タイトルの更新ボタン", () => {
 
     const updateUrl = mockBookmarks[2].url;
     const updateTitle = "更新されたタイトル";
-    mockFetch.mockResolvedValueOnce({
-      ok: false, // 409の場合は false
-      status: 409,
-      json: async () => ({
+    mockFetch.mockResolvedValueOnce(
+      createMockResponse({
+        isOk: false,
+        status: 409,
         message: "指定されたURLのブックマークは既に登録されています。",
-      }),
-    });
+      })
+    );
 
     await act(async () => {
       fireEvent.change(urlInput, { target: { value: updateUrl } });
@@ -207,14 +213,13 @@ describe("タイトルの更新ボタン", () => {
     const bookmarkToSelect = mockBookmarks[1]; // Google
     await clickBookmark(bookmarkToSelect);
 
-    mockFetch.mockResolvedValueOnce({
-      ok: false, // 404の場合は false
-      status: 404,
-      headers: { "Content-Type": "application/json" },
-      json: async () => ({
+    mockFetch.mockResolvedValueOnce(
+      createMockResponse({
+        isOk: false,
+        status: 404,
         message: "指定されたブックマークがありません。",
-      }),
-    });
+      })
+    );
 
     const updateButton = screen.getByRole("button", {
       name: UPDATE_BUTTON_ROLE_NAME,
@@ -250,15 +255,13 @@ describe("タイトルの更新ボタン", () => {
     const bookmarkToSelect = mockBookmarks[1]; // Google
     await clickBookmark(bookmarkToSelect);
 
-    mockFetch.mockReset();
-    mockFetch.mockResolvedValueOnce({
-      ok: false, // 400の場合は false
-      status: 400,
-      headers: { "Content-Type": "application/json" },
-      json: async () => ({
+    mockFetch.mockResolvedValueOnce(
+      createMockResponse({
+        isOk: false,
+        status: 400,
         message: "タイトルが指定されていません。",
-      }),
-    });
+      })
+    );
 
     const updateButton = screen.getByRole("button", {
       name: UPDATE_BUTTON_ROLE_NAME,
@@ -294,14 +297,13 @@ describe("タイトルの更新ボタン", () => {
     const bookmarkToSelect = mockBookmarks[1]; // Google
     await clickBookmark(bookmarkToSelect);
 
-    mockFetch.mockResolvedValueOnce({
-      ok: false, // 400の場合は false
-      status: 400,
-      headers: { "Content-Type": "application/json" },
-      json: async () => ({
+    mockFetch.mockResolvedValueOnce(
+      createMockResponse({
+        isOk: false,
+        status: 400,
         message: "リクエストにIDがありませんでした。",
-      }),
-    });
+      })
+    );
 
     const updateButton = screen.getByRole("button", {
       name: UPDATE_BUTTON_ROLE_NAME,
@@ -337,14 +339,13 @@ describe("タイトルの更新ボタン", () => {
     const bookmarkToSelect = mockBookmarks[1]; // Google
     await clickBookmark(bookmarkToSelect);
 
-    mockFetch.mockResolvedValueOnce({
-      ok: false, // 400の場合は false
-      status: 400,
-      headers: { "Content-Type": "application/json" },
-      json: async () => ({
+    mockFetch.mockResolvedValueOnce(
+      createMockResponse({
+        isOk: false,
+        status: 400,
         message: "IDは正の整数である必要があります。",
-      }),
-    });
+      })
+    );
 
     const updateButton = screen.getByRole("button", {
       name: UPDATE_BUTTON_ROLE_NAME,
@@ -380,14 +381,13 @@ describe("タイトルの更新ボタン", () => {
     const bookmarkToSelect = mockBookmarks[1]; // Google
     await clickBookmark(bookmarkToSelect);
 
-    mockFetch.mockResolvedValueOnce({
-      ok: false, // 500の場合は false
-      status: 500,
-      headers: { "Content-Type": "application/json" },
-      json: async () => ({
+    mockFetch.mockResolvedValueOnce(
+      createMockResponse({
+        isOk: false,
+        status: 500,
         message: "サーバーで予期せぬエラーが発生しました。",
-      }),
-    });
+      })
+    );
 
     const updateButton = screen.getByRole("button", {
       name: UPDATE_BUTTON_ROLE_NAME,
