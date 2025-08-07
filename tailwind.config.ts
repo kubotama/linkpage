@@ -1,5 +1,7 @@
 import type { Config } from "tailwindcss";
 
+const keywordWidth = "450px";
+
 export default {
   content: [
     "./src/pages/**/*.{js,ts,jsx,tsx,mdx}",
@@ -15,10 +17,12 @@ export default {
       width: {
         "bookmark-list": "800px",
         "bookmark-details": "500px",
+        "keyword-list": keywordWidth,
       },
       minWidth: {
         "bookmark-details": "500px",
-        "keyword-input": "450px",
+        "keyword-list": keywordWidth,
+        "keyword-input": keywordWidth,
       },
     },
   },

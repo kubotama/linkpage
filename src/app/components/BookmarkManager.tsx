@@ -104,7 +104,10 @@ export const BookmarkManager = () => {
                     </ActionButton>
                   </div>
                 </fieldset>
-                <KeywordTable keywords={selectedBookmark.keywords} />
+                <KeywordTable
+                  keywords={selectedBookmark.keywords}
+                  className="mt-2 w-keyword-list"
+                />
               </form>
             )}
           </div>
