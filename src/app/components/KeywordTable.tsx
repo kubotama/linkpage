@@ -7,7 +7,10 @@ type KeywordTableProps = {
   className?: string;
 };
 
-export const KeywordTable = ({ keywords = [], className }: KeywordTableProps) => {
+export const KeywordTable = ({
+  keywords = [],
+  className,
+}: KeywordTableProps): React.ReactElement => {
   return (
     <table aria-label="キーワードのテーブル" className={className}>
       <thead className="sr-only">
