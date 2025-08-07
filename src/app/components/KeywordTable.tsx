@@ -7,7 +7,7 @@ type KeywordTableProps = {
   className?: string;
 };
 
-export const KeywordTable: React.FC<KeywordTableProps> = ({ keywords = [], className }) => {
+export const KeywordTable = ({ keywords = [], className }: KeywordTableProps) => {
   return (
     <table aria-label="キーワードのテーブル" className={className}>
       <thead className="sr-only">
