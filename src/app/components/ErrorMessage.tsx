@@ -1,10 +1,16 @@
 import { ActionButton } from "./ActionButton";
 
-export const ErrorMessage: React.FC<{
+type ErrorMessageProps = {
   textMessage: string;
   isError: boolean;
   handleErrorClose: () => void;
-}> = ({ textMessage, isError, handleErrorClose }) => {
+};
+
+export const ErrorMessage = ({
+  textMessage,
+  isError,
+  handleErrorClose,
+}: ErrorMessageProps): React.ReactElement => {
   return (
     <div className="mb-1 flex justify-center items-center h-8">
       {textMessage && (
@@ -12,13 +18,7 @@ export const ErrorMessage: React.FC<{
           {isError && ( // エラーメッセージがある場合のみ「閉じる」ボタンを表示
             <ActionButton onClick={handleErrorClose}>閉じる</ActionButton>
           )}
-          <div
-            data-testid="bookmark-message"
-            className="ml-2"
-            style={{
-              color: isError ? "red" : "inherit", // エラーの場合は文字色を赤に
-            }}
-          >
+          <div data-testid="bookmark-message" className={`ml-2 ${isError ? "text-red-500" : ""}`}>
             {textMessage}
           </div>
         </>
