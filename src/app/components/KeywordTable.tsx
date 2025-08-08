@@ -2,10 +2,15 @@ import React from "react";
 
 import { Keyword } from "../types/Keyword";
 
-export const KeywordTable: React.FC<{
+type KeywordTableProps = {
   keywords?: Keyword[];
   className?: string;
-}> = ({ keywords, className }) => {
+};
+
+export const KeywordTable = ({
+  keywords = [],
+  className,
+}: KeywordTableProps): React.ReactElement => {
   return (
     <table aria-label="キーワードのテーブル" className={className}>
       <thead className="sr-only">
@@ -14,7 +19,7 @@ export const KeywordTable: React.FC<{
         </tr>
       </thead>
       <tbody>
-        {(keywords || []).map((keyword) => (
+        {keywords.map((keyword) => (
           <tr key={keyword.keyword_id}>
             <td className="p-1 text-sm border border-gray-700 bg-gray-100 text-gray-900">
               {keyword.keyword_name}
