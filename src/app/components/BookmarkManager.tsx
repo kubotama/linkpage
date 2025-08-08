@@ -47,13 +47,12 @@ export const BookmarkManager = () => {
     <>
       <div className="mt-5 mb-5">
         <div className="flex space-x-4">
-          <div className="w-bookmark-list">
-            <BookmarkTable
-              bookmarks={bookmarks}
-              selectedBookmarkId={selectedBookmarkId}
-              onSelectBookmarkId={setSelectedBookmarkId}
-            />
-          </div>
+          <BookmarkTable
+            bookmarks={bookmarks}
+            selectedBookmarkId={selectedBookmarkId}
+            onSelectBookmarkId={setSelectedBookmarkId}
+            className="w-bookmark-list"
+          />
           <div className="w-bookmark-details">
             <div className="mb-1 flex justify-center items-center h-8">
               <ErrorMessage
