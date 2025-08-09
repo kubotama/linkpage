@@ -43,7 +43,7 @@ describe("BookmarkManager", () => {
     await waitFor(() => {
       const errorSpan = screen.getByTestId("bookmark-message");
       expect(errorSpan).toHaveTextContent("URLが無効です。正しいURLを入力してください。");
-      expect(errorSpan).toHaveStyle("color: rgb(255, 0, 0)");
+      expect(errorSpan).toHaveClass("text-red-500");
     });
 
     const closeButton = screen.getByRole("button", {

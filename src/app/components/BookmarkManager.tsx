@@ -54,13 +54,12 @@ export const BookmarkManager = () => {
             className="w-bookmark-list"
           />
           <div className="w-bookmark-details">
-            <div className="mb-1 flex justify-center items-center h-8">
-              <ErrorMessage
-                textMessage={textMessage}
-                isError={isError}
-                handleErrorClose={handleErrorClose}
-              />
-            </div>
+            <ErrorMessage
+              textMessage={textMessage}
+              isError={isError}
+              handleErrorClose={handleErrorClose}
+              className="mb-1 flex justify-center items-center h-8"
+            />
             {selectedBookmark && (
               <form aria-label={FORM_BOOKMARK_DETAIL} onSubmit={(e) => e.preventDefault()}>
                 <div className="mb-2 flex justify-between">

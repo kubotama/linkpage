@@ -4,15 +4,17 @@ type ErrorMessageProps = {
   textMessage: string;
   isError: boolean;
   handleErrorClose: () => void;
+  className?: string;
 };
 
 export const ErrorMessage = ({
   textMessage,
   isError,
   handleErrorClose,
+  className,
 }: ErrorMessageProps): React.ReactElement => {
   return (
-    <div className="mb-1 flex justify-center items-center h-8">
+    <div className={className ?? ""}>
       {textMessage && (
         <>
           {isError && ( // エラーメッセージがある場合のみ「閉じる」ボタンを表示
