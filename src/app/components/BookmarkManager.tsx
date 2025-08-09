@@ -17,7 +17,11 @@ import { BookmarkTable } from "./BookmarkTable";
 import { ErrorMessage } from "./ErrorMessage";
 import { KeywordTable } from "./KeywordTable";
 
-export const BookmarkManager = () => {
+type BookmarkManagerProps = {
+  className?: string;
+};
+
+export const BookmarkManager = ({ className = "" }: BookmarkManagerProps) => {
   const {
     bookmarks,
     isError,
@@ -44,73 +48,68 @@ export const BookmarkManager = () => {
   );
 
   return (
-    <>
-      <div className="mt-5 mb-5">
-        <div className="flex space-x-4">
-          <BookmarkTable
-            bookmarks={bookmarks}
-            selectedBookmarkId={selectedBookmarkId}
-            onSelectBookmarkId={setSelectedBookmarkId}
-            className="w-bookmark-list"
+    <div className={`mt-5 mb-5 ${className}`}>
+      <div className="flex space-x-4">
+        <BookmarkTable
+          bookmarks={bookmarks}
+          selectedBookmarkId={selectedBookmarkId}
+          onSelectBookmarkId={setSelectedBookmarkId}
+          className="w-bookmark-list"
+        />
+        <div className="w-bookmark-details">
+          <ErrorMessage
+            textMessage={textMessage}
+            isError={isError}
+            handleErrorClose={handleErrorClose}
+            className="mb-1 flex justify-center items-center h-8"
           />
-          <div className="w-bookmark-details">
-            <ErrorMessage
-              textMessage={textMessage}
-              isError={isError}
-              handleErrorClose={handleErrorClose}
-              className="mb-1 flex justify-center items-center h-8"
-            />
-            {selectedBookmark && (
-              <form aria-label={FORM_BOOKMARK_DETAIL} onSubmit={(e) => e.preventDefault()}>
-                <div className="mb-2 flex justify-between">
-                  <ActionButton onClick={updateClick}>{UPDATE_BUTTON_ROLE_NAME}</ActionButton>
-                  <ActionButton onClick={deleteClick}>{DELETE_BUTTON_ROLE_NAME}</ActionButton>
-                  <ActionButton onClick={urlClick}>{PARAMETER_BUTTON_ROLE_NAME}</ActionButton>
-                  <ActionButton onClick={pathClick}>{ARROW_BUTTON_ROLE_NAME}</ActionButton>
-                </div>
-                <div className="mb-1 flex justify-center">
-                  <BookmarkInputField
-                    id="url"
-                    placeholder="URL"
-                    label="URL"
-                    value={textUrl}
-                    onChange={(e) => setTextUrl(e.target.value)}
-                  />
-                </div>
-                <div className="mb-1 flex justify-center">
-                  <BookmarkInputField
-                    id="title"
-                    placeholder="タイトル"
-                    label="タイトル"
-                    value={textTitle}
-                    onChange={(e) => setTextTitle(e.target.value)}
-                  />
-                </div>
-                <fieldset className="mt-5 flex items-end justify-start border-none p-0">
-                  <legend className="sr-only">{FIELDSET_KEYWORD_LABEL}</legend>
-                  <BookmarkInputField
-                    id="keyword"
-                    placeholder="キーワードを入力してください"
-                    label={KEYWORD_ROLE_NAME}
-                    value={textKeyword}
-                    className="min-w-keyword-input"
-                    onChange={(e) => setTextKeyword(e.target.value)}
-                  />
-                  <div className="ml-2">
-                    <ActionButton onClick={addKeywordClick} className="w-auto">
-                      {ADD_BUTTON_ROLE_NAME}
-                    </ActionButton>
-                  </div>
-                </fieldset>
-                <KeywordTable
-                  keywords={selectedBookmark.keywords}
-                  className="mt-2 w-keyword-list"
+          {selectedBookmark && (
+            <form aria-label={FORM_BOOKMARK_DETAIL} onSubmit={(e) => e.preventDefault()}>
+              <div className="mb-2 flex justify-between">
+                <ActionButton onClick={updateClick}>{UPDATE_BUTTON_ROLE_NAME}</ActionButton>
+                <ActionButton onClick={deleteClick}>{DELETE_BUTTON_ROLE_NAME}</ActionButton>
+                <ActionButton onClick={urlClick}>{PARAMETER_BUTTON_ROLE_NAME}</ActionButton>
+                <ActionButton onClick={pathClick}>{ARROW_BUTTON_ROLE_NAME}</ActionButton>
+              </div>
+              <div className="mb-1 flex justify-center">
+                <BookmarkInputField
+                  id="url"
+                  placeholder="URL"
+                  label="URL"
+                  value={textUrl}
+                  onChange={(e) => setTextUrl(e.target.value)}
                 />
-              </form>
-            )}
-          </div>
+              </div>
+              <div className="mb-1 flex justify-center">
+                <BookmarkInputField
+                  id="title"
+                  placeholder="タイトル"
+                  label="タイトル"
+                  value={textTitle}
+                  onChange={(e) => setTextTitle(e.target.value)}
+                />
+              </div>
+              <fieldset className="mt-5 flex items-end justify-start border-none p-0">
+                <legend className="sr-only">{FIELDSET_KEYWORD_LABEL}</legend>
+                <BookmarkInputField
+                  id="keyword"
+                  placeholder="キーワードを入力してください"
+                  label={KEYWORD_ROLE_NAME}
+                  value={textKeyword}
+                  className="min-w-keyword-input"
+                  onChange={(e) => setTextKeyword(e.target.value)}
+                />
+                <div className="ml-2">
+                  <ActionButton onClick={addKeywordClick} className="w-auto">
+                    {ADD_BUTTON_ROLE_NAME}
+                  </ActionButton>
+                </div>
+              </fieldset>
+              <KeywordTable keywords={selectedBookmark.keywords} className="mt-2 w-keyword-list" />
+            </form>
+          )}
         </div>
       </div>
-    </>
+    </div>
   );
 };
