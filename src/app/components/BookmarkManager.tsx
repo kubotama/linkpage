@@ -93,7 +93,7 @@ export const BookmarkManager = () => {
                     placeholder="キーワードを入力してください"
                     label={KEYWORD_ROLE_NAME}
                     value={textKeyword}
-                    minWidthClass="min-w-keyword-input"
+                    className="min-w-keyword-input"
                     onChange={(e) => setTextKeyword(e.target.value)}
                   />
                   <div className="ml-2">
