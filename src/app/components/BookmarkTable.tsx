@@ -13,7 +13,7 @@ export const BookmarkTable = ({
   bookmarks,
   selectedBookmarkId,
   onSelectBookmarkId,
-  className,
+  className = "",
 }: BookmarkTableProps): React.ReactElement => {
   return (
     <table aria-label="bookmarks" className={className}>

@@ -11,10 +11,10 @@ export const ErrorMessage = ({
   textMessage,
   isError,
   handleErrorClose,
-  className,
+  className = "",
 }: ErrorMessageProps): React.ReactElement => {
   return (
-    <div className={className ?? ""}>
+    <div className={className}>
       {textMessage && (
         <>
           {isError && ( // エラーメッセージがある場合のみ「閉じる」ボタンを表示
