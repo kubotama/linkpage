@@ -97,7 +97,7 @@ export const BookmarkManager = () => {
                     onChange={(e) => setTextKeyword(e.target.value)}
                   />
                   <div className="ml-2">
-                    <ActionButton onClick={addKeywordClick} widthClass="w-auto">
+                    <ActionButton onClick={addKeywordClick} className="w-auto">
                       {ADD_BUTTON_ROLE_NAME}
                     </ActionButton>
                   </div>
