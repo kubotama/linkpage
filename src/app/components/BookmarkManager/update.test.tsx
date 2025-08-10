@@ -1,6 +1,5 @@
 import "@testing-library/jest-dom";
 
-import { act } from "react";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 
 import { fireEvent, render, screen, waitFor } from "@testing-library/react";
@@ -9,6 +8,7 @@ import { BOOKMARKS_ENDPOINT } from "../../constants/apiEndpoints";
 import { TITLE_ROLE_NAME, UPDATE_BUTTON_ROLE_NAME, URL_ROLE_NAME } from "../../constants/constants";
 import {
   clickBookmark,
+  createBookmark,
   createMockResponse,
   mockBookmarks,
 } from "../../test-utils/bookmarkTestUtils";
@@ -17,8 +17,32 @@ import { Bookmark } from "../../types/Bookmark";
 
 const mockFetch = vi.fn();
 
+const inputTextAndClickUpdateButton = async (url: string, title: string) => {
+  const updateButton = screen.getByRole("button", {
+    name: UPDATE_BUTTON_ROLE_NAME,
+  });
+  const urlInput = screen.getByRole("textbox", { name: URL_ROLE_NAME });
+  const titleInput = screen.getByRole("textbox", { name: TITLE_ROLE_NAME });
+
+  fireEvent.change(urlInput, { target: { value: url } });
+  fireEvent.change(titleInput, { target: { value: title } });
+  fireEvent.click(updateButton);
+};
+
+const expectTextAndButton = (url: string, title: string) => {
+  const updateButton = screen.getByRole("button", {
+    name: UPDATE_BUTTON_ROLE_NAME,
+  });
+  const urlInput = screen.getByRole("textbox", { name: URL_ROLE_NAME });
+  const titleInput = screen.getByRole("textbox", { name: TITLE_ROLE_NAME });
+
+  expect(urlInput).toHaveValue(url);
+  expect(titleInput).toHaveValue(title);
+  expect(updateButton).toBeInTheDocument();
+};
+
 describe("タイトルの更新ボタン", () => {
-  beforeEach(() => {
+  beforeEach(async () => {
     mockFetch.mockReset();
     global.fetch = mockFetch;
     mockFetch.mockResolvedValueOnce({
@@ -26,13 +50,18 @@ describe("タイトルの更新ボタン", () => {
       status: 200,
       json: async () => mockBookmarks,
     });
+
+    render(<BookmarkManager />);
+
+    // 初期データがロードされ、UIが安定するのを待つ
+    // テーブル内に既知のブックマークのタイトルが表示されることを確認
+    // また、アクションボタンが表示されていることで、メインUIの準備ができていることを確認
+    await waitFor(() => {
+      expect(screen.getByText(mockBookmarks[0].title)).toBeInTheDocument();
+    });
   });
 
   it("ブックマークが選択されていない場合には、タイトルの更新ボタンは表示されない。", async () => {
-    await act(async () => {
-      render(<BookmarkManager />);
-    });
-
     const updateButtons = screen.queryAllByRole("button", {
       name: UPDATE_BUTTON_ROLE_NAME,
     });
@@ -43,17 +72,6 @@ describe("タイトルの更新ボタン", () => {
   });
 
   it("ブックマークが選択されている場合には、タイトルの更新ボタンが表示される。", async () => {
-    await act(async () => {
-      render(<BookmarkManager />);
-    });
-
-    // 初期データがロードされ、UIが安定するのを待つ
-    // テーブル内に既知のブックマークのタイトルが表示されることを確認
-    // また、アクションボタンが表示されていることで、メインUIの準備ができていることを確認
-    await waitFor(() => {
-      expect(screen.getByText(mockBookmarks[0].title)).toBeInTheDocument();
-    });
-
     // クリックするブックマークを選択（例：2番目のブックマーク）
     const bookmarkToSelect = mockBookmarks[1]; // Google
     await clickBookmark(bookmarkToSelect);
@@ -67,29 +85,13 @@ describe("タイトルの更新ボタン", () => {
   });
 
   it("ブックマークのタイトルが更新される。(APIの呼び出し、画面の更新)", async () => {
-    await act(async () => {
-      render(<BookmarkManager />);
-    });
-
-    // 初期データがロードされ、UIが安定するのを待つ
-    // テーブル内に既知のブックマークのタイトルが表示されることを確認
-    // また、アクションボタンが表示されていることで、メインUIの準備ができていることを確認
-    await waitFor(() => {
-      expect(screen.getByText(mockBookmarks[0].title)).toBeInTheDocument();
-    });
-
     // クリックするブックマークを選択（例：2番目のブックマーク）
     const bookmarkToSelect = mockBookmarks[1]; // Google
     await clickBookmark(bookmarkToSelect);
 
-    const updateButton = screen.getByRole("button", {
-      name: UPDATE_BUTTON_ROLE_NAME,
-    });
-    const urlInput = screen.getByRole("textbox", { name: URL_ROLE_NAME });
-    const titleInput = screen.getByRole("textbox", { name: TITLE_ROLE_NAME });
-
     const updateUrl = "https://www.google.com/mail";
     const updateTitle = "更新されたタイトル";
+    // 状態更新をトリガーするアクションの前に、APIのレスポンスをモックします
     mockFetch.mockResolvedValueOnce(
       createMockResponse({
         isOk: true,
@@ -97,15 +99,11 @@ describe("タイトルの更新ボタン", () => {
       })
     );
 
-    await act(async () => {
-      fireEvent.change(urlInput, { target: { value: updateUrl } });
-      fireEvent.change(titleInput, { target: { value: updateTitle } });
-      fireEvent.click(updateButton);
-    });
+    inputTextAndClickUpdateButton(updateUrl, updateTitle);
 
     await waitFor(() => {
       // APIの呼び出しの確認
-      expect(mockFetch).toHaveBeenCalledTimes(2);
+      expect(mockFetch).toHaveBeenCalledTimes(2); // beforeEachの1回 + 更新の1回
       expect(mockFetch.mock.lastCall![0]).toEqual(
         `${BOOKMARKS_ENDPOINT}/${bookmarkToSelect.bookmark_id}`
       );
@@ -119,52 +117,29 @@ describe("タイトルの更新ボタン", () => {
           title: updateTitle,
         }),
       });
-    });
-    await waitFor(() => {
-      // 更新されたタイトルが表示されていることを確認
       const updateText = screen.getAllByText(updateTitle);
       expect(updateText).toHaveLength(1);
 
       // 画面の更新の確認;
-      expect(urlInput).toHaveValue(updateUrl);
-      expect(titleInput).toHaveValue(updateTitle);
-      expect(updateButton).toBeInTheDocument();
+      expectTextAndButton(updateUrl, updateTitle);
     });
 
-    const updatedBookmark: Bookmark = {
+    const updatedBookmark: Bookmark = createBookmark({
       bookmark_id: bookmarkToSelect.bookmark_id,
       url: updateUrl,
       title: updateTitle,
       keywords: bookmarkToSelect.keywords,
-    };
+    });
     await clickBookmark(updatedBookmark);
     await waitFor(() => {
-      expect(urlInput).toHaveValue(updateUrl);
-      expect(titleInput).toHaveValue(updateTitle);
+      expectTextAndButton(updateUrl, updateTitle);
     });
   });
 
   it("同じURLを指定された場合には409を返す。", async () => {
-    await act(async () => {
-      render(<BookmarkManager />);
-    });
-
-    // 初期データがロードされ、UIが安定するのを待つ
-    // テーブル内に既知のブックマークのタイトルが表示されることを確認
-    // また、アクションボタンが表示されていることで、メインUIの準備ができていることを確認
-    await waitFor(() => {
-      expect(screen.getByText(mockBookmarks[0].title)).toBeInTheDocument();
-    });
-
     // クリックするブックマークを選択（例：2番目のブックマーク）
     const bookmarkToSelect = mockBookmarks[1]; // Google
     await clickBookmark(bookmarkToSelect);
-
-    const updateButton = screen.getByRole("button", {
-      name: UPDATE_BUTTON_ROLE_NAME,
-    });
-    const urlInput = screen.getByRole("textbox", { name: URL_ROLE_NAME });
-    const titleInput = screen.getByRole("textbox", { name: TITLE_ROLE_NAME });
 
     const updateUrl = mockBookmarks[2].url;
     const updateTitle = "更新されたタイトル";
@@ -176,11 +151,7 @@ describe("タイトルの更新ボタン", () => {
       })
     );
 
-    await act(async () => {
-      fireEvent.change(urlInput, { target: { value: updateUrl } });
-      fireEvent.change(titleInput, { target: { value: updateTitle } });
-      fireEvent.click(updateButton);
-    });
+    await inputTextAndClickUpdateButton(updateUrl, updateTitle);
 
     await waitFor(() => {
       expect(screen.getByTestId("bookmark-message")).toHaveTextContent(
@@ -193,17 +164,6 @@ describe("タイトルの更新ボタン", () => {
   });
 
   it("登録されていないブックマークIDを指定された場合は404を返す。", async () => {
-    await act(async () => {
-      render(<BookmarkManager />);
-    });
-
-    // 初期データがロードされ、UIが安定するのを待つ
-    // テーブル内に既知のブックマークのタイトルが表示されることを確認
-    // また、アクションボタンが表示されていることで、メインUIの準備ができていることを確認
-    await waitFor(() => {
-      expect(screen.getByText(mockBookmarks[0].title)).toBeInTheDocument();
-    });
-
     // クリックするブックマークを選択（例：2番目のブックマーク）
     const bookmarkToSelect = mockBookmarks[1]; // Google
     await clickBookmark(bookmarkToSelect);
@@ -220,9 +180,7 @@ describe("タイトルの更新ボタン", () => {
       name: UPDATE_BUTTON_ROLE_NAME,
     });
 
-    await act(async () => {
-      fireEvent.click(updateButton);
-    });
+    fireEvent.click(updateButton);
 
     await waitFor(() => {
       expect(screen.getByTestId("bookmark-message")).toHaveTextContent(
@@ -235,17 +193,6 @@ describe("タイトルの更新ボタン", () => {
   });
 
   it("タイトルが指定されていない場合には400を返す。", async () => {
-    await act(async () => {
-      render(<BookmarkManager />);
-    });
-
-    // 初期データがロードされ、UIが安定するのを待つ
-    // テーブル内に既知のブックマークのタイトルが表示されることを確認
-    // また、アクションボタンが表示されていることで、メインUIの準備ができていることを確認
-    await waitFor(() => {
-      expect(screen.getByText(mockBookmarks[0].title)).toBeInTheDocument();
-    });
-
     // クリックするブックマークを選択（例：2番目のブックマーク）
     const bookmarkToSelect = mockBookmarks[1]; // Google
     await clickBookmark(bookmarkToSelect);
@@ -262,9 +209,7 @@ describe("タイトルの更新ボタン", () => {
       name: UPDATE_BUTTON_ROLE_NAME,
     });
 
-    await act(async () => {
-      fireEvent.click(updateButton);
-    });
+    fireEvent.click(updateButton);
 
     await waitFor(() => {
       expect(screen.getByTestId("bookmark-message")).toHaveTextContent(
@@ -277,17 +222,6 @@ describe("タイトルの更新ボタン", () => {
   });
 
   it("IDが指定されていない場合には400を返す。", async () => {
-    await act(async () => {
-      render(<BookmarkManager />);
-    });
-
-    // 初期データがロードされ、UIが安定するのを待つ
-    // テーブル内に既知のブックマークのタイトルが表示されることを確認
-    // また、アクションボタンが表示されていることで、メインUIの準備ができていることを確認
-    await waitFor(() => {
-      expect(screen.getByText(mockBookmarks[0].title)).toBeInTheDocument();
-    });
-
     // クリックするブックマークを選択（例：2番目のブックマーク）
     const bookmarkToSelect = mockBookmarks[1]; // Google
     await clickBookmark(bookmarkToSelect);
@@ -304,9 +238,7 @@ describe("タイトルの更新ボタン", () => {
       name: UPDATE_BUTTON_ROLE_NAME,
     });
 
-    await act(async () => {
-      fireEvent.click(updateButton);
-    });
+    fireEvent.click(updateButton);
 
     await waitFor(() => {
       expect(screen.getByTestId("bookmark-message")).toHaveTextContent(
@@ -319,17 +251,6 @@ describe("タイトルの更新ボタン", () => {
   });
 
   it("不正な形式(文字列)のIDを指定された場合には400を返す。", async () => {
-    await act(async () => {
-      render(<BookmarkManager />);
-    });
-
-    // 初期データがロードされ、UIが安定するのを待つ
-    // テーブル内に既知のブックマークのタイトルが表示されることを確認
-    // また、アクションボタンが表示されていることで、メインUIの準備ができていることを確認
-    await waitFor(() => {
-      expect(screen.getByText(mockBookmarks[0].title)).toBeInTheDocument();
-    });
-
     // クリックするブックマークを選択（例：2番目のブックマーク）
     const bookmarkToSelect = mockBookmarks[1]; // Google
     await clickBookmark(bookmarkToSelect);
@@ -346,9 +267,7 @@ describe("タイトルの更新ボタン", () => {
       name: UPDATE_BUTTON_ROLE_NAME,
     });
 
-    await act(async () => {
-      fireEvent.click(updateButton);
-    });
+    fireEvent.click(updateButton);
 
     await waitFor(() => {
       expect(screen.getByTestId("bookmark-message")).toHaveTextContent(
@@ -361,17 +280,6 @@ describe("タイトルの更新ボタン", () => {
   });
 
   it("不正なJSONデータの場合は500を返す。", async () => {
-    await act(async () => {
-      render(<BookmarkManager />);
-    });
-
-    // 初期データがロードされ、UIが安定するのを待つ
-    // テーブル内に既知のブックマークのタイトルが表示されることを確認
-    // また、アクションボタンが表示されていることで、メインUIの準備ができていることを確認
-    await waitFor(() => {
-      expect(screen.getByText(mockBookmarks[0].title)).toBeInTheDocument();
-    });
-
     // クリックするブックマークを選択（例：2番目のブックマーク）
     const bookmarkToSelect = mockBookmarks[1]; // Google
     await clickBookmark(bookmarkToSelect);
@@ -388,9 +296,7 @@ describe("タイトルの更新ボタン", () => {
       name: UPDATE_BUTTON_ROLE_NAME,
     });
 
-    await act(async () => {
-      fireEvent.click(updateButton);
-    });
+    fireEvent.click(updateButton);
 
     await waitFor(() => {
       expect(screen.getByTestId("bookmark-message")).toHaveTextContent(
