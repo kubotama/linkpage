@@ -1,8 +1,6 @@
 import "@testing-library/jest-dom";
 
-import { beforeEach, describe, expect, it, vi } from "vitest";
-
-import { render, screen, waitFor } from "@testing-library/react";
+import { beforeEach, describe, it, vi } from "vitest";
 
 import { PARAMETER_BUTTON_ROLE_NAME } from "../../constants/constants";
 import {
@@ -10,8 +8,8 @@ import {
   expectBookmarkFormValues,
   mockBookmarks,
   setBookmarkFormValuesAndClickButton,
+  setupBookmarkManagerForTest,
 } from "../../test-utils/bookmarkTestUtils";
-import { BookmarkManager } from "../BookmarkManager";
 
 const mockFetch = vi.fn();
 
@@ -26,10 +24,7 @@ describe("「パラメータ」ボタン: URLから無駄な文字列を削除�
         json: async () => mockBookmarks,
       });
 
-      render(<BookmarkManager />);
-      await waitFor(() => {
-        expect(screen.getByText(mockBookmarks[0].title)).toBeInTheDocument();
-      });
+      await setupBookmarkManagerForTest();
 
       const bookmarkToSelect = mockBookmarks[1]; // Google
       await clickBookmark(bookmarkToSelect);

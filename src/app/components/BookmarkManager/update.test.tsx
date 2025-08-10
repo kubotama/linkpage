@@ -2,7 +2,7 @@ import "@testing-library/jest-dom";
 
 import { beforeEach, describe, expect, it, vi } from "vitest";
 
-import { fireEvent, render, screen, waitFor, within } from "@testing-library/react";
+import { fireEvent, screen, waitFor, within } from "@testing-library/react";
 
 import { BOOKMARKS_ENDPOINT } from "../../constants/apiEndpoints";
 import { UPDATE_BUTTON_ROLE_NAME } from "../../constants/constants";
@@ -13,8 +13,8 @@ import {
   expectBookmarkFormValues,
   mockBookmarks,
   setBookmarkFormValuesAndClickButton,
+  setupBookmarkManagerForTest,
 } from "../../test-utils/bookmarkTestUtils";
-import { BookmarkManager } from "../BookmarkManager";
 import { Bookmark } from "../../types/Bookmark";
 
 const mockFetch = vi.fn();
@@ -29,14 +29,15 @@ describe("タイトルの更新ボタン", () => {
       json: async () => mockBookmarks,
     });
 
-    render(<BookmarkManager />);
+    // render(<BookmarkManager />);
 
-    // 初期データがロードされ、UIが安定するのを待つ
-    // テーブル内に既知のブックマークのタイトルが表示されることを確認
-    // また、アクションボタンが表示されていることで、メインUIの準備ができていることを確認
-    await waitFor(() => {
-      expect(screen.getByText(mockBookmarks[0].title)).toBeInTheDocument();
-    });
+    // // 初期データがロードされ、UIが安定するのを待つ
+    // // テーブル内に既知のブックマークのタイトルが表示されることを確認
+    // // また、アクションボタンが表示されていることで、メインUIの準備ができていることを確認
+    // await waitFor(() => {
+    //   expect(screen.getByText(mockBookmarks[0].title)).toBeInTheDocument();
+    // });
+    await setupBookmarkManagerForTest();
   });
 
   it("ブックマークが選択されていない場合には、タイトルの更新ボタンは表示されない。", async () => {

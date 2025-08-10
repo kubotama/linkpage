@@ -2,16 +2,16 @@ import "@testing-library/jest-dom";
 
 import { beforeEach, describe, expect, it, vi } from "vitest";
 
-import { fireEvent, render, screen, waitFor } from "@testing-library/react";
+import { fireEvent } from "@testing-library/react";
 
 import {
   assertNoBookmarkIsSelected,
   clickBookmark,
   createBookmark,
   mockBookmarks,
+  setupBookmarkManagerForTest,
 } from "../../test-utils/bookmarkTestUtils";
 import { Bookmark } from "../../types/Bookmark";
-import { BookmarkManager } from "../BookmarkManager";
 
 const mockFetch = vi.fn();
 
@@ -25,14 +25,7 @@ describe("ブックマークの選択", () => {
       json: async () => mockBookmarks,
     });
 
-    render(<BookmarkManager />);
-
-    // 初期データがロードされ、UIが安定するのを待つ
-    // テーブル内に既知のブックマークのタイトルが表示されることを確認
-    // また、アクションボタンが表示されていることで、メインUIの準備ができていることを確認
-    await waitFor(() => {
-      expect(screen.getByText(mockBookmarks[0].title)).toBeInTheDocument();
-    });
+    await setupBookmarkManagerForTest();
   });
 
   it("初期状態では、URLとタイトルのテキストボックスには、なにも表示されていない。選択解除のボタンが表示されていない。", async () => {
