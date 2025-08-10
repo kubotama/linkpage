@@ -1,6 +1,5 @@
 import "@testing-library/jest-dom";
 
-import { act } from "react";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 
 import { fireEvent, render, screen, waitFor } from "@testing-library/react";
@@ -17,7 +16,7 @@ import { BookmarkManager } from "../BookmarkManager";
 const mockFetch = vi.fn();
 
 describe("ブックマークの選択", () => {
-  beforeEach(() => {
+  beforeEach(async () => {
     mockFetch.mockReset();
     global.fetch = mockFetch;
     mockFetch.mockResolvedValueOnce({
@@ -25,22 +24,8 @@ describe("ブックマークの選択", () => {
       status: 200,
       json: async () => mockBookmarks,
     });
-  });
 
-  it("初期状態では、URLとタイトルのテキストボックスには、なにも表示されていない。選択解除のボタンが表示されていない。", async () => {
-    await act(async () => {
-      render(<BookmarkManager />);
-    });
-
-    await assertNoBookmarkIsSelected();
-  });
-
-  it("選択解除のボタンをクリックすると、URLとタイトルのテキストボックスがクリアされる。選択解除のボタンが表示されていない。", async () => {
-    // mockFetchはbeforeEachでmockBookmarksを返すように設定されています
-
-    await act(async () => {
-      render(<BookmarkManager />);
-    });
+    render(<BookmarkManager />);
 
     // 初期データがロードされ、UIが安定するのを待つ
     // テーブル内に既知のブックマークのタイトルが表示されることを確認
@@ -48,30 +33,23 @@ describe("ブックマークの選択", () => {
     await waitFor(() => {
       expect(screen.getByText(mockBookmarks[0].title)).toBeInTheDocument();
     });
+  });
 
+  it("初期状態では、URLとタイトルのテキストボックスには、なにも表示されていない。選択解除のボタンが表示されていない。", async () => {
+    await assertNoBookmarkIsSelected();
+  });
+
+  it("選択解除のボタンをクリックすると、URLとタイトルのテキストボックスがクリアされる。選択解除のボタンが表示されていない。", async () => {
     // クリックするブックマークを選択（例：2番目のブックマーク）
     const bookmarkToSelect = mockBookmarks[1]; // Google
     await clickBookmark(bookmarkToSelect);
 
-    await act(async () => {
-      fireEvent.keyDown(document.body, { key: "Escape", code: "Escape" });
-    });
+    fireEvent.keyDown(document.body, { key: "Escape", code: "Escape" });
 
     await assertNoBookmarkIsSelected();
   });
 
   it("表示されていないタイトルが指定された場合", async () => {
-    await act(async () => {
-      render(<BookmarkManager />);
-    });
-
-    // 初期データがロードされ、UIが安定するのを待つ
-    // テーブル内に既知のブックマークのタイトルが表示されることを確認
-    // また、アクションボタンが表示されていることで、メインUIの準備ができていることを確認
-    await waitFor(() => {
-      expect(screen.getByText(mockBookmarks[0].title)).toBeInTheDocument();
-    });
-
     // クリックするブックマークを選択（例：2番目のブックマーク）
     const bookmarkToSelect: Bookmark = createBookmark({
       bookmark_id: 999,
