@@ -223,14 +223,23 @@ export const setBookmarkFormValuesAndClickButton = async (
   fireEvent.click(button);
 };
 
-export const expectBookmarkFormValues = async (values: { url?: string; title?: string }) => {
-  const urlInput = screen.getByRole("textbox", { name: URL_ROLE_NAME });
-  const titleInput = screen.getByRole("textbox", { name: TITLE_ROLE_NAME });
-
+export const expectBookmarkFormValues = async (values: {
+  url?: string;
+  title?: string;
+  buttonName?: string;
+}) => {
   if (values.url !== undefined) {
+    const urlInput = screen.getByRole("textbox", { name: URL_ROLE_NAME });
     expect(urlInput).toHaveValue(values.url);
   }
   if (values.title !== undefined) {
+    const titleInput = screen.getByRole("textbox", { name: TITLE_ROLE_NAME });
     expect(titleInput).toHaveValue(values.title);
+  }
+  if (values.buttonName !== undefined) {
+    const button = screen.getByRole("button", {
+      name: values.buttonName,
+    });
+    expect(button).toBeInTheDocument();
   }
 };

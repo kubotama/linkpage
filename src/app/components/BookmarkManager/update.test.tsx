@@ -2,44 +2,22 @@ import "@testing-library/jest-dom";
 
 import { beforeEach, describe, expect, it, vi } from "vitest";
 
-import { fireEvent, render, screen, waitFor } from "@testing-library/react";
+import { fireEvent, render, screen, waitFor, within } from "@testing-library/react";
 
 import { BOOKMARKS_ENDPOINT } from "../../constants/apiEndpoints";
-import { TITLE_ROLE_NAME, UPDATE_BUTTON_ROLE_NAME, URL_ROLE_NAME } from "../../constants/constants";
+import { UPDATE_BUTTON_ROLE_NAME } from "../../constants/constants";
 import {
   clickBookmark,
   createBookmark,
   createMockResponse,
+  expectBookmarkFormValues,
   mockBookmarks,
+  setBookmarkFormValuesAndClickButton,
 } from "../../test-utils/bookmarkTestUtils";
 import { BookmarkManager } from "../BookmarkManager";
 import { Bookmark } from "../../types/Bookmark";
 
 const mockFetch = vi.fn();
-
-const inputTextAndClickUpdateButton = async (url: string, title: string) => {
-  const updateButton = screen.getByRole("button", {
-    name: UPDATE_BUTTON_ROLE_NAME,
-  });
-  const urlInput = screen.getByRole("textbox", { name: URL_ROLE_NAME });
-  const titleInput = screen.getByRole("textbox", { name: TITLE_ROLE_NAME });
-
-  fireEvent.change(urlInput, { target: { value: url } });
-  fireEvent.change(titleInput, { target: { value: title } });
-  fireEvent.click(updateButton);
-};
-
-const expectTextAndButton = (url: string, title: string) => {
-  const updateButton = screen.getByRole("button", {
-    name: UPDATE_BUTTON_ROLE_NAME,
-  });
-  const urlInput = screen.getByRole("textbox", { name: URL_ROLE_NAME });
-  const titleInput = screen.getByRole("textbox", { name: TITLE_ROLE_NAME });
-
-  expect(urlInput).toHaveValue(url);
-  expect(titleInput).toHaveValue(title);
-  expect(updateButton).toBeInTheDocument();
-};
 
 describe("タイトルの更新ボタン", () => {
   beforeEach(async () => {
@@ -99,7 +77,10 @@ describe("タイトルの更新ボタン", () => {
       })
     );
 
-    inputTextAndClickUpdateButton(updateUrl, updateTitle);
+    setBookmarkFormValuesAndClickButton(
+      { url: updateUrl, title: updateTitle },
+      UPDATE_BUTTON_ROLE_NAME
+    );
 
     await waitFor(() => {
       // APIの呼び出しの確認
@@ -121,7 +102,7 @@ describe("タイトルの更新ボタン", () => {
       expect(updateText).toHaveLength(1);
 
       // 画面の更新の確認;
-      expectTextAndButton(updateUrl, updateTitle);
+      expectBookmarkFormValues({ url: updateUrl, title: updateTitle });
     });
 
     const updatedBookmark: Bookmark = createBookmark({
@@ -132,7 +113,7 @@ describe("タイトルの更新ボタン", () => {
     });
     await clickBookmark(updatedBookmark);
     await waitFor(() => {
-      expectTextAndButton(updateUrl, updateTitle);
+      expectBookmarkFormValues({ url: updateUrl, title: updateTitle });
     });
   });
 
@@ -151,15 +132,25 @@ describe("タイトルの更新ボタン", () => {
       })
     );
 
-    await inputTextAndClickUpdateButton(updateUrl, updateTitle);
+    await setBookmarkFormValuesAndClickButton(
+      { url: updateUrl, title: updateTitle },
+      UPDATE_BUTTON_ROLE_NAME
+    );
 
     await waitFor(() => {
       expect(screen.getByTestId("bookmark-message")).toHaveTextContent(
         "指定されたURLのブックマークは既に登録されています。"
       );
-      // 更新操作のコンテキストが依然として表示されていることを確認
-      expect(screen.getByText(bookmarkToSelect.title)).toBeInTheDocument();
-      expect(screen.getByRole("button", { name: UPDATE_BUTTON_ROLE_NAME })).toBeInTheDocument();
+      // フォームに入力した値が保持され、更新ボタンが表示されていることを確認
+      expectBookmarkFormValues({
+        url: updateUrl,
+        title: updateTitle,
+        buttonName: UPDATE_BUTTON_ROLE_NAME,
+      });
+      // リスト上の元のブックマークが消えていないことを確認
+      const table = screen.getByRole("table", { name: "bookmarks" });
+      const bookmark = within(table).getByText(bookmarkToSelect.title);
+      expect(bookmark).toBeInTheDocument();
     });
   });
 
@@ -187,8 +178,11 @@ describe("タイトルの更新ボタン", () => {
         "ブックマークの更新中にエラーが発生しました。"
       );
       // 更新操作のコンテキストが依然として表示されていることを確認
-      expect(screen.getByText(bookmarkToSelect.title)).toBeInTheDocument();
-      expect(screen.getByRole("button", { name: UPDATE_BUTTON_ROLE_NAME })).toBeInTheDocument();
+      expectBookmarkFormValues({
+        url: bookmarkToSelect.url,
+        title: bookmarkToSelect.title,
+        buttonName: UPDATE_BUTTON_ROLE_NAME,
+      });
     });
   });
 
@@ -216,8 +210,11 @@ describe("タイトルの更新ボタン", () => {
         "ブックマークの更新中にエラーが発生しました。"
       );
       // 更新操作のコンテキストが依然として表示されていることを確認
-      expect(screen.getByText(bookmarkToSelect.title)).toBeInTheDocument();
-      expect(screen.getByRole("button", { name: UPDATE_BUTTON_ROLE_NAME })).toBeInTheDocument();
+      expectBookmarkFormValues({
+        url: bookmarkToSelect.url,
+        title: bookmarkToSelect.title,
+        buttonName: UPDATE_BUTTON_ROLE_NAME,
+      });
     });
   });
 
@@ -245,8 +242,11 @@ describe("タイトルの更新ボタン", () => {
         "ブックマークの更新中にエラーが発生しました。"
       );
       // 更新操作のコンテキストが依然として表示されていることを確認
-      expect(screen.getByText(bookmarkToSelect.title)).toBeInTheDocument();
-      expect(screen.getByRole("button", { name: UPDATE_BUTTON_ROLE_NAME })).toBeInTheDocument();
+      expectBookmarkFormValues({
+        url: bookmarkToSelect.url,
+        title: bookmarkToSelect.title,
+        buttonName: UPDATE_BUTTON_ROLE_NAME,
+      });
     });
   });
 
@@ -274,8 +274,11 @@ describe("タイトルの更新ボタン", () => {
         "ブックマークの更新中にエラーが発生しました。"
       );
       // 更新操作のコンテキストが依然として表示されていることを確認
-      expect(screen.getByText(bookmarkToSelect.title)).toBeInTheDocument();
-      expect(screen.getByRole("button", { name: UPDATE_BUTTON_ROLE_NAME })).toBeInTheDocument();
+      expectBookmarkFormValues({
+        url: bookmarkToSelect.url,
+        title: bookmarkToSelect.title,
+        buttonName: UPDATE_BUTTON_ROLE_NAME,
+      });
     });
   });
 
@@ -302,9 +305,11 @@ describe("タイトルの更新ボタン", () => {
       expect(screen.getByTestId("bookmark-message")).toHaveTextContent(
         "ブックマークの更新中にエラーが発生しました。"
       );
-      // 更新操作のコンテキストが依然として表示されていることを確認
-      expect(screen.getByText(bookmarkToSelect.title)).toBeInTheDocument();
-      expect(screen.getByRole("button", { name: UPDATE_BUTTON_ROLE_NAME })).toBeInTheDocument();
+      expectBookmarkFormValues({
+        url: bookmarkToSelect.url,
+        title: bookmarkToSelect.title,
+        buttonName: UPDATE_BUTTON_ROLE_NAME,
+      });
     });
   });
 });
