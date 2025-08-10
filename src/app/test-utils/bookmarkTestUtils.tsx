@@ -1,8 +1,9 @@
 import { act } from "react";
 import { expect } from "vitest";
 
-import { fireEvent, screen, waitFor } from "@testing-library/react";
+import { fireEvent, render, screen, waitFor } from "@testing-library/react";
 
+import { BookmarkManager } from "../components/BookmarkManager";
 import { FORM_BOOKMARK_DETAIL, TITLE_ROLE_NAME, URL_ROLE_NAME } from "../constants/constants";
 import { Bookmark } from "../types/Bookmark";
 import { Keyword } from "../types/Keyword";
@@ -242,4 +243,21 @@ export const expectBookmarkFormValues = async (values: {
     });
     expect(button).toBeInTheDocument();
   }
+};
+
+export const setBookmarkFormValuesAndEnterKeydown = (url: string) => {
+  const urlInput = screen.getByRole("textbox", { name: URL_ROLE_NAME });
+
+  fireEvent.change(urlInput, { target: { value: url } });
+  fireEvent.keyDown(document.body, { key: "Enter", code: "Enter" });
+};
+
+/**
+ * BookmarkManagerコンポーネントをレンダリングし、初期データがロードされるのを待つ
+ */
+export const setupBookmarkManagerForTest = async () => {
+  render(<BookmarkManager />);
+  await waitFor(() => {
+    expect(screen.getByText(mockBookmarks[0].title)).toBeInTheDocument();
+  });
 };

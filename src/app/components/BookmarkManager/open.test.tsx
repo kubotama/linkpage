@@ -1,13 +1,15 @@
 import "@testing-library/jest-dom";
 
-import { act } from "react";
 import { afterAll, beforeAll, beforeEach, describe, expect, it, vi } from "vitest";
 
-import { fireEvent, render, screen, waitFor } from "@testing-library/react";
+import { screen, waitFor } from "@testing-library/react";
 
-import { URL_ROLE_NAME } from "../../constants/constants";
-import { clickBookmark, mockBookmarks } from "../../test-utils/bookmarkTestUtils";
-import { BookmarkManager } from "../BookmarkManager";
+import {
+  clickBookmark,
+  mockBookmarks,
+  setBookmarkFormValuesAndEnterKeydown,
+  setupBookmarkManagerForTest,
+} from "../../test-utils/bookmarkTestUtils";
 
 // Mock for window.open to test the 'Open' button functionality
 // const mockOpen = jest.fn();
@@ -55,7 +57,7 @@ describe("「開く」ボタン: 入力されたURLを新しいタブで開く",
     });
   });
 
-  beforeEach(() => {
+  beforeEach(async () => {
     // 各テスト前にモックをリセット
     // jest.clearAllMocks();
     vi.clearAllMocks();
@@ -68,52 +70,37 @@ describe("「開く」ボタン: 入力されたURLを新しいタブで開く",
 
     // hrefをリセット
     (window.location as MockedLocation).href = "";
+
+    await setupBookmarkManagerForTest();
   });
 
-  it("「開く」ボタンをクリック", async () => {
-    const url = "https://xtech.nikkei.com/";
-
-    await act(async () => {
-      render(<BookmarkManager />);
+  describe("ブックマーク選択後", () => {
+    beforeEach(async () => {
+      // クリックするブックマークを選択（例：2番目のブックマーク）
+      await clickBookmark(mockBookmarks[1]);
     });
 
-    // クリックするブックマークを選択（例：2番目のブックマーク）
-    const bookmarkToSelect = mockBookmarks[1]; // Google
-    await clickBookmark(bookmarkToSelect);
+    it("Enterキーを押した場合", async () => {
+      const url = "https://xtech.nikkei.com/";
 
-    const urlInput = screen.getByRole("textbox", { name: URL_ROLE_NAME });
+      setBookmarkFormValuesAndEnterKeydown(url);
 
-    await act(async () => {
-      fireEvent.change(urlInput, { target: { value: url } });
-      fireEvent.keyDown(document.body, { key: "Enter", code: "Enter" });
+      // window.openが正しいURLで呼び出されたことを検証
+      await waitFor(() => {
+        expect(mockOpen).toHaveBeenCalledWith(url, "_blank", "noopener,noreferrer");
+      });
     });
 
-    await waitFor(() => {
-      expect(mockOpen).toHaveBeenCalledWith(url, "_blank", "noopener,noreferrer");
-    });
-  });
+    it("不正なURLを入力した場合", async () => {
+      setBookmarkFormValuesAndEnterKeydown("invalid-url");
 
-  it("不正なURLを入力した場合", async () => {
-    await act(async () => {
-      render(<BookmarkManager />);
-    });
-
-    // クリックするブックマークを選択（例：2番目のブックマーク）
-    const bookmarkToSelect = mockBookmarks[1]; // Google
-    await clickBookmark(bookmarkToSelect);
-
-    const urlInput = screen.getByRole("textbox", { name: URL_ROLE_NAME });
-
-    await act(async () => {
-      fireEvent.change(urlInput, { target: { value: "invalid-url" } });
-      fireEvent.keyDown(document.body, { key: "Enter", code: "Enter" });
-    });
-
-    await waitFor(() => {
-      expect(screen.getByTestId("bookmark-message")).toHaveTextContent(
-        "URLが無効です。正しいURLを入力してください。"
-      );
-      expect(mockOpen).not.toHaveBeenCalled();
+      // エラーメッセージが表示され、window.openが呼び出されていないことを検証
+      await waitFor(() => {
+        expect(screen.getByTestId("bookmark-message")).toHaveTextContent(
+          "URLが無効です。正しいURLを入力してください。"
+        );
+        expect(mockOpen).not.toHaveBeenCalled();
+      });
     });
   });
 });
