@@ -201,3 +201,36 @@ export const createMockResponse = ({
 
   return response;
 };
+
+export const setBookmarkFormValuesAndClickButton = async (
+  values: {
+    url?: string;
+    title?: string;
+  },
+  buttonName: string
+) => {
+  if (values.url !== undefined) {
+    const urlInput = screen.getByRole("textbox", { name: URL_ROLE_NAME });
+    fireEvent.change(urlInput, { target: { value: values.url } });
+  }
+  if (values.title !== undefined) {
+    const titleInput = screen.getByRole("textbox", { name: TITLE_ROLE_NAME });
+    fireEvent.change(titleInput, { target: { value: values.title } });
+  }
+  const button = screen.getByRole("button", {
+    name: buttonName,
+  });
+  fireEvent.click(button);
+};
+
+export const expectBookmarkFormValues = async (values: { url?: string; title?: string }) => {
+  const urlInput = screen.getByRole("textbox", { name: URL_ROLE_NAME });
+  const titleInput = screen.getByRole("textbox", { name: TITLE_ROLE_NAME });
+
+  if (values.url !== undefined) {
+    expect(urlInput).toHaveValue(values.url);
+  }
+  if (values.title !== undefined) {
+    expect(titleInput).toHaveValue(values.title);
+  }
+};
