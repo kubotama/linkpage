@@ -27,6 +27,7 @@ describe("タイトルの更新ボタン", () => {
       json: async () => mockBookmarks,
     });
   });
+
   it("ブックマークが選択されていない場合には、タイトルの更新ボタンは表示されない。", async () => {
     await act(async () => {
       render(<BookmarkManager />);
@@ -81,9 +82,6 @@ describe("タイトルの更新ボタン", () => {
     const bookmarkToSelect = mockBookmarks[1]; // Google
     await clickBookmark(bookmarkToSelect);
 
-    // fetchMock.resetMocks();
-    mockFetch.mockReset();
-
     const updateButton = screen.getByRole("button", {
       name: UPDATE_BUTTON_ROLE_NAME,
     });
@@ -107,11 +105,11 @@ describe("タイトルの更新ボタン", () => {
 
     await waitFor(() => {
       // APIの呼び出しの確認
-      expect(mockFetch).toHaveBeenCalledTimes(1);
-      expect(mockFetch.mock.calls[0][0]).toEqual(
+      expect(mockFetch).toHaveBeenCalledTimes(2);
+      expect(mockFetch.mock.lastCall![0]).toEqual(
         `${BOOKMARKS_ENDPOINT}/${bookmarkToSelect.bookmark_id}`
       );
-      expect(mockFetch.mock.calls[0][1]).toEqual({
+      expect(mockFetch.mock.lastCall![1]).toEqual({
         method: "PUT",
         headers: {
           "Content-Type": "application/json",
@@ -139,7 +137,7 @@ describe("タイトルの更新ボタン", () => {
       title: updateTitle,
       keywords: bookmarkToSelect.keywords,
     };
-    clickBookmark(updatedBookmark);
+    await clickBookmark(updatedBookmark);
     await waitFor(() => {
       expect(urlInput).toHaveValue(updateUrl);
       expect(titleInput).toHaveValue(updateTitle);
@@ -161,9 +159,6 @@ describe("タイトルの更新ボタン", () => {
     // クリックするブックマークを選択（例：2番目のブックマーク）
     const bookmarkToSelect = mockBookmarks[1]; // Google
     await clickBookmark(bookmarkToSelect);
-
-    // fetchMock.resetMocks();
-    mockFetch.mockReset();
 
     const updateButton = screen.getByRole("button", {
       name: UPDATE_BUTTON_ROLE_NAME,
