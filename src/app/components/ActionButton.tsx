@@ -1,20 +1,18 @@
 type ActionButtonProps = {
   onClick: () => void;
   children: React.ReactNode;
-  widthClass?: string; // 例: "w-28", "w-auto"
-  heightClass?: string; // 例: "h-8", "h-10"
+  className?: string;
 };
 
-export const ActionButton: React.FC<ActionButtonProps> = ({
+export const ActionButton = ({
   onClick,
   children,
-  widthClass = "w-28", // デフォルト値
-  heightClass = "h-8", // デフォルト値
-}) => {
+  className = "w-28 h-8",
+}: ActionButtonProps): React.ReactElement => {
   return (
     <button
       type="button"
-      className={`${widthClass} ${heightClass} bg-blue-500 text-white p-1 rounded-md text-sm`}
+      className={`bg-blue-500 text-white p-1 rounded-md text-sm ${className}`}
       onClick={onClick}
     >
       {children}

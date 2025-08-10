@@ -9,7 +9,7 @@ import { BookmarkTable } from "./BookmarkTable";
 
 describe("BookmarkTableのテスト", () => {
   it("テーブルとヘッダーが正しく表示される", () => {
-    const mockOnSelectBookmark: React.Dispatch<number> = vi.fn();
+    const mockOnSelectBookmark = vi.fn<(bookmarkId: number) => void>();
     render(
       <BookmarkTable
         bookmarks={mockBookmarks}
@@ -29,7 +29,7 @@ describe("BookmarkTableのテスト", () => {
   });
 
   it("ブックマークデータが正しく表示される", () => {
-    const mockOnSelectBookmark: React.Dispatch<number> = vi.fn();
+    const mockOnSelectBookmark = vi.fn<(bookmarkId: number) => void>();
     render(
       <BookmarkTable
         bookmarks={mockBookmarks}
@@ -59,7 +59,7 @@ describe("BookmarkTableのテスト", () => {
   });
 
   it("空のブックマークリストでテーブルが表示される", () => {
-    const mockOnSelectBookmark: React.Dispatch<number> = vi.fn();
+    const mockOnSelectBookmark = vi.fn<(bookmarkId: number) => void>();
     render(
       <BookmarkTable
         bookmarks={[]}
@@ -78,7 +78,7 @@ describe("BookmarkTableのテスト", () => {
   });
 
   it("選択されたブックマークが正しくハイライト表示される", () => {
-    const mockOnSelectBookmark = vi.fn();
+    const mockOnSelectBookmark = vi.fn<(bookmarkId: number) => void>();
     const selected = mockBookmarks[1]; // "Google" を選択状態にする
 
     render(

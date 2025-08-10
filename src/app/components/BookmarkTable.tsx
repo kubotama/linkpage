@@ -2,13 +2,21 @@ import React from "react";
 
 import { Bookmark } from "../types/Bookmark";
 
-export const BookmarkTable: React.FC<{
+type BookmarkTableProps = {
   bookmarks: Bookmark[];
   selectedBookmarkId: number | undefined;
-  onSelectBookmarkId: (bookmark_id: number) => void;
-}> = ({ bookmarks, selectedBookmarkId, onSelectBookmarkId }) => {
+  onSelectBookmarkId: (bookmarkId: number) => void;
+  className?: string;
+};
+
+export const BookmarkTable = ({
+  bookmarks,
+  selectedBookmarkId,
+  onSelectBookmarkId,
+  className = "",
+}: BookmarkTableProps): React.ReactElement => {
   return (
-    <table aria-label="bookmarks">
+    <table aria-label="bookmarks" className={className}>
       <thead>
         <tr>
           <th

@@ -26,15 +26,9 @@ describe("ErrorMessage", () => {
       />
     );
 
-    expect(screen.getByTestId("bookmark-message")).toHaveTextContent(
-      "ブックマークをロード中..."
-    );
-    expect(screen.getByTestId("bookmark-message")).not.toHaveStyle(
-      "color: red"
-    );
-    expect(
-      screen.queryByRole("button", { name: "閉じる" })
-    ).not.toBeInTheDocument();
+    expect(screen.getByTestId("bookmark-message")).toHaveTextContent("ブックマークをロード中...");
+    expect(screen.getByTestId("bookmark-message")).not.toHaveStyle("color: red");
+    expect(screen.queryByRole("button", { name: "閉じる" })).not.toBeInTheDocument();
   });
 
   it("should display error message and close button when there is an error", () => {
@@ -51,7 +45,7 @@ describe("ErrorMessage", () => {
     );
     const errorMessageElement = screen.getByTestId("bookmark-message");
     expect(errorMessageElement).toHaveTextContent("エラーが発生しました");
-    expect(errorMessageElement).toHaveStyle("color: rgb(255, 0, 0)");
+    expect(errorMessageElement).toHaveClass("text-red-500");
     expect(screen.getByRole("button", { name: "閉じる" })).toBeInTheDocument();
   });
 
