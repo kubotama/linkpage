@@ -8,6 +8,7 @@ import { fireEvent, render, screen, waitFor } from "@testing-library/react";
 import {
   assertNoBookmarkIsSelected,
   clickBookmark,
+  createBookmark,
   mockBookmarks,
 } from "../../test-utils/bookmarkTestUtils";
 import { Bookmark } from "../../types/Bookmark";
@@ -72,19 +73,13 @@ describe("ブックマークの選択", () => {
     });
 
     // クリックするブックマークを選択（例：2番目のブックマーク）
-    const bookmarkToSelect: Bookmark = {
+    const bookmarkToSelect: Bookmark = createBookmark({
       bookmark_id: 999,
       url: "bad url",
       title: "bad title",
-    };
-    try {
-      await clickBookmark(bookmarkToSelect);
-      expect(true).toBe(false);
-    } catch (e) {
-      expect(e).toBeInstanceOf(Error);
-      expect((e as Error).message).toBe(
-        `ブックマーク "${bookmarkToSelect.title}" のテーブル行のクリック処理中にエラーが発生しました。`
-      );
-    }
+    });
+    await expect(clickBookmark(bookmarkToSelect)).rejects.toThrow(
+      `ブックマーク "${bookmarkToSelect.title}" のテーブル行のクリック処理中にエラーが発生しました。`
+    );
   });
 });
