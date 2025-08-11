@@ -208,7 +208,7 @@ export const setBookmarkFormValuesAndClickButton = async (
     url?: string;
     title?: string;
   },
-  buttonName: string
+  buttonName?: string
 ) => {
   if (values.url !== undefined) {
     const urlInput = screen.getByRole("textbox", { name: URL_ROLE_NAME });
@@ -218,10 +218,12 @@ export const setBookmarkFormValuesAndClickButton = async (
     const titleInput = screen.getByRole("textbox", { name: TITLE_ROLE_NAME });
     fireEvent.change(titleInput, { target: { value: values.title } });
   }
-  const button = screen.getByRole("button", {
-    name: buttonName,
-  });
-  fireEvent.click(button);
+  if (buttonName !== undefined) {
+    const button = screen.getByRole("button", {
+      name: buttonName,
+    });
+    fireEvent.click(button);
+  }
 };
 
 export const expectBookmarkFormValues = async (values: {
@@ -262,8 +264,10 @@ export const setupBookmarkManagerForTest = async () => {
   });
 };
 
+export const keyDown = async (key: string) => {
+  act(() => fireEvent.keyDown(document.body, { key: key, code: key }));
+};
+
 export const deselectBookmark = async () => {
-  await act(async () => {
-    fireEvent.keyDown(document.body, { key: "Escape", code: "Escape" });
-  });
+  keyDown("Escape");
 };
