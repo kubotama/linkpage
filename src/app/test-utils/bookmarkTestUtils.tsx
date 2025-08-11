@@ -261,3 +261,9 @@ export const setupBookmarkManagerForTest = async () => {
     expect(screen.getByText(mockBookmarks[0].title)).toBeInTheDocument();
   });
 };
+
+export const deselectBookmark = async () => {
+  await act(async () => {
+    fireEvent.keyDown(document.body, { key: "Escape", code: "Escape" });
+  });
+};
