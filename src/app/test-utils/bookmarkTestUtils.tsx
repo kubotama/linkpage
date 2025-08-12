@@ -249,7 +249,7 @@ export const expectBookmarkFormValues = async (values: {
 };
 
 export const keyDown = async (key: string) => {
-  await act(() => fireEvent.keyDown(document.body, { key: key, code: key }));
+  await act(async () => fireEvent.keyDown(document.body, { key: key, code: key }));
 };
 
 export const setBookmarkFormValuesAndEnterKeydown = async (url: string) => {
