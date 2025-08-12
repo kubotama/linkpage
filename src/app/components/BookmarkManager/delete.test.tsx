@@ -1,9 +1,8 @@
 import "@testing-library/jest-dom";
 
-import { act } from "react";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 
-import { fireEvent, render, screen, waitFor } from "@testing-library/react";
+import { act, fireEvent, screen, waitFor } from "@testing-library/react";
 
 import { BOOKMARKS_ENDPOINT } from "../../constants/apiEndpoints";
 import { DELETE_BUTTON_ROLE_NAME } from "../../constants/constants";
@@ -11,13 +10,28 @@ import {
   clickBookmark,
   createMockResponse,
   mockBookmarks,
+  setupBookmarkManagerForTest,
 } from "../../test-utils/bookmarkTestUtils";
-import { BookmarkManager } from "../BookmarkManager";
+// import { BookmarkManager } from "../BookmarkManager";
 
 const mockFetch = vi.fn();
 
+const clickDeleteButton = async () => {
+  const deleteButton = screen.getByRole("button", {
+    name: DELETE_BUTTON_ROLE_NAME,
+  });
+
+  // fireEvent.clickでトリガーされる処理には、fetchによる非同期の状態更新が含まれます。
+  // この非同期更新を正しくテストし、Reactからの警告を防ぐためにactでラップしています。
+  //
+  // TODO: #250 で user-event に置き換えることで、この明示的なactラップは不要になります。
+  await act(async () => {
+    fireEvent.click(deleteButton);
+  });
+};
+
 describe("削除ボタン", () => {
-  beforeEach(() => {
+  beforeEach(async () => {
     global.fetch = mockFetch;
     mockFetch.mockReset();
     mockFetch.mockResolvedValueOnce({
@@ -25,13 +39,11 @@ describe("削除ボタン", () => {
       status: 200,
       json: async () => mockBookmarks,
     });
+
+    await setupBookmarkManagerForTest();
   });
 
   it("ブックマークが選択されていない場合には削除ボタンは表示されない", async () => {
-    await act(async () => {
-      render(<BookmarkManager />);
-    });
-
     const deleteButtons = screen.queryAllByRole("button", {
       name: DELETE_BUTTON_ROLE_NAME,
     });
@@ -42,18 +54,6 @@ describe("削除ボタン", () => {
   });
 
   it("ブックマークが選択されると削除ボタンが表示される", async () => {
-    await act(async () => {
-      render(<BookmarkManager />);
-    });
-
-    // 初期データがロードされ、UIが安定するのを待つ
-    // テーブル内に既知のブックマークのタイトルが表示されることを確認
-    // また、アクションボタンが表示されていることで、メインUIの準備ができていることを確認
-    await waitFor(() => {
-      expect(screen.getByText(mockBookmarks[0].title)).toBeInTheDocument();
-    });
-
-    // クリックするブックマークを選択（例：2番目のブックマーク）
     const bookmarkToSelect = mockBookmarks[1]; // Google
     await clickBookmark(bookmarkToSelect);
 
@@ -67,34 +67,13 @@ describe("削除ボタン", () => {
 
   it("ブックマークが削除される(APIの呼び出し、画面の更新)", async () => {
     // fetchMockはbeforeEachでmockBookmarksを返すように設定されています
-
-    await act(async () => {
-      render(<BookmarkManager />);
-    });
-
-    // 初期データがロードされ、UIが安定するのを待つ
-    // テーブル内に既知のブックマークのタイトルが表示されることを確認
-    // また、アクションボタンが表示されていることで、メインUIの準備ができていることを確認
-    await waitFor(() => {
-      expect(screen.getByText(mockBookmarks[0].title)).toBeInTheDocument();
-    });
-
-    // クリックするブックマークを選択（例：2番目のブックマーク）
     const bookmarkToSelect = mockBookmarks[1]; // Google
     await clickBookmark(bookmarkToSelect);
 
-    // fetchMock.resetMocks();
-    // fetchMock.mockResponseOnce("", { status: 204 });
     mockFetch.mockReset();
     mockFetch.mockResolvedValueOnce(createMockResponse({ isOk: true, status: 204 }));
 
-    const deleteButton = screen.getByRole("button", {
-      name: DELETE_BUTTON_ROLE_NAME,
-    });
-
-    await act(async () => {
-      fireEvent.click(deleteButton);
-    });
+    await clickDeleteButton();
 
     await waitFor(() => {
       // APIの呼び出しの確認
@@ -116,19 +95,6 @@ describe("削除ボタン", () => {
 
   it("存在しないブックマークの削除しようとした場合のエラーハンドリング(404)", async () => {
     // fetchMockはbeforeEachでmockBookmarksを返すように設定されています
-
-    await act(async () => {
-      render(<BookmarkManager />);
-    });
-
-    // 初期データがロードされ、UIが安定するのを待つ
-    // テーブル内に既知のブックマークのタイトルが表示されることを確認
-    // また、アクションボタンが表示されていることで、メインUIの準備ができていることを確認
-    await waitFor(() => {
-      expect(screen.getByText(mockBookmarks[0].title)).toBeInTheDocument();
-    });
-
-    // クリックするブックマークを選択（例：2番目のブックマーク）
     const bookmarkToSelect = mockBookmarks[1]; // Google
     await clickBookmark(bookmarkToSelect);
 
@@ -141,13 +107,7 @@ describe("削除ボタン", () => {
       })
     );
 
-    const deleteButton = screen.getByRole("button", {
-      name: DELETE_BUTTON_ROLE_NAME,
-    });
-
-    await act(async () => {
-      fireEvent.click(deleteButton);
-    });
+    await clickDeleteButton();
 
     await waitFor(() => {
       // 画面の更新の確認
@@ -163,17 +123,6 @@ describe("削除ボタン", () => {
   it("IDがリクエストボディに含まれていない場合のエラーハンドリング(400)", async () => {
     // fetchMockはbeforeEachでmockBookmarksを返すように設定されています
 
-    await act(async () => {
-      render(<BookmarkManager />);
-    });
-
-    // 初期データがロードされ、UIが安定するのを待つ
-    // テーブル内に既知のブックマークのタイトルが表示されることを確認
-    // また、アクションボタンが表示されていることで、メインUIの準備ができていることを確認
-    await waitFor(() => {
-      expect(screen.getByText(mockBookmarks[0].title)).toBeInTheDocument();
-    });
-
     // クリックするブックマークを選択（例：2番目のブックマーク）
     const bookmarkToSelect = mockBookmarks[1]; // Google
     await clickBookmark(bookmarkToSelect);
@@ -187,13 +136,7 @@ describe("削除ボタン", () => {
       })
     );
 
-    const deleteButton = screen.getByRole("button", {
-      name: DELETE_BUTTON_ROLE_NAME,
-    });
-
-    await act(async () => {
-      fireEvent.click(deleteButton);
-    });
+    await clickDeleteButton();
 
     await waitFor(() => {
       // 画面の更新の確認
@@ -209,17 +152,6 @@ describe("削除ボタン", () => {
   it("不正なJSONデータの場合のエラーハンドリング(500)", async () => {
     // fetchMockはbeforeEachでmockBookmarksを返すように設定されています
 
-    await act(async () => {
-      render(<BookmarkManager />);
-    });
-
-    // 初期データがロードされ、UIが安定するのを待つ
-    // テーブル内に既知のブックマークのタイトルが表示されることを確認
-    // また、アクションボタンが表示されていることで、メインUIの準備ができていることを確認
-    await waitFor(() => {
-      expect(screen.getByText(mockBookmarks[0].title)).toBeInTheDocument();
-    });
-
     mockFetch.mockReset();
     mockFetch.mockResolvedValueOnce(
       createMockResponse({
@@ -233,13 +165,7 @@ describe("削除ボタン", () => {
     const bookmarkToSelect = mockBookmarks[1]; // Google
     await clickBookmark(bookmarkToSelect);
 
-    const deleteButton = screen.getByRole("button", {
-      name: DELETE_BUTTON_ROLE_NAME,
-    });
-
-    await act(async () => {
-      fireEvent.click(deleteButton);
-    });
+    await clickDeleteButton();
 
     await waitFor(() => {
       // 画面の更新の確認
