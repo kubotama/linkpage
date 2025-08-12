@@ -1,7 +1,6 @@
-import { act } from "react";
 import { expect } from "vitest";
 
-import { fireEvent, render, screen, waitFor } from "@testing-library/react";
+import { act, fireEvent, render, screen, waitFor } from "@testing-library/react";
 
 import { BookmarkManager } from "../components/BookmarkManager";
 import { FORM_BOOKMARK_DETAIL, TITLE_ROLE_NAME, URL_ROLE_NAME } from "../constants/constants";
@@ -250,7 +249,7 @@ export const expectBookmarkFormValues = async (values: {
 };
 
 export const keyDown = async (key: string) => {
-  act(() => fireEvent.keyDown(document.body, { key: key, code: key }));
+  await act(() => fireEvent.keyDown(document.body, { key: key, code: key }));
 };
 
 export const setBookmarkFormValuesAndEnterKeydown = async (url: string) => {
