@@ -249,11 +249,15 @@ export const expectBookmarkFormValues = async (values: {
   }
 };
 
-export const setBookmarkFormValuesAndEnterKeydown = (url: string) => {
+export const keyDown = async (key: string) => {
+  act(() => fireEvent.keyDown(document.body, { key: key, code: key }));
+};
+
+export const setBookmarkFormValuesAndEnterKeydown = async (url: string) => {
   const urlInput = screen.getByRole("textbox", { name: URL_ROLE_NAME });
 
   fireEvent.change(urlInput, { target: { value: url } });
-  fireEvent.keyDown(document.body, { key: "Enter", code: "Enter" });
+  await keyDown("Enter");
 };
 
 /**
@@ -266,10 +270,6 @@ export const setupBookmarkManagerForTest = async () => {
   });
 };
 
-export const keyDown = async (key: string) => {
-  act(() => fireEvent.keyDown(document.body, { key: key, code: key }));
-};
-
 export const deselectBookmark = async () => {
-  keyDown("Escape");
+  await keyDown("Escape");
 };
