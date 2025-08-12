@@ -44,7 +44,7 @@ describe("「パラメータ」ボタン: URLから無駄な文字列を削除�
         expectedUrl: "https://mail.google.com/mail/u/0/",
       },
     ])("無駄なパラメータを削除するテスト: $url", async ({ url, expectedUrl }) => {
-      setBookmarkFormValuesAndClickButton({ url }, PARAMETER_BUTTON_ROLE_NAME);
+      await setBookmarkFormValuesAndClickButton({ url }, PARAMETER_BUTTON_ROLE_NAME);
 
       await expectBookmarkFormValues({ url: expectedUrl });
     });

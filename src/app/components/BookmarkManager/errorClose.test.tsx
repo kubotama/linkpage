@@ -33,7 +33,7 @@ describe("BookmarkManager", () => {
     const bookmarkToSelect = mockBookmarks[1]; // Google
     await clickBookmark(bookmarkToSelect);
 
-    setBookmarkFormValuesAndClickButton({ url: "", title: "" });
+    await setBookmarkFormValuesAndClickButton({ url: "", title: "" });
     keyDown("Enter");
 
     await waitFor(() => {

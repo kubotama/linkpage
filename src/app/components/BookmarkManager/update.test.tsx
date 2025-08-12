@@ -78,7 +78,7 @@ describe("タイトルの更新ボタン", () => {
       })
     );
 
-    setBookmarkFormValuesAndClickButton(
+    await setBookmarkFormValuesAndClickButton(
       { url: updateUrl, title: updateTitle },
       UPDATE_BUTTON_ROLE_NAME
     );

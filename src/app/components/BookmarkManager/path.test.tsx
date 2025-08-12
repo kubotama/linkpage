@@ -58,7 +58,7 @@ describe("「←」ボタン", () => {
       expectedUrl: "invalid-url",
     },
   ])(" URLから、/の階層を一段、削除する: $url", async ({ url, expectedUrl }) => {
-    setBookmarkFormValuesAndClickButton({ url }, ARROW_BUTTON_ROLE_NAME);
+    await setBookmarkFormValuesAndClickButton({ url }, ARROW_BUTTON_ROLE_NAME);
 
     await expectBookmarkFormValues({ url: expectedUrl });
   });
