@@ -2,12 +2,11 @@ import "@testing-library/jest-dom";
 
 import { beforeEach, describe, expect, it, vi } from "vitest";
 
-import { fireEvent } from "@testing-library/react";
-
 import {
   assertNoBookmarkIsSelected,
   clickBookmark,
   createBookmark,
+  keyDown,
   mockBookmarks,
   setupBookmarkManagerForTest,
 } from "../../test-utils/bookmarkTestUtils";
@@ -37,7 +36,7 @@ describe("ブックマークの選択", () => {
     const bookmarkToSelect = mockBookmarks[1]; // Google
     await clickBookmark(bookmarkToSelect);
 
-    fireEvent.keyDown(document.body, { key: "Escape", code: "Escape" });
+    await keyDown("Escape");
 
     await assertNoBookmarkIsSelected();
   });
