@@ -83,7 +83,7 @@ describe("「開く」ボタン: 入力されたURLを新しいタブで開く",
     it("Enterキーを押した場合", async () => {
       const url = "https://xtech.nikkei.com/";
 
-      setBookmarkFormValuesAndEnterKeydown(url);
+      await setBookmarkFormValuesAndEnterKeydown(url);
 
       // window.openが正しいURLで呼び出されたことを検証
       await waitFor(() => {
@@ -92,7 +92,7 @@ describe("「開く」ボタン: 入力されたURLを新しいタブで開く",
     });
 
     it("不正なURLを入力した場合", async () => {
-      setBookmarkFormValuesAndEnterKeydown("invalid-url");
+      await setBookmarkFormValuesAndEnterKeydown("invalid-url");
 
       // エラーメッセージが表示され、window.openが呼び出されていないことを検証
       await waitFor(() => {
