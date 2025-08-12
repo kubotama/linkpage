@@ -222,7 +222,9 @@ export const setBookmarkFormValuesAndClickButton = async (
     const button = screen.getByRole("button", {
       name: buttonName,
     });
-    fireEvent.click(button);
+    await act(async () => {
+      fireEvent.click(button);
+    });
   }
 };
 

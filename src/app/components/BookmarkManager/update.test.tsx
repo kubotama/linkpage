@@ -2,7 +2,7 @@ import "@testing-library/jest-dom";
 
 import { beforeEach, describe, expect, it, vi } from "vitest";
 
-import { fireEvent, screen, waitFor, within } from "@testing-library/react";
+import { act, fireEvent, screen, waitFor, within } from "@testing-library/react";
 
 import { BOOKMARKS_ENDPOINT } from "../../constants/apiEndpoints";
 import { UPDATE_BUTTON_ROLE_NAME } from "../../constants/constants";
@@ -19,6 +19,16 @@ import { Bookmark } from "../../types/Bookmark";
 
 const mockFetch = vi.fn();
 
+const clickUpdateButton = async () => {
+  const updateButton = screen.getByRole("button", {
+    name: UPDATE_BUTTON_ROLE_NAME,
+  });
+
+  await act(async () => {
+    fireEvent.click(updateButton);
+  });
+};
+
 describe("タイトルの更新ボタン", () => {
   beforeEach(async () => {
     mockFetch.mockReset();
@@ -29,14 +39,6 @@ describe("タイトルの更新ボタン", () => {
       json: async () => mockBookmarks,
     });
 
-    // render(<BookmarkManager />);
-
-    // // 初期データがロードされ、UIが安定するのを待つ
-    // // テーブル内に既知のブックマークのタイトルが表示されることを確認
-    // // また、アクションボタンが表示されていることで、メインUIの準備ができていることを確認
-    // await waitFor(() => {
-    //   expect(screen.getByText(mockBookmarks[0].title)).toBeInTheDocument();
-    // });
     await setupBookmarkManagerForTest();
   });
 
@@ -168,11 +170,7 @@ describe("タイトルの更新ボタン", () => {
       })
     );
 
-    const updateButton = screen.getByRole("button", {
-      name: UPDATE_BUTTON_ROLE_NAME,
-    });
-
-    fireEvent.click(updateButton);
+    await clickUpdateButton();
 
     await waitFor(() => {
       expect(screen.getByTestId("bookmark-message")).toHaveTextContent(
@@ -200,11 +198,7 @@ describe("タイトルの更新ボタン", () => {
       })
     );
 
-    const updateButton = screen.getByRole("button", {
-      name: UPDATE_BUTTON_ROLE_NAME,
-    });
-
-    fireEvent.click(updateButton);
+    await clickUpdateButton();
 
     await waitFor(() => {
       expect(screen.getByTestId("bookmark-message")).toHaveTextContent(
@@ -232,11 +226,7 @@ describe("タイトルの更新ボタン", () => {
       })
     );
 
-    const updateButton = screen.getByRole("button", {
-      name: UPDATE_BUTTON_ROLE_NAME,
-    });
-
-    fireEvent.click(updateButton);
+    await clickUpdateButton();
 
     await waitFor(() => {
       expect(screen.getByTestId("bookmark-message")).toHaveTextContent(
@@ -264,11 +254,7 @@ describe("タイトルの更新ボタン", () => {
       })
     );
 
-    const updateButton = screen.getByRole("button", {
-      name: UPDATE_BUTTON_ROLE_NAME,
-    });
-
-    fireEvent.click(updateButton);
+    await clickUpdateButton();
 
     await waitFor(() => {
       expect(screen.getByTestId("bookmark-message")).toHaveTextContent(
@@ -296,11 +282,7 @@ describe("タイトルの更新ボタン", () => {
       })
     );
 
-    const updateButton = screen.getByRole("button", {
-      name: UPDATE_BUTTON_ROLE_NAME,
-    });
-
-    fireEvent.click(updateButton);
+    await clickUpdateButton();
 
     await waitFor(() => {
       expect(screen.getByTestId("bookmark-message")).toHaveTextContent(
