@@ -1,5 +1,5 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import { act, renderHook } from "@testing-library/react";
+import { act, renderHook, waitFor } from "@testing-library/react";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 
 import { useBookmarks } from "./useBookmark";
@@ -41,7 +41,7 @@ describe("useBookmarkManager › SSE", () => {
     vi.restoreAllMocks();
   });
 
-  it("should connect to SSE and call getBookmarks on message", () => {
+  it("should connect to SSE and call getBookmarks on message", async () => {
     renderHook(() => useBookmarkManager());
 
     // 初期ロードで1回呼ばれることを確認
@@ -57,7 +57,9 @@ describe("useBookmarkManager › SSE", () => {
     });
 
     // SSEイベントで追加で1回呼び出されたことを確認 (合計2回)
-    expect(mockGetBookmarks).toHaveBeenCalledTimes(2);
+    await waitFor(() => {
+      expect(mockGetBookmarks).toHaveBeenCalledTimes(2);
+    });
   });
 
   it("should close EventSource on unmount", () => {
@@ -73,9 +75,7 @@ describe("useBookmarkManager › SSE", () => {
   });
 
   it("should handle SSE errors and close the connection", () => {
-    const consoleErrorSpy = vi
-      .spyOn(console, "error")
-      .mockImplementation(() => {});
+    const consoleErrorSpy = vi.spyOn(console, "error").mockImplementation(() => {});
     renderHook(() => useBookmarkManager());
 
     const eventSourceInstance = MockEventSource.instances[0];
@@ -86,17 +86,12 @@ describe("useBookmarkManager › SSE", () => {
     });
 
     // console.errorが呼ばれたことを確認
-    expect(consoleErrorSpy).toHaveBeenCalledWith(
-      "EventSource failed:",
-      expect.any(Error)
-    );
+    expect(consoleErrorSpy).toHaveBeenCalledWith("EventSource failed:", expect.any(Error));
     expect(eventSourceInstance.close).toHaveBeenCalledTimes(0);
   });
 
   it("should handle invalid JSON data from SSE and not call getBookmarks", () => {
-    const consoleErrorSpy = vi
-      .spyOn(console, "error")
-      .mockImplementation(() => {});
+    const consoleErrorSpy = vi.spyOn(console, "error").mockImplementation(() => {});
     renderHook(() => useBookmarkManager());
 
     // onmessageを直接呼び出して不正なデータを渡す
