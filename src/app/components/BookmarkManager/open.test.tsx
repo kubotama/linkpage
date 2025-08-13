@@ -3,6 +3,7 @@ import "@testing-library/jest-dom";
 import { afterAll, beforeAll, beforeEach, describe, expect, it, vi } from "vitest";
 
 import { screen, waitFor } from "@testing-library/react";
+import userEvent, { UserEvent } from "@testing-library/user-event";
 
 import {
   clickBookmark,
@@ -27,6 +28,7 @@ const mockFetch = vi.fn();
 
 describe("「開く」ボタン: 入力されたURLを新しいタブで開く", () => {
   let originalLocation: Location;
+  let user: UserEvent;
 
   beforeAll(() => {
     // 元のlocationを保存
@@ -71,6 +73,8 @@ describe("「開く」ボタン: 入力されたURLを新しいタブで開く",
     // hrefをリセット
     (window.location as MockedLocation).href = "";
 
+    user = userEvent.setup();
+
     await setupBookmarkManagerForTest();
   });
 
@@ -83,7 +87,7 @@ describe("「開く」ボタン: 入力されたURLを新しいタブで開く",
     it("Enterキーを押した場合", async () => {
       const url = "https://xtech.nikkei.com/";
 
-      await setBookmarkFormValuesAndEnterKeydown(url);
+      await setBookmarkFormValuesAndEnterKeydown(user, url);
 
       // window.openが正しいURLで呼び出されたことを検証
       await waitFor(() => {
@@ -92,7 +96,7 @@ describe("「開く」ボタン: 入力されたURLを新しいタブで開く",
     });
 
     it("不正なURLを入力した場合", async () => {
-      await setBookmarkFormValuesAndEnterKeydown("invalid-url");
+      await setBookmarkFormValuesAndEnterKeydown(user, "invalid-url");
 
       // エラーメッセージが表示され、window.openが呼び出されていないことを検証
       await waitFor(() => {

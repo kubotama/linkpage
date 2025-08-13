@@ -39,7 +39,7 @@ describe("BookmarkManager", () => {
     await clickBookmark(bookmarkToSelect);
 
     await setBookmarkFormValuesAndClickButton({ url: "", title: "" });
-    await keyDown("Enter");
+    await keyDown(user, "{enter}");
 
     await waitFor(() => {
       const errorSpan = screen.getByTestId("bookmark-message");

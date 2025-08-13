@@ -1,6 +1,7 @@
 import { expect } from "vitest";
 
 import { act, fireEvent, render, screen, waitFor } from "@testing-library/react";
+import { UserEvent } from "@testing-library/user-event";
 
 import { BookmarkManager } from "../components/BookmarkManager";
 import { FORM_BOOKMARK_DETAIL, TITLE_ROLE_NAME, URL_ROLE_NAME } from "../constants/constants";
@@ -248,15 +249,15 @@ export const expectBookmarkFormValues = async (values: {
   }
 };
 
-export const keyDown = async (key: string) => {
-  await act(async () => fireEvent.keyDown(document.body, { key: key, code: key }));
+export const keyDown = async (user: UserEvent, key: string) => {
+  await user.keyboard(key);
 };
 
-export const setBookmarkFormValuesAndEnterKeydown = async (url: string) => {
+export const setBookmarkFormValuesAndEnterKeydown = async (user: UserEvent, url: string) => {
   const urlInput = screen.getByRole("textbox", { name: URL_ROLE_NAME });
 
   fireEvent.change(urlInput, { target: { value: url } });
-  await keyDown("Enter");
+  await keyDown(user, "{enter}");
 };
 
 /**
@@ -269,6 +270,6 @@ export const setupBookmarkManagerForTest = async () => {
   });
 };
 
-export const deselectBookmark = async () => {
-  await keyDown("Escape");
+export const deselectBookmark = async (user: UserEvent) => {
+  await keyDown(user, "{escape}");
 };

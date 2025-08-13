@@ -2,11 +2,13 @@ import "@testing-library/jest-dom";
 
 import { beforeEach, describe, expect, it, vi } from "vitest";
 
+import userEvent, { UserEvent } from "@testing-library/user-event";
+
 import {
   assertNoBookmarkIsSelected,
   clickBookmark,
   createBookmark,
-  keyDown,
+  deselectBookmark,
   mockBookmarks,
   setupBookmarkManagerForTest,
 } from "../../test-utils/bookmarkTestUtils";
@@ -15,6 +17,8 @@ import { Bookmark } from "../../types/Bookmark";
 const mockFetch = vi.fn();
 
 describe("ブックマークの選択", () => {
+  let user: UserEvent;
+
   beforeEach(async () => {
     mockFetch.mockReset();
     global.fetch = mockFetch;
@@ -23,6 +27,7 @@ describe("ブックマークの選択", () => {
       status: 200,
       json: async () => mockBookmarks,
     });
+    user = userEvent.setup();
 
     await setupBookmarkManagerForTest();
   });
@@ -36,7 +41,7 @@ describe("ブックマークの選択", () => {
     const bookmarkToSelect = mockBookmarks[1]; // Google
     await clickBookmark(bookmarkToSelect);
 
-    await keyDown("Escape");
+    await deselectBookmark(user);
 
     await assertNoBookmarkIsSelected();
   });

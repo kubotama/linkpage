@@ -3,18 +3,18 @@ import "@testing-library/jest-dom";
 import { afterAll, beforeAll, beforeEach, describe, expect, it, vi } from "vitest";
 
 import { screen, waitFor } from "@testing-library/react";
+import userEvent, { UserEvent } from "@testing-library/user-event";
 
 import {
   assertBookmarkIsSelected,
   assertNoBookmarkIsSelected,
   clickBookmark,
+  deselectBookmark,
   keyDown,
   mockBookmarks,
   setBookmarkFormValuesAndClickButton,
   setupBookmarkManagerForTest,
 } from "../../test-utils/bookmarkTestUtils";
-
-// import { BookmarkManager } from "../BookmarkManager";
 
 const mockFetch = vi.fn();
 const mockOpen = vi.fn();
@@ -29,6 +29,8 @@ interface MockedLocation {
 }
 
 describe("BookmarkManager Hotkeys", () => {
+  let user: UserEvent;
+
   beforeAll(() => {
     // Save original window.location
     originalLocation = window.location;
@@ -69,6 +71,8 @@ describe("BookmarkManager Hotkeys", () => {
     // Reset href for window.location mock
     (window.location as MockedLocation).href = "";
 
+    user = userEvent.setup();
+
     await setupBookmarkManagerForTest();
   });
 
@@ -77,7 +81,7 @@ describe("BookmarkManager Hotkeys", () => {
     const bookmarkToSelect = mockBookmarks[1]; // Google
     await clickBookmark(bookmarkToSelect);
 
-    await keyDown("Enter");
+    await keyDown(user, "{enter}");
 
     // window.openが正しいURLで呼び出されたことを検証
     await waitFor(() => {
@@ -92,7 +96,7 @@ describe("BookmarkManager Hotkeys", () => {
     await setBookmarkFormValuesAndClickButton({ url: "invalid-url" });
 
     // Enterキーの押下をシミュレート
-    await keyDown("Enter");
+    await keyDown(user, "{enter}");
 
     // エラーメッセージが表示され、window.openが呼び出されていないことを検証
     await waitFor(() => {
@@ -108,7 +112,7 @@ describe("BookmarkManager Hotkeys", () => {
     const bookmarkToSelect = mockBookmarks[1]; // Google
     await clickBookmark(bookmarkToSelect);
 
-    await keyDown("Escape");
+    await deselectBookmark(user);
 
     // 入力フィールドがドキュメントから消えたことを検証
     await assertNoBookmarkIsSelected();
@@ -120,13 +124,13 @@ describe("BookmarkManager Hotkeys", () => {
     await clickBookmark(bookmarkToSelect);
 
     // Escapeキーの押下をシミュレート
-    await keyDown("Escape");
+    await deselectBookmark(user);
 
     // 入力フィールドがドキュメントから消えたことを検証
     await assertNoBookmarkIsSelected();
 
     // Enterキーの押下をシミュレート
-    await keyDown("Enter");
+    await keyDown(user, "{enter}");
 
     // window.openが呼び出されていないことを検証
     await waitFor(() => {
@@ -137,32 +141,32 @@ describe("BookmarkManager Hotkeys", () => {
   it.each([
     {
       selectRow: undefined,
-      key: "ArrowDown",
+      key: "{arrowdown}",
       expectedRow: 1,
     },
     {
       selectRow: undefined,
-      key: "ArrowUp",
+      key: "{arrowup}",
       expectedRow: mockBookmarks.length,
     },
     {
       selectRow: mockBookmarks.length,
-      key: "ArrowDown",
+      key: "{arrowdown}",
       expectedRow: 1,
     },
     {
       selectRow: 1,
-      key: "ArrowUp",
+      key: "{arrowup}",
       expectedRow: mockBookmarks.length,
     },
     {
       selectRow: 2,
-      key: "ArrowDown",
+      key: "{arrowdown}",
       expectedRow: 3,
     },
     {
       selectRow: 3,
-      key: "ArrowUp",
+      key: "{arrowup}",
       expectedRow: 2,
     },
   ])(
@@ -171,7 +175,7 @@ describe("BookmarkManager Hotkeys", () => {
       if (selectRow !== undefined) {
         await clickBookmark(mockBookmarks[selectRow - 1]);
       }
-      await keyDown(key);
+      await keyDown(user, key);
       await assertBookmarkIsSelected(mockBookmarks[expectedRow - 1]);
     }
   );

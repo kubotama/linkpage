@@ -3,10 +3,14 @@ import "@testing-library/jest-dom";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 
 import { act, fireEvent, screen, waitFor, within } from "@testing-library/react";
+import userEvent, { UserEvent } from "@testing-library/user-event";
 
 import { BOOKMARKS_ENDPOINT } from "../../constants/apiEndpoints";
-import { TABLE_NAME_KEYWORD } from "../../constants/constants";
-import { ADD_BUTTON_ROLE_NAME, KEYWORD_ROLE_NAME } from "../../constants/constants";
+import {
+  ADD_BUTTON_ROLE_NAME,
+  KEYWORD_ROLE_NAME,
+  TABLE_NAME_KEYWORD,
+} from "../../constants/constants";
 import {
   buildMockBookmarksWithKeywords,
   clickBookmark,
@@ -50,6 +54,7 @@ const expectRowsAndKeyword = async (expectRows: number, expectKeyword: string) =
 
 describe("選択されたブックマークにキーワードを追加", () => {
   let mockBookmarksWithKeywords: Bookmark[];
+  let user: UserEvent;
 
   beforeEach(async () => {
     mockFetch.mockReset();
@@ -62,6 +67,8 @@ describe("選択されたブックマークにキーワードを追加", () => {
       status: 200,
       json: async () => mockBookmarksWithKeywords,
     });
+    user = userEvent.setup();
+
     await setupBookmarkManagerForTest();
   });
 
@@ -140,7 +147,7 @@ describe("選択されたブックマークにキーワードを追加", () => {
       it("キーワードを追加した後にブックマークの選択を解除すると、キーワードのテーブルが表示されなくなる", async () => {
         // 実行
         // ブックマークの選択を解除
-        await deselectBookmark();
+        await deselectBookmark(user);
 
         // 検証
         // キーワードのテーブルが表示されていないことを確認
@@ -153,7 +160,7 @@ describe("選択されたブックマークにキーワードを追加", () => {
       it("キーワードを追加した後にブックマークの選択を解除して、再度ブックマークを選択すると、追加したキーワードが表示される", async () => {
         // 実行
         // ブックマークの選択を解除
-        await deselectBookmark();
+        await deselectBookmark(user);
         // 同じブックマークを選択
         await clickBookmark(bookmarkToSelect);
 
