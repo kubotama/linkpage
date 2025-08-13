@@ -2,7 +2,8 @@ import "@testing-library/jest-dom";
 
 import { beforeEach, describe, expect, it, vi } from "vitest";
 
-import { fireEvent, screen, waitFor } from "@testing-library/react";
+import { screen, waitFor } from "@testing-library/react";
+import userEvent, { UserEvent } from "@testing-library/user-event";
 
 import { CLOSE_BUTTON_ROLE_NAME } from "../../constants/constants";
 import {
@@ -16,6 +17,8 @@ import {
 const mockFetch = vi.fn();
 
 describe("BookmarkManager", () => {
+  let user: UserEvent;
+
   beforeEach(async () => {
     global.fetch = mockFetch;
     mockFetch.mockReset();
@@ -24,6 +27,8 @@ describe("BookmarkManager", () => {
       status: 200,
       json: async () => mockBookmarks,
     });
+
+    user = userEvent.setup();
 
     await setupBookmarkManagerForTest();
   });
@@ -34,7 +39,7 @@ describe("BookmarkManager", () => {
     await clickBookmark(bookmarkToSelect);
 
     await setBookmarkFormValuesAndClickButton({ url: "", title: "" });
-    keyDown("Enter");
+    await keyDown("Enter");
 
     await waitFor(() => {
       const errorSpan = screen.getByTestId("bookmark-message");
@@ -46,7 +51,7 @@ describe("BookmarkManager", () => {
       name: CLOSE_BUTTON_ROLE_NAME,
     });
 
-    fireEvent.click(closeButton);
+    await user.click(closeButton);
 
     await waitFor(() => {
       const errorSpan = screen.queryAllByTestId("bookmark-message");
