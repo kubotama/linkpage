@@ -2,7 +2,7 @@ import "@testing-library/jest-dom";
 
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 
-import { act, fireEvent, screen, waitFor, within } from "@testing-library/react";
+import { screen, waitFor, within } from "@testing-library/react";
 import userEvent, { UserEvent } from "@testing-library/user-event";
 
 import { BOOKMARKS_ENDPOINT } from "../../constants/apiEndpoints";
@@ -23,13 +23,11 @@ import { Bookmark } from "../../types/Bookmark";
 
 const mockFetch = vi.fn();
 
-const addNewKeyword = async (keyword: string) => {
+const addNewKeyword = async (user: UserEvent, keyword: string) => {
   const keywordInput = screen.getByRole("textbox", { name: KEYWORD_ROLE_NAME });
   const addButton = screen.getByRole("button", { name: ADD_BUTTON_ROLE_NAME });
-  await act(async () => {
-    fireEvent.change(keywordInput, { target: { value: keyword } });
-    fireEvent.click(addButton);
-  });
+  await user.type(keywordInput, keyword);
+  await user.click(addButton);
 };
 
 const expectTableRows = async (expectRows: number) => {
@@ -93,7 +91,7 @@ describe("選択されたブックマークにキーワードを追加", () => {
       await clickBookmark(bookmarkToSelect);
 
       const keyword = "テストキーワード";
-      await addNewKeyword(keyword);
+      await addNewKeyword(user, keyword);
 
       await waitFor(() => {
         expect(mockFetch).toHaveBeenCalledTimes(1);
@@ -122,7 +120,7 @@ describe("選択されたブックマークにキーワードを追加", () => {
       // 実行
       // ブックマークにキーワードを追加
       const keyword = "テストキーワード";
-      await addNewKeyword(keyword);
+      await addNewKeyword(user, keyword);
 
       // 検証
       // キーワードのテーブルに表示されていることを確認
@@ -141,7 +139,7 @@ describe("選択されたブックマークにキーワードを追加", () => {
         await expectTableRows(1);
 
         // ブックマークにキーワードを追加
-        await addNewKeyword(keyword);
+        await addNewKeyword(user, keyword);
       });
 
       it("キーワードを追加した後にブックマークの選択を解除すると、キーワードのテーブルが表示されなくなる", async () => {
