@@ -2,7 +2,8 @@ import "@testing-library/jest-dom";
 
 import { beforeEach, describe, expect, it, vi } from "vitest";
 
-import { act, fireEvent, screen, waitFor, within } from "@testing-library/react";
+import { screen, waitFor, within } from "@testing-library/react";
+import userEvent, { UserEvent } from "@testing-library/user-event";
 
 import { BOOKMARKS_ENDPOINT } from "../../constants/apiEndpoints";
 import { UPDATE_BUTTON_ROLE_NAME } from "../../constants/constants";
@@ -19,17 +20,17 @@ import { Bookmark } from "../../types/Bookmark";
 
 const mockFetch = vi.fn();
 
-const clickUpdateButton = async () => {
+const clickUpdateButton = async (user: UserEvent) => {
   const updateButton = screen.getByRole("button", {
     name: UPDATE_BUTTON_ROLE_NAME,
   });
 
-  await act(async () => {
-    fireEvent.click(updateButton);
-  });
+  await user.click(updateButton);
 };
 
 describe("タイトルの更新ボタン", () => {
+  let user: UserEvent;
+
   beforeEach(async () => {
     mockFetch.mockReset();
     global.fetch = mockFetch;
@@ -38,6 +39,7 @@ describe("タイトルの更新ボタン", () => {
       status: 200,
       json: async () => mockBookmarks,
     });
+    user = userEvent.setup();
 
     await setupBookmarkManagerForTest();
   });
@@ -170,7 +172,7 @@ describe("タイトルの更新ボタン", () => {
       })
     );
 
-    await clickUpdateButton();
+    await clickUpdateButton(user);
 
     await waitFor(() => {
       expect(screen.getByTestId("bookmark-message")).toHaveTextContent(
@@ -198,7 +200,7 @@ describe("タイトルの更新ボタン", () => {
       })
     );
 
-    await clickUpdateButton();
+    await clickUpdateButton(user);
 
     await waitFor(() => {
       expect(screen.getByTestId("bookmark-message")).toHaveTextContent(
@@ -226,7 +228,7 @@ describe("タイトルの更新ボタン", () => {
       })
     );
 
-    await clickUpdateButton();
+    await clickUpdateButton(user);
 
     await waitFor(() => {
       expect(screen.getByTestId("bookmark-message")).toHaveTextContent(
@@ -254,7 +256,7 @@ describe("タイトルの更新ボタン", () => {
       })
     );
 
-    await clickUpdateButton();
+    await clickUpdateButton(user);
 
     await waitFor(() => {
       expect(screen.getByTestId("bookmark-message")).toHaveTextContent(
@@ -282,7 +284,7 @@ describe("タイトルの更新ボタン", () => {
       })
     );
 
-    await clickUpdateButton();
+    await clickUpdateButton(user);
 
     await waitFor(() => {
       expect(screen.getByTestId("bookmark-message")).toHaveTextContent(
