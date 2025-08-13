@@ -1,9 +1,8 @@
 import "@testing-library/jest-dom";
 
-import { act } from "react";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 
-import { render, screen, waitFor } from "@testing-library/react";
+import { render, screen } from "@testing-library/react";
 
 import { mockBookmarks } from "../../test-utils/bookmarkTestUtils";
 import { BookmarkManager } from "../BookmarkManager";
@@ -23,14 +22,10 @@ describe("BookmarkManagerの表示を確認", () => {
       json: async () => mockBookmarks,
     });
 
-    await act(async () => {
-      render(<BookmarkManager />);
-    });
+    render(<BookmarkManager />);
 
-    await waitFor(() => {
-      const bm = screen.getByText("Amazon");
-      expect(bm).toBeInTheDocument();
-    });
+    const bm = await screen.findByText("Amazon");
+    expect(bm).toBeInTheDocument();
   });
 
   it("ローディング中にローディングメッセージが表示されること", () => {
@@ -53,9 +48,7 @@ describe("BookmarkManagerの表示を確認", () => {
       json: async () => ({ message: "Internal Error" }),
     });
 
-    await act(async () => {
-      render(<BookmarkManager />);
-    });
+    render(<BookmarkManager />);
 
     const errorMessage = await screen.findByTestId("bookmark-message");
     expect(errorMessage).toHaveTextContent(/ブックマークのロード中にエラーが発生しました。/);

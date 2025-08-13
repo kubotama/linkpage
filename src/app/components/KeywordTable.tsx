@@ -2,6 +2,8 @@ import React from "react";
 
 import { Keyword } from "../types/Keyword";
 
+import { TABLE_NAME_KEYWORD } from "../constants/constants";
+
 type KeywordTableProps = {
   keywords?: Keyword[];
   className?: string;
@@ -12,7 +14,7 @@ export const KeywordTable = ({
   className,
 }: KeywordTableProps): React.ReactElement => {
   return (
-    <table aria-label="キーワードのテーブル" className={className}>
+    <table aria-label={TABLE_NAME_KEYWORD} className={className}>
       <thead className="sr-only">
         <tr>
           <th scope="col">キーワード</th>

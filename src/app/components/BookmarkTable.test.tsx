@@ -18,7 +18,7 @@ describe("BookmarkTableのテスト", () => {
       />
     );
 
-    const table = screen.getByRole("table");
+    const table = screen.getByRole("table", { name: "bookmarks" });
     expect(table).toBeInTheDocument();
 
     const headers = within(table).getAllByRole("columnheader");

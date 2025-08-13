@@ -1,8 +1,8 @@
-import { act } from "react";
 import { expect } from "vitest";
 
-import { fireEvent, screen, waitFor } from "@testing-library/react";
+import { act, fireEvent, render, screen, waitFor } from "@testing-library/react";
 
+import { BookmarkManager } from "../components/BookmarkManager";
 import { FORM_BOOKMARK_DETAIL, TITLE_ROLE_NAME, URL_ROLE_NAME } from "../constants/constants";
 import { Bookmark } from "../types/Bookmark";
 import { Keyword } from "../types/Keyword";
@@ -200,4 +200,75 @@ export const createMockResponse = ({
   }
 
   return response;
+};
+
+export const setBookmarkFormValuesAndClickButton = async (
+  values: {
+    url?: string;
+    title?: string;
+  },
+  buttonName?: string
+) => {
+  if (values.url !== undefined) {
+    const urlInput = screen.getByRole("textbox", { name: URL_ROLE_NAME });
+    fireEvent.change(urlInput, { target: { value: values.url } });
+  }
+  if (values.title !== undefined) {
+    const titleInput = screen.getByRole("textbox", { name: TITLE_ROLE_NAME });
+    fireEvent.change(titleInput, { target: { value: values.title } });
+  }
+  if (buttonName !== undefined) {
+    const button = screen.getByRole("button", {
+      name: buttonName,
+    });
+    await act(async () => {
+      fireEvent.click(button);
+    });
+  }
+};
+
+export const expectBookmarkFormValues = async (values: {
+  url?: string;
+  title?: string;
+  buttonName?: string;
+}) => {
+  if (values.url !== undefined) {
+    const urlInput = screen.getByRole("textbox", { name: URL_ROLE_NAME });
+    expect(urlInput).toHaveValue(values.url);
+  }
+  if (values.title !== undefined) {
+    const titleInput = screen.getByRole("textbox", { name: TITLE_ROLE_NAME });
+    expect(titleInput).toHaveValue(values.title);
+  }
+  if (values.buttonName !== undefined) {
+    const button = screen.getByRole("button", {
+      name: values.buttonName,
+    });
+    expect(button).toBeInTheDocument();
+  }
+};
+
+export const keyDown = async (key: string) => {
+  await act(async () => fireEvent.keyDown(document.body, { key: key, code: key }));
+};
+
+export const setBookmarkFormValuesAndEnterKeydown = async (url: string) => {
+  const urlInput = screen.getByRole("textbox", { name: URL_ROLE_NAME });
+
+  fireEvent.change(urlInput, { target: { value: url } });
+  await keyDown("Enter");
+};
+
+/**
+ * BookmarkManagerコンポーネントをレンダリングし、初期データがロードされるのを待つ
+ */
+export const setupBookmarkManagerForTest = async () => {
+  render(<BookmarkManager />);
+  await waitFor(() => {
+    expect(screen.getByText(mockBookmarks[0].title)).toBeInTheDocument();
+  });
+};
+
+export const deselectBookmark = async () => {
+  await keyDown("Escape");
 };

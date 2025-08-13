@@ -1,13 +1,17 @@
 import "@testing-library/jest-dom";
 
-import { act } from "react";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 
-import { fireEvent, render, screen, waitFor } from "@testing-library/react";
+import { fireEvent, screen, waitFor } from "@testing-library/react";
 
-import { clickBookmark, mockBookmarks } from "../../test-utils/bookmarkTestUtils";
-import { CLOSE_BUTTON_ROLE_NAME, TITLE_ROLE_NAME, URL_ROLE_NAME } from "../../constants/constants";
-import { BookmarkManager } from "../BookmarkManager";
+import { CLOSE_BUTTON_ROLE_NAME } from "../../constants/constants";
+import {
+  clickBookmark,
+  keyDown,
+  mockBookmarks,
+  setBookmarkFormValuesAndClickButton,
+  setupBookmarkManagerForTest,
+} from "../../test-utils/bookmarkTestUtils";
 
 const mockFetch = vi.fn();
 
@@ -21,9 +25,7 @@ describe("BookmarkManager", () => {
       json: async () => mockBookmarks,
     });
 
-    await act(async () => {
-      render(<BookmarkManager />);
-    });
+    await setupBookmarkManagerForTest();
   });
 
   it("エラーメッセージと閉じるボタンの表示を確認するテスト", async () => {
@@ -31,14 +33,8 @@ describe("BookmarkManager", () => {
     const bookmarkToSelect = mockBookmarks[1]; // Google
     await clickBookmark(bookmarkToSelect);
 
-    const urlInput = screen.getByRole("textbox", { name: URL_ROLE_NAME });
-    const titleInput = screen.getByRole("textbox", { name: TITLE_ROLE_NAME });
-
-    await act(async () => {
-      fireEvent.change(urlInput, { target: { value: "" } });
-      fireEvent.change(titleInput, { target: { value: "" } });
-      fireEvent.keyDown(document.body, { key: "Enter", code: "Enter" });
-    });
+    await setBookmarkFormValuesAndClickButton({ url: "", title: "" });
+    keyDown("Enter");
 
     await waitFor(() => {
       const errorSpan = screen.getByTestId("bookmark-message");
@@ -50,23 +46,22 @@ describe("BookmarkManager", () => {
       name: CLOSE_BUTTON_ROLE_NAME,
     });
 
-    await act(async () => {
-      fireEvent.click(closeButton);
-    });
+    fireEvent.click(closeButton);
 
     await waitFor(() => {
-      const errorSpan = screen.queryByTestId("bookmark-message");
-      expect(errorSpan).not.toBeInTheDocument();
+      const errorSpan = screen.queryAllByTestId("bookmark-message");
+      expect(errorSpan).toHaveLength(0);
     });
   });
 
   it("should not display the close button when there is no error", async () => {
-    const messageSpan = screen.queryByTestId("bookmark-message");
-    expect(messageSpan).not.toBeInTheDocument();
+    const messageSpan = screen.queryAllByTestId("bookmark-message");
+    expect(messageSpan).toHaveLength(0);
+
     // Ensure the close button is not in the document
-    const closeButton = screen.queryByRole("button", {
+    const closeButton = screen.queryAllByRole("button", {
       name: CLOSE_BUTTON_ROLE_NAME,
     });
-    expect(closeButton).not.toBeInTheDocument();
+    expect(closeButton).toHaveLength(0);
   });
 });

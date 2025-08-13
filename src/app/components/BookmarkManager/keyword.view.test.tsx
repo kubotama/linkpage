@@ -2,7 +2,7 @@ import "@testing-library/jest-dom";
 
 import { beforeAll, beforeEach, describe, expect, it, vi } from "vitest";
 
-import { render, screen, waitFor, within } from "@testing-library/react";
+import { screen, waitFor, within } from "@testing-library/react";
 
 import {
   ADD_BUTTON_ROLE_NAME,
@@ -13,9 +13,9 @@ import {
   buildMockBookmarksWithKeywords,
   clickBookmark,
   findBookmarkWithAtLeastNKeywords,
+  setupBookmarkManagerForTest,
 } from "../../test-utils/bookmarkTestUtils";
 import { Bookmark } from "../../types/Bookmark";
-import { BookmarkManager } from "../BookmarkManager";
 
 const mockFetch = vi.fn();
 
@@ -57,10 +57,7 @@ describe("キーワード詳細フォームの表示のテスト", () => {
       status: 200,
       json: async () => mockBookmarksWithKeywords,
     });
-    render(<BookmarkManager />);
-    await waitFor(() => {
-      expect(screen.getByText(mockBookmarksWithKeywords[0].title)).toBeInTheDocument();
-    });
+    await setupBookmarkManagerForTest();
   });
 
   describe("ブックマークが選択されていない場合", () => {

@@ -1,113 +1,52 @@
 import "@testing-library/jest-dom";
 
-import { act } from "react";
-import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
+import { beforeEach, describe, it, vi } from "vitest";
 
-import { fireEvent, render, screen, waitFor } from "@testing-library/react";
-
-import { PARAMETER_BUTTON_ROLE_NAME, URL_ROLE_NAME } from "../../constants/constants";
-import { clickBookmark, mockBookmarks } from "../../test-utils/bookmarkTestUtils";
-import { BookmarkManager } from "../BookmarkManager";
+import { PARAMETER_BUTTON_ROLE_NAME } from "../../constants/constants";
+import {
+  clickBookmark,
+  expectBookmarkFormValues,
+  mockBookmarks,
+  setBookmarkFormValuesAndClickButton,
+  setupBookmarkManagerForTest,
+} from "../../test-utils/bookmarkTestUtils";
 
 const mockFetch = vi.fn();
 
 describe("「パラメータ」ボタン: URLから無駄な文字列を削除する#61", () => {
   describe("#や?の後ろを削除する", () => {
-    let originalFetch: typeof global.fetch;
-
-    beforeEach(() => {
+    beforeEach(async () => {
       mockFetch.mockReset();
-      originalFetch = global.fetch;
       global.fetch = mockFetch;
       mockFetch.mockResolvedValueOnce({
         ok: true,
         status: 200,
         json: async () => mockBookmarks,
       });
-    });
 
-    afterEach(() => {
-      global.fetch = originalFetch;
-    });
-    it("https://mail.google.com/mail/u/0/#inbox", async () => {
-      const url = "https://mail.google.com/mail/u/0/#inbox";
+      await setupBookmarkManagerForTest();
 
-      await act(async () => {
-        render(<BookmarkManager />);
-      });
-
-      // クリックするブックマークを選択（例：2番目のブックマーク）
       const bookmarkToSelect = mockBookmarks[1]; // Google
       await clickBookmark(bookmarkToSelect);
-
-      const urlInput = screen.getByRole("textbox", { name: URL_ROLE_NAME });
-      const urlButton = screen.getByRole("button", {
-        name: PARAMETER_BUTTON_ROLE_NAME,
-      });
-
-      await act(async () => {
-        fireEvent.change(urlInput, { target: { value: url } });
-        fireEvent.click(urlButton);
-      });
-
-      await waitFor(() => {
-        expect(urlInput).toHaveValue("https://mail.google.com/mail/u/0/");
-      });
     });
 
-    it("https://xtech.nikkei.com/atcl/nxt/column/18/00148/030500376/?n_cid=nbpnxt_mled_itmh", async () => {
-      const url =
-        "https://xtech.nikkei.com/atcl/nxt/column/18/00148/030500376/?n_cid=nbpnxt_mled_itmh";
+    it.each([
+      {
+        url: "https://mail.google.com/mail/u/0/#inbox",
+        expectedUrl: "https://mail.google.com/mail/u/0/",
+      },
+      {
+        url: "https://xtech.nikkei.com/atcl/nxt/column/18/00148/030500376/?n_cid=nbpnxt_mled_itmh",
+        expectedUrl: "https://xtech.nikkei.com/atcl/nxt/column/18/00148/030500376/",
+      },
+      {
+        url: "https://mail.google.com/mail/u/0/",
+        expectedUrl: "https://mail.google.com/mail/u/0/",
+      },
+    ])("無駄なパラメータを削除するテスト: $url", async ({ url, expectedUrl }) => {
+      await setBookmarkFormValuesAndClickButton({ url }, PARAMETER_BUTTON_ROLE_NAME);
 
-      await act(async () => {
-        render(<BookmarkManager />);
-      });
-
-      // クリックするブックマークを選択（例：2番目のブックマーク）
-      const bookmarkToSelect = mockBookmarks[1]; // Google
-      await clickBookmark(bookmarkToSelect);
-
-      const urlInput = screen.getByRole("textbox", { name: URL_ROLE_NAME });
-      const urlButton = screen.getByRole("button", {
-        name: PARAMETER_BUTTON_ROLE_NAME,
-      });
-
-      await act(async () => {
-        fireEvent.change(urlInput, { target: { value: url } });
-        fireEvent.click(urlButton);
-      });
-
-      await waitFor(() => {
-        expect(urlInput).toHaveValue(
-          "https://xtech.nikkei.com/atcl/nxt/column/18/00148/030500376/"
-        );
-      });
-    });
-
-    it("https://mail.google.com/mail/u/0/", async () => {
-      const url = "https://mail.google.com/mail/u/0/";
-
-      await act(async () => {
-        render(<BookmarkManager />);
-      });
-
-      // クリックするブックマークを選択（例：2番目のブックマーク）
-      const bookmarkToSelect = mockBookmarks[1]; // Google
-      await clickBookmark(bookmarkToSelect);
-
-      const urlInput = screen.getByRole("textbox", { name: URL_ROLE_NAME });
-      const urlButton = screen.getByRole("button", {
-        name: PARAMETER_BUTTON_ROLE_NAME,
-      });
-
-      await act(async () => {
-        fireEvent.change(urlInput, { target: { value: url } });
-        fireEvent.click(urlButton);
-      });
-
-      await waitFor(() => {
-        expect(urlInput).toHaveValue("https://mail.google.com/mail/u/0/");
-      });
+      await expectBookmarkFormValues({ url: expectedUrl });
     });
   });
 });
