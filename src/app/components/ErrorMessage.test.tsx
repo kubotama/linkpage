@@ -1,17 +1,19 @@
 import "@testing-library/jest-dom";
 
-import { afterEach, beforeEach, describe, expect, it, vi } from "vitest"; // Vitestから必要なものをインポート
+import { beforeEach, describe, expect, it, vi } from "vitest"; // Vitestから必要なものをインポート
 
-import { fireEvent, render, screen } from "@testing-library/react";
+import { render, screen } from "@testing-library/react";
+import userEvent, { UserEvent } from "@testing-library/user-event";
 
 import { ErrorMessage } from "./ErrorMessage";
 
 describe("ErrorMessage", () => {
+  let user: UserEvent;
+
   beforeEach(() => {
     vi.resetAllMocks();
+    user = userEvent.setup();
   });
-
-  afterEach(() => {});
 
   it("should display loading message initially", async () => {
     const textMessage = "ブックマークをロード中...";
@@ -49,7 +51,7 @@ describe("ErrorMessage", () => {
     expect(screen.getByRole("button", { name: "閉じる" })).toBeInTheDocument();
   });
 
-  it("should call handleErrorClose when close button is clicked", () => {
+  it("should call handleErrorClose when close button is clicked", async () => {
     const textMessage = "エラーが発生しました";
     const isError = true;
     const handleErrorClose = vi.fn();
@@ -61,7 +63,7 @@ describe("ErrorMessage", () => {
         handleErrorClose={handleErrorClose}
       />
     );
-    fireEvent.click(screen.getByRole("button", { name: "閉じる" }));
+    await user.click(screen.getByRole("button", { name: "閉じる" }));
     expect(handleErrorClose).toHaveBeenCalledTimes(1);
   });
 
