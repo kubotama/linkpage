@@ -1,6 +1,6 @@
 import { expect } from "vitest";
 
-import { act, fireEvent, render, screen, waitFor } from "@testing-library/react";
+import { render, screen, waitFor } from "@testing-library/react";
 import { UserEvent } from "@testing-library/user-event";
 
 import { BookmarkManager } from "../components/BookmarkManager";
@@ -65,16 +65,14 @@ export const assertNoBookmarkIsSelected = async () => {
   });
 };
 
-export const clickBookmark = async (bookmark: Bookmark) => {
+export const clickBookmark = async (user: UserEvent, bookmark: Bookmark) => {
   // クリックするブックマークを選択（例：2番目のブックマーク）
   // const bookmark = mockBookmarks[1]; // Google
   try {
     const cellWithTitle = screen.getByText(bookmark.title);
 
     // テーブル行のクリックをシミュレート
-    await act(async () => {
-      fireEvent.click(cellWithTitle);
-    });
+    await user.click(cellWithTitle);
     await assertBookmarkIsSelected(bookmark);
   } catch (error) {
     // エラーメッセージに元のエラーを含めるとデバッグが容易になります

@@ -53,7 +53,7 @@ describe("削除ボタン", () => {
 
   it("ブックマークが選択されると削除ボタンが表示される", async () => {
     const bookmarkToSelect = mockBookmarks[1]; // Google
-    await clickBookmark(bookmarkToSelect);
+    await clickBookmark(user, bookmarkToSelect);
 
     await waitFor(() => {
       const deleteButton = screen.getByRole("button", {
@@ -66,7 +66,7 @@ describe("削除ボタン", () => {
   it("ブックマークが削除される(APIの呼び出し、画面の更新)", async () => {
     // fetchMockはbeforeEachでmockBookmarksを返すように設定されています
     const bookmarkToSelect = mockBookmarks[1]; // Google
-    await clickBookmark(bookmarkToSelect);
+    await clickBookmark(user, bookmarkToSelect);
 
     mockFetch.mockReset();
     mockFetch.mockResolvedValueOnce(createMockResponse({ isOk: true, status: 204 }));
@@ -94,7 +94,7 @@ describe("削除ボタン", () => {
   it("存在しないブックマークの削除しようとした場合のエラーハンドリング(404)", async () => {
     // fetchMockはbeforeEachでmockBookmarksを返すように設定されています
     const bookmarkToSelect = mockBookmarks[1]; // Google
-    await clickBookmark(bookmarkToSelect);
+    await clickBookmark(user, bookmarkToSelect);
 
     mockFetch.mockReset();
     mockFetch.mockResolvedValueOnce(
@@ -123,7 +123,7 @@ describe("削除ボタン", () => {
 
     // クリックするブックマークを選択（例：2番目のブックマーク）
     const bookmarkToSelect = mockBookmarks[1]; // Google
-    await clickBookmark(bookmarkToSelect);
+    await clickBookmark(user, bookmarkToSelect);
 
     mockFetch.mockReset();
     mockFetch.mockResolvedValueOnce(
@@ -161,7 +161,7 @@ describe("削除ボタン", () => {
 
     // クリックするブックマークを選択（例：2番目のブックマーク）
     const bookmarkToSelect = mockBookmarks[1]; // Google
-    await clickBookmark(bookmarkToSelect);
+    await clickBookmark(user, bookmarkToSelect);
 
     await clickDeleteButton(user);
 
