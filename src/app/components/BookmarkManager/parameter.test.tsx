@@ -2,6 +2,8 @@ import "@testing-library/jest-dom";
 
 import { beforeEach, describe, it, vi } from "vitest";
 
+import userEvent, { UserEvent } from "@testing-library/user-event";
+
 import { PARAMETER_BUTTON_ROLE_NAME } from "../../constants/constants";
 import {
   clickBookmark,
@@ -14,6 +16,8 @@ import {
 const mockFetch = vi.fn();
 
 describe("「パラメータ」ボタン: URLから無駄な文字列を削除する#61", () => {
+  let user: UserEvent;
+
   describe("#や?の後ろを削除する", () => {
     beforeEach(async () => {
       mockFetch.mockReset();
@@ -23,6 +27,8 @@ describe("「パラメータ」ボタン: URLから無駄な文字列を削除�
         status: 200,
         json: async () => mockBookmarks,
       });
+
+      user = userEvent.setup();
 
       await setupBookmarkManagerForTest();
 
@@ -44,7 +50,7 @@ describe("「パラメータ」ボタン: URLから無駄な文字列を削除�
         expectedUrl: "https://mail.google.com/mail/u/0/",
       },
     ])("無駄なパラメータを削除するテスト: $url", async ({ url, expectedUrl }) => {
-      await setBookmarkFormValuesAndClickButton({ url }, PARAMETER_BUTTON_ROLE_NAME);
+      await setBookmarkFormValuesAndClickButton(user, { url }, PARAMETER_BUTTON_ROLE_NAME);
 
       await expectBookmarkFormValues({ url: expectedUrl });
     });
