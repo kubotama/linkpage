@@ -81,7 +81,7 @@ describe("「開く」ボタン: 入力されたURLを新しいタブで開く",
   describe("ブックマーク選択後", () => {
     beforeEach(async () => {
       // クリックするブックマークを選択（例：2番目のブックマーク）
-      await clickBookmark(mockBookmarks[1]);
+      await clickBookmark(user, mockBookmarks[1]);
     });
 
     it("Enterキーを押した場合", async () => {
