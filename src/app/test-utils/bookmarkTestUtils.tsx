@@ -204,6 +204,7 @@ export const createMockResponse = ({
 };
 
 export const setBookmarkFormValuesAndClickButton = async (
+  user: UserEvent,
   values: {
     url?: string;
     title?: string;
@@ -212,19 +213,23 @@ export const setBookmarkFormValuesAndClickButton = async (
 ) => {
   if (values.url !== undefined) {
     const urlInput = screen.getByRole("textbox", { name: URL_ROLE_NAME });
-    fireEvent.change(urlInput, { target: { value: values.url } });
+    await user.clear(urlInput);
+    if (values.url.length !== 0) {
+      await user.type(urlInput, values.url);
+    }
   }
   if (values.title !== undefined) {
     const titleInput = screen.getByRole("textbox", { name: TITLE_ROLE_NAME });
-    fireEvent.change(titleInput, { target: { value: values.title } });
+    await user.clear(titleInput);
+    if (values.title.length !== 0) {
+      await user.type(titleInput, values.title);
+    }
   }
   if (buttonName !== undefined) {
     const button = screen.getByRole("button", {
       name: buttonName,
     });
-    await act(async () => {
-      fireEvent.click(button);
-    });
+    await user.click(button);
   }
 };
 
@@ -250,6 +255,8 @@ export const expectBookmarkFormValues = async (values: {
 };
 
 export const keyDown = async (user: UserEvent, key: string) => {
+  // テキストボックスなどへのフォーカスを外す
+  await user.click(document.body);
   await user.keyboard(key);
 };
 

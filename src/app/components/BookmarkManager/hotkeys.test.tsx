@@ -93,7 +93,7 @@ describe("BookmarkManager Hotkeys", () => {
     // ブックマークを選択し、URLを無効な値に変更
     await clickBookmark(mockBookmarks[1]);
 
-    await setBookmarkFormValuesAndClickButton({ url: "invalid-url" });
+    await setBookmarkFormValuesAndClickButton(user, { url: "invalid-url" });
 
     // Enterキーの押下をシミュレート
     await keyDown(user, "{enter}");
