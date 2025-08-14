@@ -263,7 +263,8 @@ export const keyDown = async (user: UserEvent, key: string) => {
 export const setBookmarkFormValuesAndEnterKeydown = async (user: UserEvent, url: string) => {
   const urlInput = screen.getByRole("textbox", { name: URL_ROLE_NAME });
 
-  fireEvent.change(urlInput, { target: { value: url } });
+  await user.clear(urlInput);
+  await user.type(urlInput, url);
   await keyDown(user, "{enter}");
 };
 
