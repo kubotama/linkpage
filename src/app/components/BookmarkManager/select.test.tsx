@@ -39,7 +39,7 @@ describe("ブックマークの選択", () => {
   it("選択解除のボタンをクリックすると、URLとタイトルのテキストボックスがクリアされる。選択解除のボタンが表示されていない。", async () => {
     // クリックするブックマークを選択（例：2番目のブックマーク）
     const bookmarkToSelect = mockBookmarks[1]; // Google
-    await clickBookmark(bookmarkToSelect);
+    await clickBookmark(user, bookmarkToSelect);
 
     await deselectBookmark(user);
 
@@ -53,7 +53,7 @@ describe("ブックマークの選択", () => {
       url: "bad url",
       title: "bad title",
     });
-    await expect(clickBookmark(bookmarkToSelect)).rejects.toThrow(
+    await expect(clickBookmark(user, bookmarkToSelect)).rejects.toThrow(
       `ブックマーク "${bookmarkToSelect.title}" のテーブル行のクリック処理中にエラーが発生しました。`
     );
   });

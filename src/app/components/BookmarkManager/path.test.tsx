@@ -31,7 +31,7 @@ describe("「←」ボタン", () => {
 
     await setupBookmarkManagerForTest();
 
-    await clickBookmark(mockBookmarks[1]);
+    await clickBookmark(user, mockBookmarks[1]);
   });
 
   it.each([

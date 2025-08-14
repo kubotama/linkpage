@@ -33,7 +33,7 @@ describe("「パラメータ」ボタン: URLから無駄な文字列を削除�
       await setupBookmarkManagerForTest();
 
       const bookmarkToSelect = mockBookmarks[1]; // Google
-      await clickBookmark(bookmarkToSelect);
+      await clickBookmark(user, bookmarkToSelect);
     });
 
     it.each([
