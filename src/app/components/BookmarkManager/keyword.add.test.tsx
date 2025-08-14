@@ -88,7 +88,7 @@ describe("選択されたブックマークにキーワードを追加", () => {
     it("テキストボックスにキーワードを入力して「追加」ボタンをクリックするとAPIが呼び出される", async () => {
       // キーワードが設定されていないブックマークを選択
       const bookmarkToSelect = findBookmarkWithAtLeastNKeywords(mockBookmarksWithKeywords, 0);
-      await clickBookmark(bookmarkToSelect);
+      await clickBookmark(user, bookmarkToSelect);
 
       const keyword = "テストキーワード";
       await addNewKeyword(user, keyword);
@@ -113,7 +113,7 @@ describe("選択されたブックマークにキーワードを追加", () => {
     it("テキストボックスにキーワードを入力して「追加」ボタンをクリックするとキーワードのテーブルに表示される", async () => {
       // キーワードが設定されていないブックマークを選択
       const bookmarkToSelect = findBookmarkWithAtLeastNKeywords(mockBookmarksWithKeywords, 0);
-      await clickBookmark(bookmarkToSelect);
+      await clickBookmark(user, bookmarkToSelect);
 
       await expectTableRows(1);
 
@@ -134,7 +134,7 @@ describe("選択されたブックマークにキーワードを追加", () => {
       beforeEach(async () => {
         // キーワードが設定されていないブックマークを選択
         bookmarkToSelect = findBookmarkWithAtLeastNKeywords(mockBookmarksWithKeywords, 0);
-        await clickBookmark(bookmarkToSelect);
+        await clickBookmark(user, bookmarkToSelect);
 
         await expectTableRows(1);
 
@@ -160,7 +160,7 @@ describe("選択されたブックマークにキーワードを追加", () => {
         // ブックマークの選択を解除
         await deselectBookmark(user);
         // 同じブックマークを選択
-        await clickBookmark(bookmarkToSelect);
+        await clickBookmark(user, bookmarkToSelect);
 
         // 検証
         // キーワードのテーブルに表示されていることを確認
