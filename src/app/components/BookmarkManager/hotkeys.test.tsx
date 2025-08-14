@@ -79,7 +79,7 @@ describe("BookmarkManager Hotkeys", () => {
   it("Enterキーを押すと、選択されたブックマークのURLが開かれる", async () => {
     // ブックマークを選択
     const bookmarkToSelect = mockBookmarks[1]; // Google
-    await clickBookmark(bookmarkToSelect);
+    await clickBookmark(user, bookmarkToSelect);
 
     await keyDown(user, "{enter}");
 
@@ -91,7 +91,7 @@ describe("BookmarkManager Hotkeys", () => {
 
   it("Enterキーを押した際にURLが無効な場合、エラーメッセージが表示され、URLは開かれない", async () => {
     // ブックマークを選択し、URLを無効な値に変更
-    await clickBookmark(mockBookmarks[1]);
+    await clickBookmark(user, mockBookmarks[1]);
 
     await setBookmarkFormValuesAndClickButton(user, { url: "invalid-url" });
 
@@ -110,7 +110,7 @@ describe("BookmarkManager Hotkeys", () => {
   it("Escapeキーを押すと、選択が解除され、入力フィールドがクリアされる", async () => {
     // ブックマークを選択
     const bookmarkToSelect = mockBookmarks[1]; // Google
-    await clickBookmark(bookmarkToSelect);
+    await clickBookmark(user, bookmarkToSelect);
 
     await deselectBookmark(user);
 
@@ -121,7 +121,7 @@ describe("BookmarkManager Hotkeys", () => {
   it("Escapeキーを押して選択が解除された後でEnterキーを押しても、なにも起きない。", async () => {
     // ブックマークを選択
     const bookmarkToSelect = mockBookmarks[1]; // Google
-    await clickBookmark(bookmarkToSelect);
+    await clickBookmark(user, bookmarkToSelect);
 
     // Escapeキーの押下をシミュレート
     await deselectBookmark(user);
@@ -173,7 +173,7 @@ describe("BookmarkManager Hotkeys", () => {
     "$keyキーを押したときに $expectedRow行目が選択される。",
     async ({ selectRow, key, expectedRow }) => {
       if (selectRow !== undefined) {
-        await clickBookmark(mockBookmarks[selectRow - 1]);
+        await clickBookmark(user, mockBookmarks[selectRow - 1]);
       }
       await keyDown(user, key);
       await assertBookmarkIsSelected(mockBookmarks[expectedRow - 1]);
