@@ -3,6 +3,7 @@ import "@testing-library/jest-dom";
 import { beforeAll, beforeEach, describe, expect, it, vi } from "vitest";
 
 import { screen, waitFor, within } from "@testing-library/react";
+import userEvent, { UserEvent } from "@testing-library/user-event";
 
 import {
   ADD_BUTTON_ROLE_NAME,
@@ -19,10 +20,10 @@ import { Bookmark } from "../../types/Bookmark";
 
 const mockFetch = vi.fn();
 
-const clickBookmarkAndAssertKeywords = async (bookmark: Bookmark) => {
+const clickBookmarkAndAssertKeywords = async (user: UserEvent, bookmark: Bookmark) => {
   const keywords = bookmark.keywords;
 
-  await clickBookmark(bookmark);
+  await clickBookmark(user, bookmark);
 
   await waitFor(() => {
     // まず、特定のキーワードテーブルをaria-labelで取得します
@@ -44,6 +45,7 @@ const clickBookmarkAndAssertKeywords = async (bookmark: Bookmark) => {
 
 describe("キーワード詳細フォームの表示のテスト", () => {
   let mockBookmarksWithKeywords: Bookmark[];
+  let user: UserEvent;
 
   beforeAll(() => {
     mockBookmarksWithKeywords = buildMockBookmarksWithKeywords();
@@ -57,6 +59,8 @@ describe("キーワード詳細フォームの表示のテスト", () => {
       status: 200,
       json: async () => mockBookmarksWithKeywords,
     });
+    user = userEvent.setup();
+
     await setupBookmarkManagerForTest();
   });
 
@@ -71,7 +75,7 @@ describe("キーワード詳細フォームの表示のテスト", () => {
   describe("ブックマークが選択されている場合", () => {
     it("キーワード設定フォーム（入力欄と追加ボタン）が表示される", async () => {
       const bookmarkToSelect = findBookmarkWithAtLeastNKeywords(mockBookmarksWithKeywords);
-      await clickBookmark(bookmarkToSelect);
+      await clickBookmark(user, bookmarkToSelect);
 
       expect(screen.getByRole("group", { name: FIELDSET_KEYWORD_LABEL })).toBeInTheDocument();
 
@@ -87,7 +91,7 @@ describe("キーワード詳細フォームの表示のテスト", () => {
     it.each(buildMockBookmarksWithKeywords())(
       "選択されたブックマーク「$title」に設定されたキーワードが一覧で表示される",
       async (bookmark) => {
-        await clickBookmarkAndAssertKeywords(bookmark);
+        await clickBookmarkAndAssertKeywords(user, bookmark);
       }
     );
   });
