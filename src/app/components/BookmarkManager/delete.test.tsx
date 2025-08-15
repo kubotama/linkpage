@@ -109,9 +109,8 @@ describe("削除ボタン", () => {
         message: "サーバーで予期せぬエラーが発生しました。",
         status: 500,
       },
-    ])("エラーハンドリング($status)", async ({ message, status }) => {
-      mockFetch.mockResolvedValueOnce(createMockResponse({ message, isOk: false, status }));
-
+    ])("エラーハンドリング($status)", async (errorCase) => {
+      mockFetch.mockResolvedValueOnce(createMockResponse({ ...errorCase, isOk: false }));
       await clickDeleteButton(user);
 
       await waitFor(() => {
