@@ -158,14 +158,34 @@ describe("タイトルの更新ボタン", () => {
       });
     });
 
+    it("タイトルが空の状態で更新しようとすると、エラーメッセージが表示される", async () => {
+      mockFetch.mockResolvedValueOnce(
+        createMockResponse({
+          isOk: false,
+          status: 400,
+          message: "タイトルが指定されていません。",
+        })
+      );
+
+      await setBookmarkFormValuesAndClickButton(user, { title: "" }, UPDATE_BUTTON_ROLE_NAME);
+
+      await waitFor(() => {
+        expect(screen.getByTestId("bookmark-message")).toHaveTextContent(
+          "ブックマークの更新中にエラーが発生しました。"
+        );
+        // フォームにはユーザーが入力した空のタイトルが保持されるべき
+        expectBookmarkFormValues({
+          url: bookmarkToSelect.url,
+          title: "",
+          buttonName: UPDATE_BUTTON_ROLE_NAME,
+        });
+      });
+    });
+
     it.each([
       {
         description: "存在しないブックマーク (404 Not Found)",
         errorCase: { message: "指定されたブックマークがありません。", status: 404 },
-      },
-      {
-        description: "タイトルが指定されていない (400 Bad Request)",
-        errorCase: { message: "タイトルが指定されていません。", status: 400 },
       },
       {
         description: "不正なリクエスト (400 Bad Request)",
