@@ -1,6 +1,6 @@
 import { expect } from "vitest";
 
-import { render, screen, waitFor } from "@testing-library/react";
+import { render, screen, waitFor, within } from "@testing-library/react";
 import { UserEvent } from "@testing-library/user-event";
 
 import { BookmarkManager } from "../components/BookmarkManager";
@@ -65,20 +65,33 @@ export const assertNoBookmarkIsSelected = async () => {
   });
 };
 
+export const getCellWithTitle = (title: string) => {
+  const table = screen.getByRole("table", { name: "bookmarks" });
+
+  const cellWithTitle = within(table).getByText(title);
+  return cellWithTitle;
+};
+
 export const clickBookmark = async (user: UserEvent, bookmark: Bookmark) => {
   // クリックするブックマークを選択（例：2番目のブックマーク）
   // const bookmark = mockBookmarks[1]; // Google
   try {
-    const cellWithTitle = screen.getByText(bookmark.title);
+    const cellWithTitle = getCellWithTitle(bookmark.title);
+    const row = cellWithTitle.closest("tr");
+    if (!row) {
+      throw new Error(`ブックマーク "${bookmark.title}" のテーブル行が見つかりませんでした。`);
+    }
 
     // テーブル行のクリックをシミュレート
     await user.click(cellWithTitle);
     await assertBookmarkIsSelected(bookmark);
   } catch (error) {
     // エラーメッセージに元のエラーを含めるとデバッグが容易になります
-    console.error(error); // 元のエラーをログに出力
+    // console.error(error); // 元のエラーをログに出力
     throw new Error(
-      `ブックマーク "${bookmark.title}" のテーブル行のクリック処理中にエラーが発生しました。`
+      `ブックマーク "${bookmark.title}" のテーブル行のクリック処理中にエラーが発生しました。: ${
+        error instanceof Error ? error.message : String(error)
+      }`
     );
   }
 };
