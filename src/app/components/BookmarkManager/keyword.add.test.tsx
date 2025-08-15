@@ -2,11 +2,15 @@ import "@testing-library/jest-dom";
 
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 
-import { act, fireEvent, screen, waitFor, within } from "@testing-library/react";
+import { screen, waitFor, within } from "@testing-library/react";
+import userEvent, { UserEvent } from "@testing-library/user-event";
 
 import { BOOKMARKS_ENDPOINT } from "../../constants/apiEndpoints";
-import { TABLE_NAME_KEYWORD } from "../../constants/constants";
-import { ADD_BUTTON_ROLE_NAME, KEYWORD_ROLE_NAME } from "../../constants/constants";
+import {
+  ADD_BUTTON_ROLE_NAME,
+  KEYWORD_ROLE_NAME,
+  TABLE_NAME_KEYWORD,
+} from "../../constants/constants";
 import {
   buildMockBookmarksWithKeywords,
   clickBookmark,
@@ -19,13 +23,11 @@ import { Bookmark } from "../../types/Bookmark";
 
 const mockFetch = vi.fn();
 
-const addNewKeyword = async (keyword: string) => {
+const addNewKeyword = async (user: UserEvent, keyword: string) => {
   const keywordInput = screen.getByRole("textbox", { name: KEYWORD_ROLE_NAME });
   const addButton = screen.getByRole("button", { name: ADD_BUTTON_ROLE_NAME });
-  await act(async () => {
-    fireEvent.change(keywordInput, { target: { value: keyword } });
-    fireEvent.click(addButton);
-  });
+  await user.type(keywordInput, keyword);
+  await user.click(addButton);
 };
 
 const expectTableRows = async (expectRows: number) => {
@@ -50,6 +52,7 @@ const expectRowsAndKeyword = async (expectRows: number, expectKeyword: string) =
 
 describe("選択されたブックマークにキーワードを追加", () => {
   let mockBookmarksWithKeywords: Bookmark[];
+  let user: UserEvent;
 
   beforeEach(async () => {
     mockFetch.mockReset();
@@ -62,6 +65,8 @@ describe("選択されたブックマークにキーワードを追加", () => {
       status: 200,
       json: async () => mockBookmarksWithKeywords,
     });
+    user = userEvent.setup();
+
     await setupBookmarkManagerForTest();
   });
 
@@ -83,10 +88,10 @@ describe("選択されたブックマークにキーワードを追加", () => {
     it("テキストボックスにキーワードを入力して「追加」ボタンをクリックするとAPIが呼び出される", async () => {
       // キーワードが設定されていないブックマークを選択
       const bookmarkToSelect = findBookmarkWithAtLeastNKeywords(mockBookmarksWithKeywords, 0);
-      await clickBookmark(bookmarkToSelect);
+      await clickBookmark(user, bookmarkToSelect);
 
       const keyword = "テストキーワード";
-      await addNewKeyword(keyword);
+      await addNewKeyword(user, keyword);
 
       await waitFor(() => {
         expect(mockFetch).toHaveBeenCalledTimes(1);
@@ -108,14 +113,14 @@ describe("選択されたブックマークにキーワードを追加", () => {
     it("テキストボックスにキーワードを入力して「追加」ボタンをクリックするとキーワードのテーブルに表示される", async () => {
       // キーワードが設定されていないブックマークを選択
       const bookmarkToSelect = findBookmarkWithAtLeastNKeywords(mockBookmarksWithKeywords, 0);
-      await clickBookmark(bookmarkToSelect);
+      await clickBookmark(user, bookmarkToSelect);
 
       await expectTableRows(1);
 
       // 実行
       // ブックマークにキーワードを追加
       const keyword = "テストキーワード";
-      await addNewKeyword(keyword);
+      await addNewKeyword(user, keyword);
 
       // 検証
       // キーワードのテーブルに表示されていることを確認
@@ -129,18 +134,18 @@ describe("選択されたブックマークにキーワードを追加", () => {
       beforeEach(async () => {
         // キーワードが設定されていないブックマークを選択
         bookmarkToSelect = findBookmarkWithAtLeastNKeywords(mockBookmarksWithKeywords, 0);
-        await clickBookmark(bookmarkToSelect);
+        await clickBookmark(user, bookmarkToSelect);
 
         await expectTableRows(1);
 
         // ブックマークにキーワードを追加
-        await addNewKeyword(keyword);
+        await addNewKeyword(user, keyword);
       });
 
       it("キーワードを追加した後にブックマークの選択を解除すると、キーワードのテーブルが表示されなくなる", async () => {
         // 実行
         // ブックマークの選択を解除
-        await deselectBookmark();
+        await deselectBookmark(user);
 
         // 検証
         // キーワードのテーブルが表示されていないことを確認
@@ -153,9 +158,9 @@ describe("選択されたブックマークにキーワードを追加", () => {
       it("キーワードを追加した後にブックマークの選択を解除して、再度ブックマークを選択すると、追加したキーワードが表示される", async () => {
         // 実行
         // ブックマークの選択を解除
-        await deselectBookmark();
+        await deselectBookmark(user);
         // 同じブックマークを選択
-        await clickBookmark(bookmarkToSelect);
+        await clickBookmark(user, bookmarkToSelect);
 
         // 検証
         // キーワードのテーブルに表示されていることを確認

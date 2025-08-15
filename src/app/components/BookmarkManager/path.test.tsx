@@ -2,11 +2,13 @@ import "@testing-library/jest-dom";
 
 import { beforeEach, describe, it, vi } from "vitest";
 
+import userEvent, { UserEvent } from "@testing-library/user-event";
+
 import { ARROW_BUTTON_ROLE_NAME } from "../../constants/constants";
 import {
   clickBookmark,
-  mockBookmarks,
   expectBookmarkFormValues,
+  mockBookmarks,
   setBookmarkFormValuesAndClickButton,
   setupBookmarkManagerForTest,
 } from "../../test-utils/bookmarkTestUtils";
@@ -14,6 +16,8 @@ import {
 const mockFetch = vi.fn();
 
 describe("「←」ボタン", () => {
+  let user: UserEvent;
+
   beforeEach(async () => {
     mockFetch.mockReset();
     global.fetch = mockFetch;
@@ -23,9 +27,11 @@ describe("「←」ボタン", () => {
       json: async () => mockBookmarks,
     });
 
+    user = userEvent.setup();
+
     await setupBookmarkManagerForTest();
 
-    await clickBookmark(mockBookmarks[1]);
+    await clickBookmark(user, mockBookmarks[1]);
   });
 
   it.each([
@@ -58,7 +64,7 @@ describe("「←」ボタン", () => {
       expectedUrl: "invalid-url",
     },
   ])(" URLから、/の階層を一段、削除する: $url", async ({ url, expectedUrl }) => {
-    await setBookmarkFormValuesAndClickButton({ url }, ARROW_BUTTON_ROLE_NAME);
+    await setBookmarkFormValuesAndClickButton(user, { url }, ARROW_BUTTON_ROLE_NAME);
 
     await expectBookmarkFormValues({ url: expectedUrl });
   });

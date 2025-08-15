@@ -3,18 +3,18 @@ import "@testing-library/jest-dom";
 import { afterAll, beforeAll, beforeEach, describe, expect, it, vi } from "vitest";
 
 import { screen, waitFor } from "@testing-library/react";
+import userEvent, { UserEvent } from "@testing-library/user-event";
 
 import {
   assertBookmarkIsSelected,
   assertNoBookmarkIsSelected,
   clickBookmark,
+  deselectBookmark,
   keyDown,
   mockBookmarks,
   setBookmarkFormValuesAndClickButton,
   setupBookmarkManagerForTest,
 } from "../../test-utils/bookmarkTestUtils";
-
-// import { BookmarkManager } from "../BookmarkManager";
 
 const mockFetch = vi.fn();
 const mockOpen = vi.fn();
@@ -29,6 +29,8 @@ interface MockedLocation {
 }
 
 describe("BookmarkManager Hotkeys", () => {
+  let user: UserEvent;
+
   beforeAll(() => {
     // Save original window.location
     originalLocation = window.location;
@@ -69,15 +71,17 @@ describe("BookmarkManager Hotkeys", () => {
     // Reset href for window.location mock
     (window.location as MockedLocation).href = "";
 
+    user = userEvent.setup();
+
     await setupBookmarkManagerForTest();
   });
 
   it("Enterキーを押すと、選択されたブックマークのURLが開かれる", async () => {
     // ブックマークを選択
     const bookmarkToSelect = mockBookmarks[1]; // Google
-    await clickBookmark(bookmarkToSelect);
+    await clickBookmark(user, bookmarkToSelect);
 
-    await keyDown("Enter");
+    await keyDown(user, "{enter}");
 
     // window.openが正しいURLで呼び出されたことを検証
     await waitFor(() => {
@@ -87,12 +91,12 @@ describe("BookmarkManager Hotkeys", () => {
 
   it("Enterキーを押した際にURLが無効な場合、エラーメッセージが表示され、URLは開かれない", async () => {
     // ブックマークを選択し、URLを無効な値に変更
-    await clickBookmark(mockBookmarks[1]);
+    await clickBookmark(user, mockBookmarks[1]);
 
-    await setBookmarkFormValuesAndClickButton({ url: "invalid-url" });
+    await setBookmarkFormValuesAndClickButton(user, { url: "invalid-url" });
 
     // Enterキーの押下をシミュレート
-    await keyDown("Enter");
+    await keyDown(user, "{enter}");
 
     // エラーメッセージが表示され、window.openが呼び出されていないことを検証
     await waitFor(() => {
@@ -106,9 +110,9 @@ describe("BookmarkManager Hotkeys", () => {
   it("Escapeキーを押すと、選択が解除され、入力フィールドがクリアされる", async () => {
     // ブックマークを選択
     const bookmarkToSelect = mockBookmarks[1]; // Google
-    await clickBookmark(bookmarkToSelect);
+    await clickBookmark(user, bookmarkToSelect);
 
-    await keyDown("Escape");
+    await deselectBookmark(user);
 
     // 入力フィールドがドキュメントから消えたことを検証
     await assertNoBookmarkIsSelected();
@@ -117,16 +121,16 @@ describe("BookmarkManager Hotkeys", () => {
   it("Escapeキーを押して選択が解除された後でEnterキーを押しても、なにも起きない。", async () => {
     // ブックマークを選択
     const bookmarkToSelect = mockBookmarks[1]; // Google
-    await clickBookmark(bookmarkToSelect);
+    await clickBookmark(user, bookmarkToSelect);
 
     // Escapeキーの押下をシミュレート
-    await keyDown("Escape");
+    await deselectBookmark(user);
 
     // 入力フィールドがドキュメントから消えたことを検証
     await assertNoBookmarkIsSelected();
 
     // Enterキーの押下をシミュレート
-    await keyDown("Enter");
+    await keyDown(user, "{enter}");
 
     // window.openが呼び出されていないことを検証
     await waitFor(() => {
@@ -137,41 +141,41 @@ describe("BookmarkManager Hotkeys", () => {
   it.each([
     {
       selectRow: undefined,
-      key: "ArrowDown",
+      key: "{arrowdown}",
       expectedRow: 1,
     },
     {
       selectRow: undefined,
-      key: "ArrowUp",
+      key: "{arrowup}",
       expectedRow: mockBookmarks.length,
     },
     {
       selectRow: mockBookmarks.length,
-      key: "ArrowDown",
+      key: "{arrowdown}",
       expectedRow: 1,
     },
     {
       selectRow: 1,
-      key: "ArrowUp",
+      key: "{arrowup}",
       expectedRow: mockBookmarks.length,
     },
     {
       selectRow: 2,
-      key: "ArrowDown",
+      key: "{arrowdown}",
       expectedRow: 3,
     },
     {
       selectRow: 3,
-      key: "ArrowUp",
+      key: "{arrowup}",
       expectedRow: 2,
     },
   ])(
     "$keyキーを押したときに $expectedRow行目が選択される。",
     async ({ selectRow, key, expectedRow }) => {
       if (selectRow !== undefined) {
-        await clickBookmark(mockBookmarks[selectRow - 1]);
+        await clickBookmark(user, mockBookmarks[selectRow - 1]);
       }
-      await keyDown(key);
+      await keyDown(user, key);
       await assertBookmarkIsSelected(mockBookmarks[expectedRow - 1]);
     }
   );

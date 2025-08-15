@@ -2,7 +2,8 @@ import "@testing-library/jest-dom";
 
 import { beforeEach, describe, expect, it, vi } from "vitest";
 
-import { act, fireEvent, screen, waitFor, within } from "@testing-library/react";
+import { screen, waitFor, within } from "@testing-library/react";
+import userEvent, { UserEvent } from "@testing-library/user-event";
 
 import { BOOKMARKS_ENDPOINT } from "../../constants/apiEndpoints";
 import { UPDATE_BUTTON_ROLE_NAME } from "../../constants/constants";
@@ -19,17 +20,17 @@ import { Bookmark } from "../../types/Bookmark";
 
 const mockFetch = vi.fn();
 
-const clickUpdateButton = async () => {
+const clickUpdateButton = async (user: UserEvent) => {
   const updateButton = screen.getByRole("button", {
     name: UPDATE_BUTTON_ROLE_NAME,
   });
 
-  await act(async () => {
-    fireEvent.click(updateButton);
-  });
+  await user.click(updateButton);
 };
 
 describe("タイトルの更新ボタン", () => {
+  let user: UserEvent;
+
   beforeEach(async () => {
     mockFetch.mockReset();
     global.fetch = mockFetch;
@@ -38,6 +39,7 @@ describe("タイトルの更新ボタン", () => {
       status: 200,
       json: async () => mockBookmarks,
     });
+    user = userEvent.setup();
 
     await setupBookmarkManagerForTest();
   });
@@ -55,7 +57,7 @@ describe("タイトルの更新ボタン", () => {
   it("ブックマークが選択されている場合には、タイトルの更新ボタンが表示される。", async () => {
     // クリックするブックマークを選択（例：2番目のブックマーク）
     const bookmarkToSelect = mockBookmarks[1]; // Google
-    await clickBookmark(bookmarkToSelect);
+    await clickBookmark(user, bookmarkToSelect);
 
     await waitFor(() => {
       const updateButton = screen.getByRole("button", {
@@ -68,7 +70,7 @@ describe("タイトルの更新ボタン", () => {
   it("ブックマークのタイトルが更新される。(APIの呼び出し、画面の更新)", async () => {
     // クリックするブックマークを選択（例：2番目のブックマーク）
     const bookmarkToSelect = mockBookmarks[1]; // Google
-    await clickBookmark(bookmarkToSelect);
+    await clickBookmark(user, bookmarkToSelect);
 
     const updateUrl = "https://www.google.com/mail";
     const updateTitle = "更新されたタイトル";
@@ -81,6 +83,7 @@ describe("タイトルの更新ボタン", () => {
     );
 
     await setBookmarkFormValuesAndClickButton(
+      user,
       { url: updateUrl, title: updateTitle },
       UPDATE_BUTTON_ROLE_NAME
     );
@@ -114,7 +117,7 @@ describe("タイトルの更新ボタン", () => {
       title: updateTitle,
       keywords: bookmarkToSelect.keywords,
     });
-    await clickBookmark(updatedBookmark);
+    await clickBookmark(user, updatedBookmark);
     await waitFor(() => {
       expectBookmarkFormValues({ url: updateUrl, title: updateTitle });
     });
@@ -123,7 +126,7 @@ describe("タイトルの更新ボタン", () => {
   it("同じURLを指定された場合には409を返す。", async () => {
     // クリックするブックマークを選択（例：2番目のブックマーク）
     const bookmarkToSelect = mockBookmarks[1]; // Google
-    await clickBookmark(bookmarkToSelect);
+    await clickBookmark(user, bookmarkToSelect);
 
     const updateUrl = mockBookmarks[2].url;
     const updateTitle = "更新されたタイトル";
@@ -136,6 +139,7 @@ describe("タイトルの更新ボタン", () => {
     );
 
     await setBookmarkFormValuesAndClickButton(
+      user,
       { url: updateUrl, title: updateTitle },
       UPDATE_BUTTON_ROLE_NAME
     );
@@ -160,7 +164,7 @@ describe("タイトルの更新ボタン", () => {
   it("登録されていないブックマークIDを指定された場合は404を返す。", async () => {
     // クリックするブックマークを選択（例：2番目のブックマーク）
     const bookmarkToSelect = mockBookmarks[1]; // Google
-    await clickBookmark(bookmarkToSelect);
+    await clickBookmark(user, bookmarkToSelect);
 
     mockFetch.mockResolvedValueOnce(
       createMockResponse({
@@ -170,7 +174,7 @@ describe("タイトルの更新ボタン", () => {
       })
     );
 
-    await clickUpdateButton();
+    await clickUpdateButton(user);
 
     await waitFor(() => {
       expect(screen.getByTestId("bookmark-message")).toHaveTextContent(
@@ -188,7 +192,7 @@ describe("タイトルの更新ボタン", () => {
   it("タイトルが指定されていない場合には400を返す。", async () => {
     // クリックするブックマークを選択（例：2番目のブックマーク）
     const bookmarkToSelect = mockBookmarks[1]; // Google
-    await clickBookmark(bookmarkToSelect);
+    await clickBookmark(user, bookmarkToSelect);
 
     mockFetch.mockResolvedValueOnce(
       createMockResponse({
@@ -198,7 +202,7 @@ describe("タイトルの更新ボタン", () => {
       })
     );
 
-    await clickUpdateButton();
+    await clickUpdateButton(user);
 
     await waitFor(() => {
       expect(screen.getByTestId("bookmark-message")).toHaveTextContent(
@@ -216,7 +220,7 @@ describe("タイトルの更新ボタン", () => {
   it("IDが指定されていない場合には400を返す。", async () => {
     // クリックするブックマークを選択（例：2番目のブックマーク）
     const bookmarkToSelect = mockBookmarks[1]; // Google
-    await clickBookmark(bookmarkToSelect);
+    await clickBookmark(user, bookmarkToSelect);
 
     mockFetch.mockResolvedValueOnce(
       createMockResponse({
@@ -226,7 +230,7 @@ describe("タイトルの更新ボタン", () => {
       })
     );
 
-    await clickUpdateButton();
+    await clickUpdateButton(user);
 
     await waitFor(() => {
       expect(screen.getByTestId("bookmark-message")).toHaveTextContent(
@@ -244,7 +248,7 @@ describe("タイトルの更新ボタン", () => {
   it("不正な形式(文字列)のIDを指定された場合には400を返す。", async () => {
     // クリックするブックマークを選択（例：2番目のブックマーク）
     const bookmarkToSelect = mockBookmarks[1]; // Google
-    await clickBookmark(bookmarkToSelect);
+    await clickBookmark(user, bookmarkToSelect);
 
     mockFetch.mockResolvedValueOnce(
       createMockResponse({
@@ -254,7 +258,7 @@ describe("タイトルの更新ボタン", () => {
       })
     );
 
-    await clickUpdateButton();
+    await clickUpdateButton(user);
 
     await waitFor(() => {
       expect(screen.getByTestId("bookmark-message")).toHaveTextContent(
@@ -272,7 +276,7 @@ describe("タイトルの更新ボタン", () => {
   it("不正なJSONデータの場合は500を返す。", async () => {
     // クリックするブックマークを選択（例：2番目のブックマーク）
     const bookmarkToSelect = mockBookmarks[1]; // Google
-    await clickBookmark(bookmarkToSelect);
+    await clickBookmark(user, bookmarkToSelect);
 
     mockFetch.mockResolvedValueOnce(
       createMockResponse({
@@ -282,7 +286,7 @@ describe("タイトルの更新ボタン", () => {
       })
     );
 
-    await clickUpdateButton();
+    await clickUpdateButton(user);
 
     await waitFor(() => {
       expect(screen.getByTestId("bookmark-message")).toHaveTextContent(

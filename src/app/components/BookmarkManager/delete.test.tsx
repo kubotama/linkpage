@@ -2,7 +2,8 @@ import "@testing-library/jest-dom";
 
 import { beforeEach, describe, expect, it, vi } from "vitest";
 
-import { act, fireEvent, screen, waitFor } from "@testing-library/react";
+import { screen, waitFor } from "@testing-library/react";
+import userEvent, { UserEvent } from "@testing-library/user-event";
 
 import { BOOKMARKS_ENDPOINT } from "../../constants/apiEndpoints";
 import { DELETE_BUTTON_ROLE_NAME } from "../../constants/constants";
@@ -12,25 +13,20 @@ import {
   mockBookmarks,
   setupBookmarkManagerForTest,
 } from "../../test-utils/bookmarkTestUtils";
-// import { BookmarkManager } from "../BookmarkManager";
 
 const mockFetch = vi.fn();
 
-const clickDeleteButton = async () => {
+const clickDeleteButton = async (user: UserEvent) => {
   const deleteButton = screen.getByRole("button", {
     name: DELETE_BUTTON_ROLE_NAME,
   });
 
-  // fireEvent.clickでトリガーされる処理には、fetchによる非同期の状態更新が含まれます。
-  // この非同期更新を正しくテストし、Reactからの警告を防ぐためにactでラップしています。
-  //
-  // TODO: #250 で user-event に置き換えることで、この明示的なactラップは不要になります。
-  await act(async () => {
-    fireEvent.click(deleteButton);
-  });
+  await user.click(deleteButton);
 };
 
 describe("削除ボタン", () => {
+  let user: UserEvent;
+
   beforeEach(async () => {
     global.fetch = mockFetch;
     mockFetch.mockReset();
@@ -39,6 +35,8 @@ describe("削除ボタン", () => {
       status: 200,
       json: async () => mockBookmarks,
     });
+
+    user = userEvent.setup();
 
     await setupBookmarkManagerForTest();
   });
@@ -55,7 +53,7 @@ describe("削除ボタン", () => {
 
   it("ブックマークが選択されると削除ボタンが表示される", async () => {
     const bookmarkToSelect = mockBookmarks[1]; // Google
-    await clickBookmark(bookmarkToSelect);
+    await clickBookmark(user, bookmarkToSelect);
 
     await waitFor(() => {
       const deleteButton = screen.getByRole("button", {
@@ -68,12 +66,12 @@ describe("削除ボタン", () => {
   it("ブックマークが削除される(APIの呼び出し、画面の更新)", async () => {
     // fetchMockはbeforeEachでmockBookmarksを返すように設定されています
     const bookmarkToSelect = mockBookmarks[1]; // Google
-    await clickBookmark(bookmarkToSelect);
+    await clickBookmark(user, bookmarkToSelect);
 
     mockFetch.mockReset();
     mockFetch.mockResolvedValueOnce(createMockResponse({ isOk: true, status: 204 }));
 
-    await clickDeleteButton();
+    await clickDeleteButton(user);
 
     await waitFor(() => {
       // APIの呼び出しの確認
@@ -96,7 +94,7 @@ describe("削除ボタン", () => {
   it("存在しないブックマークの削除しようとした場合のエラーハンドリング(404)", async () => {
     // fetchMockはbeforeEachでmockBookmarksを返すように設定されています
     const bookmarkToSelect = mockBookmarks[1]; // Google
-    await clickBookmark(bookmarkToSelect);
+    await clickBookmark(user, bookmarkToSelect);
 
     mockFetch.mockReset();
     mockFetch.mockResolvedValueOnce(
@@ -107,7 +105,7 @@ describe("削除ボタン", () => {
       })
     );
 
-    await clickDeleteButton();
+    await clickDeleteButton(user);
 
     await waitFor(() => {
       // 画面の更新の確認
@@ -125,7 +123,7 @@ describe("削除ボタン", () => {
 
     // クリックするブックマークを選択（例：2番目のブックマーク）
     const bookmarkToSelect = mockBookmarks[1]; // Google
-    await clickBookmark(bookmarkToSelect);
+    await clickBookmark(user, bookmarkToSelect);
 
     mockFetch.mockReset();
     mockFetch.mockResolvedValueOnce(
@@ -136,7 +134,7 @@ describe("削除ボタン", () => {
       })
     );
 
-    await clickDeleteButton();
+    await clickDeleteButton(user);
 
     await waitFor(() => {
       // 画面の更新の確認
@@ -163,9 +161,9 @@ describe("削除ボタン", () => {
 
     // クリックするブックマークを選択（例：2番目のブックマーク）
     const bookmarkToSelect = mockBookmarks[1]; // Google
-    await clickBookmark(bookmarkToSelect);
+    await clickBookmark(user, bookmarkToSelect);
 
-    await clickDeleteButton();
+    await clickDeleteButton(user);
 
     await waitFor(() => {
       // 画面の更新の確認

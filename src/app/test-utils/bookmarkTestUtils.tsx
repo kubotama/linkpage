@@ -1,6 +1,7 @@
 import { expect } from "vitest";
 
-import { act, fireEvent, render, screen, waitFor } from "@testing-library/react";
+import { render, screen, waitFor } from "@testing-library/react";
+import { UserEvent } from "@testing-library/user-event";
 
 import { BookmarkManager } from "../components/BookmarkManager";
 import { FORM_BOOKMARK_DETAIL, TITLE_ROLE_NAME, URL_ROLE_NAME } from "../constants/constants";
@@ -64,16 +65,14 @@ export const assertNoBookmarkIsSelected = async () => {
   });
 };
 
-export const clickBookmark = async (bookmark: Bookmark) => {
+export const clickBookmark = async (user: UserEvent, bookmark: Bookmark) => {
   // クリックするブックマークを選択（例：2番目のブックマーク）
   // const bookmark = mockBookmarks[1]; // Google
   try {
     const cellWithTitle = screen.getByText(bookmark.title);
 
     // テーブル行のクリックをシミュレート
-    await act(async () => {
-      fireEvent.click(cellWithTitle);
-    });
+    await user.click(cellWithTitle);
     await assertBookmarkIsSelected(bookmark);
   } catch (error) {
     // エラーメッセージに元のエラーを含めるとデバッグが容易になります
@@ -203,6 +202,7 @@ export const createMockResponse = ({
 };
 
 export const setBookmarkFormValuesAndClickButton = async (
+  user: UserEvent,
   values: {
     url?: string;
     title?: string;
@@ -211,19 +211,23 @@ export const setBookmarkFormValuesAndClickButton = async (
 ) => {
   if (values.url !== undefined) {
     const urlInput = screen.getByRole("textbox", { name: URL_ROLE_NAME });
-    fireEvent.change(urlInput, { target: { value: values.url } });
+    await user.clear(urlInput);
+    if (values.url.length !== 0) {
+      await user.type(urlInput, values.url);
+    }
   }
   if (values.title !== undefined) {
     const titleInput = screen.getByRole("textbox", { name: TITLE_ROLE_NAME });
-    fireEvent.change(titleInput, { target: { value: values.title } });
+    await user.clear(titleInput);
+    if (values.title.length !== 0) {
+      await user.type(titleInput, values.title);
+    }
   }
   if (buttonName !== undefined) {
     const button = screen.getByRole("button", {
       name: buttonName,
     });
-    await act(async () => {
-      fireEvent.click(button);
-    });
+    await user.click(button);
   }
 };
 
@@ -248,15 +252,18 @@ export const expectBookmarkFormValues = async (values: {
   }
 };
 
-export const keyDown = async (key: string) => {
-  await act(async () => fireEvent.keyDown(document.body, { key: key, code: key }));
+export const keyDown = async (user: UserEvent, key: string) => {
+  // テキストボックスなどへのフォーカスを外す
+  await user.click(document.body);
+  await user.keyboard(key);
 };
 
-export const setBookmarkFormValuesAndEnterKeydown = async (url: string) => {
+export const setBookmarkFormValuesAndEnterKeydown = async (user: UserEvent, url: string) => {
   const urlInput = screen.getByRole("textbox", { name: URL_ROLE_NAME });
 
-  fireEvent.change(urlInput, { target: { value: url } });
-  await keyDown("Enter");
+  await user.clear(urlInput);
+  await user.type(urlInput, url);
+  await keyDown(user, "{enter}");
 };
 
 /**
@@ -269,6 +276,6 @@ export const setupBookmarkManagerForTest = async () => {
   });
 };
 
-export const deselectBookmark = async () => {
-  await keyDown("Escape");
+export const deselectBookmark = async (user: UserEvent) => {
+  await keyDown(user, "{escape}");
 };
