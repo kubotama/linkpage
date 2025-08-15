@@ -98,18 +98,18 @@ describe("削除ボタン", () => {
 
     it.each([
       {
-        message: "指定されたブックマークがありません。",
-        status: 404,
+        description: "存在しないブックマーク (404 Not Found)",
+        errorCase: { message: "指定されたブックマークがありません。", status: 404 },
       },
       {
-        message: "リクエストにIDがありませんでした。",
-        status: 400,
+        description: "不正なリクエスト (400 Bad Request)",
+        errorCase: { message: "リクエストにIDがありませんでした。", status: 400 },
       },
       {
-        message: "サーバーで予期せぬエラーが発生しました。",
-        status: 500,
+        description: "サーバーエラー (500 Internal Server Error)",
+        errorCase: { message: "サーバーで予期せぬエラーが発生しました。", status: 500 },
       },
-    ])("エラーハンドリング($status)", async (errorCase) => {
+    ])("エラーハンドリング: $description", async ({ errorCase }) => {
       mockFetch.mockResolvedValueOnce(createMockResponse({ ...errorCase, isOk: false }));
       await clickDeleteButton(user);
 
