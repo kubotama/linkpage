@@ -57,8 +57,8 @@ describe("削除ボタン", () => {
     let bookmarkToSelect: Bookmark;
 
     beforeEach(async () => {
-      // クリックするブックマークを選択（例：2番目のブックマーク
-      bookmarkToSelect = mockBookmarks[1]; // Google
+      // 2番目のブックマーク「Google」を選択
+      bookmarkToSelect = mockBookmarks[1];
       await clickBookmark(user, bookmarkToSelect);
 
       mockFetch.mockReset();
