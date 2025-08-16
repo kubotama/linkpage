@@ -68,7 +68,7 @@ export const assertNoBookmarkIsSelected = async () => {
 export const getCellWithTitle = (title: string) => {
   const table = screen.getByRole("table", { name: "bookmarks" });
 
-  const cellWithTitle = within(table).getByText(title);
+  const cellWithTitle = within(table).getByRole("cell", { name: title });
   return cellWithTitle;
 };
 
