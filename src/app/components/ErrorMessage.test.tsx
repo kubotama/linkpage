@@ -48,7 +48,7 @@ describe("ErrorMessage", () => {
     const errorMessageElement = screen.getByTestId("bookmark-message");
     expect(errorMessageElement).toHaveTextContent("エラーが発生しました");
     expect(errorMessageElement).toHaveClass("text-red-500");
-    expect(screen.getByRole("button", { name: "閉じる" })).toBeInTheDocument();
+    expect(screen.getByRole("button", { name: "閉じる" })).toBeVisible();
   });
 
   it("should call handleErrorClose when close button is clicked", async () => {

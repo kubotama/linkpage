@@ -262,7 +262,7 @@ export const expectBookmarkFormValues = async (values: {
     const button = screen.getByRole("button", {
       name: values.buttonName,
     });
-    expect(button).toBeInTheDocument();
+    expect(button).toBeVisible();
   }
 };
 
@@ -286,7 +286,7 @@ export const setBookmarkFormValuesAndEnterKeydown = async (user: UserEvent, url:
 export const setupBookmarkManagerForTest = async () => {
   render(<BookmarkManager />);
   await waitFor(() => {
-    expect(screen.getByText(mockBookmarks[0].title)).toBeInTheDocument();
+    expect(screen.getByText(mockBookmarks[0].title)).toBeVisible();
   });
 };
 
