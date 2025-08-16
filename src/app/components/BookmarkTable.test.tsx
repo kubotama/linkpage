@@ -4,6 +4,7 @@ import { describe, expect, it, vi } from "vitest";
 
 import { render, screen, within } from "@testing-library/react";
 
+import { TABLE_NAME_BOOKMARKS } from "../constants/constants";
 import { mockBookmarks } from "../test-utils/bookmarkTestUtils";
 import { BookmarkTable } from "./BookmarkTable";
 
@@ -18,7 +19,7 @@ describe("BookmarkTableのテスト", () => {
       />
     );
 
-    const table = screen.getByRole("table", { name: "bookmarks" });
+    const table = screen.getByRole("table", { name: TABLE_NAME_BOOKMARKS });
     expect(table).toBeInTheDocument();
 
     const headers = within(table).getAllByRole("columnheader");

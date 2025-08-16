@@ -6,7 +6,7 @@ import { screen, waitFor, within } from "@testing-library/react";
 import userEvent, { UserEvent } from "@testing-library/user-event";
 
 import { BOOKMARKS_ENDPOINT } from "../../constants/apiEndpoints";
-import { UPDATE_BUTTON_ROLE_NAME } from "../../constants/constants";
+import { TABLE_NAME_BOOKMARKS, UPDATE_BUTTON_ROLE_NAME } from "../../constants/constants";
 import {
   clickBookmark,
   createBookmark,
@@ -152,7 +152,7 @@ describe("タイトルの更新ボタン", () => {
           buttonName: UPDATE_BUTTON_ROLE_NAME,
         });
         // リスト上の元のブックマークが消えていないことを確認
-        const table = screen.getByRole("table", { name: "bookmarks" });
+        const table = screen.getByRole("table", { name: TABLE_NAME_BOOKMARKS });
         const bookmark = within(table).getByText(bookmarkToSelect.title);
         expect(bookmark).toBeInTheDocument();
       });

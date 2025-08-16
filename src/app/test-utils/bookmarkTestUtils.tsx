@@ -4,7 +4,12 @@ import { render, screen, waitFor, within } from "@testing-library/react";
 import { UserEvent } from "@testing-library/user-event";
 
 import { BookmarkManager } from "../components/BookmarkManager";
-import { FORM_BOOKMARK_DETAIL, TITLE_ROLE_NAME, URL_ROLE_NAME } from "../constants/constants";
+import {
+  FORM_BOOKMARK_DETAIL,
+  TABLE_NAME_BOOKMARKS,
+  TITLE_ROLE_NAME,
+  URL_ROLE_NAME,
+} from "../constants/constants";
 import { Bookmark } from "../types/Bookmark";
 import { Keyword } from "../types/Keyword";
 
@@ -66,7 +71,7 @@ export const assertNoBookmarkIsSelected = async () => {
 };
 
 export const getCellWithTitle = (title: string) => {
-  const table = screen.getByRole("table", { name: "bookmarks" });
+  const table = screen.getByRole("table", { name: TABLE_NAME_BOOKMARKS });
 
   const cellWithTitle = within(table).getByRole("cell", { name: title });
   return cellWithTitle;
