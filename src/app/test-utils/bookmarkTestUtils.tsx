@@ -84,13 +84,13 @@ export const clickBookmark = async (user: UserEvent, bookmark: Bookmark) => {
 
     // テーブル行のクリックをシミュレート
     await user.click(row);
-    await assertBookmarkIsSelected(bookmark);
   } catch (error) {
     throw new Error(
       `ブックマーク "${bookmark.title}" のテーブル行のクリック処理中にエラーが発生しました。`,
       { cause: error }
     );
   }
+  await assertBookmarkIsSelected(bookmark);
 };
 
 export const mockKeywords: Keyword[] = [
