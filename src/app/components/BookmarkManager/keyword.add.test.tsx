@@ -30,24 +30,22 @@ const addNewKeyword = async (user: UserEvent, keyword: string) => {
   await user.click(addButton);
 };
 
-const expectTableRows = async (expectRows: number) => {
+const expectTableRows = (expectRows: number) => {
   const keywordTable = screen.getByRole("table", { name: TABLE_NAME_KEYWORD });
   expect(keywordTable).toBeVisible();
-  const rows = within(keywordTable).queryAllByRole("row");
+  const rows = within(keywordTable).getAllByRole("row");
   expect(rows).toHaveLength(expectRows);
 };
 
 const expectRowsAndKeyword = async (expectRows: number, expectKeyword: string) => {
-  await waitFor(() => {
-    const keywordTable = screen.getByRole("table", { name: TABLE_NAME_KEYWORD });
-    const keywordInput = screen.getByRole("textbox", { name: KEYWORD_ROLE_NAME });
+  const keywordTable = await screen.findByRole("table", { name: TABLE_NAME_KEYWORD });
+  const keywordInput = await screen.findByRole("textbox", { name: KEYWORD_ROLE_NAME });
 
-    expect(keywordTable).toBeVisible();
-    const rows = within(keywordTable).queryAllByRole("row");
-    expect(rows).toHaveLength(expectRows);
-    expect(within(rows[1]).getByRole("cell")).toHaveTextContent(expectKeyword);
-    expect(keywordInput).toHaveValue("");
-  });
+  expect(keywordTable).toBeVisible();
+  const rows = await within(keywordTable).findAllByRole("row");
+  expect(rows).toHaveLength(expectRows);
+  expect(await within(keywordTable).findByText(expectKeyword)).toBeVisible();
+  expect(keywordInput).toHaveValue("");
 };
 
 describe("選択されたブックマークにキーワードを追加", () => {
@@ -115,7 +113,7 @@ describe("選択されたブックマークにキーワードを追加", () => {
       const bookmarkToSelect = findBookmarkWithAtLeastNKeywords(mockBookmarksWithKeywords, 0);
       await clickBookmark(user, bookmarkToSelect);
 
-      await expectTableRows(1);
+      expectTableRows(1);
 
       // 実行
       // ブックマークにキーワードを追加
@@ -136,7 +134,7 @@ describe("選択されたブックマークにキーワードを追加", () => {
         bookmarkToSelect = findBookmarkWithAtLeastNKeywords(mockBookmarksWithKeywords, 0);
         await clickBookmark(user, bookmarkToSelect);
 
-        await expectTableRows(1);
+        expectTableRows(1);
 
         // ブックマークにキーワードを追加
         await addNewKeyword(user, keyword);
