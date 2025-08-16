@@ -99,12 +99,10 @@ describe("BookmarkManager Hotkeys", () => {
     await keyDown(user, "{enter}");
 
     // エラーメッセージが表示され、window.openが呼び出されていないことを検証
-    await waitFor(() => {
-      expect(screen.getByTestId("bookmark-message")).toHaveTextContent(
-        "URLが無効です。正しいURLを入力してください。"
-      );
-      expect(mockOpen).not.toHaveBeenCalled();
-    });
+    expect(await screen.findByTestId("bookmark-message")).toHaveTextContent(
+      "URLが無効です。正しいURLを入力してください。"
+    );
+    expect(mockOpen).not.toHaveBeenCalled();
   });
 
   it("Escapeキーを押すと、選択が解除され、入力フィールドがクリアされる", async () => {
