@@ -77,14 +77,14 @@ describe("キーワード詳細フォームの表示のテスト", () => {
       const bookmarkToSelect = findBookmarkWithAtLeastNKeywords(mockBookmarksWithKeywords);
       await clickBookmark(user, bookmarkToSelect);
 
-      expect(screen.getByRole("group", { name: FIELDSET_KEYWORD_LABEL })).toBeInTheDocument();
+      expect(screen.getByRole("group", { name: FIELDSET_KEYWORD_LABEL })).toBeVisible();
 
       const keywordInput = screen.getByRole("textbox", { name: KEYWORD_ROLE_NAME });
-      expect(keywordInput).toBeInTheDocument();
+      expect(keywordInput).toBeVisible();
       expect(keywordInput).toHaveValue("");
 
       const addButton = screen.getByRole("button", { name: ADD_BUTTON_ROLE_NAME });
-      expect(addButton).toBeInTheDocument();
+      expect(addButton).toBeVisible();
       expect(addButton).toBeEnabled();
     });
 

@@ -68,7 +68,7 @@ describe("タイトルの更新ボタン", () => {
         const updateButton = screen.getByRole("button", {
           name: UPDATE_BUTTON_ROLE_NAME,
         });
-        expect(updateButton).toBeInTheDocument();
+        expect(updateButton).toBeVisible();
       });
     });
 
@@ -154,7 +154,7 @@ describe("タイトルの更新ボタン", () => {
         // リスト上の元のブックマークが消えていないことを確認
         const table = screen.getByRole("table", { name: TABLE_NAME_BOOKMARKS });
         const bookmark = within(table).getByText(bookmarkToSelect.title);
-        expect(bookmark).toBeInTheDocument();
+        expect(bookmark).toBeVisible();
       });
     });
 

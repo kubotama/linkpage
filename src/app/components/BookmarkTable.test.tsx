@@ -20,7 +20,7 @@ describe("BookmarkTableのテスト", () => {
     );
 
     const table = screen.getByRole("table", { name: TABLE_NAME_BOOKMARKS });
-    expect(table).toBeInTheDocument();
+    expect(table).toBeVisible();
 
     const headers = within(table).getAllByRole("columnheader");
     expect(headers).toHaveLength(1);
@@ -70,7 +70,7 @@ describe("BookmarkTableのテスト", () => {
     );
 
     const table = screen.getByRole("table");
-    expect(table).toBeInTheDocument();
+    expect(table).toBeVisible();
 
     const rows = screen.queryAllByRole("row");
     expect(rows).toHaveLength(1); // ヘッダー行のみ

@@ -24,7 +24,7 @@ describe("テスト環境を動作確認するためのサンプルのテスト"
     render(<Home />);
     const urlInput = await screen.findByText("kubotama/linkpage");
     const titleInput = await screen.findByText("Google");
-    expect(urlInput).toBeInTheDocument();
-    expect(titleInput).toBeInTheDocument();
+    expect(urlInput).toBeVisible();
+    expect(titleInput).toBeVisible();
   });
 });

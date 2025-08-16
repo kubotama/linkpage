@@ -14,7 +14,7 @@ describe("KeywordTableのテスト", () => {
   it("キーワードのリストが空の場合、ヘッダー行のみ表示されデータ行は表示されない", () => {
     render(<KeywordTable keywords={[]} />);
     const keywordTable = screen.getByRole("table", { name: "キーワードのテーブル" });
-    expect(keywordTable).toBeInTheDocument();
+    expect(keywordTable).toBeVisible();
 
     const rows = screen.queryAllByRole("row");
     expect(rows).toHaveLength(1); // ヘッダー行のみ

@@ -25,7 +25,7 @@ describe("BookmarkManagerの表示を確認", () => {
     render(<BookmarkManager />);
 
     const bm = await screen.findByText("Amazon");
-    expect(bm).toBeInTheDocument();
+    expect(bm).toBeVisible();
   });
 
   it("ローディング中にローディングメッセージが表示されること", () => {

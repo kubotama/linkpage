@@ -69,7 +69,7 @@ describe("削除ボタン", () => {
         const deleteButton = screen.getByRole("button", {
           name: DELETE_BUTTON_ROLE_NAME,
         });
-        expect(deleteButton).toBeInTheDocument();
+        expect(deleteButton).toBeVisible();
       });
     });
 
@@ -119,8 +119,8 @@ describe("削除ボタン", () => {
           "ブックマークの削除中にエラーが発生しました。"
         );
         // 削除操作のコンテキスト（選択されたブックマークのタイトルや削除ボタン）が依然として表示されていることを確認
-        expect(screen.getByText(bookmarkToSelect.title)).toBeInTheDocument();
-        expect(screen.getByRole("button", { name: DELETE_BUTTON_ROLE_NAME })).toBeInTheDocument();
+        expect(screen.getByText(bookmarkToSelect.title)).toBeVisible();
+        expect(screen.getByRole("button", { name: DELETE_BUTTON_ROLE_NAME })).toBeVisible();
       });
     });
   });

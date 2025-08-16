@@ -32,7 +32,7 @@ const addNewKeyword = async (user: UserEvent, keyword: string) => {
 
 const expectTableRows = async (expectRows: number) => {
   const keywordTable = screen.getByRole("table", { name: TABLE_NAME_KEYWORD });
-  expect(keywordTable).toBeInTheDocument();
+  expect(keywordTable).toBeVisible();
   const rows = within(keywordTable).queryAllByRole("row");
   expect(rows).toHaveLength(expectRows);
 };
@@ -42,7 +42,7 @@ const expectRowsAndKeyword = async (expectRows: number, expectKeyword: string) =
     const keywordTable = screen.getByRole("table", { name: TABLE_NAME_KEYWORD });
     const keywordInput = screen.getByRole("textbox", { name: KEYWORD_ROLE_NAME });
 
-    expect(keywordTable).toBeInTheDocument();
+    expect(keywordTable).toBeVisible();
     const rows = within(keywordTable).queryAllByRole("row");
     expect(rows).toHaveLength(expectRows);
     expect(within(rows[1]).getByRole("cell")).toHaveTextContent(expectKeyword);
