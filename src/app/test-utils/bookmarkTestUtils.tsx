@@ -86,12 +86,9 @@ export const clickBookmark = async (user: UserEvent, bookmark: Bookmark) => {
     await user.click(cellWithTitle);
     await assertBookmarkIsSelected(bookmark);
   } catch (error) {
-    // エラーメッセージに元のエラーを含めるとデバッグが容易になります
-    // console.error(error); // 元のエラーをログに出力
     throw new Error(
-      `ブックマーク "${bookmark.title}" のテーブル行のクリック処理中にエラーが発生しました。: ${
-        error instanceof Error ? error.message : String(error)
-      }`
+      `ブックマーク "${bookmark.title}" のテーブル行のクリック処理中にエラーが発生しました。`,
+      { cause: error }
     );
   }
 };
