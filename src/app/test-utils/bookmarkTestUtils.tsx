@@ -83,7 +83,7 @@ export const clickBookmark = async (user: UserEvent, bookmark: Bookmark) => {
     }
 
     // テーブル行のクリックをシミュレート
-    await user.click(cellWithTitle);
+    await user.click(row);
     await assertBookmarkIsSelected(bookmark);
   } catch (error) {
     throw new Error(
