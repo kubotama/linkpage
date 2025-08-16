@@ -54,7 +54,7 @@ describe("ブックマークの選択", () => {
       title: "bad title",
     });
     await expect(clickBookmark(user, bookmarkToSelect)).rejects.toThrow(
-      `ブックマーク "${bookmarkToSelect.title}" のテーブル行のクリック処理中にエラーが発生しました。`
+      `ブックマーク "${bookmarkToSelect.title}" の選択処理中にエラーが発生しました。`
     );
   });
 });

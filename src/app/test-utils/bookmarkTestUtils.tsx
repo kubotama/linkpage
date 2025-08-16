@@ -85,10 +85,9 @@ export const clickBookmark = async (user: UserEvent, bookmark: Bookmark) => {
     // テーブル行のクリックをシミュレート
     await user.click(row);
   } catch (error) {
-    throw new Error(
-      `ブックマーク "${bookmark.title}" のテーブル行のクリック処理中にエラーが発生しました。`,
-      { cause: error }
-    );
+    throw new Error(`ブックマーク "${bookmark.title}" の選択処理中にエラーが発生しました。`, {
+      cause: error,
+    });
   }
   await assertBookmarkIsSelected(bookmark);
 };
