@@ -1,5 +1,6 @@
 import React from "react";
 
+import { TABLE_NAME_BOOKMARKS } from "../constants/constants";
 import { Bookmark } from "../types/Bookmark";
 
 type BookmarkTableProps = {
@@ -16,7 +17,7 @@ export const BookmarkTable = ({
   className = "",
 }: BookmarkTableProps): React.ReactElement => {
   return (
-    <table aria-label="bookmarks" className={className}>
+    <table aria-label={TABLE_NAME_BOOKMARKS} className={className}>
       <thead>
         <tr>
           <th
