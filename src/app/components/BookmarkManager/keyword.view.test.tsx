@@ -26,8 +26,8 @@ const clickBookmarkAndAssertKeywords = async (user: UserEvent, bookmark: Bookmar
 
   await clickBookmark(user, bookmark);
 
-  const keyWordTable = await screen.findByRole("table", { name: TABLE_NAME_KEYWORD });
-  const rows = await within(keyWordTable).findAllByRole("row");
+  const keywordTable = await screen.findByRole("table", { name: TABLE_NAME_KEYWORD });
+  const rows = await within(keywordTable).findAllByRole("row");
   expect(rows).toHaveLength(keywords.length + 1);
 
   // forEachはasyncなコールバックを待たないので、for...ofループを使用する
