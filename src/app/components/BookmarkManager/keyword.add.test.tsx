@@ -149,7 +149,9 @@ describe("選択されたブックマークにキーワードを追加", () => {
 
         // 検証
         // キーワードのテーブルが表示されていないことを確認
-        expect(screen.queryByRole("table", { name: TABLE_NAME_KEYWORD })).not.toBeInTheDocument();
+        await waitFor(() =>
+          expect(screen.queryByRole("table", { name: TABLE_NAME_KEYWORD })).not.toBeInTheDocument()
+        );
       });
 
       it("キーワードを追加した後にブックマークの選択を解除して、再度ブックマークを選択すると、追加したキーワードが表示される", async () => {
