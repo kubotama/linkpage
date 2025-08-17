@@ -44,7 +44,7 @@ describe("タイトルの更新ボタン", () => {
     await setupBookmarkManagerForTest();
   });
 
-  it("ブックマークが選択されていない場合には、タイトルの更新ボタンは表示されない。", async () => {
+  it("ブックマークが選択されていない場合には、タイトルの更新ボタンは表示されない。", () => {
     expect(screen.queryByRole("button", { name: UPDATE_BUTTON_ROLE_NAME })).not.toBeInTheDocument();
   });
 

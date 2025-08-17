@@ -42,7 +42,7 @@ describe("削除ボタン", () => {
     await setupBookmarkManagerForTest();
   });
 
-  it("ブックマークが選択されていない場合には削除ボタンは表示されない", async () => {
+  it("ブックマークが選択されていない場合には削除ボタンは表示されない", () => {
     expect(screen.queryByRole("button", { name: DELETE_BUTTON_ROLE_NAME })).not.toBeInTheDocument();
   });
 
