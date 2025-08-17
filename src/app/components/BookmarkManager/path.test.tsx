@@ -66,7 +66,6 @@ describe("「←」ボタン", () => {
   ])(" URLから、/の階層を一段、削除する: $url", async ({ url, expectedUrl }) => {
     await setBookmarkFormValuesAndClickButton(user, { url }, ARROW_BUTTON_ROLE_NAME);
 
-    // TODO: #273 - フォームの状態が非同期で更新されることを考慮したアサーションに変更
     await expectBookmarkFormValues({ url: expectedUrl });
   });
 });
