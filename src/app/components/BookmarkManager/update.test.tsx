@@ -49,6 +49,7 @@ describe("タイトルの更新ボタン", () => {
       name: UPDATE_BUTTON_ROLE_NAME,
     });
 
+    // TODO: #272で対応する
     await waitFor(() => {
       expect(updateButtons).toHaveLength(0);
     });

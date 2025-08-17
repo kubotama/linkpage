@@ -147,6 +147,7 @@ describe("選択されたブックマークにキーワードを追加", () => {
 
         // 検証
         // キーワードのテーブルが表示されていないことを確認
+        // TODO: #272で対応する
         await waitFor(() => {
           const keywordTable = screen.queryAllByRole("table", { name: TABLE_NAME_KEYWORD });
           expect(keywordTable).toHaveLength(0);

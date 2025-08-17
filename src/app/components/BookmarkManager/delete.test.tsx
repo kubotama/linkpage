@@ -43,6 +43,7 @@ describe("削除ボタン", () => {
   });
 
   it("ブックマークが選択されていない場合には削除ボタンは表示されない", async () => {
+    // TODO: #272で対応する
     const deleteButtons = screen.queryAllByRole("button", {
       name: DELETE_BUTTON_ROLE_NAME,
     });
