@@ -103,6 +103,7 @@ describe("タイトルの更新ボタン", () => {
         });
 
         // 画面の更新の確認;
+        // TODO: #273 - フォームの状態が非同期で更新されることを考慮したアサーションに変更
         expectBookmarkFormValues({ url: updateUrl, title: updateTitle });
       });
       expect(await screen.findAllByText(updateTitle)).toHaveLength(1);
@@ -115,6 +116,7 @@ describe("タイトルの更新ボタン", () => {
       });
       await clickBookmark(user, updatedBookmark);
       await waitFor(() => {
+        // TODO: #273 - フォームの状態が非同期で更新されることを考慮したアサーションに変更
         expectBookmarkFormValues({ url: updateUrl, title: updateTitle });
       });
     });
@@ -137,6 +139,7 @@ describe("タイトルの更新ボタン", () => {
       );
 
       await waitFor(() => {
+        // TODO: #273 - フォームの状態が非同期で更新されることを考慮したアサーションに変更
         // フォームに入力した値が保持され、更新ボタンが表示されていることを確認
         expectBookmarkFormValues({
           url: updateUrl,
@@ -163,6 +166,7 @@ describe("タイトルの更新ボタン", () => {
       await setBookmarkFormValuesAndClickButton(user, { title: "" }, UPDATE_BUTTON_ROLE_NAME);
 
       await waitFor(() => {
+        // TODO: #273 - フォームの状態が非同期で更新されることを考慮したアサーションに変更
         // フォームにはユーザーが入力した空のタイトルが保持されるべき
         expectBookmarkFormValues({
           url: bookmarkToSelect.url,
@@ -201,6 +205,7 @@ describe("タイトルの更新ボタン", () => {
       await clickUpdateButton(user);
 
       await waitFor(() => {
+        // TODO: #273 - フォームの状態が非同期で更新されることを考慮したアサーションに変更
         expectBookmarkFormValues({
           url: bookmarkToSelect.url,
           title: bookmarkToSelect.title,
