@@ -44,7 +44,9 @@ const expectRowsAndKeyword = async (expectRows: number, expectKeyword: string) =
   expect(keywordTable).toBeVisible();
   const rows = await within(keywordTable).findAllByRole("row");
   expect(rows).toHaveLength(expectRows);
-  expect(await within(keywordTable).findByText(expectKeyword)).toBeVisible();
+  // ヘッダー行を考慮して、2行目のセルにキーワードが表示されることを確認します
+  const newKeywordCell = await within(rows[1]).findByRole("cell");
+  expect(newKeywordCell).toHaveTextContent(expectKeyword);
   expect(keywordInput).toHaveValue("");
 };
 
