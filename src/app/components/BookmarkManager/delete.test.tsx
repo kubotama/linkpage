@@ -5,8 +5,6 @@ import { beforeEach, describe, expect, it, vi } from "vitest";
 import { screen, waitFor } from "@testing-library/react";
 import userEvent, { UserEvent } from "@testing-library/user-event";
 
-import { Bookmark } from "../../types/Bookmark";
-
 import { BOOKMARKS_ENDPOINT } from "../../constants/apiEndpoints";
 import { DELETE_BUTTON_ROLE_NAME } from "../../constants/constants";
 import {
@@ -15,6 +13,7 @@ import {
   mockBookmarks,
   setupBookmarkManagerForTest,
 } from "../../test-utils/bookmarkTestUtils";
+import { Bookmark } from "../../types/Bookmark";
 
 const mockFetch = vi.fn();
 
@@ -44,6 +43,7 @@ describe("削除ボタン", () => {
   });
 
   it("ブックマークが選択されていない場合には削除ボタンは表示されない", async () => {
+    // TODO: #272で対応する
     const deleteButtons = screen.queryAllByRole("button", {
       name: DELETE_BUTTON_ROLE_NAME,
     });
@@ -65,12 +65,7 @@ describe("削除ボタン", () => {
     });
 
     it("ブックマークが選択されると削除ボタンが表示される", async () => {
-      await waitFor(() => {
-        const deleteButton = screen.getByRole("button", {
-          name: DELETE_BUTTON_ROLE_NAME,
-        });
-        expect(deleteButton).toBeVisible();
-      });
+      await screen.findByRole("button", { name: DELETE_BUTTON_ROLE_NAME });
     });
 
     it("ブックマークが削除される(APIの呼び出し、画面の更新)", async () => {
@@ -113,15 +108,11 @@ describe("削除ボタン", () => {
       mockFetch.mockResolvedValueOnce(createMockResponse({ ...errorCase, isOk: false }));
       await clickDeleteButton(user);
 
-      await waitFor(() => {
-        // 画面の更新の確認
-        expect(screen.getByTestId("bookmark-message")).toHaveTextContent(
-          "ブックマークの削除中にエラーが発生しました。"
-        );
-        // 削除操作のコンテキスト（選択されたブックマークのタイトルや削除ボタン）が依然として表示されていることを確認
-        expect(screen.getByText(bookmarkToSelect.title)).toBeVisible();
-        expect(screen.getByRole("button", { name: DELETE_BUTTON_ROLE_NAME })).toBeVisible();
-      });
+      expect(await screen.findByTestId("bookmark-message")).toHaveTextContent(
+        "ブックマークの削除中にエラーが発生しました。"
+      );
+      await screen.findByText(bookmarkToSelect.title);
+      await screen.findByRole("button", { name: DELETE_BUTTON_ROLE_NAME });
     });
   });
 });

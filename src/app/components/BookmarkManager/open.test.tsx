@@ -98,13 +98,10 @@ describe("「開く」ボタン: 入力されたURLを新しいタブで開く",
     it("不正なURLを入力した場合", async () => {
       await setBookmarkFormValuesAndEnterKeydown(user, "invalid-url");
 
-      // エラーメッセージが表示され、window.openが呼び出されていないことを検証
-      await waitFor(() => {
-        expect(screen.getByTestId("bookmark-message")).toHaveTextContent(
-          "URLが無効です。正しいURLを入力してください。"
-        );
-        expect(mockOpen).not.toHaveBeenCalled();
-      });
+      expect(await screen.findByTestId("bookmark-message")).toHaveTextContent(
+        "URLが無効です。正しいURLを入力してください。"
+      );
+      expect(mockOpen).not.toHaveBeenCalled();
     });
   });
 });

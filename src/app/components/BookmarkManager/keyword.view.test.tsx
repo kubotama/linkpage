@@ -2,13 +2,14 @@ import "@testing-library/jest-dom";
 
 import { beforeAll, beforeEach, describe, expect, it, vi } from "vitest";
 
-import { screen, waitFor, within } from "@testing-library/react";
+import { screen, within } from "@testing-library/react";
 import userEvent, { UserEvent } from "@testing-library/user-event";
 
 import {
   ADD_BUTTON_ROLE_NAME,
   FIELDSET_KEYWORD_LABEL,
   KEYWORD_ROLE_NAME,
+  TABLE_NAME_KEYWORD,
 } from "../../constants/constants";
 import {
   buildMockBookmarksWithKeywords,
@@ -25,22 +26,18 @@ const clickBookmarkAndAssertKeywords = async (user: UserEvent, bookmark: Bookmar
 
   await clickBookmark(user, bookmark);
 
-  await waitFor(() => {
-    // まず、特定のキーワードテーブルをaria-labelで取得します
-    const keywordTable = screen.getByRole("table", { name: "キーワードのテーブル" });
-    // そのテーブルのスコープ内でrowをクエリします
-    const rows = within(keywordTable).queryAllByRole("row");
-    // ヘッダ行の1行を追加する
-    expect(rows).toHaveLength(keywords.length + 1);
+  const keywordTable = await screen.findByRole("table", { name: TABLE_NAME_KEYWORD });
+  const rows = await within(keywordTable).findAllByRole("row");
+  expect(rows).toHaveLength(keywords.length + 1);
 
-    keywords.forEach((keyword, index) => {
-      // ヘッダ行の1行を考慮する
-      const row = rows[index + 1];
-      // そのrowのスコープ内でcellをクエリします
-      const cell = within(row).getByRole("cell");
-      expect(cell).toHaveTextContent(keyword.keyword_name);
-    });
-  });
+  // forEachはasyncなコールバックを待たないので、for...ofループを使用する
+  for (const [index, keyword] of keywords.entries()) {
+    // ヘッダ行の1行を考慮する
+    const row = rows[index + 1];
+    // そのrowのスコープ内でcellをクエリします
+    const cell = await within(row).findByRole("cell");
+    expect(cell).toHaveTextContent(keyword.keyword_name);
+  }
 };
 
 describe("キーワード詳細フォームの表示のテスト", () => {

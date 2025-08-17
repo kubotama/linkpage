@@ -49,6 +49,7 @@ describe("タイトルの更新ボタン", () => {
       name: UPDATE_BUTTON_ROLE_NAME,
     });
 
+    // TODO: #272で対応する
     await waitFor(() => {
       expect(updateButtons).toHaveLength(0);
     });
@@ -64,12 +65,7 @@ describe("タイトルの更新ボタン", () => {
     });
 
     it("ブックマークが選択されている場合には、タイトルの更新ボタンが表示される。", async () => {
-      await waitFor(() => {
-        const updateButton = screen.getByRole("button", {
-          name: UPDATE_BUTTON_ROLE_NAME,
-        });
-        expect(updateButton).toBeVisible();
-      });
+      await screen.findByRole("button", { name: UPDATE_BUTTON_ROLE_NAME });
     });
 
     it("ブックマークのタイトルが更新される。(APIの呼び出し、画面の更新)", async () => {
@@ -105,12 +101,12 @@ describe("タイトルの更新ボタン", () => {
             title: updateTitle,
           }),
         });
-        const updateText = screen.getAllByText(updateTitle);
-        expect(updateText).toHaveLength(1);
 
         // 画面の更新の確認;
+        // TODO: #273 - フォームの状態が非同期で更新されることを考慮したアサーションに変更
         expectBookmarkFormValues({ url: updateUrl, title: updateTitle });
       });
+      expect(await screen.findAllByText(updateTitle)).toHaveLength(1);
 
       const updatedBookmark: Bookmark = createBookmark({
         bookmark_id: bookmarkToSelect.bookmark_id,
@@ -120,6 +116,7 @@ describe("タイトルの更新ボタン", () => {
       });
       await clickBookmark(user, updatedBookmark);
       await waitFor(() => {
+        // TODO: #273 - フォームの状態が非同期で更新されることを考慮したアサーションに変更
         expectBookmarkFormValues({ url: updateUrl, title: updateTitle });
       });
     });
@@ -142,20 +139,19 @@ describe("タイトルの更新ボタン", () => {
       );
 
       await waitFor(() => {
-        expect(screen.getByTestId("bookmark-message")).toHaveTextContent(
-          "指定されたURLのブックマークは既に登録されています。"
-        );
+        // TODO: #273 - フォームの状態が非同期で更新されることを考慮したアサーションに変更
         // フォームに入力した値が保持され、更新ボタンが表示されていることを確認
         expectBookmarkFormValues({
           url: updateUrl,
           title: updateTitle,
           buttonName: UPDATE_BUTTON_ROLE_NAME,
         });
-        // リスト上の元のブックマークが消えていないことを確認
-        const table = screen.getByRole("table", { name: TABLE_NAME_BOOKMARKS });
-        const bookmark = within(table).getByText(bookmarkToSelect.title);
-        expect(bookmark).toBeVisible();
       });
+      expect(await screen.findByTestId("bookmark-message")).toHaveTextContent(
+        "指定されたURLのブックマークは既に登録されています。"
+      );
+      const table = await screen.findByRole("table", { name: TABLE_NAME_BOOKMARKS });
+      await within(table).findByText(bookmarkToSelect.title);
     });
 
     it("タイトルが空の状態で更新しようとすると、エラーメッセージが表示される", async () => {
@@ -170,9 +166,7 @@ describe("タイトルの更新ボタン", () => {
       await setBookmarkFormValuesAndClickButton(user, { title: "" }, UPDATE_BUTTON_ROLE_NAME);
 
       await waitFor(() => {
-        expect(screen.getByTestId("bookmark-message")).toHaveTextContent(
-          "ブックマークの更新中にエラーが発生しました。"
-        );
+        // TODO: #273 - フォームの状態が非同期で更新されることを考慮したアサーションに変更
         // フォームにはユーザーが入力した空のタイトルが保持されるべき
         expectBookmarkFormValues({
           url: bookmarkToSelect.url,
@@ -180,6 +174,9 @@ describe("タイトルの更新ボタン", () => {
           buttonName: UPDATE_BUTTON_ROLE_NAME,
         });
       });
+      expect(await screen.findByTestId("bookmark-message")).toHaveTextContent(
+        "ブックマークの更新中にエラーが発生しました。"
+      );
     });
 
     it.each([
@@ -208,16 +205,16 @@ describe("タイトルの更新ボタン", () => {
       await clickUpdateButton(user);
 
       await waitFor(() => {
-        expect(screen.getByTestId("bookmark-message")).toHaveTextContent(
-          "ブックマークの更新中にエラーが発生しました。"
-        );
-        // 更新操作のコンテキストが依然として表示されていることを確認
+        // TODO: #273 - フォームの状態が非同期で更新されることを考慮したアサーションに変更
         expectBookmarkFormValues({
           url: bookmarkToSelect.url,
           title: bookmarkToSelect.title,
           buttonName: UPDATE_BUTTON_ROLE_NAME,
         });
       });
+      expect(await screen.findByTestId("bookmark-message")).toHaveTextContent(
+        "ブックマークの更新中にエラーが発生しました。"
+      );
     });
   });
 });
