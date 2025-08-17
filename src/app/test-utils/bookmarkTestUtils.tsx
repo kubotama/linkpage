@@ -245,24 +245,26 @@ export const setBookmarkFormValuesAndClickButton = async (
   }
 };
 
+const assertHaveValueByRole = async (roleName: string, name: string, value: string) => {
+  await waitFor(() => {
+    const element = screen.getByRole(roleName, { name });
+    expect(element).toHaveValue(value);
+  });
+};
+
 export const expectBookmarkFormValues = async (values: {
   url?: string;
   title?: string;
   buttonName?: string;
 }) => {
   if (values.url !== undefined) {
-    const urlInput = screen.getByRole("textbox", { name: URL_ROLE_NAME });
-    expect(urlInput).toHaveValue(values.url);
+    await assertHaveValueByRole("textbox", URL_ROLE_NAME, values.url);
   }
   if (values.title !== undefined) {
-    const titleInput = screen.getByRole("textbox", { name: TITLE_ROLE_NAME });
-    expect(titleInput).toHaveValue(values.title);
+    await assertHaveValueByRole("textbox", TITLE_ROLE_NAME, values.title);
   }
   if (values.buttonName !== undefined) {
-    const button = screen.getByRole("button", {
-      name: values.buttonName,
-    });
-    expect(button).toBeVisible();
+    await screen.findByRole("button", { name: values.buttonName });
   }
 };
 

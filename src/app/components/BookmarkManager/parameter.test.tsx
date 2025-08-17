@@ -52,7 +52,6 @@ describe("「パラメータ」ボタン: URLから無駄な文字列を削除�
     ])("無駄なパラメータを削除するテスト: $url", async ({ url, expectedUrl }) => {
       await setBookmarkFormValuesAndClickButton(user, { url }, PARAMETER_BUTTON_ROLE_NAME);
 
-      // TODO: #273 - フォームの状態が非同期で更新されることを考慮したアサーションに変更
       await expectBookmarkFormValues({ url: expectedUrl });
     });
   });

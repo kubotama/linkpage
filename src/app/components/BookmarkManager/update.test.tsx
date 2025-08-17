@@ -94,12 +94,11 @@ describe("タイトルの更新ボタン", () => {
             title: updateTitle,
           }),
         });
-
-        // 画面の更新の確認;
-        // TODO: #273 - フォームの状態が非同期で更新されることを考慮したアサーションに変更
-        expectBookmarkFormValues({ url: updateUrl, title: updateTitle });
       });
       expect(await screen.findAllByText(updateTitle)).toHaveLength(1);
+
+      // 画面の更新の確認;
+      await expectBookmarkFormValues({ url: updateUrl, title: updateTitle });
 
       const updatedBookmark: Bookmark = createBookmark({
         bookmark_id: bookmarkToSelect.bookmark_id,
@@ -108,10 +107,7 @@ describe("タイトルの更新ボタン", () => {
         keywords: bookmarkToSelect.keywords,
       });
       await clickBookmark(user, updatedBookmark);
-      await waitFor(() => {
-        // TODO: #273 - フォームの状態が非同期で更新されることを考慮したアサーションに変更
-        expectBookmarkFormValues({ url: updateUrl, title: updateTitle });
-      });
+      await expectBookmarkFormValues({ url: updateUrl, title: updateTitle });
     });
 
     it("同じURLを指定された場合には409を返す。", async () => {
@@ -131,14 +127,11 @@ describe("タイトルの更新ボタン", () => {
         UPDATE_BUTTON_ROLE_NAME
       );
 
-      await waitFor(() => {
-        // TODO: #273 - フォームの状態が非同期で更新されることを考慮したアサーションに変更
-        // フォームに入力した値が保持され、更新ボタンが表示されていることを確認
-        expectBookmarkFormValues({
-          url: updateUrl,
-          title: updateTitle,
-          buttonName: UPDATE_BUTTON_ROLE_NAME,
-        });
+      // フォームに入力した値が保持され、更新ボタンが表示されていることを確認
+      await expectBookmarkFormValues({
+        url: updateUrl,
+        title: updateTitle,
+        buttonName: UPDATE_BUTTON_ROLE_NAME,
       });
       expect(await screen.findByTestId("bookmark-message")).toHaveTextContent(
         "指定されたURLのブックマークは既に登録されています。"
@@ -158,15 +151,13 @@ describe("タイトルの更新ボタン", () => {
 
       await setBookmarkFormValuesAndClickButton(user, { title: "" }, UPDATE_BUTTON_ROLE_NAME);
 
-      await waitFor(() => {
-        // TODO: #273 - フォームの状態が非同期で更新されることを考慮したアサーションに変更
-        // フォームにはユーザーが入力した空のタイトルが保持されるべき
-        expectBookmarkFormValues({
-          url: bookmarkToSelect.url,
-          title: "",
-          buttonName: UPDATE_BUTTON_ROLE_NAME,
-        });
+      // フォームにはユーザーが入力した空のタイトルが保持されるべき
+      await expectBookmarkFormValues({
+        url: bookmarkToSelect.url,
+        title: "",
+        buttonName: UPDATE_BUTTON_ROLE_NAME,
       });
+
       expect(await screen.findByTestId("bookmark-message")).toHaveTextContent(
         "ブックマークの更新中にエラーが発生しました。"
       );
@@ -197,14 +188,13 @@ describe("タイトルの更新ボタン", () => {
 
       await clickUpdateButton(user);
 
-      await waitFor(() => {
-        // TODO: #273 - フォームの状態が非同期で更新されることを考慮したアサーションに変更
-        expectBookmarkFormValues({
-          url: bookmarkToSelect.url,
-          title: bookmarkToSelect.title,
-          buttonName: UPDATE_BUTTON_ROLE_NAME,
-        });
+      // フォームにはユーザーが入力した空のタイトルが保持されるべき
+      await expectBookmarkFormValues({
+        url: bookmarkToSelect.url,
+        title: bookmarkToSelect.title,
+        buttonName: UPDATE_BUTTON_ROLE_NAME,
       });
+
       expect(await screen.findByTestId("bookmark-message")).toHaveTextContent(
         "ブックマークの更新中にエラーが発生しました。"
       );
