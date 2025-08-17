@@ -257,15 +257,19 @@ export const expectBookmarkFormValues = async (values: {
   title?: string;
   buttonName?: string;
 }) => {
+  const promises: Promise<unknown>[] = [];
+
   if (values.url !== undefined) {
-    await assertHaveValueByRole("textbox", URL_ROLE_NAME, values.url);
+    promises.push(assertHaveValueByRole("textbox", URL_ROLE_NAME, values.url));
   }
   if (values.title !== undefined) {
-    await assertHaveValueByRole("textbox", TITLE_ROLE_NAME, values.title);
+    promises.push(assertHaveValueByRole("textbox", TITLE_ROLE_NAME, values.title));
   }
   if (values.buttonName !== undefined) {
-    await screen.findByRole("button", { name: values.buttonName });
+    promises.push(screen.findByRole("button", { name: values.buttonName }));
   }
+
+  await Promise.all(promises);
 };
 
 export const keyDown = async (user: UserEvent, key: string) => {
