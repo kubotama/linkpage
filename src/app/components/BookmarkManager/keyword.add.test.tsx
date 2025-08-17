@@ -149,11 +149,7 @@ describe("選択されたブックマークにキーワードを追加", () => {
 
         // 検証
         // キーワードのテーブルが表示されていないことを確認
-        // TODO: #272で対応する
-        await waitFor(() => {
-          const keywordTable = screen.queryAllByRole("table", { name: TABLE_NAME_KEYWORD });
-          expect(keywordTable).toHaveLength(0);
-        });
+        expect(screen.queryByRole("table", { name: TABLE_NAME_KEYWORD })).not.toBeInTheDocument();
       });
 
       it("キーワードを追加した後にブックマークの選択を解除して、再度ブックマークを選択すると、追加したキーワードが表示される", async () => {
