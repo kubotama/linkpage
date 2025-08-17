@@ -188,7 +188,7 @@ describe("タイトルの更新ボタン", () => {
 
       await clickUpdateButton(user);
 
-      // フォームにはユーザーが入力した空のタイトルが保持されるべき
+      // フォームの値は変更されずに保持されるべき
       await expectBookmarkFormValues({
         url: bookmarkToSelect.url,
         title: bookmarkToSelect.title,
