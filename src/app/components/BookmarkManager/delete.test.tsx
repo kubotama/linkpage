@@ -42,15 +42,8 @@ describe("削除ボタン", () => {
     await setupBookmarkManagerForTest();
   });
 
-  it("ブックマークが選択されていない場合には削除ボタンは表示されない", async () => {
-    // TODO: #272で対応する
-    const deleteButtons = screen.queryAllByRole("button", {
-      name: DELETE_BUTTON_ROLE_NAME,
-    });
-
-    await waitFor(() => {
-      expect(deleteButtons).toHaveLength(0);
-    });
+  it("ブックマークが選択されていない場合には削除ボタンは表示されない", () => {
+    expect(screen.queryByRole("button", { name: DELETE_BUTTON_ROLE_NAME })).not.toBeInTheDocument();
   });
 
   describe("ブックマークが選択されている場合", () => {
