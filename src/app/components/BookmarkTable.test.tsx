@@ -98,9 +98,11 @@ describe("BookmarkTableのテスト", () => {
 
     // 選択されていない行のセルを取得
     const unselectedBookmark = mockBookmarks.find((b) => b.bookmark_id !== selected.bookmark_id);
-    expect(unselectedBookmark).toBeDefined();
+    if (!unselectedBookmark) {
+      throw new Error("選択されていないブックマークが見つかるべきです");
+    }
     const unselectedCell = screen.getByRole("cell", {
-      name: unselectedBookmark!.title,
+      name: unselectedBookmark.title,
     });
     // 選択されていない行が通常のクラスを持つことを確認
     expect(unselectedCell).toHaveClass("bg-gray-100", "text-gray-900");
