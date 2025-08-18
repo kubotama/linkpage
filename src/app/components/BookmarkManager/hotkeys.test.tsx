@@ -81,7 +81,6 @@ describe("BookmarkManager Hotkeys", () => {
   describe("ブックマークが選択されている場合", () => {
     beforeEach(async () => {
       // 2番目のブックマーク「Google」を選択
-      // ブックマークを選択
       bookmarkToSelect = mockBookmarks[1]; // Google
       await clickBookmark(user, bookmarkToSelect);
       await assertBookmarkIsSelected(bookmarkToSelect);
