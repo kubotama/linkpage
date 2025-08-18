@@ -8,6 +8,7 @@ import userEvent, { UserEvent } from "@testing-library/user-event";
 import { BOOKMARKS_ENDPOINT } from "../../constants/apiEndpoints";
 import { TABLE_NAME_BOOKMARKS, UPDATE_BUTTON_ROLE_NAME } from "../../constants/constants";
 import {
+  assertBookmarkIsSelected,
   clickBookmark,
   createBookmark,
   createMockResponse,
@@ -54,6 +55,7 @@ describe("タイトルの更新ボタン", () => {
       // 2番目のブックマーク「Google」を選択
       bookmarkToSelect = mockBookmarks[1];
       await clickBookmark(user, bookmarkToSelect);
+      await assertBookmarkIsSelected(bookmarkToSelect);
       mockFetch.mockReset();
     });
 
@@ -107,6 +109,7 @@ describe("タイトルの更新ボタン", () => {
         keywords: bookmarkToSelect.keywords,
       });
       await clickBookmark(user, updatedBookmark);
+      await assertBookmarkIsSelected(updatedBookmark);
       await expectBookmarkFormValues({ url: updateUrl, title: updateTitle });
     });
 
