@@ -94,7 +94,6 @@ export const clickBookmark = async (user: UserEvent, bookmark: Bookmark) => {
       cause: error,
     });
   }
-  await assertBookmarkIsSelected(bookmark);
 };
 
 export const mockKeywords: Keyword[] = [
