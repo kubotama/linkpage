@@ -46,7 +46,7 @@ export const useBookmarks = () => {
         throw new Error(`[${response.status}] ${json.message}`);
       }
     } catch (error: unknown) {
-      console.error("ブックマーク削除エラー:", (error as Error).message);
+      console.error("ブックマークの削除エラー:", (error as Error).message);
       throw error;
     }
   }, []);
