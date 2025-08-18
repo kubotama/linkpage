@@ -8,6 +8,7 @@ import userEvent, { UserEvent } from "@testing-library/user-event";
 import { BOOKMARKS_ENDPOINT } from "../../constants/apiEndpoints";
 import { DELETE_BUTTON_ROLE_NAME } from "../../constants/constants";
 import {
+  assertBookmarkIsSelected,
   clickBookmark,
   createMockResponse,
   mockBookmarks,
@@ -53,6 +54,7 @@ describe("削除ボタン", () => {
       // 2番目のブックマーク「Google」を選択
       bookmarkToSelect = mockBookmarks[1];
       await clickBookmark(user, bookmarkToSelect);
+      await assertBookmarkIsSelected(bookmarkToSelect);
 
       mockFetch.mockReset();
     });
