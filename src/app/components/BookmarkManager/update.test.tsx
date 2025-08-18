@@ -1,6 +1,6 @@
 import "@testing-library/jest-dom";
 
-import { beforeEach, describe, expect, it, vi } from "vitest";
+import { afterEach, beforeEach, describe, expect, it, vi, MockInstance } from "vitest";
 
 import { screen, waitFor, within } from "@testing-library/react";
 import userEvent, { UserEvent } from "@testing-library/user-event";
@@ -113,94 +113,97 @@ describe("タイトルの更新ボタン", () => {
       await expectBookmarkFormValues({ url: updateUrl, title: updateTitle });
     });
 
-    it("同じURLを指定された場合には409を返す。", async () => {
-      const updateUrl = mockBookmarks[2].url;
-      const updateTitle = "更新されたタイトル";
-      mockFetch.mockResolvedValueOnce(
-        createMockResponse({
-          isOk: false,
-          status: 409,
-          message: "指定されたURLのブックマークは既に登録されています。",
-        })
-      );
+    describe("エラーメッセージが出力される場合", () => {
+      let consoleErrorSpy: MockInstance;
 
-      await setBookmarkFormValuesAndClickButton(
-        user,
-        { url: updateUrl, title: updateTitle },
-        UPDATE_BUTTON_ROLE_NAME
-      );
-
-      // フォームに入力した値が保持され、更新ボタンが表示されていることを確認
-      await expectBookmarkFormValues({
-        url: updateUrl,
-        title: updateTitle,
-        buttonName: UPDATE_BUTTON_ROLE_NAME,
-      });
-      expect(await screen.findByTestId("bookmark-message")).toHaveTextContent(
-        "指定されたURLのブックマークは既に登録されています。"
-      );
-      const table = await screen.findByRole("table", { name: TABLE_NAME_BOOKMARKS });
-      await within(table).findByText(bookmarkToSelect.title);
-    });
-
-    it("タイトルが空の状態で更新しようとすると、エラーメッセージが表示される", async () => {
-      mockFetch.mockResolvedValueOnce(
-        createMockResponse({
-          isOk: false,
-          status: 400,
-          message: "タイトルが指定されていません。",
-        })
-      );
-
-      await setBookmarkFormValuesAndClickButton(user, { title: "" }, UPDATE_BUTTON_ROLE_NAME);
-
-      // フォームにはユーザーが入力した空のタイトルが保持されるべき
-      await expectBookmarkFormValues({
-        url: bookmarkToSelect.url,
-        title: "",
-        buttonName: UPDATE_BUTTON_ROLE_NAME,
+      beforeEach(() => {
+        consoleErrorSpy = vi.spyOn(console, "error").mockImplementation(() => {});
       });
 
-      expect(await screen.findByTestId("bookmark-message")).toHaveTextContent(
-        "ブックマークの更新中にエラーが発生しました。"
-      );
-    });
+      afterEach(() => {
+        consoleErrorSpy.mockRestore();
+      });
 
-    it.each([
-      {
-        description: "存在しないブックマーク (404 Not Found)",
-        errorCase: { message: "指定されたブックマークがありません。", status: 404 },
-      },
-      {
-        description: "不正なリクエスト (400 Bad Request)",
-        errorCase: { message: "リクエストにIDがありませんでした。", status: 400 },
-      },
-      {
-        description: "IDの形式が不正 (400 Bad Request)",
-        errorCase: {
-          message: "IDは正の整数である必要があります。",
-          status: 400,
+      it("同じURLを指定された場合には409を返す。", async () => {
+        const updateUrl = mockBookmarks[2].url;
+        const updateTitle = "更新されたタイトル";
+        mockFetch.mockResolvedValueOnce(
+          createMockResponse({
+            isOk: false,
+            status: 409,
+            message: "指定されたURLのブックマークは既に登録されています。",
+          })
+        );
+
+        await setBookmarkFormValuesAndClickButton(
+          user,
+          { url: updateUrl, title: updateTitle },
+          UPDATE_BUTTON_ROLE_NAME
+        );
+
+        expect(consoleErrorSpy).toHaveBeenCalledWith(
+          "ブックマークの更新エラー:",
+          "指定されたURLのブックマークは既に登録されています。"
+        );
+
+        // フォームに入力した値が保持され、更新ボタンが表示されていることを確認
+        await expectBookmarkFormValues({
+          url: updateUrl,
+          title: updateTitle,
+          buttonName: UPDATE_BUTTON_ROLE_NAME,
+        });
+        expect(await screen.findByTestId("bookmark-message")).toHaveTextContent(
+          "指定されたURLのブックマークは既に登録されています。"
+        );
+        const table = await screen.findByRole("table", { name: TABLE_NAME_BOOKMARKS });
+        await within(table).findByText(bookmarkToSelect.title);
+      });
+
+      it.each([
+        {
+          description: "不正なリクエスト (400 Bad Request)",
+          errorCase: { message: "タイトルが指定されていません。", status: 400 },
         },
-      },
-      {
-        description: "不正なJSONデータ (500 Internal Server Error)",
-        errorCase: { message: "サーバーで予期せぬエラーが発生しました。", status: 500 },
-      },
-    ])("エラーハンドリング: $description", async ({ errorCase }) => {
-      mockFetch.mockResolvedValueOnce(createMockResponse({ ...errorCase, isOk: false }));
+        {
+          description: "存在しないブックマーク (404 Not Found)",
+          errorCase: { message: "指定されたブックマークがありません。", status: 404 },
+        },
+        {
+          description: "不正なリクエスト (400 Bad Request)",
+          errorCase: { message: "リクエストにIDがありませんでした。", status: 400 },
+        },
+        {
+          description: "IDの形式が不正 (400 Bad Request)",
+          errorCase: {
+            message: "IDは正の整数である必要があります。",
+            status: 400,
+          },
+        },
+        {
+          description: "不正なJSONデータ (500 Internal Server Error)",
+          errorCase: { message: "サーバーで予期せぬエラーが発生しました。", status: 500 },
+        },
+      ])("エラーハンドリング: $description", async ({ errorCase }) => {
+        mockFetch.mockResolvedValueOnce(createMockResponse({ ...errorCase, isOk: false }));
 
-      await clickUpdateButton(user);
+        await clickUpdateButton(user);
 
-      // フォームの値は変更されずに保持されるべき
-      await expectBookmarkFormValues({
-        url: bookmarkToSelect.url,
-        title: bookmarkToSelect.title,
-        buttonName: UPDATE_BUTTON_ROLE_NAME,
+        expect(consoleErrorSpy).toHaveBeenCalledWith(
+          "ブックマークの更新エラー:",
+          `[${errorCase.status}] ${errorCase.message}`
+        );
+
+        // フォームの値は変更されずに保持されるべき
+        await expectBookmarkFormValues({
+          url: bookmarkToSelect.url,
+          title: bookmarkToSelect.title,
+          buttonName: UPDATE_BUTTON_ROLE_NAME,
+        });
+
+        expect(await screen.findByTestId("bookmark-message")).toHaveTextContent(
+          "ブックマークの更新中にエラーが発生しました。"
+        );
       });
-
-      expect(await screen.findByTestId("bookmark-message")).toHaveTextContent(
-        "ブックマークの更新中にエラーが発生しました。"
-      );
     });
   });
 });
