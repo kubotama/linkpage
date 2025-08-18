@@ -284,7 +284,7 @@ export const setBookmarkFormValuesAndEnterKeydown = async (user: UserEvent, url:
  */
 export const setupBookmarkManagerForTest = async () => {
   render(<BookmarkManager />);
-  expect(await screen.findByRole("cell", { name: mockBookmarks[0].title })).toBeVisible();
+  await screen.findByRole("cell", { name: mockBookmarks[0].title });
 };
 
 export const deselectBookmark = async (user: UserEvent) => {
