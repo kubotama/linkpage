@@ -6,6 +6,7 @@ import { screen, waitFor } from "@testing-library/react";
 import userEvent, { UserEvent } from "@testing-library/user-event";
 
 import {
+  assertBookmarkIsSelected,
   clickBookmark,
   mockBookmarks,
   setBookmarkFormValuesAndEnterKeydown,
@@ -82,6 +83,7 @@ describe("「開く」ボタン: 入力されたURLを新しいタブで開く",
     beforeEach(async () => {
       // クリックするブックマークを選択（例：2番目のブックマーク）
       await clickBookmark(user, mockBookmarks[1]);
+      await assertBookmarkIsSelected(mockBookmarks[1]);
     });
 
     it("Enterキーを押した場合", async () => {

@@ -6,6 +6,7 @@ import userEvent, { UserEvent } from "@testing-library/user-event";
 
 import { PARAMETER_BUTTON_ROLE_NAME } from "../../constants/constants";
 import {
+  assertBookmarkIsSelected,
   clickBookmark,
   expectBookmarkFormValues,
   mockBookmarks,
@@ -34,6 +35,7 @@ describe("「パラメータ」ボタン: URLから無駄な文字列を削除�
 
       const bookmarkToSelect = mockBookmarks[1]; // Google
       await clickBookmark(user, bookmarkToSelect);
+      await assertBookmarkIsSelected(bookmarkToSelect);
     });
 
     it.each([

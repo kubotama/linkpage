@@ -6,6 +6,7 @@ import userEvent, { UserEvent } from "@testing-library/user-event";
 
 import { ARROW_BUTTON_ROLE_NAME } from "../../constants/constants";
 import {
+  assertBookmarkIsSelected,
   clickBookmark,
   expectBookmarkFormValues,
   mockBookmarks,
@@ -32,6 +33,7 @@ describe("「←」ボタン", () => {
     await setupBookmarkManagerForTest();
 
     await clickBookmark(user, mockBookmarks[1]);
+    await assertBookmarkIsSelected(mockBookmarks[1]);
   });
 
   it.each([

@@ -12,6 +12,7 @@ import {
   TABLE_NAME_KEYWORD,
 } from "../../constants/constants";
 import {
+  assertBookmarkIsSelected,
   buildMockBookmarksWithKeywords,
   clickBookmark,
   createMockResponse,
@@ -51,8 +52,11 @@ const expectRowsAndKeyword = async (expectRows: number, expectKeyword: string) =
 };
 
 describe("選択されたブックマークにキーワードを追加", () => {
+  const keyword = "テストキーワード";
+
   let mockBookmarksWithKeywords: Bookmark[];
   let user: UserEvent;
+  let bookmarkToSelect: Bookmark;
 
   beforeEach(async () => {
     mockFetch.mockReset();
@@ -83,16 +87,18 @@ describe("選択されたブックマークにキーワードを追加", () => {
           keyword_name: "テストキーワード",
         })
       );
+
+      // キーワードが設定されていないブックマークを選択
+      bookmarkToSelect = findBookmarkWithAtLeastNKeywords(mockBookmarksWithKeywords, 0);
+      await clickBookmark(user, bookmarkToSelect);
+      await assertBookmarkIsSelected(bookmarkToSelect);
+
+      expectTableRows(1);
+
+      await addNewKeyword(user, keyword);
     });
 
-    it("テキストボックスにキーワードを入力して「追加」ボタンをクリックするとAPIが呼び出される", async () => {
-      // キーワードが設定されていないブックマークを選択
-      const bookmarkToSelect = findBookmarkWithAtLeastNKeywords(mockBookmarksWithKeywords, 0);
-      await clickBookmark(user, bookmarkToSelect);
-
-      const keyword = "テストキーワード";
-      await addNewKeyword(user, keyword);
-
+    it("テキストボックスにキーワードを入力して「追加」ボタンをクリックするとAPIが呼び出されて、キーワードのテーブルに表示される", async () => {
       await waitFor(() => {
         expect(mockFetch).toHaveBeenCalledTimes(1);
         expect(mockFetch.mock.calls[0][0]).toEqual(
@@ -108,45 +114,17 @@ describe("選択されたブックマークにキーワードを追加", () => {
           }),
         });
       });
-    });
-
-    it("テキストボックスにキーワードを入力して「追加」ボタンをクリックするとキーワードのテーブルに表示される", async () => {
-      // キーワードが設定されていないブックマークを選択
-      const bookmarkToSelect = findBookmarkWithAtLeastNKeywords(mockBookmarksWithKeywords, 0);
-      await clickBookmark(user, bookmarkToSelect);
-
-      expectTableRows(1);
-
-      // 実行
-      // ブックマークにキーワードを追加
-      const keyword = "テストキーワード";
-      await addNewKeyword(user, keyword);
-
-      // 検証
       // キーワードのテーブルに表示されていることを確認
       await expectRowsAndKeyword(2, keyword);
     });
 
     describe("キーワード追加後の状態遷移", () => {
-      let bookmarkToSelect: Bookmark;
-      const keyword = "テストキーワード";
-
       beforeEach(async () => {
-        // キーワードが設定されていないブックマークを選択
-        bookmarkToSelect = findBookmarkWithAtLeastNKeywords(mockBookmarksWithKeywords, 0);
-        await clickBookmark(user, bookmarkToSelect);
-
-        expectTableRows(1);
-
-        // ブックマークにキーワードを追加
-        await addNewKeyword(user, keyword);
+        // ブックマークの選択を解除
+        await deselectBookmark(user);
       });
 
       it("キーワードを追加した後にブックマークの選択を解除すると、キーワードのテーブルが表示されなくなる", async () => {
-        // 実行
-        // ブックマークの選択を解除
-        await deselectBookmark(user);
-
         // 検証
         // キーワードのテーブルが表示されていないことを確認
         await waitFor(() =>
@@ -156,8 +134,6 @@ describe("選択されたブックマークにキーワードを追加", () => {
 
       it("キーワードを追加した後にブックマークの選択を解除して、再度ブックマークを選択すると、追加したキーワードが表示される", async () => {
         // 実行
-        // ブックマークの選択を解除
-        await deselectBookmark(user);
         // 同じブックマークを選択
         await clickBookmark(user, bookmarkToSelect);
 

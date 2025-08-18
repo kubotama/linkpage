@@ -5,6 +5,7 @@ import { beforeEach, describe, expect, it, vi } from "vitest";
 import userEvent, { UserEvent } from "@testing-library/user-event";
 
 import {
+  assertBookmarkIsSelected,
   assertNoBookmarkIsSelected,
   clickBookmark,
   createBookmark,
@@ -40,6 +41,7 @@ describe("ブックマークの選択", () => {
     // クリックするブックマークを選択（例：2番目のブックマーク）
     const bookmarkToSelect = mockBookmarks[1]; // Google
     await clickBookmark(user, bookmarkToSelect);
+    await assertBookmarkIsSelected(bookmarkToSelect);
 
     await deselectBookmark(user);
 
