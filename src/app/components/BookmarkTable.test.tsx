@@ -97,7 +97,11 @@ describe("BookmarkTableのテスト", () => {
     expect(selectedCell).not.toHaveClass("bg-gray-100", "text-gray-900");
 
     // 選択されていない行のセルを取得
-    const unselectedCell = screen.getByRole("cell", { name: mockBookmarks[0].title });
+    const unselectedBookmark = mockBookmarks.find((b) => b.bookmark_id !== selected.bookmark_id);
+    expect(unselectedBookmark).toBeDefined();
+    const unselectedCell = screen.getByRole("cell", {
+      name: unselectedBookmark!.title,
+    });
     // 選択されていない行が通常のクラスを持つことを確認
     expect(unselectedCell).toHaveClass("bg-gray-100", "text-gray-900");
     expect(unselectedCell).not.toHaveClass("bg-sky-500", "text-gray-100");
