@@ -164,10 +164,6 @@ describe("タイトルの更新ボタン", () => {
 
       it.each([
         {
-          description: "不正なリクエスト (400 Bad Request)",
-          errorCase: { message: "タイトルが指定されていません。", status: 400 },
-        },
-        {
           description: "存在しないブックマーク (404 Not Found)",
           errorCase: { message: "指定されたブックマークがありません。", status: 404 },
         },
@@ -200,6 +196,38 @@ describe("タイトルの更新ボタン", () => {
         await expectBookmarkFormValues({
           url: bookmarkToSelect.url,
           title: bookmarkToSelect.title,
+          buttonName: UPDATE_BUTTON_ROLE_NAME,
+        });
+
+        expect(await screen.findByTestId("bookmark-message")).toHaveTextContent(
+          "ブックマークの更新中にエラーが発生しました。"
+        );
+      });
+
+      it.each([
+        {
+          description: "不正なリクエスト (400 Bad Request)",
+          value: { url: "http://example.com", title: "" },
+          message: "タイトルが指定されていません。",
+        },
+        {
+          description: "不正なリクエスト (400 Bad Request)",
+          value: { url: "", title: "テストタイトル" },
+          message: "URLが指定されていません。",
+        },
+      ])("入力値が不正な場合のエラーハンドリング: $description", async ({ value, message }) => {
+        mockFetch.mockResolvedValueOnce(undefined);
+
+        await setBookmarkFormValuesAndClickButton(user, value, UPDATE_BUTTON_ROLE_NAME);
+
+        expect(mockFetch).toBeCalledTimes(0);
+
+        expect(consoleErrorSpy).toHaveBeenCalledWith("ブックマークの更新エラー:", `${message}`);
+
+        // フォームの値は変更されずに保持されるべき
+        await expectBookmarkFormValues({
+          url: value.url,
+          title: value.title,
           buttonName: UPDATE_BUTTON_ROLE_NAME,
         });
 

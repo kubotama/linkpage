@@ -53,6 +53,12 @@ export const useBookmarks = () => {
 
   const updateBookmark = useCallback(async (bookmark_id: number, url: string, title: string) => {
     try {
+      if (!url) {
+        throw new Error("URLが指定されていません。");
+      }
+      if (!title) {
+        throw new Error("タイトルが指定されていません。");
+      }
       const response = await fetch(`${BOOKMARKS_ENDPOINT}/${bookmark_id}`, {
         method: "PUT",
         headers: {
