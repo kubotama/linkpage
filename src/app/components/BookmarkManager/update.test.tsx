@@ -127,11 +127,14 @@ describe("タイトルの更新ボタン", () => {
       it("同じURLを指定された場合には409を返す。", async () => {
         const updateUrl = mockBookmarks[2].url;
         const updateTitle = "更新されたタイトル";
+        const errorText = "指定されたURLのブックマークは既に登録されています。";
+        const statusCode = 409;
+
         mockFetch.mockResolvedValueOnce(
           createMockResponse({
             isOk: false,
-            status: 409,
-            message: "指定されたURLのブックマークは既に登録されています。",
+            status: statusCode,
+            message: errorText,
           })
         );
 
@@ -143,7 +146,7 @@ describe("タイトルの更新ボタン", () => {
 
         expect(consoleErrorSpy).toHaveBeenCalledWith(
           "ブックマークの更新エラー:",
-          "指定されたURLのブックマークは既に登録されています。"
+          `[${statusCode}] ${errorText}`
         );
 
         // フォームに入力した値が保持され、更新ボタンが表示されていることを確認

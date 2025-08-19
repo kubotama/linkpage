@@ -71,7 +71,7 @@ export const useBookmarks = () => {
         // エラーレスポンスの処理
         const json = await response.json();
         if (response.status === 409) {
-          throw new DuplicatedUrlError(json.message);
+          throw new DuplicatedUrlError(`[${response.status}] ${json.message}`);
         } else {
           throw new Error(`[${response.status}] ${json.message}`);
         }
