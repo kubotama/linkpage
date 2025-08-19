@@ -26,7 +26,7 @@ export const useBookmarks = () => {
         throw new Error(`[${response.status}] ${json.message}`);
       }
     } catch (error: unknown) {
-      console.error("ブックマークのロードエラー:", error);
+      console.error("ブックマークのロードエラー:", (error as Error).message);
       throw error;
     }
   }, []);

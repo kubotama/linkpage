@@ -41,16 +41,27 @@ describe("BookmarkManagerの表示を確認", () => {
   });
 
   it("HTTPステータス500でfetchした場合、エラーメッセージが表示される", async () => {
+    const consoleErrorSpy = vi.spyOn(console, "error").mockImplementation(() => {});
+    const errorText = "Internal Error";
+    const statusCode = 500;
+
     mockFetch.mockResolvedValueOnce({
       ok: false,
-      status: 500,
-      headers: { "Content-Type": "text/plain" },
-      json: async () => ({ message: "Internal Error" }),
+      status: statusCode,
+      headers: { "Content-Type": "application/json" },
+      json: async () => ({ message: errorText }),
     });
 
     render(<BookmarkManager />);
 
     const errorMessage = await screen.findByTestId("bookmark-message");
     expect(errorMessage).toHaveTextContent(/ブックマークのロード中にエラーが発生しました。/);
+
+    expect(consoleErrorSpy).toHaveBeenCalledWith(
+      "ブックマークのロードエラー:",
+      `[${statusCode}] ${errorText}`
+    );
+
+    consoleErrorSpy.mockRestore();
   });
 });
