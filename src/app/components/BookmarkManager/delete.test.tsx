@@ -100,14 +100,23 @@ describe("削除ボタン", () => {
         errorCase: { message: "サーバーで予期せぬエラーが発生しました。", status: 500 },
       },
     ])("エラーハンドリング: $description", async ({ errorCase }) => {
+      const consoleErrorSpy = vi.spyOn(console, "error").mockImplementation(() => {});
+
       mockFetch.mockResolvedValueOnce(createMockResponse({ ...errorCase, isOk: false }));
       await clickDeleteButton(user);
+
+      expect(consoleErrorSpy).toHaveBeenCalledWith(
+        "ブックマークの削除エラー:",
+        `[${errorCase.status}] ${errorCase.message}`
+      );
 
       expect(await screen.findByTestId("bookmark-message")).toHaveTextContent(
         "ブックマークの削除中にエラーが発生しました。"
       );
       await screen.findByText(bookmarkToSelect.title);
       await screen.findByRole("button", { name: DELETE_BUTTON_ROLE_NAME });
+
+      consoleErrorSpy.mockRestore();
     });
   });
 });

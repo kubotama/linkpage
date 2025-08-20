@@ -26,7 +26,7 @@ export const useBookmarks = () => {
         throw new Error(`[${response.status}] ${json.message}`);
       }
     } catch (error: unknown) {
-      console.error("ブックマークのロードエラー:", error);
+      console.error("ブックマークのロードエラー:", (error as Error).message);
       throw error;
     }
   }, []);
@@ -46,13 +46,19 @@ export const useBookmarks = () => {
         throw new Error(`[${response.status}] ${json.message}`);
       }
     } catch (error: unknown) {
-      console.error("ブックマーク削除エラー:", (error as Error).message);
+      console.error("ブックマークの削除エラー:", (error as Error).message);
       throw error;
     }
   }, []);
 
   const updateBookmark = useCallback(async (bookmark_id: number, url: string, title: string) => {
     try {
+      if (!url) {
+        throw new Error("URLが指定されていません。");
+      }
+      if (!title) {
+        throw new Error("タイトルが指定されていません。");
+      }
       const response = await fetch(`${BOOKMARKS_ENDPOINT}/${bookmark_id}`, {
         method: "PUT",
         headers: {
@@ -71,7 +77,7 @@ export const useBookmarks = () => {
         // エラーレスポンスの処理
         const json = await response.json();
         if (response.status === 409) {
-          throw new DuplicatedUrlError(json.message);
+          throw new DuplicatedUrlError(`[${response.status}] ${json.message}`);
         } else {
           throw new Error(`[${response.status}] ${json.message}`);
         }
