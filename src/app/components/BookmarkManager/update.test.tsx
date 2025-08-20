@@ -216,8 +216,6 @@ describe("タイトルの更新ボタン", () => {
           message: "URLが指定されていません。",
         },
       ])("入力値が不正な場合のエラーハンドリング: $description", async ({ value, message }) => {
-        mockFetch.mockResolvedValueOnce(undefined);
-
         await setBookmarkFormValuesAndClickButton(user, value, UPDATE_BUTTON_ROLE_NAME);
 
         expect(mockFetch).toBeCalledTimes(0);
