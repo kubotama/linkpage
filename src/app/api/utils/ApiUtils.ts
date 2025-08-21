@@ -33,6 +33,14 @@ export class ApiError extends Error {
   }
 }
 
+const handleBodyReadError = (e: unknown): { message: string; cause: unknown } => {
+  const errorMessage = `APIエラーレスポンスのボディ読み取りに失敗しました。${
+    e instanceof Error ? `エラーの種類: ${e.name}, メッセージ: ${e.message}` : "原因不明"
+  }`;
+  console.error(errorMessage, e);
+  return { message: errorMessage, cause: e };
+};
+
 /**
  * APIからのエラーレスポンスを解析し、ApiErrorオブジェクトを生成します。
  * この関数は、`response.ok`が`false`であるようなエラーレスポンスを処理することを想定しています。
@@ -42,19 +50,28 @@ export class ApiError extends Error {
 export const parseApiError = async (response: Response): Promise<ApiError> => {
   let message = `リクエストに失敗しました。ステータス: ${response.status} ${response.statusText}`;
   let cause: unknown;
-  try {
-    const json: ApiErrorResponse = await response.json();
-    if (json && typeof json.message === "string") {
-      message = json.message;
-    } else {
-      // messageフィールドがない場合も警告ログを出力
-      console.warn("APIエラーレスポンスのボディに message フィールドが含まれていません。", json);
+
+  const bodyText = await response.text().catch((e) => {
+    // ボディの読み取り自体に失敗した場合。デフォルトメッセージが使用される。
+    const errorResult = handleBodyReadError(e);
+    cause = errorResult.cause;
+    message = errorResult.message;
+    return null;
+  });
+
+  if (bodyText) {
+    try {
+      const json: ApiErrorResponse = JSON.parse(bodyText);
+      if (json && typeof json.message === "string") {
+        message = json.message;
+      } else {
+        console.warn("APIエラーレスポンスのボディに message フィールドが含まれていません。", json);
+        message = bodyText;
+      }
+    } catch (e) {
+      cause = e;
+      message = bodyText;
     }
-  } catch (e: unknown) {
-    cause = e;
-    // JSONのパースに失敗した場合でもエラーとして扱えるように、
-    // ステータスコードに基づいたフォールバックメッセージを使用します。
-    console.error("APIエラーレスポンスボディのJSONパースに失敗しました。", e);
   }
 
   return new ApiError(message, response.status, { cause });
