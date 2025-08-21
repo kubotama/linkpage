@@ -52,26 +52,35 @@ export const parseApiError = async (response: Response): Promise<ApiError> => {
   let cause: unknown;
 
   const bodyText = await response.text().catch((e) => {
-    // ボディの読み取り自体に失敗した場合。デフォルトメッセージが使用される。
+    // ボディの読み取り自体に失敗した場合。
     const errorResult = handleBodyReadError(e);
     cause = errorResult.cause;
     message = errorResult.message;
     return null;
   });
 
-  if (bodyText) {
-    try {
-      const json: ApiErrorResponse = JSON.parse(bodyText);
-      if (json && typeof json.message === "string") {
-        message = json.message;
-      } else {
-        console.warn("APIエラーレスポンスのボディに message フィールドが含まれていません。", json);
-        message = bodyText;
-      }
-    } catch (e) {
-      cause = e;
+  // ボディが空、または読み取りに失敗した場合は、この時点のメッセージでエラーを生成
+  if (!bodyText?.trim()) {
+    return new ApiError(message, response.status, { cause });
+  }
+
+  // ボディがある場合はJSONパースを試みる
+  try {
+    const json: ApiErrorResponse = JSON.parse(bodyText);
+    if (json && typeof json.message === "string" && json.message.trim()) {
+      message = json.message;
+    } else {
+      console.warn(
+        "APIエラーレスポンスのボディに message フィールドが含まれていないか、空です。",
+        json
+      );
+      // JSONはあるがmessageがない/空なので、ボディ全体をメッセージとする
       message = bodyText;
     }
+  } catch (e) {
+    cause = e;
+    // JSONパース失敗なので、ボディ全体をメッセージとする
+    message = bodyText;
   }
 
   return new ApiError(message, response.status, { cause });
