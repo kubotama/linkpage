@@ -33,14 +33,6 @@ export class ApiError extends Error {
   }
 }
 
-const handleBodyReadError = (e: unknown): { message: string; cause: unknown } => {
-  const errorMessage = `APIエラーレスポンスのボディ読み取りに失敗しました。${
-    e instanceof Error ? `エラーの種類: ${e.name}, メッセージ: ${e.message}` : "原因不明"
-  }`;
-  console.error(errorMessage, e);
-  return { message: errorMessage, cause: e };
-};
-
 /**
  * APIからのエラーレスポンスを解析し、ApiErrorオブジェクトを生成します。
  * この関数は、`response.ok`が`false`であるようなエラーレスポンスを処理することを想定しています。
@@ -56,8 +48,13 @@ export const parseApiError = async (response: Response): Promise<ApiError> => {
     bodyText = await response.text();
   } catch (e) {
     // ボディの読み取り自体に失敗した場合。
-    const errorResult = handleBodyReadError(e);
-    return new ApiError(errorResult.message, response.status, { cause: errorResult.cause });
+    const errorMessage = `APIエラーレスポンスのボディ読み取りに失敗しました。${
+      e instanceof Error
+        ? `エラーの種類: ${e.name}, メッセージ: ${e.message}`
+        : `不明なエラー: ${String(e)}`
+    }`;
+    console.error(errorMessage, e);
+    return new ApiError(errorMessage, response.status, { cause: e });
   }
 
   // ボディがある場合はJSONパースを試みる
@@ -69,12 +66,12 @@ export const parseApiError = async (response: Response): Promise<ApiError> => {
       } else {
         const warningMessage =
           "APIエラーレスポンスのボディに message フィールドが含まれていないか、空です";
-        console.warn(warningMessage, json);
+        console.error(warningMessage, json);
         message = bodyText;
         cause = new Error(warningMessage);
       }
     } catch (e) {
-      console.warn(
+      console.error(
         "APIエラーレスポンスのボディをJSONとしてパースできませんでした。",
         e,
         "ボディ:",
