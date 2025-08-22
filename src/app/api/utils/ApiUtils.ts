@@ -81,8 +81,10 @@ export const parseApiError = async (response: Response): Promise<ApiError> => {
       bodyText
     );
     cause = e;
-    // JSONパース失敗なので、ボディ全体をメッセージとする
-    message = bodyText;
+    // JSONパース失敗時、ボディが空でなければそれをメッセージとする
+    if (bodyText) {
+      message = bodyText;
+    }
   }
 
   return new ApiError(message, response.status, { cause });
