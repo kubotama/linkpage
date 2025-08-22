@@ -67,11 +67,11 @@ export const parseApiError = async (response: Response): Promise<ApiError> => {
       if (typeof json?.message === "string" && json.message.trim()) {
         message = json.message;
       } else {
-        console.warn(
-          "APIエラーレスポンスのボディに message フィールドが含まれていないか、空です",
-          json
-        );
+        const warningMessage =
+          "APIエラーレスポンスのボディに message フィールドが含まれていないか、空です";
+        console.warn(warningMessage, json);
         message = bodyText;
+        cause = new Error(warningMessage);
       }
     } catch (e) {
       console.warn(
