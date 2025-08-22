@@ -66,7 +66,7 @@ export const parseApiError = async (response: Response): Promise<ApiError> => {
       } else {
         const warningMessage =
           "APIエラーレスポンスのボディに message フィールドが含まれていないか、空です";
-        console.error(warningMessage, json);
+        console.warn(warningMessage, json);
         message = bodyText;
         cause = new Error(warningMessage);
       }
