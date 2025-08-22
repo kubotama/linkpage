@@ -33,6 +33,15 @@ export class ApiError extends Error {
   }
 }
 
+const createErrorCauseFromContext = (logContext: object): Error => {
+  return logContext instanceof Error ? logContext : new Error(JSON.stringify(logContext));
+};
+
+const formatUserErrorMessage = (baseMessage: string, status: number): string => {
+  // ユーザー向けのエラーメッセージにHTTPステータスを付与する
+  return `${baseMessage}ステータス: ${status}`;
+};
+
 /**
  * APIからのエラーレスポンスを解析し、ApiErrorオブジェクトを生成します。
  * この関数は、`response.ok`が`false`であるようなエラーレスポンスを処理することを想定しています。
@@ -41,7 +50,7 @@ export class ApiError extends Error {
  */
 export const parseApiError = async (response: Response): Promise<ApiError> => {
   let message = `リクエストに失敗しました。ステータス: ${response.status} ${response.statusText}`;
-  let cause: unknown;
+  let cause: Error | undefined;
   let bodyText = "";
 
   try {
@@ -57,41 +66,26 @@ export const parseApiError = async (response: Response): Promise<ApiError> => {
     return new ApiError(errorMessage, response.status, { cause: e });
   }
 
-  const handleInvalidErrorBody = (
-    logMessage: string,
-    userMessage: string,
-    logContext: object,
-    isWarning = false
-  ): [string, unknown] => {
-    if (isWarning) {
-      console.warn(logMessage, logContext);
-    } else {
-      console.error(logMessage, logContext);
-    }
-    cause = logContext instanceof Error ? logContext : new Error(JSON.stringify(logContext));
-    return [userMessage, cause];
-  };
-
-  // ボディがある場合はJSONパースを試みる
   if (bodyText) {
     try {
       const json: ApiErrorResponse = JSON.parse(bodyText);
       if (typeof json?.message === "string" && json.message.trim()) {
         message = json.message;
       } else {
-        [message, cause] = handleInvalidErrorBody(
-          "APIエラーレスポンスのボディに message フィールドが含まれていないか、空です",
-          `APIから予期せぬ形式のエラーレスポンスを受け取りました。ステータス: ${response.status}`,
-          { body: bodyText, parsedJson: json },
-          true
+        console.warn("APIエラーレスポンスのボディに message フィールドが含まれていないか、空です");
+        message = formatUserErrorMessage(
+          "APIから予期せぬ形式のエラーレスポンスを受け取りました。",
+          response.status
         );
+        cause = createErrorCauseFromContext({ body: bodyText, parsedJson: json });
       }
     } catch (e) {
-      [message, cause] = handleInvalidErrorBody(
-        "APIエラーレスポンスのボディをJSONとしてパースできませんでした。",
-        `APIからJSON形式でないエラーレスポンスを受け取りました。ステータス: ${response.status}`,
-        { error: e, body: bodyText }
+      console.error("APIエラーレスポンスのボディをJSONとしてパースできませんでした。");
+      message = formatUserErrorMessage(
+        "APIからJSON形式でないエラーレスポンスを受け取りました。",
+        response.status
       );
+      cause = createErrorCauseFromContext({ error: e, body: bodyText });
     }
   }
   return new ApiError(message, response.status, { cause });
