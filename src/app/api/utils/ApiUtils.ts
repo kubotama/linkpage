@@ -34,7 +34,17 @@ export class ApiError extends Error {
 }
 
 const createErrorCauseFromContext = (logContext: object): Error => {
-  return logContext instanceof Error ? logContext : new Error(JSON.stringify(logContext));
+  const replacer = (_key: string, value: unknown) => {
+    if (value instanceof Error) {
+      return {
+        name: value.name,
+        message: value.message,
+        stack: value.stack,
+      };
+    }
+    return value;
+  };
+  return new Error(JSON.stringify(logContext, replacer));
 };
 
 const formatUserErrorMessage = (baseMessage: string, status: number): string => {
