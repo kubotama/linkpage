@@ -57,6 +57,21 @@ export const parseApiError = async (response: Response): Promise<ApiError> => {
     return new ApiError(errorMessage, response.status, { cause: e });
   }
 
+  const handleInvalidErrorBody = (
+    logMessage: string,
+    userMessage: string,
+    logContext: object,
+    isWarning = false
+  ): [string, unknown] => {
+    if (isWarning) {
+      console.warn(logMessage, logContext);
+    } else {
+      console.error(logMessage, logContext);
+    }
+    cause = logContext instanceof Error ? logContext : new Error(JSON.stringify(logContext));
+    return [userMessage, cause];
+  };
+
   // ボディがある場合はJSONパースを試みる
   if (bodyText) {
     try {
@@ -64,21 +79,19 @@ export const parseApiError = async (response: Response): Promise<ApiError> => {
       if (typeof json?.message === "string" && json.message.trim()) {
         message = json.message;
       } else {
-        const warningMessage =
-          "APIエラーレスポンスのボディに message フィールドが含まれていないか、空です";
-        console.warn(warningMessage, json);
-        message = bodyText;
-        cause = new Error(warningMessage);
+        [message, cause] = handleInvalidErrorBody(
+          "APIエラーレスポンスのボディに message フィールドが含まれていないか、空です",
+          `APIから予期せぬ形式のエラーレスポンスを受け取りました。ステータス: ${response.status}`,
+          { body: bodyText, parsedJson: json },
+          true
+        );
       }
     } catch (e) {
-      console.error(
+      [message, cause] = handleInvalidErrorBody(
         "APIエラーレスポンスのボディをJSONとしてパースできませんでした。",
-        e,
-        "ボディ:",
-        bodyText
+        `APIからJSON形式でないエラーレスポンスを受け取りました。ステータス: ${response.status}`,
+        { error: e, body: bodyText }
       );
-      cause = e;
-      message = bodyText;
     }
   }
   return new ApiError(message, response.status, { cause });
