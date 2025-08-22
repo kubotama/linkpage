@@ -50,7 +50,7 @@ const handleBodyReadError = (e: unknown): { message: string; cause: unknown } =>
 export const parseApiError = async (response: Response): Promise<ApiError> => {
   let message = `リクエストに失敗しました。ステータス: ${response.status} ${response.statusText}`;
   let cause: unknown;
-  let bodyText: string | null;
+  let bodyText = "";
 
   try {
     bodyText = await response.text();
