@@ -61,31 +61,28 @@ export const parseApiError = async (response: Response): Promise<ApiError> => {
   }
 
   // ボディがある場合はJSONパースを試みる
-  try {
-    const json: ApiErrorResponse = JSON.parse(bodyText);
-    if (!json || typeof json.message !== "string" || !json.message.trim()) {
+  if (bodyText) {
+    try {
+      const json: ApiErrorResponse = JSON.parse(bodyText);
+      if (typeof json?.message === "string" && json.message.trim()) {
+        message = json.message;
+      } else {
+        console.warn(
+          "APIエラーレスポンスのボディに message フィールドが含まれていないか、空です",
+          json
+        );
+        message = bodyText;
+      }
+    } catch (e) {
       console.warn(
-        "APIエラーレスポンスのボディに message フィールドが含まれていないか、空です",
-        json
+        "APIエラーレスポンスのボディをJSONとしてパースできませんでした。",
+        e,
+        "ボディ:",
+        bodyText
       );
-      // JSONはあるがmessageが含まれていないか、空なので、ボディ全体をメッセージとする
-      message = bodyText;
-    } else {
-      message = json.message;
-    }
-  } catch (e) {
-    console.warn(
-      "APIエラーレスポンスのボディをJSONとしてパースできませんでした。",
-      e,
-      "ボディ:",
-      bodyText
-    );
-    cause = e;
-    // JSONパース失敗時、ボディが空でなければそれをメッセージとする
-    if (bodyText) {
+      cause = e;
       message = bodyText;
     }
   }
-
   return new ApiError(message, response.status, { cause });
 };
