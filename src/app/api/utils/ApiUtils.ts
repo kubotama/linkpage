@@ -47,9 +47,13 @@ const createErrorCauseFromContext = (logContext: object): Error => {
   return new Error(JSON.stringify(logContext, replacer));
 };
 
-const formatUserErrorMessage = (baseMessage: string, status: number): string => {
+const formatUserErrorMessage = (
+  baseMessage: string,
+  status: number,
+  statusText?: string
+): string => {
   // ユーザー向けのエラーメッセージにHTTPステータスを付与する
-  return `${baseMessage}ステータス: ${status}`;
+  return `${baseMessage}ステータス: ${status} ${statusText || ""}`.trimEnd();
 };
 
 /**
@@ -59,19 +63,24 @@ const formatUserErrorMessage = (baseMessage: string, status: number): string => 
  * @returns ApiErrorオブジェクトを含むPromise
  */
 export const parseApiError = async (response: Response): Promise<ApiError> => {
-  let message = `リクエストに失敗しました。ステータス: ${response.status} ${response.statusText}`;
+  let message = formatUserErrorMessage(
+    "リクエストに失敗しました。",
+    response.status,
+    response.statusText
+  );
   let cause: Error | undefined;
   let bodyText = "";
 
   try {
     bodyText = await response.text();
   } catch (e) {
-    // ボディの読み取り自体に失敗した場合。
-    const errorMessage = `APIエラーレスポンスのボディ読み取りに失敗しました。${
+    const errorMessage = formatUserErrorMessage(
+      "APIエラーレスポンスのボディ読み取りに失敗しました。",
+      response.status,
       e instanceof Error
         ? `エラーの種類: ${e.name}, メッセージ: ${e.message}`
         : `不明なエラー: ${String(e)}`
-    }`;
+    );
     console.error(errorMessage, e);
     return new ApiError(errorMessage, response.status, { cause: e });
   }
