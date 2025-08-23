@@ -74,15 +74,24 @@ export const parseApiError = async (response: Response): Promise<ApiError> => {
   try {
     bodyText = await response.text();
   } catch (e) {
-    const errorMessage = formatUserErrorMessage(
-      "APIエラーレスポンスのボディ読み取りに失敗しました。",
-      response.status,
-      e instanceof Error
-        ? `エラーの種類: ${e.name}, メッセージ: ${e.message}`
-        : `不明なエラー: ${String(e)}`
+    const errorMessage = "APIエラーレスポンスのボディ読み取りに失敗しました。";
+    console.error(
+      formatUserErrorMessage(
+        errorMessage,
+        response.status,
+        e instanceof Error
+          ? `エラーの種類: ${e.name}, メッセージ: ${e.message}`
+          : `不明なエラー: ${String(e)}`
+      ),
+      e
     );
-    console.error(errorMessage, e);
-    return new ApiError(errorMessage, response.status, { cause: e });
+    return new ApiError(
+      formatUserErrorMessage(errorMessage, response.status, response.statusText),
+      response.status,
+      {
+        cause: e,
+      }
+    );
   }
 
   if (bodyText) {
