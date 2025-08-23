@@ -191,6 +191,7 @@ export const createMockResponse = ({
     ok: boolean;
     status: number;
     json?: () => Promise<Partial<MockResponseJson>>;
+    text?: () => Promise<string>;
   } = {
     ok: isOk ?? (responseStatus >= 200 && responseStatus < 300),
     status: responseStatus,
@@ -209,6 +210,7 @@ export const createMockResponse = ({
       body.bookmark_keyword_id = bookmark_keyword_id ?? DEFAULT_BOOKMARK_KEYWORD_ID;
     }
     response.json = async () => body;
+    response.text = async () => JSON.stringify({ message });
   }
 
   return response;

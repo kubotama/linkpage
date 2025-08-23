@@ -58,7 +58,10 @@ describe("BookmarkManagerの表示を確認", () => {
     const errorMessage = await screen.findByTestId("bookmark-message");
     expect(errorMessage).toHaveTextContent(/ブックマークのロード中にエラーが発生しました。/);
 
-    expect(consoleErrorSpy).toHaveBeenCalledWith("ブックマークのロードエラー:", errorText);
+    expect(consoleErrorSpy).toHaveBeenCalledWith(
+      "ブックマークのロードエラー:",
+      `ApiError: [${statusCode}] ${errorText}`
+    );
 
     consoleErrorSpy.mockRestore();
   });

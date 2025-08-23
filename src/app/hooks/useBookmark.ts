@@ -4,6 +4,7 @@ import { parseApiError } from "../api/utils/ApiUtils";
 import { BOOKMARKS_ENDPOINT } from "../constants/apiEndpoints";
 import { Bookmark } from "../types/Bookmark";
 import { Keyword } from "../types/Keyword";
+import { ApiError } from "../api/utils/ApiUtils";
 
 export class DuplicatedUrlError extends Error {
   constructor(message: string) {
@@ -11,6 +12,16 @@ export class DuplicatedUrlError extends Error {
     this.name = "DuplicatedUrlError";
   }
 }
+
+const getErrorMessage = (error: unknown): string => {
+  if (error instanceof ApiError) {
+    return error.toString();
+  }
+  if (error instanceof Error) {
+    return error.message;
+  }
+  return String(error);
+};
 
 export const useBookmarks = () => {
   const [bookmarks, setBookmarks] = useState<Bookmark[]>([]);
@@ -26,7 +37,7 @@ export const useBookmarks = () => {
         throw await parseApiError(response);
       }
     } catch (error: unknown) {
-      console.error("ブックマークのロードエラー:", (error as Error).message);
+      console.error("ブックマークのロードエラー:", getErrorMessage(error));
       throw error;
     }
   }, []);
@@ -42,11 +53,10 @@ export const useBookmarks = () => {
           currentBookmarks.filter((bookmark) => bookmark.bookmark_id !== bookmark_id)
         );
       } else {
-        const json = await response.json();
-        throw new Error(`[${response.status}] ${json.message}`);
+        throw await parseApiError(response);
       }
     } catch (error: unknown) {
-      console.error("ブックマークの削除エラー:", (error as Error).message);
+      console.error("ブックマークの削除エラー:", getErrorMessage(error));
       throw error;
     }
   }, []);
