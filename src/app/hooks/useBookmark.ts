@@ -1,5 +1,6 @@
 import { useCallback, useState } from "react";
 
+import { parseApiError } from "../api/utils/ApiUtils";
 import { BOOKMARKS_ENDPOINT } from "../constants/apiEndpoints";
 import { Bookmark } from "../types/Bookmark";
 import { Keyword } from "../types/Keyword";
@@ -22,8 +23,7 @@ export const useBookmarks = () => {
         setBookmarks(data);
         return;
       } else {
-        const json = await response.json();
-        throw new Error(`[${response.status}] ${json.message}`);
+        throw await parseApiError(response);
       }
     } catch (error: unknown) {
       console.error("ブックマークのロードエラー:", (error as Error).message);

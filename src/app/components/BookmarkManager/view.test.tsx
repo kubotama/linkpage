@@ -49,7 +49,8 @@ describe("BookmarkManagerの表示を確認", () => {
       ok: false,
       status: statusCode,
       headers: { "Content-Type": "application/json" },
-      json: async () => ({ message: errorText }),
+      json: async () => JSON.stringify({ message: errorText }),
+      text: async () => JSON.stringify({ message: errorText }),
     });
 
     render(<BookmarkManager />);
@@ -57,10 +58,7 @@ describe("BookmarkManagerの表示を確認", () => {
     const errorMessage = await screen.findByTestId("bookmark-message");
     expect(errorMessage).toHaveTextContent(/ブックマークのロード中にエラーが発生しました。/);
 
-    expect(consoleErrorSpy).toHaveBeenCalledWith(
-      "ブックマークのロードエラー:",
-      `[${statusCode}] ${errorText}`
-    );
+    expect(consoleErrorSpy).toHaveBeenCalledWith("ブックマークのロードエラー:", errorText);
 
     consoleErrorSpy.mockRestore();
   });
