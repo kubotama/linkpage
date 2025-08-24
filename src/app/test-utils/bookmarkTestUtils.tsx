@@ -210,7 +210,7 @@ export const createMockResponse = ({
       body.bookmark_keyword_id = bookmark_keyword_id ?? DEFAULT_BOOKMARK_KEYWORD_ID;
     }
     response.json = async () => body;
-    response.text = async () => JSON.stringify({ message });
+    response.text = async () => JSON.stringify(body);
   }
 
   return response;
