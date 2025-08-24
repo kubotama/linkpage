@@ -34,8 +34,8 @@ export class ApiError extends Error {
 }
 
 export class DuplicatedUrlError extends ApiError {
-  constructor(message: string) {
-    super(message, 409);
+  constructor(message: string, options?: { cause: unknown }) {
+    super(message, 409, options);
     this.name = "DuplicatedUrlError";
   }
 }
@@ -124,7 +124,7 @@ export const parseApiError = async (response: Response): Promise<ApiError> => {
     }
   }
   if (response.status === 409) {
-    return new DuplicatedUrlError(message);
+    return new DuplicatedUrlError(message, { cause });
   }
   return new ApiError(message, response.status, { cause });
 };
