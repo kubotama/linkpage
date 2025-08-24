@@ -36,37 +36,33 @@ export function createBookmark({
   return { bookmark_id, url, title, keywords };
 }
 
-export function createBookmarkList(bookmarkList: Partial<Bookmark>[]) {
-  return bookmarkList.map(createBookmark);
-}
+export const LINKPAGE_BOOKMARK: Bookmark = createBookmark({
+  bookmark_id: 1,
+  url: "https://github.com/kubotama/linkpage",
+  title: "kubotama/linkpage",
+});
+export const GOOGLE_BOOKMARK: Bookmark = createBookmark({
+  bookmark_id: 2,
+  url: "https://www.google.com/",
+  title: "Google",
+});
+export const GMAIL_BOOKMARK: Bookmark = createBookmark({
+  bookmark_id: 3,
+  url: "https://mail.google.com",
+  title: "Gmail",
+});
+export const AMAZON_BOOKMARK: Bookmark = createBookmark({
+  bookmark_id: 4,
+  url: "https://www.amazon.co.jp/",
+  title: "Amazon",
+});
 
-export const mockBookmarks: Bookmark[] = createBookmarkList([
-  {
-    bookmark_id: 1,
-    url: "https://github.com/kubotama/linkpage",
-    title: "kubotama/linkpage",
-  },
-  {
-    bookmark_id: 2,
-    url: "https://www.google.com/",
-    title: "Google",
-  },
-  {
-    bookmark_id: 3,
-    url: "https://mail.google.com",
-    title: "Gmail",
-  },
-  {
-    bookmark_id: 4,
-    url: "https://www.amazon.co.jp/",
-    title: "Amazon",
-  },
-]);
-
-export const LINKPAGE_BOOKMARK = mockBookmarks[0];
-export const GOOGLE_BOOKMARK = mockBookmarks[1];
-export const GMAIL_BOOKMARK = mockBookmarks[2];
-export const AMAZON_BOOKMARK = mockBookmarks[3];
+export const mockBookmarks: Bookmark[] = [
+  LINKPAGE_BOOKMARK,
+  GOOGLE_BOOKMARK,
+  GMAIL_BOOKMARK,
+  AMAZON_BOOKMARK,
+];
 
 export const assertBookmarkIsSelected = async (bookmark: Bookmark) => {
   await waitFor(() => {
