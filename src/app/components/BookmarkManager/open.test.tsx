@@ -5,6 +5,7 @@ import { afterAll, beforeAll, beforeEach, describe, expect, it, vi } from "vites
 import { screen, waitFor } from "@testing-library/react";
 import userEvent, { UserEvent } from "@testing-library/user-event";
 
+import { HTTP_STATUS_OK } from "../../constants/httpStatusCodes";
 import {
   assertBookmarkIsSelected,
   clickBookmark,
@@ -67,7 +68,7 @@ describe("「開く」ボタン: 入力されたURLを新しいタブで開く",
     global.fetch = mockFetch;
     mockFetch.mockResolvedValueOnce({
       ok: true,
-      status: 200,
+      status: HTTP_STATUS_OK,
       json: async () => mockBookmarks,
     });
 

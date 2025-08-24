@@ -1,5 +1,7 @@
 import type { ApiErrorResponse } from "@/app/types/ApiResponse";
 
+import { HTTP_STATUS_CONFLICT } from "../../constants/httpStatusCodes";
+
 /**
  * APIエラーを表すカスタムエラークラス。
  * @param message - エラーメッセージ（フォーマット前）
@@ -35,7 +37,7 @@ export class ApiError extends Error {
 
 export class DuplicatedUrlError extends ApiError {
   constructor(message: string, options?: { cause: unknown }) {
-    super(message, 409, options);
+    super(message, HTTP_STATUS_CONFLICT, options);
     this.name = "DuplicatedUrlError";
   }
 }
@@ -123,7 +125,7 @@ export const parseApiError = async (response: Response): Promise<ApiError> => {
       cause = createErrorCauseFromContext({ error: e, body: bodyText });
     }
   }
-  if (response.status === 409) {
+  if (response.status === HTTP_STATUS_CONFLICT) {
     return new DuplicatedUrlError(message, { cause });
   }
   return new ApiError(message, response.status, { cause });

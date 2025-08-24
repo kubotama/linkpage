@@ -1,6 +1,7 @@
 "use server";
 import { SqliteError } from "better-sqlite3";
 
+import { HTTP_STATUS_OK } from "../../constants/httpStatusCodes";
 import { getDb } from "../bookmarks/database";
 import {
   createDuplicateKeywordError,
@@ -15,7 +16,7 @@ export const GET = async () => {
     const stmt = db.prepare("SELECT keyword_id, keyword_name FROM keywords");
     const keywords = stmt.all();
     return new Response(JSON.stringify(keywords), {
-      status: 200,
+      status: HTTP_STATUS_OK,
       headers: { "Content-Type": "application/json" },
     });
   } catch (error: unknown) {
@@ -56,9 +57,7 @@ export const POST = async (request: Request): Promise<Response> => {
 
     // データベース操作
     const db = getDb();
-    const insertStmt = db.prepare(
-      "INSERT INTO keywords (keyword_name) VALUES (?)"
-    );
+    const insertStmt = db.prepare("INSERT INTO keywords (keyword_name) VALUES (?)");
     const result = insertStmt.run(keyword.keyword_name);
 
     // キーワードの追加に成功
@@ -73,10 +72,7 @@ export const POST = async (request: Request): Promise<Response> => {
       }
     );
   } catch (error: unknown) {
-    if (
-      error instanceof SqliteError &&
-      error.code === "SQLITE_CONSTRAINT_UNIQUE"
-    ) {
+    if (error instanceof SqliteError && error.code === "SQLITE_CONSTRAINT_UNIQUE") {
       return createDuplicateKeywordError(keywordName);
     }
     return createInternalError(error);

@@ -1,8 +1,9 @@
 import ActualDatabase from "better-sqlite3"; // Import the actual library
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 
-import { expectEqualBookmark, mockBookmarks } from "../../test-utils/bookmarkTestUtils";
+import { HTTP_STATUS_INTERNAL_SERVER_ERROR, HTTP_STATUS_OK } from "../../constants/httpStatusCodes";
 import { assertErrorResponse } from "../../test-utils/assertions";
+import { expectEqualBookmark, mockBookmarks } from "../../test-utils/bookmarkTestUtils";
 import { setupInMemoryDb } from "../../test-utils/db-setup";
 import { getDb } from "./database";
 import { GET } from "./route";
@@ -30,7 +31,7 @@ describe("ブックマークのAPIのテスト", () => {
   it("GET: ブックマークのデータが取得できる", async () => {
     const response = await GET();
 
-    expect(response.status).toBe(200);
+    expect(response.status).toBe(HTTP_STATUS_OK);
     const json = await response.json();
 
     expect(json).toHaveLength(mockBookmarks.length);
@@ -47,7 +48,11 @@ describe("ブックマークのAPIのテスト", () => {
     });
 
     const response = await GET();
-    await assertErrorResponse(response, 500, "サーバー内部でエラーが発生しました。");
+    await assertErrorResponse(
+      response,
+      HTTP_STATUS_INTERNAL_SERVER_ERROR,
+      "サーバー内部でエラーが発生しました。"
+    );
   });
 
   it("GET: クエリエラー時に500エラーを返す", async () => {
@@ -58,7 +63,11 @@ describe("ブックマークのAPIのテスト", () => {
     });
 
     const response = await GET();
-    await assertErrorResponse(response, 500, "サーバー内部でエラーが発生しました。");
+    await assertErrorResponse(
+      response,
+      HTTP_STATUS_INTERNAL_SERVER_ERROR,
+      "サーバー内部でエラーが発生しました。"
+    );
 
     prepareSpy.mockRestore();
   });

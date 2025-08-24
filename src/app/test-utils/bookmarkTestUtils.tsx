@@ -10,6 +10,7 @@ import {
   TITLE_ROLE_NAME,
   URL_ROLE_NAME,
 } from "../constants/constants";
+import { HTTP_STATUS_NO_CONTENT, HTTP_STATUS_OK } from "../constants/httpStatusCodes";
 import { Bookmark } from "../types/Bookmark";
 import { Keyword } from "../types/Keyword";
 
@@ -193,12 +194,12 @@ export const createMockResponse = ({
     json?: () => Promise<Partial<MockResponseJson>>;
     text?: () => Promise<string>;
   } = {
-    ok: isOk ?? (responseStatus >= 200 && responseStatus < 300),
+    ok: isOk ?? (responseStatus >= HTTP_STATUS_OK && responseStatus < 300),
     status: responseStatus,
   };
 
   // 204 No Contentのようなボディを持たないレスポンスを考慮
-  if (responseStatus !== 204) {
+  if (responseStatus !== HTTP_STATUS_NO_CONTENT) {
     const body: Partial<MockResponseJson> = {};
     if (message !== undefined) {
       body.message = message;

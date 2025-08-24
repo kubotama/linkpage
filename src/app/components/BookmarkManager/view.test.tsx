@@ -4,6 +4,7 @@ import { beforeEach, describe, expect, it, vi } from "vitest";
 
 import { render, screen } from "@testing-library/react";
 
+import { HTTP_STATUS_INTERNAL_SERVER_ERROR, HTTP_STATUS_OK } from "../../constants/httpStatusCodes";
 import { mockBookmarks } from "../../test-utils/bookmarkTestUtils";
 import { BookmarkManager } from "../BookmarkManager";
 
@@ -18,7 +19,7 @@ describe("BookmarkManagerの表示を確認", () => {
   it("すべてのエレメントが表示されることを確認", async () => {
     mockFetch.mockResolvedValueOnce({
       ok: true,
-      status: 200,
+      status: HTTP_STATUS_OK,
       json: async () => mockBookmarks,
     });
 
@@ -31,7 +32,7 @@ describe("BookmarkManagerの表示を確認", () => {
   it("ローディング中にローディングメッセージが表示されること", () => {
     mockFetch.mockResolvedValueOnce({
       ok: true,
-      status: 200,
+      status: HTTP_STATUS_OK,
       json: async () => new Promise(() => []),
     });
 
@@ -43,7 +44,7 @@ describe("BookmarkManagerの表示を確認", () => {
   it("HTTPステータス500でfetchした場合、エラーメッセージが表示される", async () => {
     const consoleErrorSpy = vi.spyOn(console, "error").mockImplementation(() => {});
     const errorText = "Internal Error";
-    const statusCode = 500;
+    const statusCode = HTTP_STATUS_INTERNAL_SERVER_ERROR;
 
     mockFetch.mockResolvedValueOnce({
       ok: false,

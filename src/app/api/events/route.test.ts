@@ -1,7 +1,7 @@
 import { beforeEach, describe, expect, it, vi } from "vitest";
 
+import { HTTP_STATUS_OK } from "../../../app/constants/httpStatusCodes";
 import eventEmitter from "../../../lib/event-emitter";
-
 import { dynamic, GET } from "./route";
 
 // Mock the event emitter to control its behavior in tests
@@ -27,7 +27,7 @@ describe("SSE /api/events", () => {
     const request = new Request("http://localhost/api/events");
     const response = await GET(request);
 
-    expect(response.status).toBe(200);
+    expect(response.status).toBe(HTTP_STATUS_OK);
     expect(response.headers.get("Content-Type")).toBe("text/event-stream");
     expect(response.headers.get("Cache-Control")).toBe("no-cache");
     expect(response.headers.get("Connection")).toBe("keep-alive");
@@ -74,10 +74,7 @@ describe("SSE /api/events", () => {
 
     abortController.abort();
 
-    expect(vi.mocked(eventEmitter.off)).toHaveBeenCalledWith(
-      "bookmarks-updated",
-      onUpdateHandler
-    );
+    expect(vi.mocked(eventEmitter.off)).toHaveBeenCalledWith("bookmarks-updated", onUpdateHandler);
 
     const reader = response.body!.getReader();
     const result = await reader.read();

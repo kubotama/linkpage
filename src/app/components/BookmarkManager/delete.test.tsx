@@ -8,6 +8,13 @@ import userEvent, { UserEvent } from "@testing-library/user-event";
 import { BOOKMARKS_ENDPOINT } from "../../constants/apiEndpoints";
 import { DELETE_BUTTON_ROLE_NAME } from "../../constants/constants";
 import {
+  HTTP_STATUS_BAD_REQUEST,
+  HTTP_STATUS_INTERNAL_SERVER_ERROR,
+  HTTP_STATUS_NO_CONTENT,
+  HTTP_STATUS_NOT_FOUND,
+  HTTP_STATUS_OK,
+} from "../../constants/httpStatusCodes";
+import {
   assertBookmarkIsSelected,
   clickBookmark,
   createMockResponse,
@@ -34,7 +41,7 @@ describe("削除ボタン", () => {
     mockFetch.mockReset();
     mockFetch.mockResolvedValueOnce({
       ok: true,
-      status: 200,
+      status: HTTP_STATUS_OK,
       json: async () => mockBookmarks,
     });
 
@@ -64,7 +71,9 @@ describe("削除ボタン", () => {
     });
 
     it("ブックマークが削除される(APIの呼び出し、画面の更新)", async () => {
-      mockFetch.mockResolvedValueOnce(createMockResponse({ isOk: true, status: 204 }));
+      mockFetch.mockResolvedValueOnce(
+        createMockResponse({ isOk: true, status: HTTP_STATUS_NO_CONTENT })
+      );
 
       await clickDeleteButton(user);
 
@@ -89,15 +98,24 @@ describe("削除ボタン", () => {
     it.each([
       {
         description: "存在しないブックマーク (404 Not Found)",
-        errorCase: { message: "指定されたブックマークがありません。", status: 404 },
+        errorCase: {
+          message: "指定されたブックマークがありません。",
+          status: HTTP_STATUS_NOT_FOUND,
+        },
       },
       {
         description: "不正なリクエスト (400 Bad Request)",
-        errorCase: { message: "リクエストにIDがありませんでした。", status: 400 },
+        errorCase: {
+          message: "リクエストにIDがありませんでした。",
+          status: HTTP_STATUS_BAD_REQUEST,
+        },
       },
       {
         description: "サーバーエラー (500 Internal Server Error)",
-        errorCase: { message: "サーバーで予期せぬエラーが発生しました。", status: 500 },
+        errorCase: {
+          message: "サーバーで予期せぬエラーが発生しました。",
+          status: HTTP_STATUS_INTERNAL_SERVER_ERROR,
+        },
       },
     ])("エラーハンドリング: $description", async ({ errorCase }) => {
       const consoleErrorSpy = vi.spyOn(console, "error").mockImplementation(() => {});

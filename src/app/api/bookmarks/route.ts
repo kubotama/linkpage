@@ -1,11 +1,12 @@
 "use server";
 import { SqliteError } from "better-sqlite3";
 
-import { Bookmark, IncomingBookmarkPayload, parseAndValidateKeywords } from "../../types/Bookmark";
 import { BookmarkFromDb } from "@/app/types/database";
 
 import eventEmitter from "../../../lib/event-emitter";
 import { ALLOWED_CORS_ORIGIN } from "../../constants/apiEndpoints";
+import { HTTP_STATUS_NO_CONTENT, HTTP_STATUS_OK } from "../../constants/httpStatusCodes";
+import { Bookmark, IncomingBookmarkPayload, parseAndValidateKeywords } from "../../types/Bookmark";
 import { API_BOOKMARKS_URL } from "../utils/constants";
 import {
   createDuplicateBookmarkError,
@@ -48,7 +49,7 @@ export async function GET() {
       })
     );
     return new Response(JSON.stringify(bookmarks), {
-      status: 200,
+      status: HTTP_STATUS_OK,
       headers: { "Content-Type": "application/json" },
     });
   } catch (error: unknown) {
@@ -58,7 +59,7 @@ export async function GET() {
 
 export const OPTIONS = async () => {
   return new Response(null, {
-    status: 204, // No Content
+    status: HTTP_STATUS_NO_CONTENT, // No Content
     headers: {
       "Access-Control-Allow-Origin": ALLOWED_CORS_ORIGIN,
       "Access-Control-Allow-Methods": "POST, OPTIONS",

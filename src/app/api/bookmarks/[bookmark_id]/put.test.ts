@@ -1,6 +1,13 @@
 import ActualDatabase from "better-sqlite3"; // Import the actual library
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 
+import {
+  HTTP_STATUS_BAD_REQUEST,
+  HTTP_STATUS_CONFLICT,
+  HTTP_STATUS_INTERNAL_SERVER_ERROR,
+  HTTP_STATUS_NO_CONTENT,
+  HTTP_STATUS_NOT_FOUND,
+} from "../../../constants/httpStatusCodes";
 import { assertErrorResponse } from "../../../test-utils/assertions";
 import { mockBookmarks } from "../../../test-utils/bookmarkTestUtils";
 import { setupInMemoryDb } from "../../../test-utils/db-setup";
@@ -53,8 +60,8 @@ describe("ブックマーク更新APIのテスト (オンメモリDB)", () => {
     );
     const response = await PUT(request, context);
 
-    // レスポンスステータスを確認 (200 OK)
-    expect(response.status).toBe(204);
+    // レスポンスステータスを確認 (204 No Content)
+    expect(response.status).toBe(HTTP_STATUS_NO_CONTENT);
 
     // データベースが更新されたことを確認
     const selectStmt = inMemoryDbInstance.prepare(
@@ -94,8 +101,8 @@ describe("ブックマーク更新APIのテスト (オンメモリDB)", () => {
     );
     const response = await PUT(request, context);
 
-    // レスポンスステータスを確認 (200 OK)
-    expect(response.status).toBe(204);
+    // レスポンスステータスを確認 (204 No Content)
+    expect(response.status).toBe(HTTP_STATUS_NO_CONTENT);
 
     // データベースが更新されたことを確認
     const selectStmt = inMemoryDbInstance.prepare(
@@ -130,7 +137,11 @@ describe("ブックマーク更新APIのテスト (オンメモリDB)", () => {
     const response = await PUT(request, context);
 
     // レスポンスステータスを確認 (404 Not Found)
-    await assertErrorResponse(response, 404, "指定されたブックマークがありません。");
+    await assertErrorResponse(
+      response,
+      HTTP_STATUS_NOT_FOUND,
+      "指定されたブックマークがありません。"
+    );
   });
 
   it("PUT: タイトルが指定されていない場合には400を返す。", async () => {
@@ -150,7 +161,7 @@ describe("ブックマーク更新APIのテスト (オンメモリDB)", () => {
     const response = await PUT(request, context);
 
     // レスポンスステータスを確認 (400: Bad Request)
-    await assertErrorResponse(response, 400, "タイトルを指定してください。");
+    await assertErrorResponse(response, HTTP_STATUS_BAD_REQUEST, "タイトルを指定してください。");
   });
 
   it("PUT: URLが指定されていない場合には400を返す。", async () => {
@@ -170,7 +181,7 @@ describe("ブックマーク更新APIのテスト (オンメモリDB)", () => {
     const response = await PUT(request, context);
 
     // レスポンスステータスを確認 (400: Bad Request)
-    await assertErrorResponse(response, 400, "URLを指定してください。");
+    await assertErrorResponse(response, HTTP_STATUS_BAD_REQUEST, "URLを指定してください。");
   });
 
   it("PUT: IDが指定されていない場合には400を返す。", async () => {
@@ -191,7 +202,11 @@ describe("ブックマーク更新APIのテスト (オンメモリDB)", () => {
     });
 
     // レスポンスステータスを確認 (400: Bad Request)
-    await assertErrorResponse(response, 400, "IDは正の整数である必要があります。");
+    await assertErrorResponse(
+      response,
+      HTTP_STATUS_BAD_REQUEST,
+      "IDは正の整数である必要があります。"
+    );
   });
 
   it("PUT: 不正な形式(文字列)のIDが指定された場合には400を返す。", async () => {
@@ -213,7 +228,11 @@ describe("ブックマーク更新APIのテスト (オンメモリDB)", () => {
     });
 
     // レスポンスステータスを確認 (400: Bad Request)
-    await assertErrorResponse(response, 400, "IDは正の整数である必要があります。");
+    await assertErrorResponse(
+      response,
+      HTTP_STATUS_BAD_REQUEST,
+      "IDは正の整数である必要があります。"
+    );
   });
 
   it("PUT: 不正なJSONデータの場合は400を返す。", async () => {
@@ -226,7 +245,11 @@ describe("ブックマーク更新APIのテスト (オンメモリDB)", () => {
     const [request, context] = createPutRequest("invalid json data", bookmarkToUpdate.bookmark_id);
     const response = await PUT(request, context);
 
-    await assertErrorResponse(response, 400, "リクエストボディのJSONが不正です。");
+    await assertErrorResponse(
+      response,
+      HTTP_STATUS_BAD_REQUEST,
+      "リクエストボディのJSONが不正です。"
+    );
   });
 
   it("PUT: クエリエラー時に500エラーを返す", async () => {
@@ -251,7 +274,11 @@ describe("ブックマーク更新APIのテスト (オンメモリDB)", () => {
     );
     const response = await PUT(request, context);
 
-    await assertErrorResponse(response, 500, "サーバー内部でエラーが発生しました。");
+    await assertErrorResponse(
+      response,
+      HTTP_STATUS_INTERNAL_SERVER_ERROR,
+      "サーバー内部でエラーが発生しました。"
+    );
 
     prepareSpy.mockRestore();
   });
@@ -273,6 +300,10 @@ describe("ブックマーク更新APIのテスト (オンメモリDB)", () => {
     const response = await PUT(request, context);
 
     // レスポンスステータスを確認 (409: Conflict
-    await assertErrorResponse(response, 409, "指定されたURLのブックマークは既に登録されています。");
+    await assertErrorResponse(
+      response,
+      HTTP_STATUS_CONFLICT,
+      "指定されたURLのブックマークは既に登録されています。"
+    );
   });
 });

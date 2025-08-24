@@ -2,6 +2,7 @@ import { beforeEach, describe, expect, it, vi } from "vitest";
 
 import { act, renderHook, waitFor } from "@testing-library/react";
 
+import { HTTP_STATUS_OK } from "../constants/httpStatusCodes";
 import { mockBookmarks } from "../test-utils/bookmarkTestUtils";
 import { useBookmarkManager } from "./useBookmarkManager";
 
@@ -13,7 +14,7 @@ describe("useBookmarkManager", () => {
     global.fetch = mockFetch;
     mockFetch.mockResolvedValueOnce({
       ok: true,
-      status: 200,
+      status: HTTP_STATUS_OK,
       json: async () => mockBookmarks,
     });
   });
