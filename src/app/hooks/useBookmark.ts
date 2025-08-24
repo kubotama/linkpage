@@ -94,10 +94,7 @@ export const useBookmarks = () => {
         body: JSON.stringify({ keyword_name }),
       });
       if (!response.ok) {
-        const json = await response.json();
-        throw new Error(
-          json.message || `キーワードの追加に失敗しました。 Status: ${response.status}`
-        );
+        throw await parseApiError(response);
       }
       const responseData = await response.json();
       const newKeyword: Keyword = {
@@ -113,7 +110,7 @@ export const useBookmarks = () => {
       );
       return;
     } catch (error: unknown) {
-      console.error("キーワードの追加エラー:", (error as Error).message); // 詳細なエラーはコンソールへ
+      console.error("キーワードの追加エラー:", getErrorMessage(error)); // 詳細なエラーはコンソールへ
       throw error;
     }
   }, []);
