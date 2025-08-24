@@ -3,7 +3,7 @@ import { beforeEach, describe, expect, it, vi } from "vitest";
 import { act, renderHook, waitFor } from "@testing-library/react";
 
 import { HTTP_STATUS_CREATED, HTTP_STATUS_OK } from "../constants/httpStatusCodes";
-import { mockBookmarks } from "../test-utils/bookmarkTestUtils";
+import { LINKPAGE_BOOKMARK, mockBookmarks } from "../test-utils/bookmarkTestUtils";
 import { useBookmarkManager } from "./useBookmarkManager";
 
 const mockFetch = vi.fn();
@@ -64,12 +64,12 @@ describe("useBookmarkManager", () => {
 
     // 3. ブックマークを選択する
     act(() => {
-      result.current.setSelectedBookmarkId(mockBookmarks[0].bookmark_id);
+      result.current.setSelectedBookmarkId(LINKPAGE_BOOKMARK.bookmark_id);
     });
 
     // 4. ブックマーク選択による副作用(useEffect)が完了し、フォームが更新されるのを待つ
     await waitFor(() => {
-      expect(result.current.textUrl).toBe(mockBookmarks[0].url);
+      expect(result.current.textUrl).toBe(LINKPAGE_BOOKMARK.url);
     });
 
     // 5. キーワードを入力し、追加アクションを実行する
@@ -87,7 +87,7 @@ describe("useBookmarkManager", () => {
 
       // bookmarks ステートが更新され、新しいキーワードが追加されていることを確認
       const updatedBookmark = result.current.bookmarks.find(
-        (b) => b.bookmark_id === mockBookmarks[0].bookmark_id
+        (b) => b.bookmark_id === LINKPAGE_BOOKMARK.bookmark_id
       );
       expect(updatedBookmark?.keywords).toContainEqual(newKeywordResponse);
     });

@@ -10,6 +10,7 @@ import {
   assertBookmarkIsSelected,
   clickBookmark,
   expectBookmarkFormValues,
+  GOOGLE_BOOKMARK,
   mockBookmarks,
   setBookmarkFormValuesAndClickButton,
   setupBookmarkManagerForTest,
@@ -33,8 +34,8 @@ describe("「←」ボタン", () => {
 
     await setupBookmarkManagerForTest();
 
-    await clickBookmark(user, mockBookmarks[1]);
-    await assertBookmarkIsSelected(mockBookmarks[1]);
+    await clickBookmark(user, GOOGLE_BOOKMARK);
+    await assertBookmarkIsSelected(GOOGLE_BOOKMARK);
   });
 
   it.each([

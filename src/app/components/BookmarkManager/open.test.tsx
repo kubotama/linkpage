@@ -9,6 +9,7 @@ import { HTTP_STATUS_OK } from "../../constants/httpStatusCodes";
 import {
   assertBookmarkIsSelected,
   clickBookmark,
+  GOOGLE_BOOKMARK,
   mockBookmarks,
   setBookmarkFormValuesAndEnterKeydown,
   setupBookmarkManagerForTest,
@@ -83,8 +84,8 @@ describe("「開く」ボタン: 入力されたURLを新しいタブで開く",
   describe("ブックマーク選択後", () => {
     beforeEach(async () => {
       // クリックするブックマークを選択（例：2番目のブックマーク）
-      await clickBookmark(user, mockBookmarks[1]);
-      await assertBookmarkIsSelected(mockBookmarks[1]);
+      await clickBookmark(user, GOOGLE_BOOKMARK);
+      await assertBookmarkIsSelected(GOOGLE_BOOKMARK);
     });
 
     it("Enterキーを押した場合", async () => {

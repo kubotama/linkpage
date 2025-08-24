@@ -11,6 +11,7 @@ import {
   clickBookmark,
   createBookmark,
   deselectBookmark,
+  GOOGLE_BOOKMARK,
   mockBookmarks,
   setupBookmarkManagerForTest,
 } from "../../test-utils/bookmarkTestUtils";
@@ -40,7 +41,7 @@ describe("ブックマークの選択", () => {
 
   it("選択解除のボタンをクリックすると、URLとタイトルのテキストボックスがクリアされる。選択解除のボタンが表示されていない。", async () => {
     // クリックするブックマークを選択（例：2番目のブックマーク）
-    const bookmarkToSelect = mockBookmarks[1]; // Google
+    const bookmarkToSelect = GOOGLE_BOOKMARK; // Google
     await clickBookmark(user, bookmarkToSelect);
     await assertBookmarkIsSelected(bookmarkToSelect);
 

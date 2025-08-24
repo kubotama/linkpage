@@ -8,7 +8,7 @@ import {
   HTTP_STATUS_OK,
 } from "../../../constants/httpStatusCodes";
 import { assertErrorResponse } from "../../../test-utils/assertions";
-import { expectEqualBookmark, mockBookmarks } from "../../../test-utils/bookmarkTestUtils";
+import { expectEqualBookmark, GOOGLE_BOOKMARK } from "../../../test-utils/bookmarkTestUtils";
 import { setupInMemoryDb } from "../../../test-utils/db-setup";
 import { API_BOOKMARKS_URL } from "../../utils/constants";
 import { getDb } from "../database";
@@ -46,7 +46,7 @@ describe("ブックマークを1件取得するAPIのテスト", () => {
   });
 
   it("GET: ブックマークのデータが取得できる", async () => {
-    const targetBookmark = mockBookmarks[1];
+    const targetBookmark = GOOGLE_BOOKMARK;
     const [request, context] = createGetRequest(targetBookmark.bookmark_id.toString());
     const response = await GET(request, context);
 

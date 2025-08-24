@@ -11,6 +11,7 @@ import {
   assertNoBookmarkIsSelected,
   clickBookmark,
   deselectBookmark,
+  GOOGLE_BOOKMARK,
   keyDown,
   mockBookmarks,
   setBookmarkFormValuesAndClickButton,
@@ -82,7 +83,7 @@ describe("BookmarkManager Hotkeys", () => {
   describe("ブックマークが選択されている場合", () => {
     beforeEach(async () => {
       // 2番目のブックマーク「Google」を選択
-      bookmarkToSelect = mockBookmarks[1]; // Google
+      bookmarkToSelect = GOOGLE_BOOKMARK; // Google
       await clickBookmark(user, bookmarkToSelect);
       await assertBookmarkIsSelected(bookmarkToSelect);
     });

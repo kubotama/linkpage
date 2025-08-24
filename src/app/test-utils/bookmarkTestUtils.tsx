@@ -63,6 +63,11 @@ export const mockBookmarks: Bookmark[] = createBookmarkList([
   },
 ]);
 
+export const LINKPAGE_BOOKMARK = mockBookmarks[0];
+export const GOOGLE_BOOKMARK = mockBookmarks[1];
+export const GMAIL_BOOKMARK = mockBookmarks[2];
+export const AMAZON_BOOKMARK = mockBookmarks[3];
+
 export const assertBookmarkIsSelected = async (bookmark: Bookmark) => {
   await waitFor(() => {
     expect(screen.getByRole("textbox", { name: URL_ROLE_NAME })).toHaveValue(bookmark.url);
@@ -84,8 +89,6 @@ export const getCellWithTitle = (title: string) => {
 };
 
 export const clickBookmark = async (user: UserEvent, bookmark: Bookmark) => {
-  // クリックするブックマークを選択（例：2番目のブックマーク）
-  // const bookmark = mockBookmarks[1]; // Google
   try {
     const cellWithTitle = getCellWithTitle(bookmark.title);
     const row = cellWithTitle.closest("tr");
@@ -292,7 +295,7 @@ export const setBookmarkFormValuesAndEnterKeydown = async (user: UserEvent, url:
  */
 export const setupBookmarkManagerForTest = async () => {
   render(<BookmarkManager />);
-  await screen.findByRole("cell", { name: mockBookmarks[0].title });
+  await screen.findByRole("cell", { name: LINKPAGE_BOOKMARK.title });
 };
 
 export const deselectBookmark = async (user: UserEvent) => {

@@ -5,7 +5,7 @@ import { describe, expect, it, vi } from "vitest";
 import { render, screen, within } from "@testing-library/react";
 
 import { TABLE_NAME_BOOKMARKS } from "../constants/constants";
-import { mockBookmarks } from "../test-utils/bookmarkTestUtils";
+import { GOOGLE_BOOKMARK, mockBookmarks } from "../test-utils/bookmarkTestUtils";
 import { BookmarkTable } from "./BookmarkTable";
 
 describe("BookmarkTableのテスト", () => {
@@ -80,7 +80,7 @@ describe("BookmarkTableのテスト", () => {
 
   it("選択されたブックマークが正しくハイライト表示される", () => {
     const mockOnSelectBookmark = vi.fn<(bookmarkId: number) => void>();
-    const selected = mockBookmarks[1]; // "Google" を選択状態にする
+    const selected = GOOGLE_BOOKMARK; // "Google" を選択状態にする
 
     render(
       <BookmarkTable
