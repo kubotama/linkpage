@@ -1,7 +1,7 @@
 "use server";
 import { SqliteError } from "better-sqlite3";
 
-import { HTTP_STATUS_OK } from "../../constants/httpStatusCodes";
+import { HTTP_STATUS_CREATED, HTTP_STATUS_OK } from "../../constants/httpStatusCodes";
 import { getDb } from "../bookmarks/database";
 import {
   createDuplicateKeywordError,
@@ -67,7 +67,7 @@ export const POST = async (request: Request): Promise<Response> => {
         keyword_id: result.lastInsertRowid,
       }),
       {
-        status: 201,
+        status: HTTP_STATUS_CREATED,
         headers: { "Content-Type": "application/json" },
       }
     );

@@ -5,7 +5,11 @@ import { BookmarkFromDb } from "@/app/types/database";
 
 import eventEmitter from "../../../lib/event-emitter";
 import { ALLOWED_CORS_ORIGIN } from "../../constants/apiEndpoints";
-import { HTTP_STATUS_NO_CONTENT, HTTP_STATUS_OK } from "../../constants/httpStatusCodes";
+import {
+  HTTP_STATUS_CREATED,
+  HTTP_STATUS_NO_CONTENT,
+  HTTP_STATUS_OK,
+} from "../../constants/httpStatusCodes";
 import { Bookmark, IncomingBookmarkPayload, parseAndValidateKeywords } from "../../types/Bookmark";
 import { API_BOOKMARKS_URL } from "../utils/constants";
 import {
@@ -121,7 +125,7 @@ export async function POST(request: Request) {
         bookmark_id: result.lastInsertRowid,
       }),
       {
-        status: 201,
+        status: HTTP_STATUS_CREATED,
         headers: {
           ...commonHeaders,
           "Content-Type": "application/json",

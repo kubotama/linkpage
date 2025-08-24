@@ -4,6 +4,7 @@ import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import {
   HTTP_STATUS_BAD_REQUEST,
   HTTP_STATUS_CONFLICT,
+  HTTP_STATUS_CREATED,
   HTTP_STATUS_INTERNAL_SERVER_ERROR,
 } from "../../constants/httpStatusCodes";
 import { assertErrorResponse } from "../../test-utils/assertions";
@@ -49,7 +50,7 @@ describe("キーワードAPIのテスト", () => {
     const keyword_name = "テスト";
     const response = await POST(createPostRequest(keyword_name));
 
-    expect(response.status).toBe(201);
+    expect(response.status).toBe(HTTP_STATUS_CREATED);
     const json = await response.json();
     expect(json).toEqual({
       keyword_id: expect.any(Number),

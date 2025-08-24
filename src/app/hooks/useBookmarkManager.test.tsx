@@ -2,7 +2,7 @@ import { beforeEach, describe, expect, it, vi } from "vitest";
 
 import { act, renderHook, waitFor } from "@testing-library/react";
 
-import { HTTP_STATUS_OK } from "../constants/httpStatusCodes";
+import { HTTP_STATUS_CREATED, HTTP_STATUS_OK } from "../constants/httpStatusCodes";
 import { mockBookmarks } from "../test-utils/bookmarkTestUtils";
 import { useBookmarkManager } from "./useBookmarkManager";
 
@@ -58,7 +58,7 @@ describe("useBookmarkManager", () => {
     // 2. キーワード追加APIのレスポンスをモックする
     mockFetch.mockResolvedValueOnce({
       ok: true,
-      status: 201,
+      status: HTTP_STATUS_CREATED,
       json: async () => newKeywordResponse,
     });
 

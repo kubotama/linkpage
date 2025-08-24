@@ -5,6 +5,7 @@ import { afterEach, assert, beforeEach, describe, expect, it, vi } from "vitest"
 import {
   HTTP_STATUS_BAD_REQUEST,
   HTTP_STATUS_CONFLICT,
+  HTTP_STATUS_CREATED,
   HTTP_STATUS_INTERNAL_SERVER_ERROR,
   HTTP_STATUS_NOT_FOUND,
 } from "../../../../constants/httpStatusCodes";
@@ -70,7 +71,7 @@ describe("POST /api/bookmarks/[bookmark_id]/keywords", () => {
       const response = await POST(request, getPostParams("1"));
       const responseBody = await response.json();
 
-      expect(response.status).toBe(201);
+      expect(response.status).toBe(HTTP_STATUS_CREATED);
       expect(responseBody.message).toBe("キーワードをブックマークに追加しました。");
       expect(responseBody.keyword_id).toEqual(expect.any(Number));
       expect(responseBody.bookmark_keyword_id).toEqual(expect.any(Number));
@@ -112,7 +113,7 @@ describe("POST /api/bookmarks/[bookmark_id]/keywords", () => {
       const response = await POST(request, getPostParams("1"));
       const responseBody = await response.json();
 
-      expect(response.status).toBe(201);
+      expect(response.status).toBe(HTTP_STATUS_CREATED);
       expect(responseBody.keyword_id).toBe(keywordId);
       expect(responseBody.keyword_name).toBe(existingKeyword);
       expect(responseBody.bookmark_keyword_id).toEqual(expect.any(Number));

@@ -1,5 +1,6 @@
 import { SqliteError } from "better-sqlite3";
 
+import { HTTP_STATUS_CREATED } from "../../../../constants/httpStatusCodes";
 import { isKeyword, KeywordPostParams } from "../../../../types/Keyword";
 import { getId, InvalidIdError } from "../../../utils/id";
 import {
@@ -95,7 +96,7 @@ export async function POST(request: Request, { params }: KeywordPostParams) {
     const result = runInTransaction.immediate();
     return new Response(
       JSON.stringify({ message: "キーワードをブックマークに追加しました。", ...result }),
-      { status: 201, headers: { "Content-Type": "application/json" } }
+      { status: HTTP_STATUS_CREATED, headers: { "Content-Type": "application/json" } }
     );
   } catch (error: unknown) {
     if (error instanceof BookmarkNotFoundError) {

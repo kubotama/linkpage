@@ -4,6 +4,7 @@ import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import {
   HTTP_STATUS_BAD_REQUEST,
   HTTP_STATUS_CONFLICT,
+  HTTP_STATUS_CREATED,
   HTTP_STATUS_INTERNAL_SERVER_ERROR,
   HTTP_STATUS_NO_CONTENT,
 } from "../../constants/httpStatusCodes";
@@ -49,7 +50,7 @@ describe("ブックマーク追加APIのテスト (オンメモリDB)", () => {
   async function addBookmarkAndVerify(bookmark: Bookmark) {
     const response = await POST(createPostRequest(JSON.stringify(bookmark)));
 
-    expect(response.status).toBe(201);
+    expect(response.status).toBe(HTTP_STATUS_CREATED);
     const json = await response.json();
     expect(json).toEqual({
       bookmark_id: expect.any(Number),
