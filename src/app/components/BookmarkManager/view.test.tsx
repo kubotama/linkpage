@@ -49,7 +49,7 @@ describe("BookmarkManagerの表示を確認", () => {
       ok: false,
       status: statusCode,
       headers: { "Content-Type": "application/json" },
-      json: async () => ({ message: errorText }),
+      text: async () => JSON.stringify({ message: errorText }),
     });
 
     render(<BookmarkManager />);
@@ -59,7 +59,7 @@ describe("BookmarkManagerの表示を確認", () => {
 
     expect(consoleErrorSpy).toHaveBeenCalledWith(
       "ブックマークのロードエラー:",
-      `[${statusCode}] ${errorText}`
+      `ApiError: [${statusCode}] ${errorText}`
     );
 
     consoleErrorSpy.mockRestore();

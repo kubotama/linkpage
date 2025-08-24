@@ -107,7 +107,7 @@ describe("削除ボタン", () => {
 
       expect(consoleErrorSpy).toHaveBeenCalledWith(
         "ブックマークの削除エラー:",
-        `[${errorCase.status}] ${errorCase.message}`
+        `ApiError: [${errorCase.status}] ${errorCase.message}`
       );
 
       expect(await screen.findByTestId("bookmark-message")).toHaveTextContent(

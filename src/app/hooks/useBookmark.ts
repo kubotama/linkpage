@@ -1,15 +1,19 @@
 import { useCallback, useState } from "react";
 
+import { ApiError, parseApiError } from "../api/utils/ApiUtils";
 import { BOOKMARKS_ENDPOINT } from "../constants/apiEndpoints";
 import { Bookmark } from "../types/Bookmark";
 import { Keyword } from "../types/Keyword";
 
-export class DuplicatedUrlError extends Error {
-  constructor(message: string) {
-    super(message);
-    this.name = "DuplicatedUrlError";
+const getErrorMessage = (error: unknown): string => {
+  if (error instanceof ApiError) {
+    return error.toString();
   }
-}
+  if (error instanceof Error) {
+    return error.message;
+  }
+  return String(error);
+};
 
 export const useBookmarks = () => {
   const [bookmarks, setBookmarks] = useState<Bookmark[]>([]);
@@ -22,11 +26,10 @@ export const useBookmarks = () => {
         setBookmarks(data);
         return;
       } else {
-        const json = await response.json();
-        throw new Error(`[${response.status}] ${json.message}`);
+        throw await parseApiError(response);
       }
     } catch (error: unknown) {
-      console.error("ブックマークのロードエラー:", (error as Error).message);
+      console.error("ブックマークのロードエラー:", getErrorMessage(error));
       throw error;
     }
   }, []);
@@ -42,11 +45,10 @@ export const useBookmarks = () => {
           currentBookmarks.filter((bookmark) => bookmark.bookmark_id !== bookmark_id)
         );
       } else {
-        const json = await response.json();
-        throw new Error(`[${response.status}] ${json.message}`);
+        throw await parseApiError(response);
       }
     } catch (error: unknown) {
-      console.error("ブックマークの削除エラー:", (error as Error).message);
+      console.error("ブックマークの削除エラー:", getErrorMessage(error));
       throw error;
     }
   }, []);
@@ -74,16 +76,10 @@ export const useBookmarks = () => {
           )
         );
       } else {
-        // エラーレスポンスの処理
-        const json = await response.json();
-        if (response.status === 409) {
-          throw new DuplicatedUrlError(`[${response.status}] ${json.message}`);
-        } else {
-          throw new Error(`[${response.status}] ${json.message}`);
-        }
+        throw await parseApiError(response);
       }
     } catch (error: unknown) {
-      console.error("ブックマークの更新エラー:", (error as Error).message); // 詳細なエラーはコンソールへ
+      console.error("ブックマークの更新エラー:", getErrorMessage(error)); // 詳細なエラーはコンソールへ
       throw error;
     }
   }, []);
@@ -98,10 +94,7 @@ export const useBookmarks = () => {
         body: JSON.stringify({ keyword_name }),
       });
       if (!response.ok) {
-        const json = await response.json();
-        throw new Error(
-          json.message || `キーワードの追加に失敗しました。 Status: ${response.status}`
-        );
+        throw await parseApiError(response);
       }
       const responseData = await response.json();
       const newKeyword: Keyword = {
@@ -117,7 +110,7 @@ export const useBookmarks = () => {
       );
       return;
     } catch (error: unknown) {
-      console.error("キーワードの追加エラー:", (error as Error).message); // 詳細なエラーはコンソールへ
+      console.error("キーワードの追加エラー:", getErrorMessage(error)); // 詳細なエラーはコンソールへ
       throw error;
     }
   }, []);

@@ -3,7 +3,8 @@
 import { useCallback, useEffect, useRef, useState } from "react";
 import { useHotkeys } from "react-hotkeys-hook";
 
-import { DuplicatedUrlError, useBookmarks } from "./useBookmark";
+import { DuplicatedUrlError } from "../api/utils/ApiUtils";
+import { useBookmarks } from "./useBookmark";
 import { useErrorMessage } from "./useErrorMessage";
 
 export const useBookmarkManager = () => {
