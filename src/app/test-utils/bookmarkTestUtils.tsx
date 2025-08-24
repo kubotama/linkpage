@@ -297,3 +297,44 @@ export const setupBookmarkManagerForTest = async () => {
 export const deselectBookmark = async (user: UserEvent) => {
   await keyDown(user, "{escape}");
 };
+
+interface AssertErrorMessageOptions {
+  message: string;
+  isError: boolean;
+  isWait: boolean;
+}
+
+export const assertErrorMessage = async ({
+  message,
+  isError,
+  isWait,
+}: AssertErrorMessageOptions) => {
+  let errorElement: HTMLElement;
+  if (isWait) {
+    errorElement = await screen.findByTestId("bookmark-message");
+  } else {
+    errorElement = screen.getByTestId("bookmark-message");
+  }
+  expect(errorElement).toBeInTheDocument();
+  expect(errorElement).toHaveTextContent(message);
+
+  if (isError) {
+    expect(errorElement).toHaveClass("text-red-500");
+    expect(errorElement).not.toHaveClass("text-gray-800");
+    if (isWait) {
+      expect(await screen.findByRole("button", { name: "閉じる" })).toBeVisible();
+    } else {
+      expect(screen.getByRole("button", { name: "閉じる" })).toBeVisible();
+    }
+  } else {
+    expect(errorElement).not.toHaveClass("text-red-500");
+    expect(errorElement).toHaveClass("text-gray-800");
+    if (isWait) {
+      waitFor(() => {
+        expect(screen.queryByRole("button", { name: "閉じる" })).not.toBeInTheDocument();
+      });
+    } else {
+      expect(screen.queryByRole("button", { name: "閉じる" })).not.toBeInTheDocument();
+    }
+  }
+};

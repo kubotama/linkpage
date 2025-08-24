@@ -2,12 +2,13 @@ import "@testing-library/jest-dom";
 
 import { afterAll, beforeAll, beforeEach, describe, expect, it, vi } from "vitest";
 
-import { screen, waitFor } from "@testing-library/react";
+import { waitFor } from "@testing-library/react";
 import userEvent, { UserEvent } from "@testing-library/user-event";
 
 import { HTTP_STATUS_OK } from "../../constants/httpStatusCodes";
 import {
   assertBookmarkIsSelected,
+  assertErrorMessage,
   assertNoBookmarkIsSelected,
   clickBookmark,
   deselectBookmark,
@@ -109,9 +110,11 @@ describe("BookmarkManager Hotkeys", () => {
       await keyDown(user, "{enter}");
 
       // エラーメッセージが表示され、window.openが呼び出されていないことを検証
-      expect(await screen.findByTestId("bookmark-message")).toHaveTextContent(
-        "URLが無効です。正しいURLを入力してください。"
-      );
+      await assertErrorMessage({
+        message: "URLが無効です。正しいURLを入力してください。",
+        isError: true,
+        isWait: true,
+      });
       expect(mockOpen).not.toHaveBeenCalled();
     });
 

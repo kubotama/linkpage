@@ -16,6 +16,7 @@ import {
 } from "../../constants/httpStatusCodes";
 import {
   assertBookmarkIsSelected,
+  assertErrorMessage,
   clickBookmark,
   createMockResponse,
   GOOGLE_BOOKMARK,
@@ -129,11 +130,11 @@ describe("削除ボタン", () => {
         `ApiError: [${errorCase.status}] ${errorCase.message}`
       );
 
-      expect(await screen.findByTestId("bookmark-message")).toHaveTextContent(
-        "ブックマークの削除中にエラーが発生しました。"
-      );
-      await screen.findByText(bookmarkToSelect.title);
-      await screen.findByRole("button", { name: DELETE_BUTTON_ROLE_NAME });
+      await assertErrorMessage({
+        message: "ブックマークの削除中にエラーが発生しました。",
+        isError: true,
+        isWait: true,
+      });
 
       consoleErrorSpy.mockRestore();
     });
