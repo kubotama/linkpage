@@ -5,6 +5,7 @@ import { beforeEach, describe, it, vi } from "vitest";
 import userEvent, { UserEvent } from "@testing-library/user-event";
 
 import { PARAMETER_BUTTON_ROLE_NAME } from "../../constants/constants";
+import { HTTP_STATUS_OK } from "../../constants/httpStatusCodes";
 import {
   assertBookmarkIsSelected,
   clickBookmark,
@@ -25,7 +26,7 @@ describe("「パラメータ」ボタン: URLから無駄な文字列を削除�
       global.fetch = mockFetch;
       mockFetch.mockResolvedValueOnce({
         ok: true,
-        status: 200,
+        status: HTTP_STATUS_OK,
         json: async () => mockBookmarks,
       });
 

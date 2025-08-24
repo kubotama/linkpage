@@ -1,6 +1,12 @@
 import ActualDatabase from "better-sqlite3";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 
+import {
+  HTTP_STATUS_BAD_REQUEST,
+  HTTP_STATUS_INTERNAL_SERVER_ERROR,
+  HTTP_STATUS_NO_CONTENT,
+  HTTP_STATUS_NOT_FOUND,
+} from "../../../constants/httpStatusCodes";
 import { assertErrorResponse } from "../../../test-utils/assertions";
 import { setupInMemoryDb } from "../../../test-utils/db-setup";
 import { getDb } from "../../bookmarks/database";
@@ -36,22 +42,34 @@ describe("キーワードDELETE APIのテスト", () => {
   it("DELETE: 正常にキーワードが削除できる", async () => {
     const [req, ctx] = createDeleteRequest("1");
     const response = await DELETE(req, ctx);
-    expect(response.status).toBe(204);
+    expect(response.status).toBe(HTTP_STATUS_NO_CONTENT);
     // 削除後にもう一度削除を試みると404になることを確認
     const response2 = await DELETE(req, ctx);
-    await assertErrorResponse(response2, 404, "指定されたキーワードが見つかりません。");
+    await assertErrorResponse(
+      response2,
+      HTTP_STATUS_NOT_FOUND,
+      "指定されたキーワードが見つかりません。"
+    );
   });
 
   it("DELETE: 存在しないIDの場合404を返す", async () => {
     const [req, ctx] = createDeleteRequest("9999");
     const response = await DELETE(req, ctx);
-    await assertErrorResponse(response, 404, "指定されたキーワードが見つかりません。");
+    await assertErrorResponse(
+      response,
+      HTTP_STATUS_NOT_FOUND,
+      "指定されたキーワードが見つかりません。"
+    );
   });
 
   it("DELETE: 不正なIDの場合400を返す", async () => {
     const [req, ctx] = createDeleteRequest("abc");
     const response = await DELETE(req, ctx);
-    await assertErrorResponse(response, 400, "IDは正の整数である必要があります。");
+    await assertErrorResponse(
+      response,
+      HTTP_STATUS_BAD_REQUEST,
+      "IDは正の整数である必要があります。"
+    );
   });
 
   it("DELETE: DBエラー時は500を返す", async () => {
@@ -60,6 +78,10 @@ describe("キーワードDELETE APIのテスト", () => {
     });
     const [req, ctx] = createDeleteRequest("1");
     const response = await DELETE(req, ctx);
-    await assertErrorResponse(response, 500, "サーバー内部でエラーが発生しました。");
+    await assertErrorResponse(
+      response,
+      HTTP_STATUS_INTERNAL_SERVER_ERROR,
+      "サーバー内部でエラーが発生しました。"
+    );
   });
 });

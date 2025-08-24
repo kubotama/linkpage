@@ -7,6 +7,8 @@ import { render, screen } from "@testing-library/react";
 import Home from "./page";
 import { mockBookmarks } from "./test-utils/bookmarkTestUtils";
 
+import { HTTP_STATUS_OK } from "./constants/httpStatusCodes";
+
 const mockFetch = vi.fn();
 
 describe("テスト環境を動作確認するためのサンプルのテスト", () => {
@@ -18,7 +20,7 @@ describe("テスト環境を動作確認するためのサンプルのテスト"
   it("すべてのエレメントが表示されることを確認", async () => {
     mockFetch.mockResolvedValueOnce({
       ok: true,
-      status: 200,
+      status: HTTP_STATUS_OK,
       json: async () => mockBookmarks,
     });
     render(<Home />);

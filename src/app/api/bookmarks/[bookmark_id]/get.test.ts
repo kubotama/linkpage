@@ -1,6 +1,12 @@
 import ActualDatabase from "better-sqlite3"; // Import the actual library
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 
+import {
+  HTTP_STATUS_BAD_REQUEST,
+  HTTP_STATUS_INTERNAL_SERVER_ERROR,
+  HTTP_STATUS_NOT_FOUND,
+  HTTP_STATUS_OK,
+} from "../../../constants/httpStatusCodes";
 import { assertErrorResponse } from "../../../test-utils/assertions";
 import { expectEqualBookmark, mockBookmarks } from "../../../test-utils/bookmarkTestUtils";
 import { setupInMemoryDb } from "../../../test-utils/db-setup";
@@ -44,7 +50,7 @@ describe("ブックマークを1件取得するAPIのテスト", () => {
     const [request, context] = createGetRequest(targetBookmark.bookmark_id.toString());
     const response = await GET(request, context);
 
-    expect(response.status).toBe(200);
+    expect(response.status).toBe(HTTP_STATUS_OK);
     const json = await response.json();
 
     expectEqualBookmark(json, targetBookmark);
@@ -54,14 +60,22 @@ describe("ブックマークを1件取得するAPIのテスト", () => {
     const [request, context] = createGetRequest("abc");
     const response = await GET(request, context);
 
-    await assertErrorResponse(response, 400, "IDは正の整数である必要があります。");
+    await assertErrorResponse(
+      response,
+      HTTP_STATUS_BAD_REQUEST,
+      "IDは正の整数である必要があります。"
+    );
   });
 
   it("GET: 存在しないIDの場合404エラーを返す", async () => {
     const [request, context] = createGetRequest("100");
     const response = await GET(request, context);
 
-    await assertErrorResponse(response, 404, "指定されたブックマークがありません。");
+    await assertErrorResponse(
+      response,
+      HTTP_STATUS_NOT_FOUND,
+      "指定されたブックマークがありません。"
+    );
   });
 
   it("GET: データベースエラー時に500エラーを返す", async () => {
@@ -72,7 +86,11 @@ describe("ブックマークを1件取得するAPIのテスト", () => {
 
     const [request, context] = createGetRequest("1");
     const response = await GET(request, context);
-    await assertErrorResponse(response, 500, "サーバー内部でエラーが発生しました。");
+    await assertErrorResponse(
+      response,
+      HTTP_STATUS_INTERNAL_SERVER_ERROR,
+      "サーバー内部でエラーが発生しました。"
+    );
   });
 
   it("GET: クエリエラー時に500エラーを返す", async () => {
@@ -84,7 +102,11 @@ describe("ブックマークを1件取得するAPIのテスト", () => {
 
     const [request, context] = createGetRequest("1");
     const response = await GET(request, context);
-    await assertErrorResponse(response, 500, "サーバー内部でエラーが発生しました。");
+    await assertErrorResponse(
+      response,
+      HTTP_STATUS_INTERNAL_SERVER_ERROR,
+      "サーバー内部でエラーが発生しました。"
+    );
 
     prepareSpy.mockRestore();
   });

@@ -1,6 +1,12 @@
 import ActualDatabase from "better-sqlite3"; // Import the actual library
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 
+import {
+  HTTP_STATUS_BAD_REQUEST,
+  HTTP_STATUS_CONFLICT,
+  HTTP_STATUS_CREATED,
+  HTTP_STATUS_INTERNAL_SERVER_ERROR,
+} from "../../constants/httpStatusCodes";
 import { assertErrorResponse } from "../../test-utils/assertions";
 import { mockKeywords } from "../../test-utils/bookmarkTestUtils";
 import { setupInMemoryDb } from "../../test-utils/db-setup";
@@ -44,7 +50,7 @@ describe("キーワードAPIのテスト", () => {
     const keyword_name = "テスト";
     const response = await POST(createPostRequest(keyword_name));
 
-    expect(response.status).toBe(201);
+    expect(response.status).toBe(HTTP_STATUS_CREATED);
     const json = await response.json();
     expect(json).toEqual({
       keyword_id: expect.any(Number),
@@ -65,7 +71,7 @@ describe("キーワードAPIのテスト", () => {
   it("POST: キーワードが空文字の場合は400を返す", async () => {
     const response = await POST(createPostRequest(""));
 
-    await assertErrorResponse(response, 400, "キーワードを指定してください。");
+    await assertErrorResponse(response, HTTP_STATUS_BAD_REQUEST, "キーワードを指定してください。");
   });
 
   it("POST: 不正なJSONデータ(JSON.parseエラー)の場合は400を返す", async () => {
@@ -78,7 +84,11 @@ describe("キーワードAPIのテスト", () => {
         body: "invalid json",
       })
     );
-    await assertErrorResponse(response, 400, "リクエストボディのJSONが不正です。");
+    await assertErrorResponse(
+      response,
+      HTTP_STATUS_BAD_REQUEST,
+      "リクエストボディのJSONが不正です。"
+    );
   });
 
   it("POST: 不正なJSONデータ(null)の場合は400を返す", async () => {
@@ -91,13 +101,21 @@ describe("キーワードAPIのテスト", () => {
         body: JSON.stringify(null),
       })
     );
-    await assertErrorResponse(response, 400, "リクエストボディのJSONが不正です。");
+    await assertErrorResponse(
+      response,
+      HTTP_STATUS_BAD_REQUEST,
+      "リクエストボディのJSONが不正です。"
+    );
   });
 
   it("POST: 重複したキーワードを追加時に409 Conflictを返す", async () => {
     const response = await POST(createPostRequest(mockKeywords[0].keyword_name));
 
-    await assertErrorResponse(response, 409, "指定されたキーワードは既に登録されています。");
+    await assertErrorResponse(
+      response,
+      HTTP_STATUS_CONFLICT,
+      "指定されたキーワードは既に登録されています。"
+    );
   });
 
   it("POST: データベースエラー時に500エラーを返す", async () => {
@@ -108,7 +126,11 @@ describe("キーワードAPIのテスト", () => {
     });
 
     const response = await POST(createPostRequest("テスト"));
-    await assertErrorResponse(response, 500, "サーバー内部でエラーが発生しました。");
+    await assertErrorResponse(
+      response,
+      HTTP_STATUS_INTERNAL_SERVER_ERROR,
+      "サーバー内部でエラーが発生しました。"
+    );
 
     prepareSpy.mockRestore();
   });

@@ -1,6 +1,12 @@
 import ActualDatabase from "better-sqlite3"; // Import the actual library
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 
+import {
+  HTTP_STATUS_BAD_REQUEST,
+  HTTP_STATUS_INTERNAL_SERVER_ERROR,
+  HTTP_STATUS_NO_CONTENT,
+  HTTP_STATUS_NOT_FOUND,
+} from "../../../constants/httpStatusCodes";
 import { assertErrorResponse } from "../../../test-utils/assertions";
 import { mockBookmarks } from "../../../test-utils/bookmarkTestUtils";
 import { setupInMemoryDb } from "../../../test-utils/db-setup";
@@ -64,7 +70,7 @@ describe("ブックマーク削除APIのテスト (オンメモリDB)", () => {
     const response = await DELETE(request, context);
 
     // レスポンスステータスを確認 (204 No Content)
-    expect(response.status).toBe(204);
+    expect(response.status).toBe(HTTP_STATUS_NO_CONTENT);
 
     // データベースから削除されたことを確認
     const deletedEntry = selectStmt.get(bookmarkToDelete.url);
@@ -84,7 +90,11 @@ describe("ブックマーク削除APIのテスト (オンメモリDB)", () => {
     const [request, context] = createDeleteRequest(nonExistentId.toString());
     const response = await DELETE(request, context);
 
-    await assertErrorResponse(response, 404, "指定されたブックマークがありません。");
+    await assertErrorResponse(
+      response,
+      HTTP_STATUS_NOT_FOUND,
+      "指定されたブックマークがありません。"
+    );
 
     // ブックマーク数が変わっていないことを確認
     const count = (
@@ -103,7 +113,11 @@ describe("ブックマーク削除APIのテスト (オンメモリDB)", () => {
     const [request, context] = createDeleteRequest(anyValidId.toString());
     const response = await DELETE(request, context);
 
-    await assertErrorResponse(response, 500, "サーバー内部でエラーが発生しました。");
+    await assertErrorResponse(
+      response,
+      HTTP_STATUS_INTERNAL_SERVER_ERROR,
+      "サーバー内部でエラーが発生しました。"
+    );
   });
 
   it("DELETE: 不正なIDの場合には400エラーを返す", async () => {
@@ -111,6 +125,10 @@ describe("ブックマーク削除APIのテスト (オンメモリDB)", () => {
     const [request, context] = createDeleteRequest(nonExistentId.toString());
     const response = await DELETE(request, context);
 
-    await assertErrorResponse(response, 400, "IDは正の整数である必要があります。");
+    await assertErrorResponse(
+      response,
+      HTTP_STATUS_BAD_REQUEST,
+      "IDは正の整数である必要があります。"
+    );
   });
 });

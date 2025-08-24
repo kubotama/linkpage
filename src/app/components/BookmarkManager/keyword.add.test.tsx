@@ -11,6 +11,7 @@ import {
   KEYWORD_ROLE_NAME,
   TABLE_NAME_KEYWORD,
 } from "../../constants/constants";
+import { HTTP_STATUS_OK } from "../../constants/httpStatusCodes";
 import {
   assertBookmarkIsSelected,
   buildMockBookmarksWithKeywords,
@@ -66,7 +67,7 @@ describe("選択されたブックマークにキーワードを追加", () => {
     mockBookmarksWithKeywords = buildMockBookmarksWithKeywords();
     mockFetch.mockResolvedValueOnce({
       ok: true,
-      status: 200,
+      status: HTTP_STATUS_OK,
       json: async () => mockBookmarksWithKeywords,
     });
     user = userEvent.setup();

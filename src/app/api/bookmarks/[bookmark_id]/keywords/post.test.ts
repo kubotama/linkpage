@@ -2,6 +2,13 @@ import ActualDatabase from "better-sqlite3"; // 実際のライブラリをイ�
 import { NextRequest } from "next/server";
 import { afterEach, assert, beforeEach, describe, expect, it, vi } from "vitest";
 
+import {
+  HTTP_STATUS_BAD_REQUEST,
+  HTTP_STATUS_CONFLICT,
+  HTTP_STATUS_CREATED,
+  HTTP_STATUS_INTERNAL_SERVER_ERROR,
+  HTTP_STATUS_NOT_FOUND,
+} from "../../../../constants/httpStatusCodes";
 import { assertErrorResponse } from "../../../../test-utils/assertions";
 import { setupInMemoryDb } from "../../../../test-utils/db-setup";
 import { isKeyword, KeywordPostParams } from "../../../../types/Keyword";
@@ -64,7 +71,7 @@ describe("POST /api/bookmarks/[bookmark_id]/keywords", () => {
       const response = await POST(request, getPostParams("1"));
       const responseBody = await response.json();
 
-      expect(response.status).toBe(201);
+      expect(response.status).toBe(HTTP_STATUS_CREATED);
       expect(responseBody.message).toBe("キーワードをブックマークに追加しました。");
       expect(responseBody.keyword_id).toEqual(expect.any(Number));
       expect(responseBody.bookmark_keyword_id).toEqual(expect.any(Number));
@@ -106,7 +113,7 @@ describe("POST /api/bookmarks/[bookmark_id]/keywords", () => {
       const response = await POST(request, getPostParams("1"));
       const responseBody = await response.json();
 
-      expect(response.status).toBe(201);
+      expect(response.status).toBe(HTTP_STATUS_CREATED);
       expect(responseBody.keyword_id).toBe(keywordId);
       expect(responseBody.keyword_name).toBe(existingKeyword);
       expect(responseBody.bookmark_keyword_id).toEqual(expect.any(Number));
@@ -125,13 +132,21 @@ describe("POST /api/bookmarks/[bookmark_id]/keywords", () => {
     it("should return 404 if bookmark_id does not exist", async () => {
       const request = mockRequest({ keyword_name: "test-keyword" });
       const response = await POST(request, getPostParams("999"));
-      await assertErrorResponse(response, 404, "指定されたブックマークがありません。");
+      await assertErrorResponse(
+        response,
+        HTTP_STATUS_NOT_FOUND,
+        "指定されたブックマークがありません。"
+      );
     });
 
     it("should return 400 if bookmark_id is invalid", async () => {
       const request = mockRequest({ keyword_name: "test-keyword" });
       const response = await POST(request, getPostParams("invalid"));
-      await assertErrorResponse(response, 400, "IDは正の整数である必要があります。");
+      await assertErrorResponse(
+        response,
+        HTTP_STATUS_BAD_REQUEST,
+        "IDは正の整数である必要があります。"
+      );
     });
 
     it("should return 400 if request body is not valid JSON", async () => {
@@ -142,7 +157,11 @@ describe("POST /api/bookmarks/[bookmark_id]/keywords", () => {
       } as unknown as NextRequest;
 
       const response = await POST(request, getPostParams("1"));
-      await assertErrorResponse(response, 400, "リクエストボディのJSONが不正です。");
+      await assertErrorResponse(
+        response,
+        HTTP_STATUS_BAD_REQUEST,
+        "リクエストボディのJSONが不正です。"
+      );
     });
 
     it.each([
@@ -152,7 +171,11 @@ describe("POST /api/bookmarks/[bookmark_id]/keywords", () => {
     ])("should return 400 if keyword_name $case", async ({ body }) => {
       const request = mockRequest(body);
       const response = await POST(request, getPostParams("1"));
-      await assertErrorResponse(response, 400, "キーワードを指定してください。");
+      await assertErrorResponse(
+        response,
+        HTTP_STATUS_BAD_REQUEST,
+        "キーワードを指定してください。"
+      );
     });
 
     it("should return 409 if the keyword is already associated with the bookmark", async () => {
@@ -176,7 +199,7 @@ describe("POST /api/bookmarks/[bookmark_id]/keywords", () => {
       // Assert
       await assertErrorResponse(
         response,
-        409,
+        HTTP_STATUS_CONFLICT,
         "指定されたキーワードは既にこのブックマークに登録されています。"
       );
     });
@@ -190,7 +213,11 @@ describe("POST /api/bookmarks/[bookmark_id]/keywords", () => {
 
       const request = mockRequest({ keyword_name: "test-keyword" });
       const response = await POST(request, getPostParams("1"));
-      await assertErrorResponse(response, 500, "サーバー内部でエラーが発生しました。");
+      await assertErrorResponse(
+        response,
+        HTTP_STATUS_INTERNAL_SERVER_ERROR,
+        "サーバー内部でエラーが発生しました。"
+      );
     });
   });
 });

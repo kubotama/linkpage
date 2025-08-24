@@ -7,6 +7,7 @@ import {
   createInvalidIdError,
   createNotFoundKeywordError,
 } from "../../utils/response";
+import { HTTP_STATUS_NO_CONTENT } from "../../../constants/httpStatusCodes";
 
 export const DELETE = async (
   _request: Request,
@@ -20,7 +21,7 @@ export const DELETE = async (
     if (result.changes === 0) {
       return createNotFoundKeywordError(keyword_id);
     }
-    return new Response(null, { status: 204 });
+    return new Response(null, { status: HTTP_STATUS_NO_CONTENT });
   } catch (error: unknown) {
     if (error instanceof InvalidIdError) {
       return createInvalidIdError({ id: (await params).keyword_id });

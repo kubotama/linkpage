@@ -2,9 +2,10 @@
 
 import { SqliteError } from "better-sqlite3";
 
-import { Bookmark, parseAndValidateKeywords } from "../../../types/Bookmark";
 import { BookmarkFromDb } from "@/app/types/database";
 
+import { HTTP_STATUS_NO_CONTENT, HTTP_STATUS_OK } from "../../../constants/httpStatusCodes";
+import { Bookmark, parseAndValidateKeywords } from "../../../types/Bookmark";
 import { getBookmarkIdAsync, InvalidIdError } from "../../utils/id";
 import {
   createDuplicateBookmarkError,
@@ -54,7 +55,7 @@ export async function GET(
       keywords: parseAndValidateKeywords(bookmarkFromDb.keywords),
     };
     return new Response(JSON.stringify(bookmark), {
-      status: 200,
+      status: HTTP_STATUS_OK,
       headers: { "Content-Type": "application/json" },
     });
   } catch (error: unknown) {
@@ -87,7 +88,7 @@ export async function PUT(
     if (info.changes === 0) {
       return createNotFoundBookmarkError(bookmark_id);
     }
-    return new Response(null, { status: 204 });
+    return new Response(null, { status: HTTP_STATUS_NO_CONTENT });
   } catch (error: unknown) {
     if (error instanceof SyntaxError) {
       return createInvalidBodyError(error);
@@ -115,7 +116,7 @@ export async function DELETE(
     if (info.changes === 0) {
       return createNotFoundBookmarkError(bookmark_id);
     }
-    return new Response(null, { status: 204 });
+    return new Response(null, { status: HTTP_STATUS_NO_CONTENT });
   } catch (error: unknown) {
     if (error instanceof InvalidIdError) {
       return createInvalidIdError({ id: (await params).bookmark_id });

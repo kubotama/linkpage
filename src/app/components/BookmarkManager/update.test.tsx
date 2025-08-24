@@ -8,6 +8,14 @@ import userEvent, { UserEvent } from "@testing-library/user-event";
 import { BOOKMARKS_ENDPOINT } from "../../constants/apiEndpoints";
 import { TABLE_NAME_BOOKMARKS, UPDATE_BUTTON_ROLE_NAME } from "../../constants/constants";
 import {
+  HTTP_STATUS_BAD_REQUEST,
+  HTTP_STATUS_CONFLICT,
+  HTTP_STATUS_INTERNAL_SERVER_ERROR,
+  HTTP_STATUS_NO_CONTENT,
+  HTTP_STATUS_NOT_FOUND,
+  HTTP_STATUS_OK,
+} from "../../constants/httpStatusCodes";
+import {
   assertBookmarkIsSelected,
   clickBookmark,
   createBookmark,
@@ -37,7 +45,7 @@ describe("タイトルの更新ボタン", () => {
     global.fetch = mockFetch;
     mockFetch.mockResolvedValueOnce({
       ok: true,
-      status: 200,
+      status: HTTP_STATUS_OK,
       json: async () => mockBookmarks,
     });
     user = userEvent.setup();
@@ -70,7 +78,7 @@ describe("タイトルの更新ボタン", () => {
       mockFetch.mockResolvedValueOnce(
         createMockResponse({
           isOk: true,
-          status: 204,
+          status: HTTP_STATUS_NO_CONTENT,
         })
       );
 
@@ -128,7 +136,7 @@ describe("タイトルの更新ボタン", () => {
         const updateUrl = mockBookmarks[2].url;
         const updateTitle = "更新されたタイトル";
         const errorText = "指定されたURLのブックマークは既に登録されています。";
-        const statusCode = 409;
+        const statusCode = HTTP_STATUS_CONFLICT;
 
         mockFetch.mockResolvedValueOnce(
           createMockResponse({
@@ -165,22 +173,31 @@ describe("タイトルの更新ボタン", () => {
       it.each([
         {
           description: "存在しないブックマーク (404 Not Found)",
-          errorCase: { message: "指定されたブックマークがありません。", status: 404 },
+          errorCase: {
+            message: "指定されたブックマークがありません。",
+            status: HTTP_STATUS_NOT_FOUND,
+          },
         },
         {
           description: "不正なリクエスト (400 Bad Request)",
-          errorCase: { message: "リクエストにIDがありませんでした。", status: 400 },
+          errorCase: {
+            message: "リクエストにIDがありませんでした。",
+            status: HTTP_STATUS_BAD_REQUEST,
+          },
         },
         {
           description: "IDの形式が不正 (400 Bad Request)",
           errorCase: {
             message: "IDは正の整数である必要があります。",
-            status: 400,
+            status: HTTP_STATUS_BAD_REQUEST,
           },
         },
         {
           description: "不正なJSONデータ (500 Internal Server Error)",
-          errorCase: { message: "サーバーで予期せぬエラーが発生しました。", status: 500 },
+          errorCase: {
+            message: "サーバーで予期せぬエラーが発生しました。",
+            status: HTTP_STATUS_INTERNAL_SERVER_ERROR,
+          },
         },
       ])("エラーハンドリング: $description", async ({ errorCase }) => {
         mockFetch.mockResolvedValueOnce(createMockResponse({ ...errorCase, isOk: false }));

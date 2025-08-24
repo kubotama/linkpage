@@ -4,6 +4,7 @@ import { beforeEach, describe, expect, it, vi } from "vitest";
 
 import userEvent, { UserEvent } from "@testing-library/user-event";
 
+import { HTTP_STATUS_OK } from "../../constants/httpStatusCodes";
 import {
   assertBookmarkIsSelected,
   assertNoBookmarkIsSelected,
@@ -25,7 +26,7 @@ describe("ブックマークの選択", () => {
     global.fetch = mockFetch;
     mockFetch.mockResolvedValueOnce({
       ok: true,
-      status: 200,
+      status: HTTP_STATUS_OK,
       json: async () => mockBookmarks,
     });
     user = userEvent.setup();

@@ -1,8 +1,15 @@
 import ActualDatabase from "better-sqlite3"; // Import the actual library
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 
-import { createBookmark, mockBookmarks } from "../../test-utils/bookmarkTestUtils";
+import {
+  HTTP_STATUS_BAD_REQUEST,
+  HTTP_STATUS_CONFLICT,
+  HTTP_STATUS_CREATED,
+  HTTP_STATUS_INTERNAL_SERVER_ERROR,
+  HTTP_STATUS_NO_CONTENT,
+} from "../../constants/httpStatusCodes";
 import { assertErrorResponse } from "../../test-utils/assertions";
+import { createBookmark, mockBookmarks } from "../../test-utils/bookmarkTestUtils";
 import { setupInMemoryDb } from "../../test-utils/db-setup";
 import { Bookmark } from "../../types/Bookmark";
 import { API_BOOKMARKS_URL } from "../utils/constants";
@@ -43,7 +50,7 @@ describe("ブックマーク追加APIのテスト (オンメモリDB)", () => {
   async function addBookmarkAndVerify(bookmark: Bookmark) {
     const response = await POST(createPostRequest(JSON.stringify(bookmark)));
 
-    expect(response.status).toBe(201);
+    expect(response.status).toBe(HTTP_STATUS_CREATED);
     const json = await response.json();
     expect(json).toEqual({
       bookmark_id: expect.any(Number),
@@ -90,7 +97,11 @@ describe("ブックマーク追加APIのテスト (オンメモリDB)", () => {
   it("POST: 不正なJSONデータの場合はエラーを返す", async () => {
     const response = await POST(createPostRequest("invalid json"));
 
-    await assertErrorResponse(response, 400, "リクエストボディのJSONが不正です。");
+    await assertErrorResponse(
+      response,
+      HTTP_STATUS_BAD_REQUEST,
+      "リクエストボディのJSONが不正です。"
+    );
   });
 
   it("POST: クエリエラー時に500エラーを返す", async () => {
@@ -106,7 +117,11 @@ describe("ブックマーク追加APIのテスト (オンメモリDB)", () => {
     });
 
     const response = await POST(createPostRequest(JSON.stringify(bookmark)));
-    await assertErrorResponse(response, 500, "サーバー内部でエラーが発生しました。");
+    await assertErrorResponse(
+      response,
+      HTTP_STATUS_INTERNAL_SERVER_ERROR,
+      "サーバー内部でエラーが発生しました。"
+    );
 
     prepareSpy.mockRestore();
   });
@@ -119,7 +134,11 @@ describe("ブックマーク追加APIのテスト (オンメモリDB)", () => {
 
     const response = await POST(createPostRequest(JSON.stringify(bookmark)));
 
-    await assertErrorResponse(response, 409, "指定されたURLのブックマークは既に登録されています。");
+    await assertErrorResponse(
+      response,
+      HTTP_STATUS_CONFLICT,
+      "指定されたURLのブックマークは既に登録されています。"
+    );
   });
 
   it("POST: URLが空文字の場合にエラーを返す", async () => {
@@ -129,7 +148,7 @@ describe("ブックマーク追加APIのテスト (オンメモリDB)", () => {
 
     const response = await POST(createPostRequest(JSON.stringify(bookmark)));
 
-    await assertErrorResponse(response, 400, "URLを指定してください。");
+    await assertErrorResponse(response, HTTP_STATUS_BAD_REQUEST, "URLを指定してください。");
   });
 
   it("POST: タイトルが空文字の場合にエラーを返す", async () => {
@@ -139,14 +158,14 @@ describe("ブックマーク追加APIのテスト (オンメモリDB)", () => {
 
     const response = await POST(createPostRequest(JSON.stringify(bookmark)));
 
-    await assertErrorResponse(response, 400, "タイトルを指定してください。");
+    await assertErrorResponse(response, HTTP_STATUS_BAD_REQUEST, "タイトルを指定してください。");
   });
 
   // --- OPTIONS Tests ---
   it("OPTIONS: 適切なCORSヘッダーを返す", async () => {
     const response = await OPTIONS(); // OPTIONS handler might not take a request argument
 
-    expect(response.status).toBe(204);
+    expect(response.status).toBe(HTTP_STATUS_NO_CONTENT);
     expect(response.headers.get("Access-Control-Allow-Origin")).toBe(
       "chrome-extension://jonckoigjppkhajocdbgfbgjdgffhebf"
     );
