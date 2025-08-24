@@ -17,7 +17,7 @@ export class ApiError extends Error {
 
   // エラーオブジェクトが文字列として評価される際に、ステータスコードを含む形式にする
   public toString(): string {
-    return `ApiError: [${this.status}] ${this.message}`;
+    return `${this.name}: [${this.status}] ${this.message}`;
   }
 
   /**
@@ -30,6 +30,13 @@ export class ApiError extends Error {
       message: this.message,
       status: this.status,
     };
+  }
+}
+
+export class DuplicatedUrlError extends ApiError {
+  constructor(message: string) {
+    super(message, 409);
+    this.name = "DuplicatedUrlError";
   }
 }
 
@@ -115,6 +122,9 @@ export const parseApiError = async (response: Response): Promise<ApiError> => {
       );
       cause = createErrorCauseFromContext({ error: e, body: bodyText });
     }
+  }
+  if (response.status === 409) {
+    return new DuplicatedUrlError(message);
   }
   return new ApiError(message, response.status, { cause });
 };

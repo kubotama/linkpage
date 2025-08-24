@@ -1,17 +1,9 @@
 import { useCallback, useState } from "react";
 
-import { parseApiError } from "../api/utils/ApiUtils";
+import { ApiError, parseApiError } from "../api/utils/ApiUtils";
 import { BOOKMARKS_ENDPOINT } from "../constants/apiEndpoints";
 import { Bookmark } from "../types/Bookmark";
 import { Keyword } from "../types/Keyword";
-import { ApiError } from "../api/utils/ApiUtils";
-
-export class DuplicatedUrlError extends Error {
-  constructor(message: string) {
-    super(message);
-    this.name = "DuplicatedUrlError";
-  }
-}
 
 const getErrorMessage = (error: unknown): string => {
   if (error instanceof ApiError) {
@@ -84,16 +76,10 @@ export const useBookmarks = () => {
           )
         );
       } else {
-        // エラーレスポンスの処理
-        const json = await response.json();
-        if (response.status === 409) {
-          throw new DuplicatedUrlError(`[${response.status}] ${json.message}`);
-        } else {
-          throw new Error(`[${response.status}] ${json.message}`);
-        }
+        throw await parseApiError(response);
       }
     } catch (error: unknown) {
-      console.error("ブックマークの更新エラー:", (error as Error).message); // 詳細なエラーはコンソールへ
+      console.error("ブックマークの更新エラー:", getErrorMessage(error)); // 詳細なエラーはコンソールへ
       throw error;
     }
   }, []);

@@ -1,6 +1,6 @@
 import "@testing-library/jest-dom";
 
-import { afterEach, beforeEach, describe, expect, it, vi, MockInstance } from "vitest";
+import { afterEach, beforeEach, describe, expect, it, MockInstance, vi } from "vitest";
 
 import { screen, waitFor, within } from "@testing-library/react";
 import userEvent, { UserEvent } from "@testing-library/user-event";
@@ -146,7 +146,7 @@ describe("タイトルの更新ボタン", () => {
 
         expect(consoleErrorSpy).toHaveBeenCalledWith(
           "ブックマークの更新エラー:",
-          `[${statusCode}] ${errorText}`
+          `DuplicatedUrlError: [${statusCode}] ${errorText}`
         );
 
         // フォームに入力した値が保持され、更新ボタンが表示されていることを確認
@@ -189,7 +189,7 @@ describe("タイトルの更新ボタン", () => {
 
         expect(consoleErrorSpy).toHaveBeenCalledWith(
           "ブックマークの更新エラー:",
-          `[${errorCase.status}] ${errorCase.message}`
+          `ApiError: [${errorCase.status}] ${errorCase.message}`
         );
 
         // フォームの値は変更されずに保持されるべき
