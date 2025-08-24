@@ -49,7 +49,6 @@ describe("BookmarkManagerの表示を確認", () => {
       ok: false,
       status: statusCode,
       headers: { "Content-Type": "application/json" },
-      json: async () => JSON.stringify({ message: errorText }),
       text: async () => JSON.stringify({ message: errorText }),
     });
 
