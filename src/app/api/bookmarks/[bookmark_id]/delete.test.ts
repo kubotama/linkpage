@@ -8,7 +8,7 @@ import {
   HTTP_STATUS_NOT_FOUND,
 } from "../../../constants/httpStatusCodes";
 import { assertErrorResponse } from "../../../test-utils/assertions";
-import { mockBookmarks } from "../../../test-utils/bookmarkTestUtils";
+import { GOOGLE_BOOKMARK, mockBookmarks } from "../../../test-utils/bookmarkTestUtils";
 import { setupInMemoryDb } from "../../../test-utils/db-setup";
 import { API_BOOKMARKS_URL } from "../../utils/constants";
 import { getDb } from "../database";
@@ -45,7 +45,7 @@ describe("ブックマーク削除APIのテスト (オンメモリDB)", () => {
 
   it("DELETE: ブックマークを削除できる", async () => {
     // 削除対象のブックマーク (例: Google, IDは2になるはず)
-    const bookmarkToDelete = mockBookmarks[1]; // Google
+    const bookmarkToDelete = GOOGLE_BOOKMARK; // Google
 
     // データベースからIDを取得して確認
     const selectStmt = inMemoryDbInstance.prepare(

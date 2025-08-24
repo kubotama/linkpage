@@ -9,7 +9,11 @@ import {
   HTTP_STATUS_NOT_FOUND,
 } from "../../../constants/httpStatusCodes";
 import { assertErrorResponse } from "../../../test-utils/assertions";
-import { mockBookmarks } from "../../../test-utils/bookmarkTestUtils";
+import {
+  GMAIL_BOOKMARK,
+  LINKPAGE_BOOKMARK,
+  mockBookmarks,
+} from "../../../test-utils/bookmarkTestUtils";
 import { setupInMemoryDb } from "../../../test-utils/db-setup";
 import { API_BOOKMARKS_URL } from "../../utils/constants";
 import { getDb } from "../database";
@@ -53,10 +57,10 @@ describe("ブックマーク更新APIのテスト (オンメモリDB)", () => {
   it("PUT: ブックマークのタイトルのみを更新できる。", async () => {
     const [request, context] = createPutRequest(
       JSON.stringify({
-        url: mockBookmarks[0].url,
+        url: LINKPAGE_BOOKMARK.url,
         title: "Updated Title",
       }),
-      mockBookmarks[0].bookmark_id
+      LINKPAGE_BOOKMARK.bookmark_id
     );
     const response = await PUT(request, context);
 
@@ -67,13 +71,13 @@ describe("ブックマーク更新APIのテスト (オンメモリDB)", () => {
     const selectStmt = inMemoryDbInstance.prepare(
       "SELECT bookmark_id, url, title FROM bookmarks WHERE bookmark_id = ?"
     );
-    const updatedEntry = selectStmt.get(mockBookmarks[0].bookmark_id) as {
+    const updatedEntry = selectStmt.get(LINKPAGE_BOOKMARK.bookmark_id) as {
       bookmark_id: number;
       url: string;
       title: string;
     };
-    expect(updatedEntry.bookmark_id).toEqual(mockBookmarks[0].bookmark_id);
-    expect(updatedEntry.url).toEqual(mockBookmarks[0].url);
+    expect(updatedEntry.bookmark_id).toEqual(LINKPAGE_BOOKMARK.bookmark_id);
+    expect(updatedEntry.url).toEqual(LINKPAGE_BOOKMARK.url);
     expect(updatedEntry.title).toEqual("Updated Title");
     // 更新後の件数を確認
     const countAfter = (
@@ -284,18 +288,12 @@ describe("ブックマーク更新APIのテスト (オンメモリDB)", () => {
   });
 
   it("PUT: 同じURLが登録される場合には409を返す。", async () => {
-    const bookmarkToUpdate = {
-      bookmark_id: 1,
-      url: "https://www.example.com",
-      title: "Example Title",
-    };
-
     const [request, context] = createPutRequest(
       JSON.stringify({
-        url: mockBookmarks[2].url,
-        title: bookmarkToUpdate.title,
+        url: GMAIL_BOOKMARK.url,
+        title: "Example Title",
       }),
-      bookmarkToUpdate.bookmark_id
+      LINKPAGE_BOOKMARK.bookmark_id
     );
     const response = await PUT(request, context);
 

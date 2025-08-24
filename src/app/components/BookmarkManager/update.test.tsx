@@ -21,6 +21,8 @@ import {
   createBookmark,
   createMockResponse,
   expectBookmarkFormValues,
+  GMAIL_BOOKMARK,
+  GOOGLE_BOOKMARK,
   mockBookmarks,
   setBookmarkFormValuesAndClickButton,
   setupBookmarkManagerForTest,
@@ -61,7 +63,7 @@ describe("タイトルの更新ボタン", () => {
     let bookmarkToSelect: Bookmark;
     beforeEach(async () => {
       // 2番目のブックマーク「Google」を選択
-      bookmarkToSelect = mockBookmarks[1];
+      bookmarkToSelect = GOOGLE_BOOKMARK;
       await clickBookmark(user, bookmarkToSelect);
       await assertBookmarkIsSelected(bookmarkToSelect);
       mockFetch.mockReset();
@@ -133,7 +135,7 @@ describe("タイトルの更新ボタン", () => {
       });
 
       it("同じURLを指定された場合には409を返す。", async () => {
-        const updateUrl = mockBookmarks[2].url;
+        const updateUrl = GMAIL_BOOKMARK.url;
         const updateTitle = "更新されたタイトル";
         const errorText = "指定されたURLのブックマークは既に登録されています。";
         const statusCode = HTTP_STATUS_CONFLICT;

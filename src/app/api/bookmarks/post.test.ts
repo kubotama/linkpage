@@ -9,7 +9,7 @@ import {
   HTTP_STATUS_NO_CONTENT,
 } from "../../constants/httpStatusCodes";
 import { assertErrorResponse } from "../../test-utils/assertions";
-import { createBookmark, mockBookmarks } from "../../test-utils/bookmarkTestUtils";
+import { createBookmark, GOOGLE_BOOKMARK } from "../../test-utils/bookmarkTestUtils";
 import { setupInMemoryDb } from "../../test-utils/db-setup";
 import { Bookmark } from "../../types/Bookmark";
 import { API_BOOKMARKS_URL } from "../utils/constants";
@@ -128,7 +128,7 @@ describe("ブックマーク追加APIのテスト (オンメモリDB)", () => {
 
   it("POST: 重複したURLのブックマーク追加時に409 Conflictを返す", async () => {
     const bookmark: Bookmark = createBookmark({
-      url: mockBookmarks[1].url, // Same URL
+      url: GOOGLE_BOOKMARK.url, // Same URL
       title: "同じURLで別のタイトル",
     });
 

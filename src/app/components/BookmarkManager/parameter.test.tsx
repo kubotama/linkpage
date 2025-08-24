@@ -10,6 +10,7 @@ import {
   assertBookmarkIsSelected,
   clickBookmark,
   expectBookmarkFormValues,
+  GOOGLE_BOOKMARK,
   mockBookmarks,
   setBookmarkFormValuesAndClickButton,
   setupBookmarkManagerForTest,
@@ -34,7 +35,7 @@ describe("「パラメータ」ボタン: URLから無駄な文字列を削除�
 
       await setupBookmarkManagerForTest();
 
-      const bookmarkToSelect = mockBookmarks[1]; // Google
+      const bookmarkToSelect = GOOGLE_BOOKMARK; // Google
       await clickBookmark(user, bookmarkToSelect);
       await assertBookmarkIsSelected(bookmarkToSelect);
     });

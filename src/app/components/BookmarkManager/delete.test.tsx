@@ -18,6 +18,7 @@ import {
   assertBookmarkIsSelected,
   clickBookmark,
   createMockResponse,
+  GOOGLE_BOOKMARK,
   mockBookmarks,
   setupBookmarkManagerForTest,
 } from "../../test-utils/bookmarkTestUtils";
@@ -59,7 +60,7 @@ describe("削除ボタン", () => {
 
     beforeEach(async () => {
       // 2番目のブックマーク「Google」を選択
-      bookmarkToSelect = mockBookmarks[1];
+      bookmarkToSelect = GOOGLE_BOOKMARK;
       await clickBookmark(user, bookmarkToSelect);
       await assertBookmarkIsSelected(bookmarkToSelect);
 
