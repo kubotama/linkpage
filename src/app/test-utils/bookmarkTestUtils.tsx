@@ -10,7 +10,12 @@ import {
   TITLE_ROLE_NAME,
   URL_ROLE_NAME,
 } from "../constants/constants";
-import { HTTP_STATUS_NO_CONTENT, HTTP_STATUS_OK } from "../constants/httpStatusCodes";
+import {
+  HTTP_STATUS_CREATED,
+  HTTP_STATUS_MULTIPLE_CHOICES,
+  HTTP_STATUS_NO_CONTENT,
+  HTTP_STATUS_OK,
+} from "../constants/httpStatusCodes";
 import { Bookmark } from "../types/Bookmark";
 import { Keyword } from "../types/Keyword";
 
@@ -187,14 +192,15 @@ export const createMockResponse = ({
 }: CreateMockResponseOptions = {}) => {
   const DEFAULT_KEYWORD_ID = 1;
   const DEFAULT_BOOKMARK_KEYWORD_ID = 123;
-  const responseStatus = status ?? 201;
+
+  const responseStatus = status ?? HTTP_STATUS_CREATED;
   const response: {
     ok: boolean;
     status: number;
     json?: () => Promise<Partial<MockResponseJson>>;
     text?: () => Promise<string>;
   } = {
-    ok: isOk ?? (responseStatus >= HTTP_STATUS_OK && responseStatus < 300),
+    ok: isOk ?? (responseStatus >= HTTP_STATUS_OK && responseStatus < HTTP_STATUS_MULTIPLE_CHOICES),
     status: responseStatus,
   };
 
