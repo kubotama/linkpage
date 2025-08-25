@@ -121,23 +121,26 @@ describe("削除ボタン", () => {
       },
     ])("エラーハンドリング: $description", async ({ errorCase }) => {
       const consoleErrorSpy = vi.spyOn(console, "error").mockImplementation(() => {});
+      try {
+        mockFetch.mockResolvedValueOnce(createMockResponse({ ...errorCase, isOk: false }));
+        await clickDeleteButton(user);
 
-      mockFetch.mockResolvedValueOnce(createMockResponse({ ...errorCase, isOk: false }));
-      await clickDeleteButton(user);
+        expect(consoleErrorSpy).toHaveBeenCalledWith(
+          "ブックマークの削除エラー:",
+          `ApiError: [${errorCase.status}] ${errorCase.message}`
+        );
 
-      expect(consoleErrorSpy).toHaveBeenCalledWith(
-        "ブックマークの削除エラー:",
-        `ApiError: [${errorCase.status}] ${errorCase.message}`
-      );
+        await assertErrorMessage({
+          message: "ブックマークの削除中にエラーが発生しました。",
+          isError: true,
+          isWait: true,
+        });
 
-      await assertErrorMessage({
-        message: "ブックマークの削除中にエラーが発生しました。",
-        isError: true,
-        isWait: true,
-      });
-
-      await screen.findByText(bookmarkToSelect.title);
-      await screen.findByRole("button", { name: DELETE_BUTTON_ROLE_NAME });
+        await screen.findByText(bookmarkToSelect.title);
+        await screen.findByRole("button", { name: DELETE_BUTTON_ROLE_NAME });
+      } finally {
+        consoleErrorSpy.mockRestore();
+      }
     });
   });
 });

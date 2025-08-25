@@ -47,29 +47,31 @@ describe("BookmarkManagerの表示を確認", () => {
 
   it("HTTPステータス500でfetchした場合、エラーメッセージが表示される", async () => {
     const consoleErrorSpy = vi.spyOn(console, "error").mockImplementation(() => {});
-    const errorText = "Internal Error";
-    const statusCode = HTTP_STATUS_INTERNAL_SERVER_ERROR;
+    try {
+      const errorText = "Internal Error";
+      const statusCode = HTTP_STATUS_INTERNAL_SERVER_ERROR;
 
-    mockFetch.mockResolvedValueOnce({
-      ok: false,
-      status: statusCode,
-      headers: { "Content-Type": "application/json" },
-      text: async () => JSON.stringify({ message: errorText }),
-    });
+      mockFetch.mockResolvedValueOnce({
+        ok: false,
+        status: statusCode,
+        headers: { "Content-Type": "application/json" },
+        text: async () => JSON.stringify({ message: errorText }),
+      });
 
-    render(<BookmarkManager />);
+      render(<BookmarkManager />);
 
-    await assertErrorMessage({
-      message: "ブックマークのロード中にエラーが発生しました。",
-      isError: true,
-      isWait: true,
-    });
+      await assertErrorMessage({
+        message: "ブックマークのロード中にエラーが発生しました。",
+        isError: true,
+        isWait: true,
+      });
 
-    expect(consoleErrorSpy).toHaveBeenCalledWith(
-      "ブックマークのロードエラー:",
-      `ApiError: [${statusCode}] ${errorText}`
-    );
-
-    consoleErrorSpy.mockRestore();
+      expect(consoleErrorSpy).toHaveBeenCalledWith(
+        "ブックマークのロードエラー:",
+        `ApiError: [${statusCode}] ${errorText}`
+      );
+    } finally {
+      consoleErrorSpy.mockRestore();
+    }
   });
 });
