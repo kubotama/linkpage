@@ -222,7 +222,7 @@ export const createMockResponse = ({
   return response;
 };
 
-const typeInTextbox = async (user: UserEvent, name: string, value: string) => {
+export const typeInTextbox = async (user: UserEvent, name: string, value: string) => {
   const textbox = screen.getByRole("textbox", { name });
   await user.clear(textbox);
   if (value.length > 0) {

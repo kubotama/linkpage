@@ -21,14 +21,14 @@ import {
   deselectBookmark,
   findBookmarkWithAtLeastNKeywords,
   setupBookmarkManagerForTest,
+  typeInTextbox,
 } from "../../test-utils/bookmarkTestUtils";
 import { Bookmark } from "../../types/Bookmark";
 
 const mockFetch = vi.fn();
 
 const addNewKeyword = async (user: UserEvent, keyword: string) => {
-  const keywordInput = screen.getByRole("textbox", { name: KEYWORD_ROLE_NAME });
-  await user.type(keywordInput, keyword);
+  await typeInTextbox(user, KEYWORD_ROLE_NAME, keyword);
   await clickButtonByName(user, ADD_BUTTON_ROLE_NAME);
 };
 
