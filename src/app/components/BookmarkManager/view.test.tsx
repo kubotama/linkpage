@@ -5,7 +5,7 @@ import { beforeEach, describe, expect, it, vi } from "vitest";
 import { render, screen } from "@testing-library/react";
 
 import { HTTP_STATUS_INTERNAL_SERVER_ERROR, HTTP_STATUS_OK } from "../../constants/httpStatusCodes";
-import { mockBookmarks } from "../../test-utils/bookmarkTestUtils";
+import { assertErrorMessage, mockBookmarks } from "../../test-utils/bookmarkTestUtils";
 import { BookmarkManager } from "../BookmarkManager";
 
 const mockFetch = vi.fn();
@@ -29,7 +29,7 @@ describe("BookmarkManagerの表示を確認", () => {
     expect(bm).toBeVisible();
   });
 
-  it("ローディング中にローディングメッセージが表示されること", () => {
+  it("ローディング中にローディングメッセージが表示されること", async () => {
     mockFetch.mockResolvedValueOnce({
       ok: true,
       status: HTTP_STATUS_OK,
@@ -38,31 +38,40 @@ describe("BookmarkManagerの表示を確認", () => {
 
     render(<BookmarkManager />);
 
-    expect(screen.getByTestId("bookmark-message")).toHaveTextContent(/^ブックマークをロード中...$/);
+    await assertErrorMessage({
+      message: "ブックマークをロード中...",
+      isError: false,
+      isAsync: false,
+    });
   });
 
   it("HTTPステータス500でfetchした場合、エラーメッセージが表示される", async () => {
     const consoleErrorSpy = vi.spyOn(console, "error").mockImplementation(() => {});
-    const errorText = "Internal Error";
-    const statusCode = HTTP_STATUS_INTERNAL_SERVER_ERROR;
+    try {
+      const errorText = "Internal Error";
+      const statusCode = HTTP_STATUS_INTERNAL_SERVER_ERROR;
 
-    mockFetch.mockResolvedValueOnce({
-      ok: false,
-      status: statusCode,
-      headers: { "Content-Type": "application/json" },
-      text: async () => JSON.stringify({ message: errorText }),
-    });
+      mockFetch.mockResolvedValueOnce({
+        ok: false,
+        status: statusCode,
+        headers: { "Content-Type": "application/json" },
+        text: async () => JSON.stringify({ message: errorText }),
+      });
 
-    render(<BookmarkManager />);
+      render(<BookmarkManager />);
 
-    const errorMessage = await screen.findByTestId("bookmark-message");
-    expect(errorMessage).toHaveTextContent(/ブックマークのロード中にエラーが発生しました。/);
+      await assertErrorMessage({
+        message: "ブックマークのロード中にエラーが発生しました。",
+        isError: true,
+        isAsync: true,
+      });
 
-    expect(consoleErrorSpy).toHaveBeenCalledWith(
-      "ブックマークのロードエラー:",
-      `ApiError: [${statusCode}] ${errorText}`
-    );
-
-    consoleErrorSpy.mockRestore();
+      expect(consoleErrorSpy).toHaveBeenCalledWith(
+        "ブックマークのロードエラー:",
+        `ApiError: [${statusCode}] ${errorText}`
+      );
+    } finally {
+      consoleErrorSpy.mockRestore();
+    }
   });
 });

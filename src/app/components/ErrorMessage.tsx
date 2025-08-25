@@ -20,7 +20,10 @@ export const ErrorMessage = ({
           {isError && ( // エラーメッセージがある場合のみ「閉じる」ボタンを表示
             <ActionButton onClick={handleErrorClose}>閉じる</ActionButton>
           )}
-          <div data-testid="bookmark-message" className={`ml-2 ${isError ? "text-red-500" : ""}`}>
+          <div
+            data-testid="bookmark-message"
+            className={`ml-2 ${isError ? "text-red-500" : "text-gray-800"}`}
+          >
             {textMessage}
           </div>
         </>

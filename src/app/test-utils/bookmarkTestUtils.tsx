@@ -297,3 +297,34 @@ export const setupBookmarkManagerForTest = async () => {
 export const deselectBookmark = async (user: UserEvent) => {
   await keyDown(user, "{escape}");
 };
+
+interface AssertErrorMessageOptions {
+  message: string;
+  isError: boolean;
+  isAsync: boolean;
+}
+
+export const assertErrorMessage = async ({
+  message,
+  isError,
+  isAsync,
+}: AssertErrorMessageOptions) => {
+  const messageElement = isAsync
+    ? await screen.findByTestId("bookmark-message")
+    : screen.getByTestId("bookmark-message");
+  expect(messageElement).toHaveTextContent(message);
+
+  if (isError) {
+    expect(messageElement).toHaveClass("text-red-500");
+    expect(messageElement).not.toHaveClass("text-gray-800");
+    expect(screen.getByRole("button", { name: "閉じる" })).toBeVisible();
+  } else {
+    expect(messageElement).not.toHaveClass("text-red-500");
+    expect(messageElement).toHaveClass("text-gray-800");
+    // 「閉じる」ボタンは非同期で消える可能性があるため、isAsyncの値に関わらず
+    // waitForを使用して、ボタンが確実に存在しないことを検証します。
+    await waitFor(() => {
+      expect(screen.queryByRole("button", { name: "閉じる" })).not.toBeInTheDocument();
+    });
+  }
+};

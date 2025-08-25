@@ -5,6 +5,7 @@ import { beforeEach, describe, expect, it, vi } from "vitest"; // Vitestから�
 import { render, screen } from "@testing-library/react";
 import userEvent, { UserEvent } from "@testing-library/user-event";
 
+import { assertErrorMessage } from "../test-utils/bookmarkTestUtils";
 import { ErrorMessage } from "./ErrorMessage";
 
 describe("ErrorMessage", () => {
@@ -28,12 +29,10 @@ describe("ErrorMessage", () => {
       />
     );
 
-    expect(screen.getByTestId("bookmark-message")).toHaveTextContent("ブックマークをロード中...");
-    expect(screen.getByTestId("bookmark-message")).not.toHaveStyle("color: red");
-    expect(screen.queryByRole("button", { name: "閉じる" })).not.toBeInTheDocument();
+    await assertErrorMessage({ message: textMessage, isError: false, isAsync: false });
   });
 
-  it("should display error message and close button when there is an error", () => {
+  it("should display error message and close button when there is an error", async () => {
     const textMessage = "エラーが発生しました";
     const isError = true;
     const handleErrorClose = vi.fn();
@@ -45,10 +44,7 @@ describe("ErrorMessage", () => {
         handleErrorClose={handleErrorClose}
       />
     );
-    const errorMessageElement = screen.getByTestId("bookmark-message");
-    expect(errorMessageElement).toHaveTextContent("エラーが発生しました");
-    expect(errorMessageElement).toHaveClass("text-red-500");
-    expect(screen.getByRole("button", { name: "閉じる" })).toBeVisible();
+    await assertErrorMessage({ message: textMessage, isError: true, isAsync: false });
   });
 
   it("should call handleErrorClose when close button is clicked", async () => {

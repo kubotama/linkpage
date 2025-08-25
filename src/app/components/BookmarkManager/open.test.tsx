@@ -2,12 +2,13 @@ import "@testing-library/jest-dom";
 
 import { afterAll, beforeAll, beforeEach, describe, expect, it, vi } from "vitest";
 
-import { screen, waitFor } from "@testing-library/react";
+import { waitFor } from "@testing-library/react";
 import userEvent, { UserEvent } from "@testing-library/user-event";
 
 import { HTTP_STATUS_OK } from "../../constants/httpStatusCodes";
 import {
   assertBookmarkIsSelected,
+  assertErrorMessage,
   clickBookmark,
   GOOGLE_BOOKMARK,
   mockBookmarks,
@@ -102,9 +103,12 @@ describe("「開く」ボタン: 入力されたURLを新しいタブで開く",
     it("不正なURLを入力した場合", async () => {
       await setBookmarkFormValuesAndEnterKeydown(user, "invalid-url");
 
-      expect(await screen.findByTestId("bookmark-message")).toHaveTextContent(
-        "URLが無効です。正しいURLを入力してください。"
-      );
+      await assertErrorMessage({
+        message: "URLが無効です。正しいURLを入力してください。",
+        isError: true,
+        isAsync: true,
+      });
+
       expect(mockOpen).not.toHaveBeenCalled();
     });
   });

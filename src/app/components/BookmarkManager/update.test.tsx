@@ -17,6 +17,7 @@ import {
 } from "../../constants/httpStatusCodes";
 import {
   assertBookmarkIsSelected,
+  assertErrorMessage,
   clickBookmark,
   createBookmark,
   createMockResponse,
@@ -165,9 +166,11 @@ describe("タイトルの更新ボタン", () => {
           title: updateTitle,
           buttonName: UPDATE_BUTTON_ROLE_NAME,
         });
-        expect(await screen.findByTestId("bookmark-message")).toHaveTextContent(
-          "指定されたURLのブックマークは既に登録されています。"
-        );
+        await assertErrorMessage({
+          message: "指定されたURLのブックマークは既に登録されています。",
+          isError: true,
+          isAsync: true,
+        });
         const table = await screen.findByRole("table", { name: TABLE_NAME_BOOKMARKS });
         await within(table).findByText(bookmarkToSelect.title);
       });
@@ -218,9 +221,11 @@ describe("タイトルの更新ボタン", () => {
           buttonName: UPDATE_BUTTON_ROLE_NAME,
         });
 
-        expect(await screen.findByTestId("bookmark-message")).toHaveTextContent(
-          "ブックマークの更新中にエラーが発生しました。"
-        );
+        await assertErrorMessage({
+          message: "ブックマークの更新中にエラーが発生しました。",
+          isError: true,
+          isAsync: true,
+        });
       });
 
       it.each([
@@ -248,9 +253,11 @@ describe("タイトルの更新ボタン", () => {
           buttonName: UPDATE_BUTTON_ROLE_NAME,
         });
 
-        expect(await screen.findByTestId("bookmark-message")).toHaveTextContent(
-          "ブックマークの更新中にエラーが発生しました。"
-        );
+        await assertErrorMessage({
+          message: "ブックマークの更新中にエラーが発生しました。",
+          isError: true,
+          isAsync: true,
+        });
       });
     });
   });
