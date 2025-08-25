@@ -312,7 +312,6 @@ export const assertErrorMessage = async ({
   const messageElement = isAsync
     ? await screen.findByTestId("bookmark-message")
     : screen.getByTestId("bookmark-message");
-  expect(messageElement).toBeInTheDocument();
   expect(messageElement).toHaveTextContent(message);
 
   if (isError) {
@@ -322,8 +321,8 @@ export const assertErrorMessage = async ({
   } else {
     expect(messageElement).not.toHaveClass("text-red-500");
     expect(messageElement).toHaveClass("text-gray-800");
-// 「閉じる」ボタンは非同期で消える可能性があるため、isAsyncの値に関わらず
-// waitForを使用して、ボタンが確実に存在しないことを検証します。
+    // 「閉じる」ボタンは非同期で消える可能性があるため、isAsyncの値に関わらず
+    // waitForを使用して、ボタンが確実に存在しないことを検証します。
     await waitFor(() => {
       expect(screen.queryByRole("button", { name: "閉じる" })).not.toBeInTheDocument();
     });
