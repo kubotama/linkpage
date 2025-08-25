@@ -309,32 +309,26 @@ export const assertErrorMessage = async ({
   isError,
   isWait,
 }: AssertErrorMessageOptions) => {
-  let errorElement: HTMLElement;
-  if (isWait) {
-    errorElement = await screen.findByTestId("bookmark-message");
-  } else {
-    errorElement = screen.getByTestId("bookmark-message");
-  }
+  const errorElement = isWait
+    ? await screen.findByTestId("bookmark-message")
+    : screen.getByTestId("bookmark-message");
   expect(errorElement).toBeInTheDocument();
   expect(errorElement).toHaveTextContent(message);
 
   if (isError) {
     expect(errorElement).toHaveClass("text-red-500");
     expect(errorElement).not.toHaveClass("text-gray-800");
-    if (isWait) {
-      expect(await screen.findByRole("button", { name: "閉じる" })).toBeVisible();
-    } else {
-      expect(screen.getByRole("button", { name: "閉じる" })).toBeVisible();
-    }
+    const closeButton = isWait
+      ? await screen.findByRole("button", { name: "閉じる" })
+      : screen.getByRole("button", { name: "閉じる" });
+    expect(closeButton).toBeVisible();
   } else {
     expect(errorElement).not.toHaveClass("text-red-500");
     expect(errorElement).toHaveClass("text-gray-800");
-    if (isWait) {
-      await waitFor(() => {
-        expect(screen.queryByRole("button", { name: "閉じる" })).not.toBeInTheDocument();
-      });
-    } else {
+    // isWait の場合、要素が非同期で消えるのを待つ必要がある。
+    // isWait でない場合でも、waitFor はすぐに解決されるため、コードを統一できる。
+    await waitFor(() => {
       expect(screen.queryByRole("button", { name: "閉じる" })).not.toBeInTheDocument();
-    }
+    });
   }
 };
