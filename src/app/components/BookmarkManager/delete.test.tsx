@@ -136,7 +136,8 @@ describe("削除ボタン", () => {
         isWait: true,
       });
 
-      consoleErrorSpy.mockRestore();
+      await screen.findByText(bookmarkToSelect.title);
+      await screen.findByRole("button", { name: DELETE_BUTTON_ROLE_NAME });
     });
   });
 });
