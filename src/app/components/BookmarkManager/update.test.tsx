@@ -19,6 +19,7 @@ import {
   assertBookmarkIsSelected,
   assertErrorMessage,
   clickBookmark,
+  clickButtonByName,
   createBookmark,
   createMockResponse,
   expectBookmarkFormValues,
@@ -31,14 +32,6 @@ import {
 import { Bookmark } from "../../types/Bookmark";
 
 const mockFetch = vi.fn();
-
-const clickUpdateButton = async (user: UserEvent) => {
-  const updateButton = screen.getByRole("button", {
-    name: UPDATE_BUTTON_ROLE_NAME,
-  });
-
-  await user.click(updateButton);
-};
 
 describe("タイトルの更新ボタン", () => {
   let user: UserEvent;
@@ -207,7 +200,7 @@ describe("タイトルの更新ボタン", () => {
       ])("エラーハンドリング: $description", async ({ errorCase }) => {
         mockFetch.mockResolvedValueOnce(createMockResponse({ ...errorCase, isOk: false }));
 
-        await clickUpdateButton(user);
+        await clickButtonByName(user, UPDATE_BUTTON_ROLE_NAME);
 
         expect(consoleErrorSpy).toHaveBeenCalledWith(
           "ブックマークの更新エラー:",

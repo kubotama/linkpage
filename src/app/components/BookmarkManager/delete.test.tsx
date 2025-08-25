@@ -18,6 +18,7 @@ import {
   assertBookmarkIsSelected,
   assertErrorMessage,
   clickBookmark,
+  clickButtonByName,
   createMockResponse,
   GOOGLE_BOOKMARK,
   mockBookmarks,
@@ -26,14 +27,6 @@ import {
 import { Bookmark } from "../../types/Bookmark";
 
 const mockFetch = vi.fn();
-
-const clickDeleteButton = async (user: UserEvent) => {
-  const deleteButton = screen.getByRole("button", {
-    name: DELETE_BUTTON_ROLE_NAME,
-  });
-
-  await user.click(deleteButton);
-};
 
 describe("削除ボタン", () => {
   let user: UserEvent;
@@ -77,7 +70,7 @@ describe("削除ボタン", () => {
         createMockResponse({ isOk: true, status: HTTP_STATUS_NO_CONTENT })
       );
 
-      await clickDeleteButton(user);
+      await clickButtonByName(user, DELETE_BUTTON_ROLE_NAME);
 
       await waitFor(() => {
         // APIの呼び出しの確認
@@ -123,7 +116,7 @@ describe("削除ボタン", () => {
       const consoleErrorSpy = vi.spyOn(console, "error").mockImplementation(() => {});
       try {
         mockFetch.mockResolvedValueOnce(createMockResponse({ ...errorCase, isOk: false }));
-        await clickDeleteButton(user);
+        await clickButtonByName(user, DELETE_BUTTON_ROLE_NAME);
 
         expect(consoleErrorSpy).toHaveBeenCalledWith(
           "ブックマークの削除エラー:",

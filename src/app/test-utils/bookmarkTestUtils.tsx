@@ -222,12 +222,17 @@ export const createMockResponse = ({
   return response;
 };
 
-const typeInTextbox = async (user: UserEvent, name: string, value: string) => {
+export const typeInTextbox = async (user: UserEvent, name: string, value: string) => {
   const textbox = screen.getByRole("textbox", { name });
   await user.clear(textbox);
   if (value.length > 0) {
     await user.type(textbox, value);
   }
+};
+
+export const clickButtonByName = async (user: UserEvent, name: string) => {
+  const button = screen.getByRole("button", { name });
+  await user.click(button);
 };
 
 export const setBookmarkFormValuesAndClickButton = async (
@@ -245,7 +250,7 @@ export const setBookmarkFormValuesAndClickButton = async (
     await typeInTextbox(user, TITLE_ROLE_NAME, values.title);
   }
   if (buttonName !== undefined) {
-    await user.click(screen.getByRole("button", { name: buttonName }));
+    await clickButtonByName(user, buttonName);
   }
 };
 

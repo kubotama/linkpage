@@ -2,10 +2,10 @@ import "@testing-library/jest-dom";
 
 import { beforeEach, describe, expect, it, vi } from "vitest"; // Vitestから必要なものをインポート
 
-import { render, screen } from "@testing-library/react";
+import { render } from "@testing-library/react";
 import userEvent, { UserEvent } from "@testing-library/user-event";
 
-import { assertErrorMessage } from "../test-utils/bookmarkTestUtils";
+import { assertErrorMessage, clickButtonByName } from "../test-utils/bookmarkTestUtils";
 import { ErrorMessage } from "./ErrorMessage";
 
 describe("ErrorMessage", () => {
@@ -59,7 +59,7 @@ describe("ErrorMessage", () => {
         handleErrorClose={handleErrorClose}
       />
     );
-    await user.click(screen.getByRole("button", { name: "閉じる" }));
+    await clickButtonByName(user, "閉じる");
     expect(handleErrorClose).toHaveBeenCalledTimes(1);
   });
 
