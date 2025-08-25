@@ -330,7 +330,7 @@ export const assertErrorMessage = async ({
     expect(errorElement).not.toHaveClass("text-red-500");
     expect(errorElement).toHaveClass("text-gray-800");
     if (isWait) {
-      waitFor(() => {
+      await waitFor(() => {
         expect(screen.queryByRole("button", { name: "閉じる" })).not.toBeInTheDocument();
       });
     } else {
