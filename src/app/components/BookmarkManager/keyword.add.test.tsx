@@ -16,6 +16,7 @@ import {
   assertBookmarkIsSelected,
   buildMockBookmarksWithKeywords,
   clickBookmark,
+  clickButtonByName,
   createMockResponse,
   deselectBookmark,
   findBookmarkWithAtLeastNKeywords,
@@ -27,9 +28,8 @@ const mockFetch = vi.fn();
 
 const addNewKeyword = async (user: UserEvent, keyword: string) => {
   const keywordInput = screen.getByRole("textbox", { name: KEYWORD_ROLE_NAME });
-  const addButton = screen.getByRole("button", { name: ADD_BUTTON_ROLE_NAME });
   await user.type(keywordInput, keyword);
-  await user.click(addButton);
+  await clickButtonByName(user, ADD_BUTTON_ROLE_NAME);
 };
 
 const expectTableRows = (expectRows: number) => {

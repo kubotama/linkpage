@@ -230,6 +230,11 @@ const typeInTextbox = async (user: UserEvent, name: string, value: string) => {
   }
 };
 
+export const clickButtonByName = async (user: UserEvent, name: string) => {
+  const button = screen.getByRole("button", { name });
+  await user.click(button);
+};
+
 export const setBookmarkFormValuesAndClickButton = async (
   user: UserEvent,
   values: {
@@ -245,7 +250,7 @@ export const setBookmarkFormValuesAndClickButton = async (
     await typeInTextbox(user, TITLE_ROLE_NAME, values.title);
   }
   if (buttonName !== undefined) {
-    await user.click(screen.getByRole("button", { name: buttonName }));
+    await clickButtonByName(user, buttonName);
   }
 };
 
