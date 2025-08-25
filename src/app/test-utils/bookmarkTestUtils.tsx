@@ -322,8 +322,8 @@ export const assertErrorMessage = async ({
   } else {
     expect(messageElement).not.toHaveClass("text-red-500");
     expect(messageElement).toHaveClass("text-gray-800");
-    // isWait の場合、要素が非同期で消えるのを待つ必要がある。
-    // isWait でない場合でも、waitFor はすぐに解決されるため、コードを統一できる。
+// 「閉じる」ボタンは非同期で消える可能性があるため、isAsyncの値に関わらず
+// waitForを使用して、ボタンが確実に存在しないことを検証します。
     await waitFor(() => {
       expect(screen.queryByRole("button", { name: "閉じる" })).not.toBeInTheDocument();
     });
