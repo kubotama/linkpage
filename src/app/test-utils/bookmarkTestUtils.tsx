@@ -309,22 +309,19 @@ export const assertErrorMessage = async ({
   isError,
   isWait,
 }: AssertErrorMessageOptions) => {
-  const errorElement = isWait
+  const messageElement = isWait
     ? await screen.findByTestId("bookmark-message")
     : screen.getByTestId("bookmark-message");
-  expect(errorElement).toBeInTheDocument();
-  expect(errorElement).toHaveTextContent(message);
+  expect(messageElement).toBeInTheDocument();
+  expect(messageElement).toHaveTextContent(message);
 
   if (isError) {
-    expect(errorElement).toHaveClass("text-red-500");
-    expect(errorElement).not.toHaveClass("text-gray-800");
-    const closeButton = isWait
-      ? await screen.findByRole("button", { name: "閉じる" })
-      : screen.getByRole("button", { name: "閉じる" });
-    expect(closeButton).toBeVisible();
+    expect(messageElement).toHaveClass("text-red-500");
+    expect(messageElement).not.toHaveClass("text-gray-800");
+    expect(screen.getByRole("button", { name: "閉じる" })).toBeVisible();
   } else {
-    expect(errorElement).not.toHaveClass("text-red-500");
-    expect(errorElement).toHaveClass("text-gray-800");
+    expect(messageElement).not.toHaveClass("text-red-500");
+    expect(messageElement).toHaveClass("text-gray-800");
     // isWait の場合、要素が非同期で消えるのを待つ必要がある。
     // isWait でない場合でも、waitFor はすぐに解決されるため、コードを統一できる。
     await waitFor(() => {
