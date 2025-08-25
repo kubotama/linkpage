@@ -3,7 +3,7 @@
 import { useCallback, useEffect, useRef, useState } from "react";
 import { useHotkeys } from "react-hotkeys-hook";
 
-import { DuplicatedUrlError } from "../api/utils/ApiUtils";
+import { DuplicatedError } from "../api/utils/ApiUtils";
 import { useBookmarks } from "./useBookmark";
 import { useErrorMessage } from "./useErrorMessage";
 
@@ -131,7 +131,7 @@ export const useBookmarkManager = () => {
       await updateBookmark(selectedBookmarkId, textUrl, textTitle);
       setMessage();
     } catch (error: unknown) {
-      if (error instanceof DuplicatedUrlError) {
+      if (error instanceof DuplicatedError) {
         setMessage("指定されたURLのブックマークは既に登録されています。", true);
       } else {
         setMessage("ブックマークの更新中にエラーが発生しました。", true);

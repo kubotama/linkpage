@@ -35,10 +35,10 @@ export class ApiError extends Error {
   }
 }
 
-export class DuplicatedUrlError extends ApiError {
+export class DuplicatedError extends ApiError {
   constructor(message: string, options?: { cause: unknown }) {
     super(message, HTTP_STATUS_CONFLICT, options);
-    this.name = "DuplicatedUrlError";
+    this.name = "DuplicatedError";
   }
 }
 
@@ -126,7 +126,7 @@ export const parseApiError = async (response: Response): Promise<ApiError> => {
     }
   }
   if (response.status === HTTP_STATUS_CONFLICT) {
-    return new DuplicatedUrlError(message, { cause });
+    return new DuplicatedError(message, { cause });
   }
   return new ApiError(message, response.status, { cause });
 };
