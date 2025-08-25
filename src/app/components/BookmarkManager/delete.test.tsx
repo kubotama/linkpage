@@ -133,7 +133,7 @@ describe("削除ボタン", () => {
         await assertErrorMessage({
           message: "ブックマークの削除中にエラーが発生しました。",
           isError: true,
-          isWait: true,
+          isAsync: true,
         });
 
         await screen.findByText(bookmarkToSelect.title);

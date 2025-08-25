@@ -106,7 +106,7 @@ describe("「開く」ボタン: 入力されたURLを新しいタブで開く",
       await assertErrorMessage({
         message: "URLが無効です。正しいURLを入力してください。",
         isError: true,
-        isWait: true,
+        isAsync: true,
       });
 
       expect(mockOpen).not.toHaveBeenCalled();

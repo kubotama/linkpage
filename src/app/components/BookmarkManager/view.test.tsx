@@ -41,7 +41,7 @@ describe("BookmarkManagerの表示を確認", () => {
     await assertErrorMessage({
       message: "ブックマークをロード中...",
       isError: false,
-      isWait: false,
+      isAsync: false,
     });
   });
 
@@ -63,7 +63,7 @@ describe("BookmarkManagerの表示を確認", () => {
       await assertErrorMessage({
         message: "ブックマークのロード中にエラーが発生しました。",
         isError: true,
-        isWait: true,
+        isAsync: true,
       });
 
       expect(consoleErrorSpy).toHaveBeenCalledWith(

@@ -29,7 +29,7 @@ describe("ErrorMessage", () => {
       />
     );
 
-    await assertErrorMessage({ message: textMessage, isError: false, isWait: false });
+    await assertErrorMessage({ message: textMessage, isError: false, isAsync: false });
   });
 
   it("should display error message and close button when there is an error", async () => {
@@ -44,7 +44,7 @@ describe("ErrorMessage", () => {
         handleErrorClose={handleErrorClose}
       />
     );
-    await assertErrorMessage({ message: textMessage, isError: true, isWait: false });
+    await assertErrorMessage({ message: textMessage, isError: true, isAsync: false });
   });
 
   it("should call handleErrorClose when close button is clicked", async () => {

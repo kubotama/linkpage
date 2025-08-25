@@ -169,7 +169,7 @@ describe("タイトルの更新ボタン", () => {
         await assertErrorMessage({
           message: "指定されたURLのブックマークは既に登録されています。",
           isError: true,
-          isWait: true,
+          isAsync: true,
         });
         const table = await screen.findByRole("table", { name: TABLE_NAME_BOOKMARKS });
         await within(table).findByText(bookmarkToSelect.title);
@@ -224,7 +224,7 @@ describe("タイトルの更新ボタン", () => {
         await assertErrorMessage({
           message: "ブックマークの更新中にエラーが発生しました。",
           isError: true,
-          isWait: true,
+          isAsync: true,
         });
       });
 
@@ -256,7 +256,7 @@ describe("タイトルの更新ボタン", () => {
         await assertErrorMessage({
           message: "ブックマークの更新中にエラーが発生しました。",
           isError: true,
-          isWait: true,
+          isAsync: true,
         });
       });
     });

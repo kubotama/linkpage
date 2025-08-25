@@ -301,15 +301,15 @@ export const deselectBookmark = async (user: UserEvent) => {
 interface AssertErrorMessageOptions {
   message: string;
   isError: boolean;
-  isWait: boolean;
+  isAsync: boolean;
 }
 
 export const assertErrorMessage = async ({
   message,
   isError,
-  isWait,
+  isAsync,
 }: AssertErrorMessageOptions) => {
-  const messageElement = isWait
+  const messageElement = isAsync
     ? await screen.findByTestId("bookmark-message")
     : screen.getByTestId("bookmark-message");
   expect(messageElement).toBeInTheDocument();

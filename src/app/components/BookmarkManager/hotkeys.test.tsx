@@ -113,7 +113,7 @@ describe("BookmarkManager Hotkeys", () => {
       await assertErrorMessage({
         message: "URLが無効です。正しいURLを入力してください。",
         isError: true,
-        isWait: true,
+        isAsync: true,
       });
       expect(mockOpen).not.toHaveBeenCalled();
     });
