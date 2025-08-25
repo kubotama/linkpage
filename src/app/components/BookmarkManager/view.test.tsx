@@ -29,7 +29,7 @@ describe("BookmarkManagerの表示を確認", () => {
     expect(bm).toBeVisible();
   });
 
-  it("ローディング中にローディングメッセージが表示されること", () => {
+  it("ローディング中にローディングメッセージが表示されること", async () => {
     mockFetch.mockResolvedValueOnce({
       ok: true,
       status: HTTP_STATUS_OK,
@@ -38,7 +38,11 @@ describe("BookmarkManagerの表示を確認", () => {
 
     render(<BookmarkManager />);
 
-    assertErrorMessage({ message: "ブックマークをロード中...", isError: false, isWait: false });
+    await assertErrorMessage({
+      message: "ブックマークをロード中...",
+      isError: false,
+      isWait: false,
+    });
   });
 
   it("HTTPステータス500でfetchした場合、エラーメッセージが表示される", async () => {

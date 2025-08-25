@@ -32,7 +32,7 @@ describe("ErrorMessage", () => {
     await assertErrorMessage({ message: textMessage, isError: false, isWait: false });
   });
 
-  it("should display error message and close button when there is an error", () => {
+  it("should display error message and close button when there is an error", async () => {
     const textMessage = "エラーが発生しました";
     const isError = true;
     const handleErrorClose = vi.fn();
@@ -44,7 +44,7 @@ describe("ErrorMessage", () => {
         handleErrorClose={handleErrorClose}
       />
     );
-    assertErrorMessage({ message: textMessage, isError: true, isWait: false });
+    await assertErrorMessage({ message: textMessage, isError: true, isWait: false });
   });
 
   it("should call handleErrorClose when close button is clicked", async () => {
