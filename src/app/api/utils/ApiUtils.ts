@@ -90,7 +90,7 @@ export const parseApiError = async (response: Response): Promise<ApiError> => {
   try {
     bodyText = await response.text();
   } catch (e) {
-    const errorMessage = "APIエラーレスポンスのボディ読み取りに失敗しました。";
+    const errorMessage = ERROR_MESSAGE_READ_RESPONSE_BODY;
     const errorDetails =
       e instanceof Error
         ? `エラーの種類: ${e.name}, メッセージ: ${e.message}`
