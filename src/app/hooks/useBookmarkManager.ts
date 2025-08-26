@@ -131,7 +131,10 @@ export const useBookmarkManager = () => {
       await updateBookmark(selectedBookmarkId, textUrl, textTitle);
       setMessage();
     } catch (error: unknown) {
-      setMessage(getErrorMessage(error, "ブックマークの更新中にエラーが発生しました。"), true);
+      setMessage(
+        getErrorMessage(error, "ブックマークの更新中にエラーが発生しました。", false),
+        true
+      );
     }
   }, [selectedBookmarkId, setMessage, textTitle, textUrl, updateBookmark]);
 
@@ -236,7 +239,7 @@ export const useBookmarkManager = () => {
       setTextKeyword("");
       setMessage();
     } catch (error: unknown) {
-      setMessage(getErrorMessage(error, "キーワードの追加中にエラーが発生しました。"), true);
+      setMessage(getErrorMessage(error, "キーワードの追加中にエラーが発生しました。", false), true);
     }
   }, [textKeyword, selectedBookmarkId, addKeyword, setMessage, setTextKeyword]);
 

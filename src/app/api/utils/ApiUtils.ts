@@ -131,9 +131,24 @@ export const parseApiError = async (response: Response): Promise<ApiError> => {
   return new ApiError(message, response.status, { cause });
 };
 
-export const getErrorMessage = (error: unknown, fallbackMessage?: string): string => {
+/**
+ * エラーオブジェクトからユーザーフレンドリーなエラーメッセージを抽出します。
+ * @param error - 解析対象のエラーオブジェクト (unknown型)
+ * @param fallbackMessage - エラーからメッセージを抽出できなかった場合の代替メッセージ
+ * @param isLog - trueの場合、ログ用の詳細なメッセージ（ステータスコード等を含む）を返す。falseの場合はUI表示用の簡潔なメッセージを返す。
+ * @returns エラーメッセージ文字列
+ */
+export const getErrorMessage = (
+  error: unknown,
+  fallbackMessage?: string,
+  isLog: boolean = true
+): string => {
   if (error instanceof ApiError) {
-    return error.toString();
+    if (isLog) {
+      return error.toString();
+    } else {
+      return error.message;
+    }
   }
   if (error instanceof Error) {
     return error.message;
