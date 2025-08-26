@@ -159,5 +159,10 @@ export const getErrorMessage = (
   }
 
   // 上記のいずれにも当てはまらない場合の最終的なフォールバック
-  return String(error ?? "") || "不明なエラーが発生しました。";
+  const unknownErrorMessage = "不明なエラーが発生しました。";
+  try {
+    return String(error ?? "") || unknownErrorMessage;
+  } catch {
+    return unknownErrorMessage;
+  }
 };
