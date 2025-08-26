@@ -2,6 +2,13 @@ import type { ApiErrorResponse } from "@/app/types/ApiResponse";
 
 import { HTTP_STATUS_CONFLICT } from "../../constants/httpStatusCodes";
 
+export const ERROR_MESSAGE_NOT_EXIST_OR_EMPTY =
+  "APIエラーレスポンスのボディに message フィールドが含まれていないか、空です";
+export const ERROR_MESSAGE_PARSE_JSON =
+  "APIエラーレスポンスのボディをJSONとしてパースできませんでした。";
+export const ERROR_UNEXPECTED_RESPONSE_FORMAT =
+  "APIから予期せぬ形式のエラーレスポンスを受け取りました。";
+export const ERROR_MESSAGE_READ_RESPONSE_BODY = `APIエラーレスポンスのボディ読み取りに失敗しました。`;
 /**
  * APIエラーを表すカスタムエラークラス。
  * @param message - エラーメッセージ（フォーマット前）
@@ -62,7 +69,7 @@ const formatUserErrorMessage = (
   statusText?: string
 ): string => {
   // ユーザー向けのエラーメッセージにHTTPステータスを付与する
-  return `${baseMessage}ステータス: ${status} ${statusText || ""}`.trimEnd();
+  return `${baseMessage} ステータス: ${status} ${statusText || ""}`.trimEnd();
 };
 
 /**
@@ -84,16 +91,13 @@ export const parseApiError = async (response: Response): Promise<ApiError> => {
     bodyText = await response.text();
   } catch (e) {
     const errorMessage = "APIエラーレスポンスのボディ読み取りに失敗しました。";
-    console.error(
-      formatUserErrorMessage(
-        errorMessage,
-        response.status,
-        e instanceof Error
-          ? `エラーの種類: ${e.name}, メッセージ: ${e.message}`
-          : `不明なエラー: ${String(e)}`
-      ),
-      e
-    );
+    const errorDetails =
+      e instanceof Error
+        ? `エラーの種類: ${e.name}, メッセージ: ${e.message}`
+        : `不明なエラー: ${String(e)}`;
+    const logMessage = formatUserErrorMessage(errorMessage, response.status, errorDetails);
+    console.error(logMessage, e);
+
     return new ApiError(
       formatUserErrorMessage(errorMessage, response.status, response.statusText),
       response.status,
@@ -109,19 +113,13 @@ export const parseApiError = async (response: Response): Promise<ApiError> => {
       if (typeof json?.message === "string" && json.message.trim()) {
         message = json.message;
       } else {
-        console.warn("APIエラーレスポンスのボディに message フィールドが含まれていないか、空です");
-        message = formatUserErrorMessage(
-          "APIから予期せぬ形式のエラーレスポンスを受け取りました。",
-          response.status
-        );
+        console.warn(ERROR_MESSAGE_NOT_EXIST_OR_EMPTY);
+        message = formatUserErrorMessage(ERROR_UNEXPECTED_RESPONSE_FORMAT, response.status);
         cause = createErrorCauseFromContext({ body: bodyText, parsedJson: json });
       }
     } catch (e) {
-      console.error("APIエラーレスポンスのボディをJSONとしてパースできませんでした。");
-      message = formatUserErrorMessage(
-        "APIからJSON形式でないエラーレスポンスを受け取りました。",
-        response.status
-      );
+      console.error(ERROR_MESSAGE_PARSE_JSON);
+      message = formatUserErrorMessage(ERROR_MESSAGE_PARSE_JSON, response.status);
       cause = createErrorCauseFromContext({ error: e, body: bodyText });
     }
   }

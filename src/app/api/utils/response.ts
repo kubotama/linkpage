@@ -12,13 +12,15 @@ export const createErrorResponse = (
   message: string,
   status: number,
   log: string = "",
-  headers: Record<string, string> = {}
+  headers: Record<string, string> = {},
+  statusText: string = ""
 ): Response => {
   if (log) {
     console.error(log);
   }
   return new Response(JSON.stringify({ message }), {
     status,
+    statusText,
     headers: {
       ...headers,
       "Content-Type": "application/json",
