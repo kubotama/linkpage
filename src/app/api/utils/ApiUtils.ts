@@ -153,16 +153,13 @@ export const getErrorMessage = (
     return error.message;
   }
 
-  // フォールバックメッセージがあればそれを返す
+  // Errorインスタンスでない、またはメッセージが空の場合は、
+  // フォールバックメッセージがあればそれを返す。
+  // なければ最終的なフォールバックメッセージを返す。
   if (fallbackMessage) {
     return fallbackMessage;
   }
 
-  // 上記のいずれにも当てはまらない場合の最終的なフォールバック
-  const unknownErrorMessage = "不明なエラーが発生しました。";
-  try {
-    return String(error ?? "") || unknownErrorMessage;
-  } catch {
-    return unknownErrorMessage;
-  }
+  // 最終的なフォールバック
+  return "不明なエラーが発生しました。";
 };
