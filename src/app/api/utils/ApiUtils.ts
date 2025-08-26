@@ -143,18 +143,21 @@ export const getErrorMessage = (
   fallbackMessage?: string,
   isLog: boolean = true
 ): string => {
-  if (error instanceof ApiError) {
-    if (isLog) {
-      return error.toString();
-    } else {
-      return error.message;
-    }
+  // ログ出力時はステータスコード等を含む詳細なメッセージを返す
+  if (error instanceof ApiError && isLog) {
+    return error.toString();
   }
-  if (error instanceof Error) {
+
+  // Errorインスタンスからメッセージを抽出し、空でなければ返す
+  if (error instanceof Error && error.message) {
     return error.message;
   }
+
+  // フォールバックメッセージがあればそれを返す
   if (fallbackMessage) {
     return fallbackMessage;
   }
+
+  // 上記のいずれにも当てはまらない場合の最終的なフォールバック
   return String(error ?? "不明なエラーが発生しました。");
 };
