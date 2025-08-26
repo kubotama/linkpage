@@ -149,7 +149,7 @@ export const getErrorMessage = (
   }
 
   // Errorインスタンスからメッセージを抽出し、空でなければ返す
-  if (error instanceof Error && error.message) {
+  if (error instanceof Error && error.message.trim()) {
     return error.message;
   }
 
