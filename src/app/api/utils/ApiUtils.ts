@@ -35,10 +35,10 @@ export class ApiError extends Error {
   }
 }
 
-export class DuplicatedUrlError extends ApiError {
+export class DuplicatedError extends ApiError {
   constructor(message: string, options?: { cause: unknown }) {
     super(message, HTTP_STATUS_CONFLICT, options);
-    this.name = "DuplicatedUrlError";
+    this.name = "DuplicatedError";
   }
 }
 
@@ -126,7 +126,40 @@ export const parseApiError = async (response: Response): Promise<ApiError> => {
     }
   }
   if (response.status === HTTP_STATUS_CONFLICT) {
-    return new DuplicatedUrlError(message, { cause });
+    return new DuplicatedError(message, { cause });
   }
   return new ApiError(message, response.status, { cause });
+};
+
+/**
+ * エラーオブジェクトからユーザーフレンドリーなエラーメッセージを抽出します。
+ * @param error - 解析対象のエラーオブジェクト (unknown型)
+ * @param fallbackMessage - エラーからメッセージを抽出できなかった場合の代替メッセージ
+ * @param isLog - trueの場合、ログ用の詳細なメッセージ（ステータスコード等を含む）を返す。falseの場合はUI表示用の簡潔なメッセージを返す。
+ * @returns エラーメッセージ文字列
+ */
+export const getErrorMessage = (
+  error: unknown,
+  fallbackMessage?: string,
+  isLog: boolean = true
+): string => {
+  // ログ出力時はステータスコード等を含む詳細なメッセージを返す
+  if (error instanceof ApiError && isLog) {
+    return error.toString();
+  }
+
+  // Errorインスタンスからメッセージを抽出し、空でなければ返す
+  if (error instanceof Error && error.message.trim()) {
+    return error.message;
+  }
+
+  // Errorインスタンスでない、またはメッセージが空の場合は、
+  // フォールバックメッセージがあればそれを返す。
+  // なければ最終的なフォールバックメッセージを返す。
+  if (fallbackMessage) {
+    return fallbackMessage;
+  }
+
+  // 最終的なフォールバック
+  return "不明なエラーが発生しました。";
 };

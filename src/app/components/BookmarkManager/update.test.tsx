@@ -150,7 +150,7 @@ describe("タイトルの更新ボタン", () => {
 
         expect(consoleErrorSpy).toHaveBeenCalledWith(
           "ブックマークの更新エラー:",
-          `DuplicatedUrlError: [${statusCode}] ${errorText}`
+          `DuplicatedError: [${statusCode}] ${errorText}`
         );
 
         // フォームに入力した値が保持され、更新ボタンが表示されていることを確認
@@ -215,7 +215,7 @@ describe("タイトルの更新ボタン", () => {
         });
 
         await assertErrorMessage({
-          message: "ブックマークの更新中にエラーが発生しました。",
+          message: errorCase.message,
           isError: true,
           isAsync: true,
         });
@@ -247,7 +247,7 @@ describe("タイトルの更新ボタン", () => {
         });
 
         await assertErrorMessage({
-          message: "ブックマークの更新中にエラーが発生しました。",
+          message: message,
           isError: true,
           isAsync: true,
         });

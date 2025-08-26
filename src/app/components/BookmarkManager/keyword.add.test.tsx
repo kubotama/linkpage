@@ -1,6 +1,6 @@
 import "@testing-library/jest-dom";
 
-import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
+import { afterEach, beforeEach, describe, expect, it, MockInstance, vi } from "vitest";
 
 import { screen, waitFor, within } from "@testing-library/react";
 import userEvent, { UserEvent } from "@testing-library/user-event";
@@ -142,6 +142,67 @@ describe("選択されたブックマークにキーワードを追加", () => {
         // キーワードのテーブルに表示されていることを確認
         await expectRowsAndKeyword(2, keyword);
       });
+    });
+    describe("キーワード追加のエラーハンドリング", () => {
+      let consoleErrorSpy: MockInstance;
+
+      beforeEach(() => {
+        // console.errorをスパイして、エラー出力がされるか確認
+        consoleErrorSpy = vi.spyOn(console, "error").mockImplementation(() => {});
+      });
+
+      afterEach(() => {
+        consoleErrorSpy.mockRestore();
+      });
+      it.each([
+        {
+          description: "サーバーエラー (500 Internal Server Error)",
+          errorCase: { message: "サーバーで予期せぬエラーが発生しました。", status: 500 },
+          expectedMessage: "サーバーで予期せぬエラーが発生しました。",
+          errorClass: "ApiError",
+        },
+        {
+          description: "既に登録済みのキーワード (409 Conflict)",
+          errorCase: {
+            message: "指定されたキーワードは既にこのブックマークに登録されています。",
+            status: 409,
+          },
+          expectedMessage: "指定されたキーワードは既にこのブックマークに登録されています。",
+          errorClass: "DuplicatedError",
+        },
+        // 他のエラーケース...
+      ])(
+        "APIがエラーを返した場合 ($description)",
+        async ({ errorCase, expectedMessage, errorClass }) => {
+          const bookmarkToSelect = findBookmarkWithAtLeastNKeywords(mockBookmarksWithKeywords, 0);
+          await clickBookmark(user, bookmarkToSelect);
+          await assertBookmarkIsSelected(bookmarkToSelect);
+
+          const newKeyword = "新しいキーワード";
+
+          mockFetch.mockResolvedValueOnce(
+            createMockResponse({
+              isOk: false,
+              status: errorCase.status,
+              message: errorCase.message,
+            })
+          );
+
+          await addNewKeyword(user, newKeyword);
+
+          await waitFor(() => {
+            expect(screen.getByTestId("bookmark-message")).toHaveTextContent(expectedMessage);
+          });
+
+          expect(consoleErrorSpy).toHaveBeenCalledWith(
+            "キーワードの追加エラー:",
+            `${errorClass}: [${errorCase.status}] ${errorCase.message}`
+          );
+
+          const keywordTable = screen.getByRole("table", { name: TABLE_NAME_KEYWORD });
+          expect(within(keywordTable).queryByText(newKeyword)).not.toBeInTheDocument();
+        }
+      );
     });
   });
 });

@@ -3,7 +3,7 @@
 import { useCallback, useEffect, useRef, useState } from "react";
 import { useHotkeys } from "react-hotkeys-hook";
 
-import { DuplicatedUrlError } from "../api/utils/ApiUtils";
+import { getErrorMessage } from "../api/utils/ApiUtils";
 import { useBookmarks } from "./useBookmark";
 import { useErrorMessage } from "./useErrorMessage";
 
@@ -131,11 +131,10 @@ export const useBookmarkManager = () => {
       await updateBookmark(selectedBookmarkId, textUrl, textTitle);
       setMessage();
     } catch (error: unknown) {
-      if (error instanceof DuplicatedUrlError) {
-        setMessage("指定されたURLのブックマークは既に登録されています。", true);
-      } else {
-        setMessage("ブックマークの更新中にエラーが発生しました。", true);
-      }
+      setMessage(
+        getErrorMessage(error, "ブックマークの更新中にエラーが発生しました。", false),
+        true
+      );
     }
   }, [selectedBookmarkId, setMessage, textTitle, textUrl, updateBookmark]);
 
@@ -240,9 +239,7 @@ export const useBookmarkManager = () => {
       setTextKeyword("");
       setMessage();
     } catch (error: unknown) {
-      const message =
-        error instanceof Error ? error.message : "キーワードの追加中にエラーが発生しました。";
-      setMessage(message, true);
+      setMessage(getErrorMessage(error, "キーワードの追加中にエラーが発生しました。", false), true);
     }
   }, [textKeyword, selectedBookmarkId, addKeyword, setMessage, setTextKeyword]);
 
