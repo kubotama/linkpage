@@ -130,3 +130,16 @@ export const parseApiError = async (response: Response): Promise<ApiError> => {
   }
   return new ApiError(message, response.status, { cause });
 };
+
+export const getErrorMessage = (error: unknown, fallbackMessage?: string): string => {
+  if (error instanceof ApiError) {
+    return error.toString();
+  }
+  if (error instanceof Error) {
+    return error.message;
+  }
+  if (fallbackMessage) {
+    return fallbackMessage;
+  }
+  return String(error ?? "不明なエラーが発生しました。");
+};

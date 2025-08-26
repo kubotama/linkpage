@@ -1,19 +1,9 @@
 import { useCallback, useState } from "react";
 
-import { ApiError, parseApiError } from "../api/utils/ApiUtils";
+import { getErrorMessage, parseApiError } from "../api/utils/ApiUtils";
 import { BOOKMARKS_ENDPOINT } from "../constants/apiEndpoints";
 import { Bookmark } from "../types/Bookmark";
 import { Keyword } from "../types/Keyword";
-
-const getErrorMessage = (error: unknown): string => {
-  if (error instanceof ApiError) {
-    return error.toString();
-  }
-  if (error instanceof Error) {
-    return error.message;
-  }
-  return String(error);
-};
 
 export const useBookmarks = () => {
   const [bookmarks, setBookmarks] = useState<Bookmark[]>([]);

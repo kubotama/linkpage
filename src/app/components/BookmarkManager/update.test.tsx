@@ -215,7 +215,7 @@ describe("タイトルの更新ボタン", () => {
         });
 
         await assertErrorMessage({
-          message: "ブックマークの更新中にエラーが発生しました。",
+          message: errorCase.message,
           isError: true,
           isAsync: true,
         });
@@ -247,7 +247,7 @@ describe("タイトルの更新ボタン", () => {
         });
 
         await assertErrorMessage({
-          message: "ブックマークの更新中にエラーが発生しました。",
+          message: message,
           isError: true,
           isAsync: true,
         });
