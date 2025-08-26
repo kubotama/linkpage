@@ -157,8 +157,10 @@ describe("選択されたブックマークにキーワードを追加", () => {
       it.each([
         {
           description: "サーバーエラー (500 Internal Server Error)",
-          errorCase: { message: "サーバーで予期せぬエラーが発生しました。", status: 500 },
-          expectedMessage: "サーバーで予期せぬエラーが発生しました。",
+          errorCase: {
+            message: "サーバーで予期せぬエラーが発生しました。",
+            status: 500,
+          },
           errorClass: "ApiError",
         },
         {
@@ -167,42 +169,47 @@ describe("選択されたブックマークにキーワードを追加", () => {
             message: "指定されたキーワードは既にこのブックマークに登録されています。",
             status: 409,
           },
-          expectedMessage: "指定されたキーワードは既にこのブックマークに登録されています。",
           errorClass: "DuplicatedError",
         },
-        // 他のエラーケース...
-      ])(
-        "APIがエラーを返した場合 ($description)",
-        async ({ errorCase, expectedMessage, errorClass }) => {
-          const bookmarkToSelect = findBookmarkWithAtLeastNKeywords(mockBookmarksWithKeywords, 0);
-          await clickBookmark(user, bookmarkToSelect);
-          await assertBookmarkIsSelected(bookmarkToSelect);
+        {
+          description: "不正なリクエスト (400 Bad Request)",
+          errorCase: { message: "キーワードを指定してください。", status: 400 },
+          errorClass: "ApiError",
+        },
+        {
+          description: "アクセス拒否 (403 Forbidden)",
+          errorCase: { message: "アクセスが拒否されました。", status: 403 },
+          errorClass: "ApiError",
+        },
+      ])("APIがエラーを返した場合 ($description)", async ({ errorCase, errorClass }) => {
+        const bookmarkToSelect = findBookmarkWithAtLeastNKeywords(mockBookmarksWithKeywords, 0);
+        await clickBookmark(user, bookmarkToSelect);
+        await assertBookmarkIsSelected(bookmarkToSelect);
 
-          const newKeyword = "新しいキーワード";
+        const newKeyword = "新しいキーワード";
 
-          mockFetch.mockResolvedValueOnce(
-            createMockResponse({
-              isOk: false,
-              status: errorCase.status,
-              message: errorCase.message,
-            })
-          );
+        mockFetch.mockResolvedValueOnce(
+          createMockResponse({
+            isOk: false,
+            status: errorCase.status,
+            message: errorCase.message,
+          })
+        );
 
-          await addNewKeyword(user, newKeyword);
+        await addNewKeyword(user, newKeyword);
 
-          await waitFor(() => {
-            expect(screen.getByTestId("bookmark-message")).toHaveTextContent(expectedMessage);
-          });
+        await waitFor(() => {
+          expect(screen.getByTestId("bookmark-message")).toHaveTextContent(errorCase.message);
+        });
 
-          expect(consoleErrorSpy).toHaveBeenCalledWith(
-            "キーワードの追加エラー:",
-            `${errorClass}: [${errorCase.status}] ${errorCase.message}`
-          );
+        expect(consoleErrorSpy).toHaveBeenCalledWith(
+          "キーワードの追加エラー:",
+          `${errorClass}: [${errorCase.status}] ${errorCase.message}`
+        );
 
-          const keywordTable = screen.getByRole("table", { name: TABLE_NAME_KEYWORD });
-          expect(within(keywordTable).queryByText(newKeyword)).not.toBeInTheDocument();
-        }
-      );
+        const keywordTable = screen.getByRole("table", { name: TABLE_NAME_KEYWORD });
+        expect(within(keywordTable).queryByText(newKeyword)).not.toBeInTheDocument();
+      });
     });
   });
 });
