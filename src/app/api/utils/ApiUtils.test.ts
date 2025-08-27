@@ -140,42 +140,35 @@ describe("ApiUtils", () => {
       expect(getErrorMessage(error)).toBe("Normal error");
     });
 
-    it("error が Error インスタンスだが message プロパティが空の場合、フォールバックメッセージを返す", () => {
-      const errorWithEmptyMessage = new Error("");
-      const errorWithWhitespaceMessage = new Error("   ");
-      const fallbackMessage = "Fallback message";
-      expect(getErrorMessage(errorWithEmptyMessage, fallbackMessage)).toBe(fallbackMessage);
-      expect(getErrorMessage(errorWithWhitespaceMessage, fallbackMessage)).toBe(fallbackMessage);
+    const fallbackMessage = "Fallback message";
+    const defaultMessage = "不明なエラーが発生しました。";
+
+    describe("フォールバックメッセージが指定されている場合", () => {
+      it.each([
+        { description: "null", error: null },
+        { description: "undefined", error: undefined },
+        { description: "文字列", error: "some string" },
+        { description: "数値", error: 123 },
+        { description: "オブジェクト", error: {} },
+        { description: "Errorインスタンス(メッセージ空)", error: new Error("") },
+        { description: "Errorインスタンス(メッセージ空白)", error: new Error("   ") },
+      ])("error が $description の場合、フォールバックメッセージを返す", ({ error }) => {
+        expect(getErrorMessage(error, fallbackMessage)).toBe(fallbackMessage);
+      });
     });
 
-    it.each([
-      { description: "null", error: null },
-      { description: "undefined", error: undefined },
-      { description: "文字列", error: "some string" },
-      { description: "数値", error: 123 },
-      { description: "オブジェクト", error: {} },
-    ])("error が $description で fallbackMessage が指定されている場合、それを返す", ({ error }) => {
-      const fallbackMessage = "Fallback message";
-      expect(getErrorMessage(error, fallbackMessage)).toBe(fallbackMessage);
-    });
-
-    it("error が null または undefined でフォールバックもない場合、デフォルトメッセージを返す", () => {
-      const defaultMessage = "不明なエラーが発生しました。";
-      expect(getErrorMessage(null)).toBe(defaultMessage);
-      expect(getErrorMessage(undefined)).toBe(defaultMessage);
-    });
-
-    it.each([
-      { description: "Errorインスタンスだがメッセージが空", error: new Error("") },
-      { description: "文字列", error: "some string" },
-      { description: "数値", error: 123 },
-      { description: "オブジェクト", error: {} },
-    ])(
-      "error ($description) からメッセージを抽出できず、フォールバックもない場合、デフォルトメッセージを返す",
-      ({ error }) => {
-        const defaultMessage = "不明なエラーが発生しました。";
+    describe("フォールバックメッセージが指定されていない場合", () => {
+      it.each([
+        { description: "null", error: null },
+        { description: "undefined", error: undefined },
+        { description: "文字列", error: "some string" },
+        { description: "数値", error: 123 },
+        { description: "オブジェクト", error: {} },
+        { description: "Errorインスタンス(メッセージ空)", error: new Error("") },
+        { description: "Errorインスタンス(メッセージ空白)", error: new Error("   ") },
+      ])("error が $description の場合、デフォルトメッセージを返す", ({ error }) => {
         expect(getErrorMessage(error)).toBe(defaultMessage);
-      }
-    );
+      });
+    });
   });
 });
