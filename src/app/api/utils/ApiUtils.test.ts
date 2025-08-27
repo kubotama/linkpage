@@ -135,7 +135,7 @@ describe("ApiUtils", () => {
         { isLog: undefined, expected: apiError.toString(), description: "未指定(デフォルト)" },
         { isLog: false, expected: apiErrorMessage, description: "false" },
       ])("isLog が $description の場合、期待するメッセージを返す", ({ isLog, expected }) => {
-        expect(getErrorMessage(apiError, "fallback", isLog)).toBe(expected);
+        expect(getErrorMessage(apiError, "unused-fallback", isLog)).toBe(expected);
       });
     });
 
