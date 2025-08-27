@@ -152,6 +152,7 @@ describe("ApiUtils", () => {
       { description: "null", error: null },
       { description: "undefined", error: undefined },
       { description: "文字列", error: "some string" },
+      { description: "空文字列", error: "" },
       { description: "数値", error: 123 },
       { description: "オブジェクト", error: {} },
       { description: "Errorインスタンス(メッセージ空)", error: new Error("") },
