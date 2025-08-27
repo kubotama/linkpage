@@ -2,6 +2,13 @@ import type { ApiErrorResponse } from "@/app/types/ApiResponse";
 
 import { HTTP_STATUS_CONFLICT } from "../../constants/httpStatusCodes";
 
+export const ERROR_MESSAGE_NOT_EXIST_OR_EMPTY =
+  "APIエラーレスポンスのボディに message フィールドが含まれていないか、空です";
+export const ERROR_MESSAGE_PARSE_JSON =
+  "APIエラーレスポンスのボディをJSONとしてパースできませんでした。";
+export const ERROR_UNEXPECTED_RESPONSE_FORMAT =
+  "APIから予期せぬ形式のエラーレスポンスを受け取りました。";
+export const ERROR_MESSAGE_READ_RESPONSE_BODY = `APIエラーレスポンスのボディ読み取りに失敗しました。`;
 /**
  * APIエラーを表すカスタムエラークラス。
  * @param message - エラーメッセージ（フォーマット前）
@@ -62,7 +69,7 @@ const formatUserErrorMessage = (
   statusText?: string
 ): string => {
   // ユーザー向けのエラーメッセージにHTTPステータスを付与する
-  return `${baseMessage}ステータス: ${status} ${statusText || ""}`.trimEnd();
+  return `${baseMessage} ステータス: ${status} ${statusText || ""}`.trimEnd();
 };
 
 /**
@@ -83,17 +90,12 @@ export const parseApiError = async (response: Response): Promise<ApiError> => {
   try {
     bodyText = await response.text();
   } catch (e) {
-    const errorMessage = "APIエラーレスポンスのボディ読み取りに失敗しました。";
-    console.error(
-      formatUserErrorMessage(
-        errorMessage,
-        response.status,
-        e instanceof Error
-          ? `エラーの種類: ${e.name}, メッセージ: ${e.message}`
-          : `不明なエラー: ${String(e)}`
-      ),
-      e
-    );
+    const errorMessage = ERROR_MESSAGE_READ_RESPONSE_BODY;
+    const errorDetails =
+      e instanceof Error
+        ? `エラーの種類: ${e.name}, メッセージ: ${e.message}`
+        : `不明なエラー: ${String(e)}`;
+    console.error(`${errorMessage} ステータス: ${response.status}. ${errorDetails}`, e);
     return new ApiError(
       formatUserErrorMessage(errorMessage, response.status, response.statusText),
       response.status,
@@ -107,22 +109,24 @@ export const parseApiError = async (response: Response): Promise<ApiError> => {
     try {
       const json: ApiErrorResponse = JSON.parse(bodyText);
       if (typeof json?.message === "string" && json.message.trim()) {
-        message = json.message;
+        message = json.message.trim();
       } else {
-        console.warn("APIエラーレスポンスのボディに message フィールドが含まれていないか、空です");
+        console.warn(`${ERROR_MESSAGE_NOT_EXIST_OR_EMPTY} ステータス: ${response.status}`);
         message = formatUserErrorMessage(
-          "APIから予期せぬ形式のエラーレスポンスを受け取りました。",
-          response.status
+          ERROR_UNEXPECTED_RESPONSE_FORMAT,
+          response.status,
+          response.statusText
         );
         cause = createErrorCauseFromContext({ body: bodyText, parsedJson: json });
       }
     } catch (e) {
-      console.error("APIエラーレスポンスのボディをJSONとしてパースできませんでした。");
+      console.error(`${ERROR_MESSAGE_PARSE_JSON} ステータス: ${response.status}`, e);
       message = formatUserErrorMessage(
-        "APIからJSON形式でないエラーレスポンスを受け取りました。",
-        response.status
+        ERROR_MESSAGE_PARSE_JSON,
+        response.status,
+        response.statusText
       );
-      cause = createErrorCauseFromContext({ error: e, body: bodyText });
+      cause = e instanceof Error ? e : new Error(String(e));
     }
   }
   if (response.status === HTTP_STATUS_CONFLICT) {
