@@ -109,7 +109,7 @@ export const parseApiError = async (response: Response): Promise<ApiError> => {
     try {
       const json: ApiErrorResponse = JSON.parse(bodyText);
       if (typeof json?.message === "string" && json.message.trim()) {
-        message = json.message;
+        message = json.message.trim();
       } else {
         console.warn(`${ERROR_MESSAGE_NOT_EXIST_OR_EMPTY} ステータス: ${response.status}`);
         message = formatUserErrorMessage(
