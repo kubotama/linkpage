@@ -118,8 +118,12 @@ export const parseApiError = async (response: Response): Promise<ApiError> => {
         cause = createErrorCauseFromContext({ body: bodyText, parsedJson: json });
       }
     } catch (e) {
-      console.error(ERROR_MESSAGE_PARSE_JSON);
-      message = formatUserErrorMessage(ERROR_MESSAGE_PARSE_JSON, response.status);
+      console.error(ERROR_MESSAGE_PARSE_JSON, e);
+      message = formatUserErrorMessage(
+        ERROR_MESSAGE_PARSE_JSON,
+        response.status,
+        response.statusText
+      );
       cause = createErrorCauseFromContext({ error: e, body: bodyText });
     }
   }

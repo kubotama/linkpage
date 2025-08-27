@@ -71,7 +71,8 @@ describe("ApiUtils", () => {
     });
 
     it("JSON形式でないレスポンスボディを処理する", async () => {
-      const response = new Response("Internal Server Error", {
+      const serverError = "Internal Server Error";
+      const response = new Response(serverError, {
         status: HTTP_STATUS_INTERNAL_SERVER_ERROR,
         statusText: "Server Error",
       });
@@ -81,9 +82,9 @@ describe("ApiUtils", () => {
       expect(error).toBeInstanceOf(ApiError);
       expect(error.status).toBe(HTTP_STATUS_INTERNAL_SERVER_ERROR);
       expect(error.message).toBe(
-        `${ERROR_MESSAGE_PARSE_JSON} ステータス: ${HTTP_STATUS_INTERNAL_SERVER_ERROR}`
+        `${ERROR_MESSAGE_PARSE_JSON} ステータス: ${response.status} ${response.statusText}`
       );
-      expect(consoleErrorSpy).toHaveBeenCalledWith(ERROR_MESSAGE_PARSE_JSON);
+      expect(consoleErrorSpy).toHaveBeenCalledWith(ERROR_MESSAGE_PARSE_JSON, expect.any(Error));
     });
 
     it("レスポンスボディの読み取りエラーを処理する", async () => {
