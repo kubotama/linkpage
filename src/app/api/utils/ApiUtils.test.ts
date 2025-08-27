@@ -168,22 +168,28 @@ describe("ApiUtils", () => {
       { description: "Errorインスタンス(メッセージ空白)", error: new Error("   ") },
     ];
 
-    describe("フォールバックメッセージが指定されている場合", () => {
-      it.each(fallbackTestCases)(
-        "error が $description の場合、フォールバックメッセージを返す",
-        ({ error }) => {
-          expect(getErrorMessage(error, fallbackMessage)).toBe(fallbackMessage);
-        }
-      );
-    });
+    describe("フォールバック動作のテスト", () => {
+      const fallbackScenarios = [
+        {
+          description: "フォールバックメッセージが指定されている場合",
+          fallback: fallbackMessage,
+          expected: fallbackMessage,
+        },
+        {
+          description: "フォールバックメッセージが指定されていない場合",
+          fallback: undefined,
+          expected: defaultMessage,
+        },
+      ];
 
-    describe("フォールバックメッセージが指定されていない場合", () => {
-      it.each(fallbackTestCases)(
-        "error が $description の場合、デフォルトメッセージを返す",
-        ({ error }) => {
-          expect(getErrorMessage(error)).toBe(defaultMessage);
-        }
-      );
+      describe.each(fallbackScenarios)("$description", ({ fallback, expected }) => {
+        it.each(fallbackTestCases)(
+          "error が $description の場合、期待されるメッセージを返す",
+          ({ error }) => {
+            expect(getErrorMessage(error, fallback)).toBe(expected);
+          }
+        );
+      });
     });
   });
 });
