@@ -10,6 +10,7 @@ import {
   ERROR_MESSAGE_PARSE_JSON,
   ERROR_MESSAGE_READ_RESPONSE_BODY,
   ERROR_UNEXPECTED_RESPONSE_FORMAT,
+  ERROR_UNKNOWN,
   getErrorMessage,
   parseApiError,
 } from "./ApiUtils";
@@ -156,7 +157,7 @@ describe("ApiUtils", () => {
     });
 
     const fallbackMessage = "Fallback message";
-    const defaultMessage = "不明なエラーが発生しました。";
+    const defaultMessage = ERROR_UNKNOWN;
 
     const fallbackTestCases = [
       { description: "null", error: null },
