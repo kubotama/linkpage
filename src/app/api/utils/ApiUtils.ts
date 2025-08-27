@@ -111,7 +111,7 @@ export const parseApiError = async (response: Response): Promise<ApiError> => {
       if (typeof json?.message === "string" && json.message.trim()) {
         message = json.message;
       } else {
-        console.warn(ERROR_MESSAGE_NOT_EXIST_OR_EMPTY);
+        console.warn(`${ERROR_MESSAGE_NOT_EXIST_OR_EMPTY} ステータス: ${response.status}`);
         message = formatUserErrorMessage(
           ERROR_UNEXPECTED_RESPONSE_FORMAT,
           response.status,
@@ -120,7 +120,7 @@ export const parseApiError = async (response: Response): Promise<ApiError> => {
         cause = createErrorCauseFromContext({ body: bodyText, parsedJson: json });
       }
     } catch (e) {
-      console.error(ERROR_MESSAGE_PARSE_JSON, e);
+      console.error(`${ERROR_MESSAGE_PARSE_JSON} ステータス: ${response.status}`, e);
       message = formatUserErrorMessage(
         ERROR_MESSAGE_PARSE_JSON,
         response.status,

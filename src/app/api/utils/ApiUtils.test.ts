@@ -67,7 +67,10 @@ describe("ApiUtils", () => {
       expect(error.message).toBe(
         `${ERROR_UNEXPECTED_RESPONSE_FORMAT} ステータス: ${response.status} ${response.statusText}`
       );
-      expect(consoleWarnSpy).toHaveBeenCalledWith(ERROR_MESSAGE_NOT_EXIST_OR_EMPTY);
+      expect(consoleWarnSpy).toHaveBeenCalledWith(
+        `${ERROR_MESSAGE_NOT_EXIST_OR_EMPTY} ステータス: ${response.status}`
+      );
+      expect(consoleErrorSpy).toHaveBeenCalledTimes(0);
     });
 
     it("JSON形式でないレスポンスボディを処理する", async () => {
@@ -84,7 +87,11 @@ describe("ApiUtils", () => {
       expect(error.message).toBe(
         `${ERROR_MESSAGE_PARSE_JSON} ステータス: ${response.status} ${response.statusText}`
       );
-      expect(consoleErrorSpy).toHaveBeenCalledWith(ERROR_MESSAGE_PARSE_JSON, expect.any(Error));
+      expect(consoleWarnSpy).toHaveBeenCalledTimes(0);
+      expect(consoleErrorSpy).toHaveBeenCalledWith(
+        `${ERROR_MESSAGE_PARSE_JSON} ステータス: ${response.status}`,
+        expect.any(Error)
+      );
     });
 
     it("レスポンスボディの読み取りエラーを処理する", async () => {
