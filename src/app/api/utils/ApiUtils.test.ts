@@ -148,32 +148,32 @@ describe("ApiUtils", () => {
     const fallbackMessage = "Fallback message";
     const defaultMessage = "不明なエラーが発生しました。";
 
+    const fallbackTestCases = [
+      { description: "null", error: null },
+      { description: "undefined", error: undefined },
+      { description: "文字列", error: "some string" },
+      { description: "数値", error: 123 },
+      { description: "オブジェクト", error: {} },
+      { description: "Errorインスタンス(メッセージ空)", error: new Error("") },
+      { description: "Errorインスタンス(メッセージ空白)", error: new Error("   ") },
+    ];
+
     describe("フォールバックメッセージが指定されている場合", () => {
-      it.each([
-        { description: "null", error: null },
-        { description: "undefined", error: undefined },
-        { description: "文字列", error: "some string" },
-        { description: "数値", error: 123 },
-        { description: "オブジェクト", error: {} },
-        { description: "Errorインスタンス(メッセージ空)", error: new Error("") },
-        { description: "Errorインスタンス(メッセージ空白)", error: new Error("   ") },
-      ])("error が $description の場合、フォールバックメッセージを返す", ({ error }) => {
-        expect(getErrorMessage(error, fallbackMessage)).toBe(fallbackMessage);
-      });
+      it.each(fallbackTestCases)(
+        "error が $description の場合、フォールバックメッセージを返す",
+        ({ error }) => {
+          expect(getErrorMessage(error, fallbackMessage)).toBe(fallbackMessage);
+        }
+      );
     });
 
     describe("フォールバックメッセージが指定されていない場合", () => {
-      it.each([
-        { description: "null", error: null },
-        { description: "undefined", error: undefined },
-        { description: "文字列", error: "some string" },
-        { description: "数値", error: 123 },
-        { description: "オブジェクト", error: {} },
-        { description: "Errorインスタンス(メッセージ空)", error: new Error("") },
-        { description: "Errorインスタンス(メッセージ空白)", error: new Error("   ") },
-      ])("error が $description の場合、デフォルトメッセージを返す", ({ error }) => {
-        expect(getErrorMessage(error)).toBe(defaultMessage);
-      });
+      it.each(fallbackTestCases)(
+        "error が $description の場合、デフォルトメッセージを返す",
+        ({ error }) => {
+          expect(getErrorMessage(error)).toBe(defaultMessage);
+        }
+      );
     });
   });
 });
