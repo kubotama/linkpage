@@ -90,8 +90,9 @@ describe("ApiUtils", () => {
       expect(consoleWarnSpy).toHaveBeenCalledTimes(0);
       expect(consoleErrorSpy).toHaveBeenCalledWith(
         `${ERROR_MESSAGE_PARSE_JSON} ステータス: ${response.status}`,
-        expect.any(Error)
+        expect.any(SyntaxError)
       );
+      expect(error.cause).toBeInstanceOf(SyntaxError);
     });
 
     it("レスポンスボディの読み取りエラーを処理する", async () => {
