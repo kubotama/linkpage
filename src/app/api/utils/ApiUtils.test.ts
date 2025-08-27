@@ -10,6 +10,8 @@ import {
   ERROR_MESSAGE_PARSE_JSON,
   ERROR_MESSAGE_READ_RESPONSE_BODY,
   ERROR_UNEXPECTED_RESPONSE_FORMAT,
+  ERROR_UNKNOWN,
+  getErrorMessage,
   parseApiError,
 } from "./ApiUtils";
 import { createErrorResponse } from "./response";
@@ -120,6 +122,65 @@ describe("ApiUtils", () => {
         readError
       );
       expect(error.cause).toBe(readError);
+    });
+  });
+
+  describe("getErrorMessage", () => {
+    describe("error が ApiError インスタンスの場合", () => {
+      const apiErrorMessage = "API error";
+      const apiError = new ApiError(apiErrorMessage, 400);
+
+      it.each([
+        { isLog: true, expected: apiError.toString(), description: "true" },
+        { isLog: undefined, expected: apiError.toString(), description: "未指定(デフォルト)" },
+        { isLog: false, expected: apiErrorMessage, description: "false" },
+      ])("isLog が $description の場合、期待するメッセージを返す", ({ isLog, expected }) => {
+        expect(getErrorMessage(apiError, "unused-fallback", isLog)).toBe(expected);
+      });
+    });
+
+    it("error が通常の Error インスタンスの場合、message プロパティを返す", () => {
+      const normalErrorMessage = "Normal error";
+      const normalError = new Error(normalErrorMessage);
+      expect(getErrorMessage(normalError)).toBe(normalErrorMessage);
+    });
+
+    const fallbackMessage = "Fallback message";
+    const defaultMessage = ERROR_UNKNOWN;
+
+    const fallbackTestCases = [
+      { description: "null", error: null },
+      { description: "undefined", error: undefined },
+      { description: "文字列", error: "some string" },
+      { description: "空文字列", error: "" },
+      { description: "数値", error: 123 },
+      { description: "オブジェクト", error: {} },
+      { description: "Errorインスタンス(メッセージ空)", error: new Error("") },
+      { description: "Errorインスタンス(メッセージ空白)", error: new Error("   ") },
+    ];
+
+    describe("フォールバック動作のテスト", () => {
+      const fallbackScenarios = [
+        {
+          description: "フォールバックメッセージが指定されている場合",
+          fallback: fallbackMessage,
+          expected: fallbackMessage,
+        },
+        {
+          description: "フォールバックメッセージが指定されていない場合",
+          fallback: undefined,
+          expected: defaultMessage,
+        },
+      ];
+
+      describe.each(fallbackScenarios)("$description", ({ fallback, expected }) => {
+        it.each(fallbackTestCases)(
+          "error が $description の場合、期待されるメッセージを返す",
+          ({ error }) => {
+            expect(getErrorMessage(error, fallback)).toBe(expected);
+          }
+        );
+      });
     });
   });
 });

@@ -9,6 +9,8 @@ export const ERROR_MESSAGE_PARSE_JSON =
 export const ERROR_UNEXPECTED_RESPONSE_FORMAT =
   "APIから予期せぬ形式のエラーレスポンスを受け取りました。";
 export const ERROR_MESSAGE_READ_RESPONSE_BODY = `APIエラーレスポンスのボディ読み取りに失敗しました。`;
+export const ERROR_UNKNOWN = "不明なエラーが発生しました。";
+
 /**
  * APIエラーを表すカスタムエラークラス。
  * @param message - エラーメッセージ（フォーマット前）
@@ -165,5 +167,5 @@ export const getErrorMessage = (
   }
 
   // 最終的なフォールバック
-  return "不明なエラーが発生しました。";
+  return ERROR_UNKNOWN;
 };
