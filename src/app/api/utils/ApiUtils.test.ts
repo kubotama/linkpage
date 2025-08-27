@@ -131,14 +131,11 @@ describe("ApiUtils", () => {
       const apiError = new ApiError(apiErrorMessage, 400);
 
       it.each([
-        { isLog: true, description: "true" },
-        { isLog: undefined, description: "未指定(デフォルト)" },
-      ])("isLog が $description の場合、toString() の結果を返す", ({ isLog }) => {
-        expect(getErrorMessage(apiError, "fallback", isLog)).toBe(apiError.toString());
-      });
-
-      it("isLog が false の場合、message プロパティを返す", () => {
-        expect(getErrorMessage(apiError, "fallback", false)).toBe(apiErrorMessage);
+        { isLog: true, expected: apiError.toString(), description: "true" },
+        { isLog: undefined, expected: apiError.toString(), description: "未指定(デフォルト)" },
+        { isLog: false, expected: apiErrorMessage, description: "false" },
+      ])("isLog が $description の場合、期待するメッセージを返す", ({ isLog, expected }) => {
+        expect(getErrorMessage(apiError, "fallback", isLog)).toBe(expected);
       });
     });
 
