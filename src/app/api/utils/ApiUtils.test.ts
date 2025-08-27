@@ -10,6 +10,7 @@ import {
   ERROR_MESSAGE_PARSE_JSON,
   ERROR_MESSAGE_READ_RESPONSE_BODY,
   ERROR_UNEXPECTED_RESPONSE_FORMAT,
+  getErrorMessage,
   parseApiError,
 } from "./ApiUtils";
 import { createErrorResponse } from "./response";
@@ -121,5 +122,60 @@ describe("ApiUtils", () => {
       );
       expect(error.cause).toBe(readError);
     });
+  });
+
+  describe("getErrorMessage", () => {
+    it("error が ApiError インスタンスで isLog が true の場合、toString() の結果を返す", () => {
+      const apiError = new ApiError("API error", 400);
+      expect(getErrorMessage(apiError, "fallback", true)).toBe(apiError.toString());
+    });
+
+    it("error が ApiError インスタンスで isLog が false の場合、message プロパティを返す", () => {
+      const apiError = new ApiError("API error", 400);
+      expect(getErrorMessage(apiError, "fallback", false)).toBe("API error");
+    });
+
+    it("error が通常の Error インスタンスの場合、message プロパティを返す", () => {
+      const error = new Error("Normal error");
+      expect(getErrorMessage(error)).toBe("Normal error");
+    });
+
+    it("error が Error インスタンスだが message プロパティが空の場合、フォールバックメッセージを返す", () => {
+      const errorWithEmptyMessage = new Error("");
+      const errorWithWhitespaceMessage = new Error("   ");
+      const fallbackMessage = "Fallback message";
+      expect(getErrorMessage(errorWithEmptyMessage, fallbackMessage)).toBe(fallbackMessage);
+      expect(getErrorMessage(errorWithWhitespaceMessage, fallbackMessage)).toBe(fallbackMessage);
+    });
+
+    it.each([
+      { description: "null", error: null },
+      { description: "undefined", error: undefined },
+      { description: "文字列", error: "some string" },
+      { description: "数値", error: 123 },
+      { description: "オブジェクト", error: {} },
+    ])("error が $description で fallbackMessage が指定されている場合、それを返す", ({ error }) => {
+      const fallbackMessage = "Fallback message";
+      expect(getErrorMessage(error, fallbackMessage)).toBe(fallbackMessage);
+    });
+
+    it("error が null または undefined でフォールバックもない場合、デフォルトメッセージを返す", () => {
+      const defaultMessage = "不明なエラーが発生しました。";
+      expect(getErrorMessage(null)).toBe(defaultMessage);
+      expect(getErrorMessage(undefined)).toBe(defaultMessage);
+    });
+
+    it.each([
+      { description: "Errorインスタンスだがメッセージが空", error: new Error("") },
+      { description: "文字列", error: "some string" },
+      { description: "数値", error: 123 },
+      { description: "オブジェクト", error: {} },
+    ])(
+      "error ($description) からメッセージを抽出できず、フォールバックもない場合、デフォルトメッセージを返す",
+      ({ error }) => {
+        const defaultMessage = "不明なエラーが発生しました。";
+        expect(getErrorMessage(error)).toBe(defaultMessage);
+      }
+    );
   });
 });
