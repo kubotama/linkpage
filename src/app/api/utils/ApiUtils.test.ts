@@ -127,33 +127,25 @@ describe("ApiUtils", () => {
 
   describe("getErrorMessage", () => {
     describe("error が ApiError インスタンスの場合", () => {
-      const apiError = new ApiError("API error", 400);
-      const testCases = [
-        {
-          description: "isLog が true の場合、toString() の結果を返す",
-          isLog: true,
-          expected: apiError.toString(),
-        },
-        {
-          description: "isLog が false の場合、message プロパティを返す",
-          isLog: false,
-          expected: "API error",
-        },
-        {
-          description: "isLog が未指定の場合、toString() の結果を返す",
-          isLog: undefined,
-          expected: apiError.toString(),
-        },
-      ];
+      const apiErrorMessage = "API error";
+      const apiError = new ApiError(apiErrorMessage, 400);
 
-      it.each(testCases)("$description", ({ isLog, expected }) => {
-        expect(getErrorMessage(apiError, "fallback", isLog)).toBe(expected);
+      it.each([
+        { isLog: true, description: "true" },
+        { isLog: undefined, description: "未指定(デフォルト)" },
+      ])("isLog が $description の場合、toString() の結果を返す", ({ isLog }) => {
+        expect(getErrorMessage(apiError, "fallback", isLog)).toBe(apiError.toString());
+      });
+
+      it("isLog が false の場合、message プロパティを返す", () => {
+        expect(getErrorMessage(apiError, "fallback", false)).toBe(apiErrorMessage);
       });
     });
 
     it("error が通常の Error インスタンスの場合、message プロパティを返す", () => {
-      const error = new Error("Normal error");
-      expect(getErrorMessage(error)).toBe("Normal error");
+      const normalErrorMessage = "Normal error";
+      const normalError = new Error(normalErrorMessage);
+      expect(getErrorMessage(normalError)).toBe(normalErrorMessage);
     });
 
     const fallbackMessage = "Fallback message";
