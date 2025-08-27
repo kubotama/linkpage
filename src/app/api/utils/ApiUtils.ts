@@ -95,9 +95,7 @@ export const parseApiError = async (response: Response): Promise<ApiError> => {
       e instanceof Error
         ? `エラーの種類: ${e.name}, メッセージ: ${e.message}`
         : `不明なエラー: ${String(e)}`;
-    const logMessage = formatUserErrorMessage(errorMessage, response.status, errorDetails);
-    console.error(logMessage, e);
-
+    console.error(`${errorMessage} ステータス: ${response.status}. ${errorDetails}`, e);
     return new ApiError(
       formatUserErrorMessage(errorMessage, response.status, response.statusText),
       response.status,
