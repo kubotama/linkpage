@@ -126,17 +126,27 @@ describe("ApiUtils", () => {
 
   describe("getErrorMessage", () => {
     describe("error が ApiError インスタンスの場合", () => {
-      it("isLog が true の場合、toString() の結果を返す", () => {
-        const apiError = new ApiError("API error", 400);
-        expect(getErrorMessage(apiError, "fallback", true)).toBe(apiError.toString());
-      });
-      it("isLog が false の場合、message プロパティを返す", () => {
-        const apiError = new ApiError("API error", 400);
-        expect(getErrorMessage(apiError, "fallback", false)).toBe("API error");
-      });
-      it("isLog が未指定の場合、toString() の結果を返す", () => {
-        const apiError = new ApiError("API error", 400);
-        expect(getErrorMessage(apiError, "fallback")).toBe(apiError.toString());
+      const apiError = new ApiError("API error", 400);
+      const testCases = [
+        {
+          description: "isLog が true の場合、toString() の結果を返す",
+          isLog: true,
+          expected: apiError.toString(),
+        },
+        {
+          description: "isLog が false の場合、message プロパティを返す",
+          isLog: false,
+          expected: "API error",
+        },
+        {
+          description: "isLog が未指定の場合、toString() の結果を返す",
+          isLog: undefined,
+          expected: apiError.toString(),
+        },
+      ];
+
+      it.each(testCases)("$description", ({ isLog, expected }) => {
+        expect(getErrorMessage(apiError, "fallback", isLog)).toBe(expected);
       });
     });
 
