@@ -65,7 +65,7 @@ describe("ApiUtils", () => {
       expect(error).toBeInstanceOf(ApiError);
       expect(error.status).toBe(HTTP_STATUS_BAD_REQUEST);
       expect(error.message).toBe(
-        `${ERROR_UNEXPECTED_RESPONSE_FORMAT} ステータス: ${HTTP_STATUS_BAD_REQUEST}`
+        `${ERROR_UNEXPECTED_RESPONSE_FORMAT} ステータス: ${response.status} ${response.statusText}`
       );
       expect(consoleWarnSpy).toHaveBeenCalledWith(ERROR_MESSAGE_NOT_EXIST_OR_EMPTY);
     });

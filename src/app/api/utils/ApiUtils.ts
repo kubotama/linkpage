@@ -114,7 +114,11 @@ export const parseApiError = async (response: Response): Promise<ApiError> => {
         message = json.message;
       } else {
         console.warn(ERROR_MESSAGE_NOT_EXIST_OR_EMPTY);
-        message = formatUserErrorMessage(ERROR_UNEXPECTED_RESPONSE_FORMAT, response.status);
+        message = formatUserErrorMessage(
+          ERROR_UNEXPECTED_RESPONSE_FORMAT,
+          response.status,
+          response.statusText
+        );
         cause = createErrorCauseFromContext({ body: bodyText, parsedJson: json });
       }
     } catch (e) {
