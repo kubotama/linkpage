@@ -126,7 +126,7 @@ export const parseApiError = async (response: Response): Promise<ApiError> => {
         response.status,
         response.statusText
       );
-      cause = createErrorCauseFromContext({ error: e, body: bodyText });
+      cause = e instanceof Error ? e : new Error(String(e));
     }
   }
   if (response.status === HTTP_STATUS_CONFLICT) {
