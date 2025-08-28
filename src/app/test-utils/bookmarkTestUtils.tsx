@@ -368,7 +368,7 @@ export const testApiErrorHandling = async ({
   });
 
   expect(consoleErrorSpy).toHaveBeenCalledWith(
-    expect.stringContaining(errorMessage), // "ブックマークの更新エラー:" や "キーワードの追加エラー:" など
+    errorMessage, // "ブックマークの更新エラー:" や "キーワードの追加エラー:" など
     `${errorClass}: [${errorCase.status}] ${errorCase.message}`
   );
 };
