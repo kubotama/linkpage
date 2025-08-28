@@ -11,7 +11,13 @@ import {
   KEYWORD_ROLE_NAME,
   TABLE_NAME_KEYWORD,
 } from "../../constants/constants";
-import { HTTP_STATUS_OK } from "../../constants/httpStatusCodes";
+import {
+  HTTP_STATUS_BAD_REQUEST,
+  HTTP_STATUS_CONFLICT,
+  HTTP_STATUS_FORBIDDEN,
+  HTTP_STATUS_INTERNAL_SERVER_ERROR,
+  HTTP_STATUS_OK,
+} from "../../constants/httpStatusCodes";
 import {
   assertBookmarkIsSelected,
   buildMockBookmarksWithKeywords,
@@ -21,6 +27,7 @@ import {
   deselectBookmark,
   findBookmarkWithAtLeastNKeywords,
   setupBookmarkManagerForTest,
+  testApiErrorHandling,
   typeInTextbox,
 } from "../../test-utils/bookmarkTestUtils";
 import { Bookmark } from "../../types/Bookmark";
@@ -159,54 +166,39 @@ describe("選択されたブックマークにキーワードを追加", () => {
           description: "サーバーエラー (500 Internal Server Error)",
           errorCase: {
             message: "サーバーで予期せぬエラーが発生しました。",
-            status: 500,
+            status: HTTP_STATUS_INTERNAL_SERVER_ERROR,
           },
-          errorClass: "ApiError",
         },
         {
           description: "既に登録済みのキーワード (409 Conflict)",
           errorCase: {
             message: "指定されたキーワードは既にこのブックマークに登録されています。",
-            status: 409,
+            status: HTTP_STATUS_CONFLICT,
           },
-          errorClass: "DuplicatedError",
         },
         {
           description: "不正なリクエスト (400 Bad Request)",
-          errorCase: { message: "キーワードを指定してください。", status: 400 },
-          errorClass: "ApiError",
+          errorCase: { message: "キーワードを指定してください。", status: HTTP_STATUS_BAD_REQUEST },
         },
         {
           description: "アクセス拒否 (403 Forbidden)",
-          errorCase: { message: "アクセスが拒否されました。", status: 403 },
-          errorClass: "ApiError",
+          errorCase: { message: "アクセスが拒否されました。", status: HTTP_STATUS_FORBIDDEN },
         },
-      ])("APIがエラーを返した場合 ($description)", async ({ errorCase, errorClass }) => {
+      ])("APIがエラーを返した場合 ($description)", async ({ errorCase }) => {
         const bookmarkToSelect = findBookmarkWithAtLeastNKeywords(mockBookmarksWithKeywords, 0);
         await clickBookmark(user, bookmarkToSelect);
         await assertBookmarkIsSelected(bookmarkToSelect);
 
         const newKeyword = "新しいキーワード";
+        const errorMessage = "キーワードの追加エラー:";
 
-        mockFetch.mockResolvedValueOnce(
-          createMockResponse({
-            isOk: false,
-            status: errorCase.status,
-            message: errorCase.message,
-          })
-        );
-
-        await addNewKeyword(user, newKeyword);
-
-        await waitFor(() => {
-          expect(screen.getByTestId("bookmark-message")).toHaveTextContent(errorCase.message);
+        await testApiErrorHandling({
+          action: () => addNewKeyword(user, newKeyword),
+          errorCase,
+          mockFetch,
+          consoleErrorSpy,
+          errorMessage,
         });
-
-        expect(consoleErrorSpy).toHaveBeenCalledWith(
-          "キーワードの追加エラー:",
-          `${errorClass}: [${errorCase.status}] ${errorCase.message}`
-        );
-
         const keywordTable = screen.getByRole("table", { name: TABLE_NAME_KEYWORD });
         expect(within(keywordTable).queryByText(newKeyword)).not.toBeInTheDocument();
       });

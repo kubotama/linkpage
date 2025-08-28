@@ -28,6 +28,7 @@ import {
   mockBookmarks,
   setBookmarkFormValuesAndClickButton,
   setupBookmarkManagerForTest,
+  testApiErrorHandling,
 } from "../../test-utils/bookmarkTestUtils";
 import { Bookmark } from "../../types/Bookmark";
 
@@ -131,27 +132,21 @@ describe("タイトルの更新ボタン", () => {
       it("同じURLを指定された場合には409を返す。", async () => {
         const updateUrl = GMAIL_BOOKMARK.url;
         const updateTitle = "更新されたタイトル";
-        const errorText = "指定されたURLのブックマークは既に登録されています。";
-        const statusCode = HTTP_STATUS_CONFLICT;
-
-        mockFetch.mockResolvedValueOnce(
-          createMockResponse({
-            isOk: false,
-            status: statusCode,
-            message: errorText,
-          })
-        );
-
-        await setBookmarkFormValuesAndClickButton(
-          user,
-          { url: updateUrl, title: updateTitle },
-          UPDATE_BUTTON_ROLE_NAME
-        );
-
-        expect(consoleErrorSpy).toHaveBeenCalledWith(
-          "ブックマークの更新エラー:",
-          `DuplicatedError: [${statusCode}] ${errorText}`
-        );
+        await testApiErrorHandling({
+          action: () =>
+            setBookmarkFormValuesAndClickButton(
+              user,
+              { url: updateUrl, title: updateTitle },
+              UPDATE_BUTTON_ROLE_NAME
+            ),
+          errorCase: {
+            message: "指定されたURLのブックマークは既に登録されています。",
+            status: HTTP_STATUS_CONFLICT,
+          },
+          mockFetch,
+          consoleErrorSpy,
+          errorMessage: "ブックマークの更新エラー:",
+        });
 
         // フォームに入力した値が保持され、更新ボタンが表示されていることを確認
         await expectBookmarkFormValues({
@@ -159,11 +154,7 @@ describe("タイトルの更新ボタン", () => {
           title: updateTitle,
           buttonName: UPDATE_BUTTON_ROLE_NAME,
         });
-        await assertErrorMessage({
-          message: "指定されたURLのブックマークは既に登録されています。",
-          isError: true,
-          isAsync: true,
-        });
+
         const table = await screen.findByRole("table", { name: TABLE_NAME_BOOKMARKS });
         await within(table).findByText(bookmarkToSelect.title);
       });
@@ -198,26 +189,19 @@ describe("タイトルの更新ボタン", () => {
           },
         },
       ])("エラーハンドリング: $description", async ({ errorCase }) => {
-        mockFetch.mockResolvedValueOnce(createMockResponse({ ...errorCase, isOk: false }));
-
-        await clickButtonByName(user, UPDATE_BUTTON_ROLE_NAME);
-
-        expect(consoleErrorSpy).toHaveBeenCalledWith(
-          "ブックマークの更新エラー:",
-          `ApiError: [${errorCase.status}] ${errorCase.message}`
-        );
+        await testApiErrorHandling({
+          action: () => clickButtonByName(user, UPDATE_BUTTON_ROLE_NAME),
+          errorCase,
+          mockFetch,
+          consoleErrorSpy,
+          errorMessage: "ブックマークの更新エラー:",
+        });
 
         // フォームの値は変更されずに保持されるべき
         await expectBookmarkFormValues({
           url: bookmarkToSelect.url,
           title: bookmarkToSelect.title,
           buttonName: UPDATE_BUTTON_ROLE_NAME,
-        });
-
-        await assertErrorMessage({
-          message: errorCase.message,
-          isError: true,
-          isAsync: true,
         });
       });
 
