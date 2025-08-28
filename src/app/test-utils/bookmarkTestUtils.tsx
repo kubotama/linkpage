@@ -1,4 +1,4 @@
-import { expect } from "vitest";
+import { expect, MockInstance } from "vitest";
 
 import { render, screen, waitFor, within } from "@testing-library/react";
 import { UserEvent } from "@testing-library/user-event";
@@ -332,4 +332,41 @@ export const assertErrorMessage = async ({
       expect(screen.queryByRole("button", { name: "閉じる" })).not.toBeInTheDocument();
     });
   }
+};
+
+export const testApiErrorHandling = async ({
+  action,
+  errorCase,
+  mockFetch,
+  consoleErrorSpy,
+  errorMessage,
+  errorClass = "ApiError",
+}: {
+  action: () => Promise<void>;
+  errorCase: { message: string; status: number };
+  mockFetch: MockInstance;
+  consoleErrorSpy: MockInstance;
+  errorMessage: string;
+  errorClass?: string;
+}) => {
+  mockFetch.mockResolvedValueOnce(
+    createMockResponse({
+      isOk: false,
+      status: errorCase.status,
+      message: errorCase.message,
+    })
+  );
+
+  await action();
+
+  await assertErrorMessage({
+    message: errorCase.message,
+    isError: true,
+    isAsync: true,
+  });
+
+  expect(consoleErrorSpy).toHaveBeenCalledWith(
+    expect.stringContaining(errorMessage), // "ブックマークの更新エラー:" や "キーワードの追加エラー:" など
+    `${errorClass}: [${errorCase.status}] ${errorCase.message}`
+  );
 };

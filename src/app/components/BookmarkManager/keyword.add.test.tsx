@@ -21,6 +21,7 @@ import {
   deselectBookmark,
   findBookmarkWithAtLeastNKeywords,
   setupBookmarkManagerForTest,
+  testApiErrorHandling,
   typeInTextbox,
 } from "../../test-utils/bookmarkTestUtils";
 import { Bookmark } from "../../types/Bookmark";
@@ -187,26 +188,16 @@ describe("選択されたブックマークにキーワードを追加", () => {
         await assertBookmarkIsSelected(bookmarkToSelect);
 
         const newKeyword = "新しいキーワード";
+        const errorMessage = "キーワードの追加エラー:";
 
-        mockFetch.mockResolvedValueOnce(
-          createMockResponse({
-            isOk: false,
-            status: errorCase.status,
-            message: errorCase.message,
-          })
-        );
-
-        await addNewKeyword(user, newKeyword);
-
-        await waitFor(() => {
-          expect(screen.getByTestId("bookmark-message")).toHaveTextContent(errorCase.message);
+        await testApiErrorHandling({
+          action: () => addNewKeyword(user, newKeyword),
+          errorCase,
+          mockFetch,
+          consoleErrorSpy,
+          errorMessage,
+          errorClass,
         });
-
-        expect(consoleErrorSpy).toHaveBeenCalledWith(
-          "キーワードの追加エラー:",
-          `${errorClass}: [${errorCase.status}] ${errorCase.message}`
-        );
-
         const keywordTable = screen.getByRole("table", { name: TABLE_NAME_KEYWORD });
         expect(within(keywordTable).queryByText(newKeyword)).not.toBeInTheDocument();
       });

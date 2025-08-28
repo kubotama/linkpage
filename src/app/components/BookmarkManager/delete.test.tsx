@@ -16,13 +16,13 @@ import {
 } from "../../constants/httpStatusCodes";
 import {
   assertBookmarkIsSelected,
-  assertErrorMessage,
   clickBookmark,
   clickButtonByName,
   createMockResponse,
   GOOGLE_BOOKMARK,
   mockBookmarks,
   setupBookmarkManagerForTest,
+  testApiErrorHandling,
 } from "../../test-utils/bookmarkTestUtils";
 import { Bookmark } from "../../types/Bookmark";
 
@@ -115,18 +115,12 @@ describe("削除ボタン", () => {
     ])("エラーハンドリング: $description", async ({ errorCase }) => {
       const consoleErrorSpy = vi.spyOn(console, "error").mockImplementation(() => {});
       try {
-        mockFetch.mockResolvedValueOnce(createMockResponse({ ...errorCase, isOk: false }));
-        await clickButtonByName(user, DELETE_BUTTON_ROLE_NAME);
-
-        expect(consoleErrorSpy).toHaveBeenCalledWith(
-          "ブックマークの削除エラー:",
-          `ApiError: [${errorCase.status}] ${errorCase.message}`
-        );
-
-        await assertErrorMessage({
-          message: "ブックマークの削除中にエラーが発生しました。",
-          isError: true,
-          isAsync: true,
+        await testApiErrorHandling({
+          action: () => clickButtonByName(user, DELETE_BUTTON_ROLE_NAME),
+          errorCase,
+          mockFetch,
+          consoleErrorSpy,
+          errorMessage: "ブックマークの削除エラー:",
         });
 
         await screen.findByText(bookmarkToSelect.title);

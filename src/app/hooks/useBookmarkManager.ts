@@ -81,8 +81,11 @@ export const useBookmarkManager = () => {
       await deleteBookmark(selectedBookmarkId);
       setSelectedBookmarkId(undefined);
       setMessage();
-    } catch {
-      setMessage("ブックマークの削除中にエラーが発生しました。", true);
+    } catch (error: unknown) {
+      setMessage(
+        getErrorMessage(error, "ブックマークの削除中にエラーが発生しました。", false),
+        true
+      );
     }
   }, [deleteBookmark, selectedBookmarkId, setMessage]);
 
