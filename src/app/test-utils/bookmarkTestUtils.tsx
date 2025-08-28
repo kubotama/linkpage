@@ -334,6 +334,15 @@ export const assertErrorMessage = async ({
   }
 };
 
+interface TestApiErrorHandlingParams {
+  action: () => Promise<void>;
+  errorCase: { message: string; status: number };
+  mockFetch: MockInstance;
+  consoleErrorSpy: MockInstance;
+  errorMessage: string;
+  errorClass?: string;
+}
+
 export const testApiErrorHandling = async ({
   action,
   errorCase,
@@ -341,14 +350,7 @@ export const testApiErrorHandling = async ({
   consoleErrorSpy,
   errorMessage,
   errorClass = "ApiError",
-}: {
-  action: () => Promise<void>;
-  errorCase: { message: string; status: number };
-  mockFetch: MockInstance;
-  consoleErrorSpy: MockInstance;
-  errorMessage: string;
-  errorClass?: string;
-}) => {
+}: TestApiErrorHandlingParams) => {
   mockFetch.mockResolvedValueOnce(
     createMockResponse({
       isOk: false,
