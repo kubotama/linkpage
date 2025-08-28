@@ -11,6 +11,7 @@ import {
   URL_ROLE_NAME,
 } from "../constants/constants";
 import {
+  HTTP_STATUS_CONFLICT,
   HTTP_STATUS_CREATED,
   HTTP_STATUS_MULTIPLE_CHOICES,
   HTTP_STATUS_NO_CONTENT,
@@ -340,7 +341,6 @@ interface TestApiErrorHandlingParams {
   mockFetch: MockInstance;
   consoleErrorSpy: MockInstance;
   errorMessage: string;
-  errorClass?: string;
 }
 
 export const testApiErrorHandling = async ({
@@ -349,7 +349,6 @@ export const testApiErrorHandling = async ({
   mockFetch,
   consoleErrorSpy,
   errorMessage,
-  errorClass = "ApiError",
 }: TestApiErrorHandlingParams) => {
   mockFetch.mockResolvedValueOnce(
     createMockResponse({
@@ -367,8 +366,11 @@ export const testApiErrorHandling = async ({
     isAsync: true,
   });
 
+  const resolvedErrorClass =
+    errorCase.status === HTTP_STATUS_CONFLICT ? "DuplicatedError" : "ApiError";
+
   expect(consoleErrorSpy).toHaveBeenCalledWith(
     errorMessage, // "ブックマークの更新エラー:" や "キーワードの追加エラー:" など
-    `${errorClass}: [${errorCase.status}] ${errorCase.message}`
+    `${resolvedErrorClass}: [${errorCase.status}] ${errorCase.message}`
   );
 };

@@ -162,7 +162,6 @@ describe("選択されたブックマークにキーワードを追加", () => {
             message: "サーバーで予期せぬエラーが発生しました。",
             status: 500,
           },
-          errorClass: "ApiError",
         },
         {
           description: "既に登録済みのキーワード (409 Conflict)",
@@ -170,19 +169,16 @@ describe("選択されたブックマークにキーワードを追加", () => {
             message: "指定されたキーワードは既にこのブックマークに登録されています。",
             status: 409,
           },
-          errorClass: "DuplicatedError",
         },
         {
           description: "不正なリクエスト (400 Bad Request)",
           errorCase: { message: "キーワードを指定してください。", status: 400 },
-          errorClass: "ApiError",
         },
         {
           description: "アクセス拒否 (403 Forbidden)",
           errorCase: { message: "アクセスが拒否されました。", status: 403 },
-          errorClass: "ApiError",
         },
-      ])("APIがエラーを返した場合 ($description)", async ({ errorCase, errorClass }) => {
+      ])("APIがエラーを返した場合 ($description)", async ({ errorCase }) => {
         const bookmarkToSelect = findBookmarkWithAtLeastNKeywords(mockBookmarksWithKeywords, 0);
         await clickBookmark(user, bookmarkToSelect);
         await assertBookmarkIsSelected(bookmarkToSelect);
@@ -196,7 +192,6 @@ describe("選択されたブックマークにキーワードを追加", () => {
           mockFetch,
           consoleErrorSpy,
           errorMessage,
-          errorClass,
         });
         const keywordTable = screen.getByRole("table", { name: TABLE_NAME_KEYWORD });
         expect(within(keywordTable).queryByText(newKeyword)).not.toBeInTheDocument();
