@@ -166,9 +166,7 @@ describe("ブックマーク追加APIのテスト (オンメモリDB)", () => {
     const response = await OPTIONS(); // OPTIONS handler might not take a request argument
 
     expect(response.status).toBe(HTTP_STATUS_NO_CONTENT);
-    expect(response.headers.get("Access-Control-Allow-Origin")).toBe(
-      "chrome-extension://jonckoigjppkhajocdbgfbgjdgffhebf"
-    );
+    expect(response.headers.get("Access-Control-Allow-Origin")).toBe("");
     expect(response.headers.get("Access-Control-Allow-Methods")).toBe("POST, OPTIONS");
     expect(response.headers.get("Access-Control-Allow-Headers")).toBe("Content-Type");
   });
