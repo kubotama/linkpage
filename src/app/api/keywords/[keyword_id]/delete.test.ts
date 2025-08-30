@@ -74,18 +74,6 @@ describe("キーワードDELETE APIのテスト", () => {
         },
       },
       {
-        description: "DBエラーが発生した場合",
-        keywordId: "1",
-        statusCode: HTTP_STATUS_INTERNAL_SERVER_ERROR,
-        errorMessage: "サーバー内部でエラーが発生しました。",
-        logMessage: "Internal Server Error: DB error",
-        setup: async () => {
-          vi.mocked(getDb).mockImplementation(() => {
-            throw new Error("DB error");
-          });
-        },
-      },
-      {
         description: "存在しないIDを指定した場合",
         keywordId: "9999",
         statusCode: HTTP_STATUS_NOT_FOUND,
@@ -115,5 +103,25 @@ describe("キーワードDELETE APIのテスト", () => {
         expect(consoleErrorSpy).toHaveBeenCalledWith(logMessage);
       }
     );
+
+    // DBエラーのテストケースを分離する
+    it("DBエラーが発生した場合に500エラーが返る", async () => {
+      const getDbSpy = vi.mocked(getDb).mockImplementation(() => {
+        throw new Error("DB error");
+      });
+
+      try {
+        const [req, ctx] = createDeleteRequest("1");
+        const response = await DELETE(req, ctx);
+        await assertErrorResponse(
+          response,
+          HTTP_STATUS_INTERNAL_SERVER_ERROR,
+          "サーバー内部でエラーが発生しました。"
+        );
+        expect(consoleErrorSpy).toHaveBeenCalledWith("Internal Server Error: DB error");
+      } finally {
+        getDbSpy.mockRestore();
+      }
+    });
   });
 });
