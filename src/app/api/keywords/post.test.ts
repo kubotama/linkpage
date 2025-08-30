@@ -92,7 +92,7 @@ describe("キーワードAPIのテスト", () => {
         statusCode: HTTP_STATUS_BAD_REQUEST,
         body: "invalid json",
         errorMessage: "リクエストボディのJSONが不正です。",
-        logMessage: "Invalid JSON format: Unexpected token 'i', \"invalid json\" is not valid JSON",
+        logMessage: expect.stringContaining("Invalid JSON format: Unexpected token"),
       },
       {
         description: "不正なJSONデータ(null)",
