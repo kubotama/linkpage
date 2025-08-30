@@ -1,5 +1,5 @@
 import ActualDatabase from "better-sqlite3"; // Import the actual library
-import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
+import { afterEach, beforeEach, describe, expect, it, MockInstance, vi } from "vitest";
 
 import {
   HTTP_STATUS_BAD_REQUEST,
@@ -74,64 +74,74 @@ describe("キーワードAPIのテスト", () => {
     await assertErrorResponse(response, HTTP_STATUS_BAD_REQUEST, "キーワードを指定してください。");
   });
 
-  it("POST: 不正なJSONデータ(JSON.parseエラー)の場合は400を返す", async () => {
-    const response = await POST(
-      new Request(API_KEYWORDS_URL, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: "invalid json",
-      })
-    );
-    await assertErrorResponse(
-      response,
-      HTTP_STATUS_BAD_REQUEST,
-      "リクエストボディのJSONが不正です。"
-    );
-  });
+  describe("POST: エラーログが出力される場合のテスト", () => {
+    let consoleErrorSpy: MockInstance;
 
-  it("POST: 不正なJSONデータ(null)の場合は400を返す", async () => {
-    const response = await POST(
-      new Request(API_KEYWORDS_URL, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(null),
-      })
-    );
-    await assertErrorResponse(
-      response,
-      HTTP_STATUS_BAD_REQUEST,
-      "リクエストボディのJSONが不正です。"
-    );
-  });
-
-  it("POST: 重複したキーワードを追加時に409 Conflictを返す", async () => {
-    const response = await POST(createPostRequest(mockKeywords[0].keyword_name));
-
-    await assertErrorResponse(
-      response,
-      HTTP_STATUS_CONFLICT,
-      "指定されたキーワードは既に登録されています。"
-    );
-  });
-
-  it("POST: データベースエラー時に500エラーを返す", async () => {
-    const queryError = new Error("Failed to execute query");
-    // prepareメソッドをモックしてクエリエラーを発生させる
-    const prepareSpy = vi.spyOn(inMemoryDbInstance, "prepare").mockImplementation(() => {
-      throw queryError;
+    beforeEach(() => {
+      // console.errorをスパイして、エラー出力がされるか確認
+      consoleErrorSpy = vi.spyOn(console, "error").mockImplementation(() => {});
     });
 
-    const response = await POST(createPostRequest("テスト"));
-    await assertErrorResponse(
-      response,
-      HTTP_STATUS_INTERNAL_SERVER_ERROR,
-      "サーバー内部でエラーが発生しました。"
-    );
+    afterEach(() => {
+      vi.restoreAllMocks();
+    });
 
-    prepareSpy.mockRestore();
+    const invalidRequestTestCases = [
+      {
+        description: "不正なJSONデータ(JSON.parseエラー)",
+        statusCode: HTTP_STATUS_BAD_REQUEST,
+        body: "invalid json",
+        errorMessage: "リクエストボディのJSONが不正です。",
+        logMessage: expect.stringContaining("Invalid JSON format: Unexpected token"),
+      },
+      {
+        description: "不正なJSONデータ(null)",
+        statusCode: HTTP_STATUS_BAD_REQUEST,
+        body: JSON.stringify(null),
+        errorMessage: "リクエストボディのJSONが不正です。",
+        logMessage: "Invalid JSON format: リクエストボディのJSONが不正です。",
+      },
+      {
+        description: "重複したキーワードを追加",
+        statusCode: HTTP_STATUS_CONFLICT,
+        body: JSON.stringify({
+          keyword_name: mockKeywords[0].keyword_name,
+        }),
+        errorMessage: "指定されたキーワードは既に登録されています。",
+        logMessage: 'Keyword with "キーワード1" already exists.',
+      },
+      {
+        description: "データベースエラーが発生した場合",
+        statusCode: HTTP_STATUS_INTERNAL_SERVER_ERROR,
+        body: JSON.stringify({ keyword_name: "テスト" }),
+        errorMessage: "サーバー内部でエラーが発生しました。",
+        logMessage: "Internal Server Error: Failed to execute query",
+        setup: () => {
+          vi.spyOn(inMemoryDbInstance, "prepare").mockImplementation(() => {
+            throw new Error("Failed to execute query");
+          });
+        },
+      },
+    ];
+
+    it.each(invalidRequestTestCases)(
+      `キーワードが$descriptionの場合は$statusCodeを返す`,
+      async ({ statusCode, body, errorMessage, logMessage, setup }) => {
+        if (setup) {
+          setup();
+        }
+        const response = await POST(
+          new Request(API_KEYWORDS_URL, {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+            },
+            body,
+          })
+        );
+        await assertErrorResponse(response, statusCode, errorMessage);
+        expect(consoleErrorSpy).toHaveBeenCalledWith(logMessage);
+      }
+    );
   });
 });
