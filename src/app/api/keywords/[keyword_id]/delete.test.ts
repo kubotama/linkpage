@@ -68,8 +68,8 @@ describe("キーワードDELETE APIのテスト", () => {
         statusCode: HTTP_STATUS_NOT_FOUND,
         errorMessage: "指定されたキーワードが見つかりません。",
         logMessage: "Keyword with id: 1 not found.",
-        setup: async (id: string) => {
-          const [req, ctx] = createDeleteRequest(id);
+        setup: async (keywordId: string) => {
+          const [req, ctx] = createDeleteRequest(keywordId);
           await DELETE(req, ctx); // 1回目の削除 (keywordId "1" を使用)
         },
       },
@@ -95,7 +95,7 @@ describe("キーワードDELETE APIのテスト", () => {
       `$descriptionに$statusCodeでエラーメッセージが返る`,
       async ({ setup, keywordId, statusCode, errorMessage, logMessage }) => {
         if (setup) {
-          await setup(keywordId); // ここで keywordId を渡すように変更する
+          await setup(keywordId);
         }
         const [req, ctx] = createDeleteRequest(keywordId);
         const response = await DELETE(req, ctx);
