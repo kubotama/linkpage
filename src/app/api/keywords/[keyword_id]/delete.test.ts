@@ -58,7 +58,7 @@ describe("キーワードDELETE APIのテスト", () => {
     });
 
     afterEach(() => {
-      consoleErrorSpy.mockRestore();
+      vi.restoreAllMocks();
     });
 
     const setupErrorCases = [
@@ -89,6 +89,18 @@ describe("キーワードDELETE APIのテスト", () => {
         logMessage: "Invalid ID provided: abc. It must be a positive integer.",
         setup: undefined,
       },
+      {
+        description: "DBエラーが発生した場合",
+        keywordId: "1",
+        statusCode: HTTP_STATUS_INTERNAL_SERVER_ERROR,
+        errorMessage: "サーバー内部でエラーが発生しました。",
+        logMessage: "Internal Server Error: DB Error",
+        setup: () => {
+          vi.mocked(getDb).mockImplementation(() => {
+            throw new Error("DB Error");
+          });
+        },
+      },
     ];
 
     it.each(setupErrorCases)(
@@ -103,25 +115,5 @@ describe("キーワードDELETE APIのテスト", () => {
         expect(consoleErrorSpy).toHaveBeenCalledWith(logMessage);
       }
     );
-
-    // DBエラーのテストケースを分離する
-    it("DBエラーが発生した場合に500エラーが返る", async () => {
-      const getDbSpy = vi.mocked(getDb).mockImplementation(() => {
-        throw new Error("DB error");
-      });
-
-      try {
-        const [req, ctx] = createDeleteRequest("1");
-        const response = await DELETE(req, ctx);
-        await assertErrorResponse(
-          response,
-          HTTP_STATUS_INTERNAL_SERVER_ERROR,
-          "サーバー内部でエラーが発生しました。"
-        );
-        expect(consoleErrorSpy).toHaveBeenCalledWith("Internal Server Error: DB error");
-      } finally {
-        getDbSpy.mockRestore();
-      }
-    });
   });
 });
