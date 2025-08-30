@@ -83,7 +83,7 @@ describe("キーワードAPIのテスト", () => {
     });
 
     afterEach(() => {
-      consoleErrorSpy.mockRestore();
+      vi.restoreAllMocks();
     });
 
     const invalidRequestTestCases = [
@@ -110,11 +110,26 @@ describe("キーワードAPIのテスト", () => {
         errorMessage: "指定されたキーワードは既に登録されています。",
         logMessage: 'Keyword with "キーワード1" already exists.',
       },
+      {
+        description: "データベースエラーが発生した場合",
+        statusCode: HTTP_STATUS_INTERNAL_SERVER_ERROR,
+        body: JSON.stringify({ keyword_name: "テスト" }),
+        errorMessage: "サーバー内部でエラーが発生しました。",
+        logMessage: "Internal Server Error: Failed to execute query",
+        setup: () => {
+          vi.spyOn(inMemoryDbInstance, "prepare").mockImplementation(() => {
+            throw new Error("Failed to execute query");
+          });
+        },
+      },
     ];
 
     it.each(invalidRequestTestCases)(
       `キーワードが$descriptionの場合は$statusCodeを返す`,
-      async ({ statusCode, body, errorMessage, logMessage }) => {
+      async ({ statusCode, body, errorMessage, logMessage, setup }) => {
+        if (setup) {
+          setup();
+        }
         const response = await POST(
           new Request(API_KEYWORDS_URL, {
             method: "POST",
@@ -128,25 +143,5 @@ describe("キーワードAPIのテスト", () => {
         expect(consoleErrorSpy).toHaveBeenCalledWith(logMessage);
       }
     );
-
-    it("POST: データベースエラー時に500エラーを返す", async () => {
-      const queryError = new Error("Failed to execute query");
-      // prepareメソッドをモックしてクエリエラーを発生させる
-      const prepareSpy = vi.spyOn(inMemoryDbInstance, "prepare").mockImplementation(() => {
-        throw queryError;
-      });
-
-      const response = await POST(createPostRequest("テスト"));
-      await assertErrorResponse(
-        response,
-        HTTP_STATUS_INTERNAL_SERVER_ERROR,
-        "サーバー内部でエラーが発生しました。"
-      );
-      expect(consoleErrorSpy).toHaveBeenCalledWith(
-        "Internal Server Error: Failed to execute query"
-      );
-
-      prepareSpy.mockRestore();
-    });
   });
 });
