@@ -86,7 +86,7 @@ describe("キーワードAPIのテスト", () => {
       consoleErrorSpy.mockRestore();
     });
 
-    const emptyKeywordTestCases = [
+    const invalidRequestTestCases = [
       {
         description: "不正なJSONデータ(JSON.parseエラー)",
         statusCode: HTTP_STATUS_BAD_REQUEST,
@@ -112,8 +112,8 @@ describe("キーワードAPIのテスト", () => {
       },
     ];
 
-    it.each(emptyKeywordTestCases)(
-      `POST: キーワードが$descriptionの場合は$statusCodeを返す`,
+    it.each(invalidRequestTestCases)(
+      `キーワードが$descriptionの場合は$statusCodeを返す`,
       async ({ statusCode, body, errorMessage, logMessage }) => {
         const response = await POST(
           new Request(API_KEYWORDS_URL, {
