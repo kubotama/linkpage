@@ -98,7 +98,7 @@ describe("ブックマーク削除APIのテスト (オンメモリDB)", () => {
       vi.restoreAllMocks();
     });
 
-    const errorTestCases: ErrorTestCase<Partial<number> | string>[] = [
+    const errorTestCases: ErrorTestCase<number | string>[] = [
       {
         description: "登録されていないIDの場合に404エラーを返す",
         statusCode: HTTP_STATUS_NOT_FOUND,
@@ -134,8 +134,7 @@ describe("ブックマーク削除APIのテスト (オンメモリDB)", () => {
           setup();
         }
 
-        const requestBody = typeof body === "string" ? body : body.toString();
-        const [request, context] = createDeleteRequest(requestBody.toString());
+        const [request, context] = createDeleteRequest(body.toString());
         const response = await DELETE(request, context);
 
         await assertErrorResponse(response, statusCode, errorMessage);
