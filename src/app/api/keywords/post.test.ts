@@ -12,6 +12,7 @@ import { mockKeywords } from "../../test-utils/bookmarkTestUtils";
 import { setupInMemoryDb } from "../../test-utils/db-setup";
 import { getDb } from "../bookmarks/database";
 import { API_KEYWORDS_URL } from "../utils/constants";
+import { ErrorTestCase } from "../utils/types";
 import { POST } from "./route";
 
 vi.mock("../bookmarks/database");
@@ -86,7 +87,7 @@ describe("キーワードAPIのテスト", () => {
       vi.restoreAllMocks();
     });
 
-    const invalidRequestTestCases = [
+    const invalidRequestTestCases: ErrorTestCase<string>[] = [
       {
         description: "不正なJSONデータ(JSON.parseエラー)",
         statusCode: HTTP_STATUS_BAD_REQUEST,
