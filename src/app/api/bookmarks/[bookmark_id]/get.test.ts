@@ -1,5 +1,5 @@
 import ActualDatabase from "better-sqlite3"; // Import the actual library
-import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
+import { afterEach, beforeEach, describe, expect, it, MockInstance, vi } from "vitest";
 
 import {
   HTTP_STATUS_BAD_REQUEST,
@@ -11,6 +11,7 @@ import { assertErrorResponse } from "../../../test-utils/assertions";
 import { expectEqualBookmark, GOOGLE_BOOKMARK } from "../../../test-utils/bookmarkTestUtils";
 import { setupInMemoryDb } from "../../../test-utils/db-setup";
 import { API_BOOKMARKS_URL } from "../../utils/constants";
+import { ErrorTestCase } from "../../utils/types";
 import { getDb } from "../database";
 import { GET } from "./route";
 
@@ -20,11 +21,9 @@ let inMemoryDbInstance: ActualDatabase.Database;
 
 const createGetRequest = (
   bookmark_id: string
-  // ): [Request, { params: { id: string } }] => {
 ): [Request, { params: Promise<{ bookmark_id: string }> }] => {
   return [
     new Request(`${API_BOOKMARKS_URL}${bookmark_id}`, { method: "Get" }),
-    // { params: { id } },
     { params: Promise.resolve({ bookmark_id: bookmark_id.toString() }) },
   ];
 };
@@ -56,58 +55,72 @@ describe("ブックマークを1件取得するAPIのテスト", () => {
     expectEqualBookmark(json, targetBookmark);
   });
 
-  it("GET: 不正なIDの場合400エラーを返す", async () => {
-    const [request, context] = createGetRequest("abc");
-    const response = await GET(request, context);
+  describe("GET: エラーログが出力される場合のテスト", () => {
+    let consoleErrorSpy: MockInstance;
 
-    await assertErrorResponse(
-      response,
-      HTTP_STATUS_BAD_REQUEST,
-      "IDは正の整数である必要があります。"
-    );
-  });
-
-  it("GET: 存在しないIDの場合404エラーを返す", async () => {
-    const [request, context] = createGetRequest("100");
-    const response = await GET(request, context);
-
-    await assertErrorResponse(
-      response,
-      HTTP_STATUS_NOT_FOUND,
-      "指定されたブックマークがありません。"
-    );
-  });
-
-  it("GET: データベースエラー時に500エラーを返す", async () => {
-    const dbError = new Error("Database connection failed");
-    vi.mocked(getDb).mockImplementation(() => {
-      throw dbError;
+    beforeEach(() => {
+      // console.errorをスパイして、エラー出力がされるか確認
+      consoleErrorSpy = vi.spyOn(console, "error").mockImplementation(() => {});
     });
 
-    const [request, context] = createGetRequest("1");
-    const response = await GET(request, context);
-    await assertErrorResponse(
-      response,
-      HTTP_STATUS_INTERNAL_SERVER_ERROR,
-      "サーバー内部でエラーが発生しました。"
-    );
-  });
-
-  it("GET: クエリエラー時に500エラーを返す", async () => {
-    const queryError = new Error("Failed to execute query");
-    // prepareメソッドをモックしてクエリエラーを発生させる
-    const prepareSpy = vi.spyOn(inMemoryDbInstance, "prepare").mockImplementation(() => {
-      throw queryError;
+    afterEach(() => {
+      vi.restoreAllMocks();
     });
 
-    const [request, context] = createGetRequest("1");
-    const response = await GET(request, context);
-    await assertErrorResponse(
-      response,
-      HTTP_STATUS_INTERNAL_SERVER_ERROR,
-      "サーバー内部でエラーが発生しました。"
-    );
+    const errorTestCases: ErrorTestCase<string>[] = [
+      {
+        description: "不正なIDの場合400エラーを返す",
+        statusCode: HTTP_STATUS_BAD_REQUEST,
+        errorMessage: "IDは正の整数である必要があります。",
+        logMessage: "Invalid ID provided: abc. It must be a positive integer.",
+        body: "abc",
+      },
+      {
+        description: "存在しないIDの場合404エラーを返す",
+        statusCode: HTTP_STATUS_NOT_FOUND,
+        errorMessage: "指定されたブックマークがありません。",
+        logMessage: "Bookmark with id: 100 not found.",
+        body: "100",
+      },
+      {
+        description: "データベース接続エラーの場合500エラーを返す",
+        statusCode: HTTP_STATUS_INTERNAL_SERVER_ERROR,
+        errorMessage: "サーバー内部でエラーが発生しました。",
+        logMessage: "Internal Server Error: Database connection failed",
+        body: "1",
+        setup: () => {
+          vi.mocked(getDb).mockImplementation(() => {
+            throw new Error("Database connection failed");
+          });
+        },
+      },
+      {
+        description: "クエリエラー時に500エラーを返す",
+        statusCode: HTTP_STATUS_INTERNAL_SERVER_ERROR,
+        errorMessage: "サーバー内部でエラーが発生しました。",
+        logMessage: "Internal Server Error: Failed to execute query",
+        body: "1",
+        setup: () => {
+          vi.spyOn(inMemoryDbInstance, "prepare").mockImplementation(() => {
+            throw new Error("Failed to execute query");
+          });
+        },
+      },
+    ];
 
-    prepareSpy.mockRestore();
+    it.each(errorTestCases)(
+      "$description",
+      async ({ setup, body, statusCode, errorMessage, logMessage }) => {
+        if (setup) {
+          setup();
+        }
+
+        const [request, context] = createGetRequest(body);
+        const response = await GET(request, context);
+
+        await assertErrorResponse(response, statusCode, errorMessage);
+        expect(consoleErrorSpy).toHaveBeenCalledWith(logMessage);
+      }
+    );
   });
 });
