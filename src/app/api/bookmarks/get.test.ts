@@ -5,6 +5,7 @@ import { HTTP_STATUS_INTERNAL_SERVER_ERROR, HTTP_STATUS_OK } from "../../constan
 import { assertErrorResponse } from "../../test-utils/assertions";
 import { expectEqualBookmark, mockBookmarks } from "../../test-utils/bookmarkTestUtils";
 import { setupInMemoryDb } from "../../test-utils/db-setup";
+import { ErrorTestCase } from "../utils/types";
 import { getDb } from "./database";
 import { GET } from "./route";
 
@@ -53,40 +54,45 @@ describe("ブックマークのAPIのテスト", () => {
       vi.restoreAllMocks();
     });
 
-    const errorTestCases = [
+    const errorTestCases: ErrorTestCase<null>[] = [
       {
         description: "データベースエラー時に500エラーを返す",
+        statusCode: HTTP_STATUS_INTERNAL_SERVER_ERROR,
+        errorMessage: "サーバー内部でエラーが発生しました。",
+        logMessage: "Internal Server Error: Database connection failed",
+        body: null,
         setup: () => {
-          const errorMessage = "Database connection failed";
           // getDbをモックして、データベースエラーを発生させる
           vi.mocked(getDb).mockImplementation(() => {
-            throw new Error(errorMessage);
+            throw new Error("Database connection failed");
           });
-          return errorMessage;
         },
       },
       {
         description: "クエリエラー時に500エラーを返す",
+        statusCode: HTTP_STATUS_INTERNAL_SERVER_ERROR,
+        errorMessage: "サーバー内部でエラーが発生しました。",
+        logMessage: "Internal Server Error: Failed to execute query",
+        body: null,
         setup: () => {
-          const errorMessage = "Failed to execute query";
           // prepareメソッドをモックしてクエリエラーを発生させる
           vi.spyOn(inMemoryDbInstance, "prepare").mockImplementation(() => {
             throw new Error("Failed to execute query");
           });
-          return errorMessage;
         },
       },
     ];
 
-    it.each(errorTestCases)("$description", async ({ setup }) => {
-      const errorMessage = setup();
-      const response = await GET();
-      await assertErrorResponse(
-        response,
-        HTTP_STATUS_INTERNAL_SERVER_ERROR,
-        "サーバー内部でエラーが発生しました。"
-      );
-      expect(consoleErrorSpy).toHaveBeenCalledWith(`Internal Server Error: ${errorMessage}`);
-    });
+    it.each(errorTestCases)(
+      "$description",
+      async ({ setup, statusCode, errorMessage, logMessage }) => {
+        if (setup) {
+          setup();
+        }
+        const response = await GET();
+        await assertErrorResponse(response, statusCode, errorMessage);
+        expect(consoleErrorSpy).toHaveBeenCalledWith(logMessage);
+      }
+    );
   });
 });
