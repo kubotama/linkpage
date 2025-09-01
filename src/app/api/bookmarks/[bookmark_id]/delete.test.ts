@@ -1,5 +1,5 @@
 import ActualDatabase from "better-sqlite3"; // Import the actual library
-import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
+import { afterEach, beforeEach, describe, expect, it, MockInstance, vi } from "vitest";
 
 import {
   HTTP_STATUS_BAD_REQUEST,
@@ -11,6 +11,7 @@ import { assertErrorResponse } from "../../../test-utils/assertions";
 import { GOOGLE_BOOKMARK, mockBookmarks } from "../../../test-utils/bookmarkTestUtils";
 import { setupInMemoryDb } from "../../../test-utils/db-setup";
 import { API_BOOKMARKS_URL } from "../../utils/constants";
+import { ErrorTestCase } from "../../utils/types";
 import { getDb } from "../database";
 import { DELETE } from "./route";
 
@@ -85,50 +86,68 @@ describe("ブックマーク削除APIのテスト (オンメモリDB)", () => {
     expect(countAfter).toBe(mockBookmarks.length - 1);
   });
 
-  it("DELETE: 登録されていないブックマークIDを指定された場合は404を返す", async () => {
-    const nonExistentId = 99999; // 存在しないID
-    const [request, context] = createDeleteRequest(nonExistentId.toString());
-    const response = await DELETE(request, context);
+  describe("DELETE: エラーログが出力される場合のテスト", () => {
+    let consoleErrorSpy: MockInstance;
 
-    await assertErrorResponse(
-      response,
-      HTTP_STATUS_NOT_FOUND,
-      "指定されたブックマークがありません。"
-    );
-
-    // ブックマーク数が変わっていないことを確認
-    const count = (
-      inMemoryDbInstance.prepare("SELECT COUNT(*) as count FROM bookmarks").get() as {
-        count: number;
-      }
-    ).count;
-    expect(count).toBe(mockBookmarks.length);
-  });
-
-  it("DELETE: データベースエラーの場合は500エラーを返す", async () => {
-    vi.mocked(getDb).mockImplementation(() => {
-      throw new Error("DB error");
+    beforeEach(() => {
+      // console.errorをスパイして、エラー出力がされるか確認
+      consoleErrorSpy = vi.spyOn(console, "error").mockImplementation(() => {});
     });
-    const anyValidId = 1; // DBエラーのテストなので、IDは任意の値で問題ありません。
-    const [request, context] = createDeleteRequest(anyValidId.toString());
-    const response = await DELETE(request, context);
 
-    await assertErrorResponse(
-      response,
-      HTTP_STATUS_INTERNAL_SERVER_ERROR,
-      "サーバー内部でエラーが発生しました。"
-    );
-  });
+    afterEach(() => {
+      vi.restoreAllMocks();
+    });
 
-  it("DELETE: 不正なIDの場合には400エラーを返す", async () => {
-    const nonExistentId = -1; // 不正なID
-    const [request, context] = createDeleteRequest(nonExistentId.toString());
-    const response = await DELETE(request, context);
+    const errorTestCases: ErrorTestCase<number | string>[] = [
+      {
+        description: "登録されていないIDの場合に404エラーを返す",
+        statusCode: HTTP_STATUS_NOT_FOUND,
+        errorMessage: "指定されたブックマークがありません。",
+        logMessage: `Bookmark with id: 99999 not found.`,
+        body: 99999,
+      },
+      {
+        description: "データベースエラー時に500エラーを返す",
+        statusCode: HTTP_STATUS_INTERNAL_SERVER_ERROR,
+        errorMessage: "サーバー内部でエラーが発生しました。",
+        logMessage: "Internal Server Error: DB error",
+        body: 1,
+        setup: () => {
+          vi.mocked(getDb).mockImplementation(() => {
+            throw new Error("DB error");
+          });
+        },
+      },
+      {
+        description: "不正なIDの場合に400エラーを返す",
+        statusCode: HTTP_STATUS_BAD_REQUEST,
+        errorMessage: "IDは正の整数である必要があります。",
+        logMessage: "Invalid ID provided: -1. It must be a positive integer.",
+        body: "-1",
+      },
+    ];
 
-    await assertErrorResponse(
-      response,
-      HTTP_STATUS_BAD_REQUEST,
-      "IDは正の整数である必要があります。"
+    it.each(errorTestCases)(
+      "$description",
+      async ({ setup, body, statusCode, errorMessage, logMessage }) => {
+        if (setup) {
+          setup();
+        }
+
+        const [request, context] = createDeleteRequest(body.toString());
+        const response = await DELETE(request, context);
+
+        await assertErrorResponse(response, statusCode, errorMessage);
+        expect(consoleErrorSpy).toHaveBeenCalledWith(logMessage);
+
+        // ブックマーク数が変わっていないことを確認
+        const count = (
+          inMemoryDbInstance.prepare("SELECT COUNT(*) as count FROM bookmarks").get() as {
+            count: number;
+          }
+        ).count;
+        expect(count).toBe(mockBookmarks.length);
+      }
     );
   });
 });

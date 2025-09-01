@@ -12,6 +12,7 @@ import { mockKeywords } from "../../test-utils/bookmarkTestUtils";
 import { setupInMemoryDb } from "../../test-utils/db-setup";
 import { getDb } from "../bookmarks/database";
 import { API_KEYWORDS_URL } from "../utils/constants";
+import { ErrorTestCase } from "../utils/types";
 import { POST } from "./route";
 
 vi.mock("../bookmarks/database");
@@ -86,20 +87,20 @@ describe("キーワードAPIのテスト", () => {
       vi.restoreAllMocks();
     });
 
-    const invalidRequestTestCases = [
+    const invalidRequestTestCases: ErrorTestCase<string>[] = [
       {
         description: "不正なJSONデータ(JSON.parseエラー)",
         statusCode: HTTP_STATUS_BAD_REQUEST,
         body: "invalid json",
         errorMessage: "リクエストボディのJSONが不正です。",
-        logMessage: expect.stringContaining("Invalid JSON format: Unexpected token"),
+        logMessage: "Invalid JSON format: リクエストボディのJSONが不正です。",
       },
       {
         description: "不正なJSONデータ(null)",
         statusCode: HTTP_STATUS_BAD_REQUEST,
         body: JSON.stringify(null),
-        errorMessage: "リクエストボディのJSONが不正です。",
-        logMessage: "Invalid JSON format: リクエストボディのJSONが不正です。",
+        errorMessage: "キーワードを指定してください。",
+        logMessage: "キーワードが指定されていません。",
       },
       {
         description: "重複したキーワードを追加",

@@ -1,6 +1,6 @@
 import ActualDatabase from "better-sqlite3"; // 実際のライブラリをインポート
 import { NextRequest } from "next/server";
-import { afterEach, assert, beforeEach, describe, expect, it, vi } from "vitest";
+import { afterEach, assert, beforeEach, describe, expect, it, MockInstance, vi } from "vitest";
 
 import {
   HTTP_STATUS_BAD_REQUEST,
@@ -12,6 +12,7 @@ import {
 import { assertErrorResponse } from "../../../../test-utils/assertions";
 import { setupInMemoryDb } from "../../../../test-utils/db-setup";
 import { isKeyword, KeywordPostParams } from "../../../../types/Keyword";
+import { ErrorTestCase } from "../../../utils/types";
 import { getDb } from "../../database";
 
 vi.mock("../../database");
@@ -129,25 +130,43 @@ describe("POST /api/bookmarks/[bookmark_id]/keywords", () => {
 
   // // 異常系テスト
   describe("Error cases", () => {
-    it("should return 404 if bookmark_id does not exist", async () => {
-      const request = mockRequest({ keyword_name: "test-keyword" });
-      const response = await POST(request, getPostParams("999"));
-      await assertErrorResponse(
-        response,
-        HTTP_STATUS_NOT_FOUND,
-        "指定されたブックマークがありません。"
-      );
+    let consoleErrorSpy: MockInstance;
+
+    beforeEach(() => {
+      // console.errorをスパイして、エラー出力がされるか確認
+      consoleErrorSpy = vi.spyOn(console, "error").mockImplementation(() => {});
     });
 
-    it("should return 400 if bookmark_id is invalid", async () => {
-      const request = mockRequest({ keyword_name: "test-keyword" });
-      const response = await POST(request, getPostParams("invalid"));
-      await assertErrorResponse(
-        response,
-        HTTP_STATUS_BAD_REQUEST,
-        "IDは正の整数である必要があります。"
-      );
+    afterEach(() => {
+      vi.restoreAllMocks();
     });
+
+    const errorTestCases: ErrorTestCase<string>[] = [
+      {
+        description: "存在しないIDの場合は404エラーを返す",
+        statusCode: HTTP_STATUS_NOT_FOUND,
+        errorMessage: "指定されたブックマークがありません。",
+        logMessage: "Bookmark with id: 999 not found.",
+        body: "999",
+      },
+      {
+        description: "不正なIDの場合は400エラーを返す",
+        statusCode: HTTP_STATUS_BAD_REQUEST,
+        errorMessage: "IDは正の整数である必要があります。",
+        logMessage: "Invalid ID provided: abc. It must be a positive integer.",
+        body: "abc",
+      },
+    ];
+
+    it.each(errorTestCases)(
+      "$description",
+      async ({ statusCode, errorMessage, logMessage, body }) => {
+        const request = mockRequest({ keyword_name: "test-keyword" });
+        const response = await POST(request, getPostParams(body));
+        await assertErrorResponse(response, statusCode, errorMessage);
+        expect(consoleErrorSpy).toHaveBeenCalledWith(logMessage);
+      }
+    );
 
     it("should return 400 if request body is not valid JSON", async () => {
       const request = {
@@ -162,6 +181,7 @@ describe("POST /api/bookmarks/[bookmark_id]/keywords", () => {
         HTTP_STATUS_BAD_REQUEST,
         "リクエストボディのJSONが不正です。"
       );
+      expect(consoleErrorSpy).toHaveBeenCalledWith("Invalid JSON format: Invalid JSON");
     });
 
     it.each([
@@ -176,6 +196,7 @@ describe("POST /api/bookmarks/[bookmark_id]/keywords", () => {
         HTTP_STATUS_BAD_REQUEST,
         "キーワードを指定してください。"
       );
+      expect(consoleErrorSpy).toHaveBeenCalledWith("キーワードが指定されていません。");
     });
 
     it("should return 409 if the keyword is already associated with the bookmark", async () => {
@@ -202,6 +223,9 @@ describe("POST /api/bookmarks/[bookmark_id]/keywords", () => {
         HTTP_STATUS_CONFLICT,
         "指定されたキーワードは既にこのブックマークに登録されています。"
       );
+      expect(consoleErrorSpy).toHaveBeenCalledWith(
+        'Keyword "duplicate-keyword" is already associated with bookmark id: 1.'
+      );
     });
 
     it("should handle internal server errors gracefully", async () => {
@@ -218,6 +242,7 @@ describe("POST /api/bookmarks/[bookmark_id]/keywords", () => {
         HTTP_STATUS_INTERNAL_SERVER_ERROR,
         "サーバー内部でエラーが発生しました。"
       );
+      expect(consoleErrorSpy).toHaveBeenCalledWith("Internal Server Error: Database error");
     });
   });
 });
