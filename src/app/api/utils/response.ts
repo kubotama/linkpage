@@ -95,7 +95,7 @@ export const createDuplicateKeywordError = (
 
 export const createInvalidBodyError = (error: unknown, headers: Record<string, string> = {}) => {
   return createErrorResponse(
-    "リクエストボディのJSONが不正です。",
+    ensureError(error).message,
     HTTP_STATUS_BAD_REQUEST,
     `Invalid JSON format: ${ensureError(error).message}`,
     headers
