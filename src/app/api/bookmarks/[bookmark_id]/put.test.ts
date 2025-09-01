@@ -1,5 +1,5 @@
 import ActualDatabase from "better-sqlite3"; // Import the actual library
-import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
+import { afterEach, beforeEach, describe, expect, it, MockInstance, vi } from "vitest";
 
 import {
   HTTP_STATUS_BAD_REQUEST,
@@ -16,8 +16,10 @@ import {
 } from "../../../test-utils/bookmarkTestUtils";
 import { setupInMemoryDb } from "../../../test-utils/db-setup";
 import { API_BOOKMARKS_URL } from "../../utils/constants";
+import { ErrorTestCase } from "../../utils/types";
 import { getDb } from "../database";
 import { PUT } from "./route";
+import { Bookmark } from "../../../types/Bookmark";
 
 // We will mock getDb to return our in-memory instance.
 // The actual getDb function is simple, but mocking allows us to inject the in-memory DB.
@@ -124,184 +126,184 @@ describe("ブックマーク更新APIのテスト (オンメモリDB)", () => {
     expect(countAfter).toBe(mockBookmarks.length);
   });
 
-  it("PUT: 登録されていないブックマークIDを指定された場合は404を返す。", async () => {
-    const bookmarkToUpdate = {
-      bookmark_id: 999,
-      url: "https://www.example.com",
-      title: "Example Title",
-    };
-
-    const [request, context] = createPutRequest(
-      JSON.stringify({
-        url: bookmarkToUpdate.url,
-        title: bookmarkToUpdate.title,
-      }),
-      bookmarkToUpdate.bookmark_id
-    );
-    const response = await PUT(request, context);
-
-    // レスポンスステータスを確認 (404 Not Found)
-    await assertErrorResponse(
-      response,
-      HTTP_STATUS_NOT_FOUND,
-      "指定されたブックマークがありません。"
-    );
-  });
-
-  it("PUT: タイトルが指定されていない場合には400を返す。", async () => {
-    const bookmarkToUpdate = {
-      bookmark_id: 1,
-      url: "https://www.example.com",
-      title: "",
-    };
-
-    const [request, context] = createPutRequest(
-      JSON.stringify({
-        url: bookmarkToUpdate.url,
-        title: bookmarkToUpdate.title,
-      }),
-      bookmarkToUpdate.bookmark_id
-    );
-    const response = await PUT(request, context);
-
-    // レスポンスステータスを確認 (400: Bad Request)
-    await assertErrorResponse(response, HTTP_STATUS_BAD_REQUEST, "タイトルを指定してください。");
-  });
-
-  it("PUT: URLが指定されていない場合には400を返す。", async () => {
-    const bookmarkToUpdate = {
-      bookmark_id: 1,
-      url: "",
-      title: "Example Title",
-    };
-
-    const [request, context] = createPutRequest(
-      JSON.stringify({
-        url: bookmarkToUpdate.url,
-        title: bookmarkToUpdate.title,
-      }),
-      bookmarkToUpdate.bookmark_id
-    );
-    const response = await PUT(request, context);
-
-    // レスポンスステータスを確認 (400: Bad Request)
-    await assertErrorResponse(response, HTTP_STATUS_BAD_REQUEST, "URLを指定してください。");
-  });
-
-  it("PUT: IDが指定されていない場合には400を返す。", async () => {
-    const bookmarkToUpdate = {
-      url: "https://www.example.com",
-      title: "Example Title",
-    };
-
-    const [request] = createPutRequest(
-      JSON.stringify({
-        url: bookmarkToUpdate.url,
-        title: bookmarkToUpdate.title,
-      }),
-      0 // ダミーのID。params.idが優先されるため、この値は影響しない
-    );
-    const response = await PUT(request, {
-      params: Promise.resolve({ bookmark_id: "" }),
+  describe("PUT: エラーログが出力される場合のテスト", () => {
+    let consoleErrorSpy: MockInstance;
+    beforeEach(() => {
+      consoleErrorSpy = vi.spyOn(console, "error").mockImplementation(() => {});
     });
 
-    // レスポンスステータスを確認 (400: Bad Request)
-    await assertErrorResponse(
-      response,
-      HTTP_STATUS_BAD_REQUEST,
-      "IDは正の整数である必要があります。"
-    );
-  });
-
-  it("PUT: 不正な形式(文字列)のIDが指定された場合には400を返す。", async () => {
-    const bookmarkToUpdate = {
-      id: 1,
-      url: "https://www.example.com",
-      title: "Example Title",
-    };
-
-    const [request] = createPutRequest(
-      JSON.stringify({
-        url: bookmarkToUpdate.url,
-        title: bookmarkToUpdate.title,
-      }),
-      bookmarkToUpdate.id
-    );
-    const response = await PUT(request, {
-      params: Promise.resolve({ bookmark_id: "invalid id" }),
+    afterEach(() => {
+      vi.restoreAllMocks();
     });
 
-    // レスポンスステータスを確認 (400: Bad Request)
-    await assertErrorResponse(
-      response,
-      HTTP_STATUS_BAD_REQUEST,
-      "IDは正の整数である必要があります。"
+    const errorTestCases: ErrorTestCase<Bookmark>[] = [
+      {
+        description: "登録されていないブックマークIDを指定された場合は404を返す。",
+        statusCode: HTTP_STATUS_NOT_FOUND,
+        errorMessage: "指定されたブックマークがありません。",
+        logMessage: "Bookmark with id: 999 not found.",
+        body: {
+          bookmark_id: 999,
+          url: "https://www.example.com",
+          title: "Example Title",
+          keywords: [],
+        },
+      },
+      {
+        description: "タイトルが指定されていない場合には400を返す。",
+        statusCode: HTTP_STATUS_BAD_REQUEST,
+        errorMessage: "タイトルを指定してください。",
+        logMessage: "タイトルが指定されていません。",
+        body: {
+          bookmark_id: 1,
+          url: "https://www.example.com",
+          title: "",
+          keywords: [],
+        },
+      },
+      {
+        description: "URLが指定されていない場合には400を返す。",
+        statusCode: HTTP_STATUS_BAD_REQUEST,
+        errorMessage: "URLを指定してください。",
+        logMessage: "URLが指定されていません。",
+        body: {
+          bookmark_id: 1,
+          url: "",
+          title: "Example Title",
+          keywords: [],
+        },
+      },
+      {
+        description: "クエリエラー時に500エラーを返す",
+        statusCode: HTTP_STATUS_INTERNAL_SERVER_ERROR,
+        errorMessage: "サーバー内部でエラーが発生しました。",
+        logMessage: "Internal Server Error: Failed to execute query",
+        body: {
+          bookmark_id: 1,
+          url: "https://www.example.com",
+          title: "Example Title",
+          keywords: [],
+        },
+        setup: () => {
+          // prepareメソッドをモックしてクエリエラーを発生
+          vi.spyOn(inMemoryDbInstance, "prepare").mockImplementation(() => {
+            throw new Error("Failed to execute query");
+          });
+        },
+      },
+      {
+        description: "同じURLが登録される場合には409を返す。",
+        statusCode: HTTP_STATUS_CONFLICT,
+        errorMessage: "指定されたURLのブックマークは既に登録されています。",
+        logMessage: 'Bookmark with URL "https://mail.google.com" already exists.',
+        body: {
+          bookmark_id: 1,
+          url: GMAIL_BOOKMARK.url,
+          title: "Example Title",
+          keywords: [],
+        },
+      },
+    ];
+
+    it.each(errorTestCases)(
+      "$description",
+      async ({ setup, body, statusCode, errorMessage, logMessage }) => {
+        if (setup) {
+          setup();
+        }
+        const [request, context] = createPutRequest(
+          JSON.stringify({
+            url: body.url,
+            title: body.title,
+          }),
+          body.bookmark_id
+        );
+        const response = await PUT(request, context);
+
+        // レスポンスステータスを確認 (404 Not Found)
+        await assertErrorResponse(response, statusCode, errorMessage);
+        expect(consoleErrorSpy).toHaveBeenCalledWith(logMessage);
+      }
     );
-  });
 
-  it("PUT: 不正なJSONデータの場合は400を返す。", async () => {
-    const bookmarkToUpdate = {
-      bookmark_id: 1,
-      url: "https://www.example.com",
-      title: "Example Title",
-    };
-
-    const [request, context] = createPutRequest("invalid json data", bookmarkToUpdate.bookmark_id);
-    const response = await PUT(request, context);
-
-    await assertErrorResponse(
-      response,
-      HTTP_STATUS_BAD_REQUEST,
-      "リクエストボディのJSONが不正です。"
-    );
-  });
-
-  it("PUT: クエリエラー時に500エラーを返す", async () => {
-    const queryError = new Error("Failed to execute query");
-    // prepareメソッドをモックしてクエリエラーを発生させる
-    const prepareSpy = vi.spyOn(inMemoryDbInstance, "prepare").mockImplementation(() => {
-      throw queryError;
-    });
-
-    const bookmarkToUpdate = {
-      bookmark_id: 1,
-      url: "https://www.example.com",
-      title: "Example Title",
-    };
-
-    const [request, context] = createPutRequest(
-      JSON.stringify({
-        url: bookmarkToUpdate.url,
-        title: bookmarkToUpdate.title,
-      }),
-      bookmarkToUpdate.bookmark_id
-    );
-    const response = await PUT(request, context);
-
-    await assertErrorResponse(
-      response,
-      HTTP_STATUS_INTERNAL_SERVER_ERROR,
-      "サーバー内部でエラーが発生しました。"
-    );
-
-    prepareSpy.mockRestore();
-  });
-
-  it("PUT: 同じURLが登録される場合には409を返す。", async () => {
-    const [request, context] = createPutRequest(
-      JSON.stringify({
-        url: GMAIL_BOOKMARK.url,
+    it("PUT: IDが指定されていない場合には400を返す。", async () => {
+      const bookmarkToUpdate = {
+        url: "https://www.example.com",
         title: "Example Title",
-      }),
-      LINKPAGE_BOOKMARK.bookmark_id
-    );
-    const response = await PUT(request, context);
+      };
 
-    // レスポンスステータスを確認 (409: Conflict
-    await assertErrorResponse(
-      response,
-      HTTP_STATUS_CONFLICT,
-      "指定されたURLのブックマークは既に登録されています。"
-    );
+      const [request] = createPutRequest(
+        JSON.stringify({
+          url: bookmarkToUpdate.url,
+          title: bookmarkToUpdate.title,
+        }),
+        0 // ダミーのID。params.idが優先されるため、この値は影響しない
+      );
+      const response = await PUT(request, {
+        params: Promise.resolve({ bookmark_id: "" }),
+      });
+
+      // レスポンスステータスを確認 (400: Bad Request)
+      await assertErrorResponse(
+        response,
+        HTTP_STATUS_BAD_REQUEST,
+        "IDは正の整数である必要があります。"
+      );
+      expect(consoleErrorSpy).toHaveBeenCalledWith(
+        "Invalid ID provided: . It must be a positive integer."
+      );
+    });
+
+    it("PUT: 不正な形式(文字列)のIDが指定された場合には400を返す。", async () => {
+      const bookmarkToUpdate = {
+        id: 1,
+        url: "https://www.example.com",
+        title: "Example Title",
+      };
+
+      const [request] = createPutRequest(
+        JSON.stringify({
+          url: bookmarkToUpdate.url,
+          title: bookmarkToUpdate.title,
+        }),
+        bookmarkToUpdate.id
+      );
+      const response = await PUT(request, {
+        params: Promise.resolve({ bookmark_id: "invalid id" }),
+      });
+
+      // レスポンスステータスを確認 (400: Bad Request)
+      await assertErrorResponse(
+        response,
+        HTTP_STATUS_BAD_REQUEST,
+        "IDは正の整数である必要があります。"
+      );
+      expect(consoleErrorSpy).toHaveBeenCalledWith(
+        "Invalid ID provided: invalid id. It must be a positive integer."
+      );
+    });
+
+    it("PUT: 不正なJSONデータの場合は400を返す。", async () => {
+      const bookmarkToUpdate = {
+        bookmark_id: 1,
+        url: "https://www.example.com",
+        title: "Example Title",
+      };
+
+      const [request, context] = createPutRequest(
+        "invalid json data",
+        bookmarkToUpdate.bookmark_id
+      );
+      const response = await PUT(request, context);
+
+      await assertErrorResponse(
+        response,
+        HTTP_STATUS_BAD_REQUEST,
+        "リクエストボディのJSONが不正です。"
+      );
+      expect(consoleErrorSpy).toHaveBeenCalledWith(
+        expect.stringContaining("Invalid JSON format: Unexpected token")
+      );
+    });
   });
 });

@@ -84,8 +84,7 @@ export async function POST(request: Request) {
     incomingData = await request.json();
   } catch (error) {
     // JSONパースエラーのハンドリング
-    console.error(error);
-    return createInvalidBodyError(new Error("リクエストボディのJSONが不正です。"), commonHeaders);
+    return createInvalidBodyError(error, commonHeaders);
   }
   try {
     // incomingDataがオブジェクトでない場合(例: JSONが "null" だった場合)を考慮します
@@ -134,9 +133,6 @@ export async function POST(request: Request) {
       }
     );
   } catch (error: unknown) {
-    if (error instanceof SyntaxError) {
-      return createInvalidBodyError(error, commonHeaders);
-    }
     if (error instanceof SqliteError && error.code === "SQLITE_CONSTRAINT_UNIQUE") {
       return createDuplicateBookmarkError(incomingData.url, commonHeaders);
     }

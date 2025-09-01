@@ -1,5 +1,5 @@
 import ActualDatabase from "better-sqlite3"; // Import the actual library
-import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
+import { afterEach, beforeEach, describe, expect, it, MockInstance, vi } from "vitest";
 
 import {
   HTTP_STATUS_BAD_REQUEST,
@@ -13,6 +13,7 @@ import { createBookmark, GOOGLE_BOOKMARK } from "../../test-utils/bookmarkTestUt
 import { setupInMemoryDb } from "../../test-utils/db-setup";
 import { Bookmark } from "../../types/Bookmark";
 import { API_BOOKMARKS_URL } from "../utils/constants";
+import { ErrorTestCase } from "../utils/types";
 import { getDb } from "./database";
 import { OPTIONS, POST } from "./route";
 
@@ -94,71 +95,85 @@ describe("ブックマーク追加APIのテスト (オンメモリDB)", () => {
     );
   });
 
-  it("POST: 不正なJSONデータの場合はエラーを返す", async () => {
-    const response = await POST(createPostRequest("invalid json"));
+  describe("POST: エラーログが出力される場合のテスト", () => {
+    let consoleErrorSpy: MockInstance;
 
-    await assertErrorResponse(
-      response,
-      HTTP_STATUS_BAD_REQUEST,
-      "リクエストボディのJSONが不正です。"
+    beforeEach(() => {
+      // console.errorをスパイして、エラー出力がされるか確認
+      consoleErrorSpy = vi.spyOn(console, "error").mockImplementation(() => {});
+    });
+
+    afterEach(() => {
+      vi.restoreAllMocks();
+    });
+
+    const errorTestCases: ErrorTestCase<Partial<Bookmark> | string>[] = [
+      {
+        description: "不正なJSONデータの場合",
+        statusCode: HTTP_STATUS_BAD_REQUEST,
+        errorMessage: "リクエストボディのJSONが不正です。",
+        logMessage: expect.stringContaining("Invalid JSON format"),
+        body: "invalid json",
+      },
+      {
+        description: "データベースエラー時に500エラーを返す",
+        statusCode: HTTP_STATUS_INTERNAL_SERVER_ERROR,
+        errorMessage: "サーバー内部でエラーが発生しました。",
+        logMessage: "Internal Server Error: Failed to execute query",
+        body: {
+          url: "https://www2.example.com",
+          title: "サンプルのタイトル2",
+        },
+        setup: () => {
+          // prepareメソッドをモックしてクエリエラーを発生させる
+          vi.spyOn(inMemoryDbInstance, "prepare").mockImplementation(() => {
+            throw new Error("Failed to execute query");
+          });
+        },
+      },
+      {
+        description: "重複したURLのブックマーク追加時に409 Conflictを返す",
+        statusCode: HTTP_STATUS_CONFLICT,
+        errorMessage: "指定されたURLのブックマークは既に登録されています。",
+        logMessage: `Bookmark with URL "${GOOGLE_BOOKMARK.url}" already exists.`,
+        body: {
+          url: GOOGLE_BOOKMARK.url, // Same URL
+          title: "同じURLで別のタイトル",
+        },
+      },
+      {
+        description: "URLが空文字の場合にエラーを返す",
+        statusCode: HTTP_STATUS_BAD_REQUEST,
+        errorMessage: "URLを指定してください。",
+        logMessage: "URLが指定されていません。",
+        body: {
+          title: "Example",
+        },
+      },
+      {
+        description: "タイトルが空文字の場合にエラーを返す",
+        statusCode: HTTP_STATUS_BAD_REQUEST,
+        errorMessage: "タイトルを指定してください。",
+        logMessage: "タイトルが指定されていません。",
+        body: {
+          url: "https://example.com",
+        },
+      },
+    ];
+
+    it.each(errorTestCases)(
+      "$description",
+      async ({ setup, body, statusCode, errorMessage, logMessage }) => {
+        if (setup) {
+          setup();
+        }
+
+        const requestBody = typeof body === "string" ? body : JSON.stringify(createBookmark(body));
+        const response = await POST(createPostRequest(requestBody));
+        await assertErrorResponse(response, statusCode, errorMessage);
+        expect(consoleErrorSpy).toHaveBeenCalledWith(logMessage);
+      }
     );
-  });
-
-  it("POST: クエリエラー時に500エラーを返す", async () => {
-    const queryError = new Error("Failed to execute query");
-    // prepareメソッドをモックしてクエリエラーを発生させる
-    const prepareSpy = vi.spyOn(inMemoryDbInstance, "prepare").mockImplementation(() => {
-      throw queryError;
-    });
-
-    const bookmark: Bookmark = createBookmark({
-      url: "https://www2.example.com",
-      title: "サンプルのタイトル2",
-    });
-
-    const response = await POST(createPostRequest(JSON.stringify(bookmark)));
-    await assertErrorResponse(
-      response,
-      HTTP_STATUS_INTERNAL_SERVER_ERROR,
-      "サーバー内部でエラーが発生しました。"
-    );
-
-    prepareSpy.mockRestore();
-  });
-
-  it("POST: 重複したURLのブックマーク追加時に409 Conflictを返す", async () => {
-    const bookmark: Bookmark = createBookmark({
-      url: GOOGLE_BOOKMARK.url, // Same URL
-      title: "同じURLで別のタイトル",
-    });
-
-    const response = await POST(createPostRequest(JSON.stringify(bookmark)));
-
-    await assertErrorResponse(
-      response,
-      HTTP_STATUS_CONFLICT,
-      "指定されたURLのブックマークは既に登録されています。"
-    );
-  });
-
-  it("POST: URLが空文字の場合にエラーを返す", async () => {
-    const bookmark: Bookmark = createBookmark({
-      title: "Example",
-    });
-
-    const response = await POST(createPostRequest(JSON.stringify(bookmark)));
-
-    await assertErrorResponse(response, HTTP_STATUS_BAD_REQUEST, "URLを指定してください。");
-  });
-
-  it("POST: タイトルが空文字の場合にエラーを返す", async () => {
-    const bookmark: Bookmark = createBookmark({
-      url: "https://example.com",
-    });
-
-    const response = await POST(createPostRequest(JSON.stringify(bookmark)));
-
-    await assertErrorResponse(response, HTTP_STATUS_BAD_REQUEST, "タイトルを指定してください。");
   });
 
   // --- OPTIONS Tests ---
