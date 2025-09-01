@@ -1,5 +1,5 @@
 import ActualDatabase from "better-sqlite3"; // Import the actual library
-import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
+import { afterEach, beforeEach, describe, expect, it, MockInstance, vi } from "vitest";
 
 import { HTTP_STATUS_INTERNAL_SERVER_ERROR, HTTP_STATUS_OK } from "../../constants/httpStatusCodes";
 import { assertErrorResponse } from "../../test-utils/assertions";
@@ -36,34 +36,53 @@ describe("キーワードGET APIのテスト", () => {
     expect(json).toEqual(mockKeywords);
   });
 
-  it("GET: データベースエラー時に500エラーを返す", async () => {
-    const dbError = new Error("Database connection failed");
-    vi.mocked(getDb).mockImplementation(() => {
-      throw dbError;
+  describe("GET: エラーログが出力される場合のテスト", () => {
+    let consoleErrorSpy: MockInstance;
+
+    beforeEach(() => {
+      // console.errorをスパイして、エラー出力がされるか確認
+      consoleErrorSpy = vi.spyOn(console, "error").mockImplementation(() => {});
     });
 
-    const response = await GET();
-    await assertErrorResponse(
-      response,
-      HTTP_STATUS_INTERNAL_SERVER_ERROR,
-      "サーバー内部でエラーが発生しました。"
-    );
-  });
-
-  it("GET: クエリエラー時に500エラーを返す", async () => {
-    const queryError = new Error("Failed to execute query");
-    // prepareメソッドをモックしてクエリエラーを発生させる
-    const prepareSpy = vi.spyOn(inMemoryDbInstance, "prepare").mockImplementation(() => {
-      throw queryError;
+    afterEach(() => {
+      vi.restoreAllMocks();
     });
 
-    const response = await GET();
-    await assertErrorResponse(
-      response,
-      HTTP_STATUS_INTERNAL_SERVER_ERROR,
-      "サーバー内部でエラーが発生しました。"
-    );
+    const errorTestCases = [
+      {
+        description: "データベースエラー時に500エラーを返す",
+        setup: () => {
+          const errorMessage = "Database connection failed";
+          // getDbをモックして、データベースエラーを発生させる
+          vi.mocked(getDb).mockImplementation(() => {
+            throw new Error(errorMessage);
+          });
+          return errorMessage;
+        },
+      },
+      {
+        description: "クエリエラー時に500エラーを返す",
+        setup: () => {
+          const errorMessage = "Failed to execute query";
+          // prepareメソッドをモックしてクエリエラーを発生させる
+          vi.spyOn(inMemoryDbInstance, "prepare").mockImplementation(() => {
+            throw new Error(errorMessage);
+          });
+          return errorMessage;
+        },
+      },
+    ];
 
-    prepareSpy.mockRestore();
+    it.each(errorTestCases)("$description", async ({ setup }) => {
+      const errorMessage = setup();
+      const response = await GET();
+
+      await assertErrorResponse(
+        response,
+        HTTP_STATUS_INTERNAL_SERVER_ERROR,
+        "サーバー内部でエラーが発生しました。"
+      );
+      expect(consoleErrorSpy).toHaveBeenCalledWith(`Internal Server Error: ${errorMessage}`);
+    });
   });
 });
