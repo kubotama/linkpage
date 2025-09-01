@@ -423,6 +423,13 @@ linkpage はリンクデータを SQLite のデータベースで管理します
 | [SQLite](https://www.sqlite.org/index.html)   | 3.37.2     |
 | [vitest](https://vitest.dev)                  | 3.2.3      |
 
+## 変更履歴
+
+### 2025/09/01
+
+- fix: 不正な JSON ボディに対するエラーメッセージを統一
+- feat: キーワード追加 API のリクエストボディ検証を強化し、より具体的なエラーメッセージを返すよう変更
+
 ## ライセンス
 
 このプロジェクトは[MIT ライセンス](LICENSE)の下で公開されています。
