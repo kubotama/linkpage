@@ -432,7 +432,7 @@ linkpage はリンクデータを SQLite のデータベースで管理します
 
 ### 2025/09/02
 
-- 依存パッケージのメジャーバージョンアップ (better-sqlite3, @types/node など)
+- 依存パッケージのメジャーバージョンアップ: `better-sqlite3` (v12), `@types/node` (v24), `@vitejs/plugin-react` (v5) など
 - パッケージの削除 (sqlite, sqlite3)
 
 ## ライセンス
