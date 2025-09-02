@@ -69,12 +69,6 @@ describe("キーワードAPIのテスト", () => {
     });
   });
 
-  it("POST: キーワードが空文字の場合は400を返す", async () => {
-    const response = await POST(createPostRequest(""));
-
-    await assertErrorResponse(response, HTTP_STATUS_BAD_REQUEST, "キーワードを指定してください。");
-  });
-
   describe("POST: エラーログが出力される場合のテスト", () => {
     let consoleErrorSpy: MockInstance;
 
@@ -88,6 +82,15 @@ describe("キーワードAPIのテスト", () => {
     });
 
     const invalidRequestTestCases: ErrorTestCase<string>[] = [
+      {
+        description: "キーワードが空文字の場合",
+        statusCode: HTTP_STATUS_BAD_REQUEST,
+        body: JSON.stringify({
+          keyword_name: "",
+        }),
+        errorMessage: "キーワードを指定してください。",
+        logMessage: "キーワードが指定されていません。",
+      },
       {
         description: "不正なJSONデータ(JSON.parseエラー)",
         statusCode: HTTP_STATUS_BAD_REQUEST,
