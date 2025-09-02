@@ -92,6 +92,15 @@ describe("キーワードAPIのテスト", () => {
         logMessage: "キーワードが指定されていません。",
       },
       {
+        description: "キーワードが空白文字のみの場合",
+        statusCode: HTTP_STATUS_BAD_REQUEST,
+        body: JSON.stringify({
+          keyword_name: "   ",
+        }),
+        errorMessage: "キーワードを指定してください。",
+        logMessage: "キーワードが指定されていません。",
+      },
+      {
         description: "不正なJSONデータ(JSON.parseエラー)",
         statusCode: HTTP_STATUS_BAD_REQUEST,
         body: "invalid json",
