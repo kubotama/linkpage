@@ -56,7 +56,7 @@ export const BookmarkTable = ({
               onClick={() => onSelectBookmarkId(bookmark.bookmark_id)}
               className="cursor-pointer"
             >
-              <td className={`text-sm ${rowStyle}  ${BASE_CELL_STYLE}`}>{bookmark.title}</td>
+              <td className={`text-sm ${rowStyle} ${BASE_CELL_STYLE}`}>{bookmark.title}</td>
             </tr>
           );
         })}
