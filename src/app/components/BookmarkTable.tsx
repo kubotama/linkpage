@@ -1,6 +1,10 @@
 import React, { useMemo } from "react";
 
-import { TABLE_NAME_BOOKMARKS } from "../constants/constants";
+import {
+  ROW_STYLE_BOOKMARK_SELECTED,
+  ROW_STYLE_DEFAULT,
+  TABLE_NAME_BOOKMARKS,
+} from "../constants/constants";
 import { Bookmark } from "../types/Bookmark";
 
 type BookmarkTableProps = {
@@ -11,8 +15,8 @@ type BookmarkTableProps = {
 };
 
 const ROW_STYLES = {
-  selected: "bg-sky-500 text-gray-100",
-  default: "bg-gray-100 text-gray-900",
+  selected: ROW_STYLE_BOOKMARK_SELECTED,
+  default: ROW_STYLE_DEFAULT,
 };
 
 type BookmarkRow = {

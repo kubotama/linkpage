@@ -1,8 +1,11 @@
 import React from "react";
 
+import {
+  ROW_STYLE_DEFAULT,
+  ROW_STYLE_KEYWORD_SELECTED,
+  TABLE_NAME_KEYWORD,
+} from "../constants/constants";
 import { Keyword } from "../types/Keyword";
-
-import { TABLE_NAME_KEYWORD } from "../constants/constants";
 
 type KeywordTableProps = {
   keywords?: Keyword[];
@@ -39,8 +42,8 @@ export const KeywordTable = ({
             <td
               className={`p-1 text-sm border border-gray-700 ${
                 selectedKeywordId === keyword.keyword_id
-                  ? "bg-green-500 text-gray-100"
-                  : "bg-gray-100 text-gray-900"
+                  ? `${ROW_STYLE_KEYWORD_SELECTED}`
+                  : `${ROW_STYLE_DEFAULT}`
               }`}
             >
               {keyword.keyword_name}

@@ -5,6 +5,7 @@ import { beforeEach, describe, expect, it, vi } from "vitest";
 import { render, screen, within } from "@testing-library/react";
 import userEvent, { UserEvent } from "@testing-library/user-event";
 
+import { ROW_STYLE_KEYWORD_SELECTED } from "../constants/constants";
 import {
   buildMockBookmarksWithKeywords,
   findBookmarkWithAtLeastNKeywords,
@@ -98,10 +99,10 @@ describe("KeywordTableのテスト", () => {
         />
       );
 
-      expect(within(rowToClick).getByRole("cell")).toHaveClass("bg-green-500 text-gray-100");
+      expect(within(rowToClick).getByRole("cell")).toHaveClass(ROW_STYLE_KEYWORD_SELECTED);
       expect(
         within(screen.getByTestId(`keyword-row-${otherKeyword.keyword_id}`)).getByRole("cell")
-      ).not.toHaveClass("bg-green-500 text-gray-100");
+      ).not.toHaveClass(ROW_STYLE_KEYWORD_SELECTED);
     });
   });
 });
