@@ -1,4 +1,4 @@
-import React, { useMemo, useState } from "react";
+import React, { useMemo } from "react";
 
 import {
   ADD_BUTTON_ROLE_NAME,
@@ -30,7 +30,9 @@ export const BookmarkManager = ({ className = "" }: BookmarkManagerProps) => {
     textKeyword,
     textMessage,
     selectedBookmarkId,
+    selectedKeywordId,
     setSelectedBookmarkId,
+    setSelectedKeywordId,
     setTextUrl,
     setTextTitle,
     setTextKeyword,
@@ -46,8 +48,6 @@ export const BookmarkManager = ({ className = "" }: BookmarkManagerProps) => {
     () => bookmarks.find((b) => b.bookmark_id === selectedBookmarkId),
     [bookmarks, selectedBookmarkId]
   );
-
-  const [selectedKeywordId, setSelectedKeywordId] = useState<number | undefined>(undefined);
 
   return (
     <div className={`mt-5 mb-5 ${className}`}>

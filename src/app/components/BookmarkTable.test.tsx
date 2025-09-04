@@ -10,11 +10,12 @@ import {
   TABLE_NAME_BOOKMARKS,
 } from "../constants/constants";
 import {
-  GOOGLE_BOOKMARK,
   buildMockBookmarksWithKeywords,
+  GOOGLE_BOOKMARK,
   mockBookmarks,
 } from "../test-utils/bookmarkTestUtils";
-import { BookmarkTable, hasKeyword } from "./BookmarkTable";
+import { hasKeyword } from "../types/Bookmark";
+import { BookmarkTable } from "./BookmarkTable";
 
 describe("BookmarkTableのテスト", () => {
   let mockOnSelectBookmark = vi.fn<(bookmarkId: number) => void>();
