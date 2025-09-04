@@ -220,6 +220,7 @@ export const useBookmarkManager = () => {
           return false; // Prevent default
         case "escape":
           setSelectedBookmarkId(undefined);
+          setSelectedKeywordId(undefined);
           return false; // Prevent default
         default:
           return true;
