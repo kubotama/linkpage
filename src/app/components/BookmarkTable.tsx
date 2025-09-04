@@ -6,26 +6,7 @@ import {
   ROW_STYLE_KEYWORD_SELECTED,
   TABLE_NAME_BOOKMARKS,
 } from "../constants/constants";
-import { Bookmark } from "../types/Bookmark";
-import { Keyword } from "../types/Keyword";
-
-/**
- * ブックマークに指定されたキーワードが含まれているかを確認します。
- * @param bookmark - 確認対象のブックマークオブジェクト
- * @param keywordIdentifier - キーワード名(string)またはキーワードID(number)
- * @returns キーワードが含まれていればtrue、そうでなければfalse
- */
-export const hasKeyword = (bookmark: Bookmark, keywordIdentifier: string | number): boolean => {
-  if (!bookmark || !bookmark.keywords) {
-    return false;
-  }
-
-  if (typeof keywordIdentifier === "string") {
-    return bookmark.keywords.some((k: Keyword) => k.keyword_name === keywordIdentifier);
-  } else {
-    return bookmark.keywords.some((k: Keyword) => k.keyword_id === keywordIdentifier);
-  }
-};
+import { Bookmark, hasKeyword } from "../types/Bookmark";
 
 type BookmarkTableProps = {
   bookmarks: Bookmark[];

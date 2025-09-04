@@ -36,3 +36,21 @@ export function parseAndValidateKeywords(jsonString: string): Keyword[] {
     return []; // 安全のために空の配列を返す
   }
 }
+
+/**
+ * ブックマークに指定されたキーワードが含まれているかを確認します。
+ * @param bookmark - 確認対象のブックマークオブジェクト
+ * @param keywordIdentifier - キーワード名(string)またはキーワードID(number)
+ * @returns キーワードが含まれていればtrue、そうでなければfalse
+ */
+export const hasKeyword = (bookmark: Bookmark, keywordIdentifier: string | number): boolean => {
+  if (!bookmark || !bookmark.keywords) {
+    return false;
+  }
+
+  if (typeof keywordIdentifier === "string") {
+    return bookmark.keywords.some((k: Keyword) => k.keyword_name === keywordIdentifier);
+  } else {
+    return bookmark.keywords.some((k: Keyword) => k.keyword_id === keywordIdentifier);
+  }
+};
