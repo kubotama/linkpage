@@ -11,7 +11,7 @@ type KeywordTableProps = {
   keywords?: Keyword[];
   className?: string;
   selectedKeywordId?: number;
-  setSelectedKeywordId: (keywordId: number) => void;
+  setSelectedKeywordId: (keywordId: number | undefined) => void;
 };
 
 export const KeywordTable = ({
@@ -21,7 +21,11 @@ export const KeywordTable = ({
   setSelectedKeywordId,
 }: KeywordTableProps): React.ReactElement => {
   const handleSelectKeyword = (keywordId: number) => {
-    setSelectedKeywordId(keywordId);
+    if (selectedKeywordId !== keywordId) {
+      setSelectedKeywordId(keywordId);
+    } else {
+      setSelectedKeywordId(undefined);
+    }
   };
 
   return (
