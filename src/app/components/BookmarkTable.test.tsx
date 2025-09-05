@@ -136,4 +136,41 @@ describe("BookmarkTableのテスト", () => {
       }
     });
   });
+
+  it("ブックマーク選択がキーワード選択より優先してハイライト表示される", () => {
+    const mockBookmarksWithKeywords = buildMockBookmarksWithKeywords();
+    const selectedKeywordId = 1; // "キーワード1"
+    const bookmarkToSelect = mockBookmarksWithKeywords.find((b) =>
+      hasKeyword(b, selectedKeywordId)
+    );
+    if (!bookmarkToSelect) {
+      throw new Error("テストデータエラー: キーワードID 1 を持つブックマークが見つかりません。");
+    }
+    const selectedBookmarkId = bookmarkToSelect.bookmark_id;
+
+    renderComponent(
+      {
+        selectedKeywordId: selectedKeywordId,
+        selectedBookmarkId: selectedBookmarkId,
+      },
+      mockBookmarksWithKeywords
+    );
+
+    mockBookmarksWithKeywords.forEach((bookmark) => {
+      const cell = screen.getByRole("cell", { name: bookmark.title });
+      if (bookmark.bookmark_id === selectedBookmarkId) {
+        // 直接選択されたブックマークは、ブックマーク選択スタイルが適用される
+        expect(cell).toHaveClass(ROW_STYLE_BOOKMARK_SELECTED);
+        expect(cell).not.toHaveClass(ROW_STYLE_KEYWORD_SELECTED);
+      } else if (hasKeyword(bookmark, selectedKeywordId)) {
+        // キーワードを持つ他のブックマークは、キーワード選択スタイルが適用される
+        expect(cell).toHaveClass(ROW_STYLE_KEYWORD_SELECTED);
+        expect(cell).not.toHaveClass(ROW_STYLE_BOOKMARK_SELECTED);
+      } else {
+        // それ以外のブックマークはデフォルトスタイル
+        expect(cell).not.toHaveClass(ROW_STYLE_BOOKMARK_SELECTED);
+        expect(cell).not.toHaveClass(ROW_STYLE_KEYWORD_SELECTED);
+      }
+    });
+  });
 });
