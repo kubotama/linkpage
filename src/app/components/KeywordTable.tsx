@@ -22,11 +22,7 @@ export const KeywordTable = ({
   setSelectedKeywordId,
 }: KeywordTableProps): React.ReactElement => {
   const handleSelectKeyword = (keywordId: number) => {
-    if (selectedKeywordId !== keywordId) {
-      setSelectedKeywordId(keywordId);
-    } else {
-      setSelectedKeywordId(undefined);
-    }
+    setSelectedKeywordId(selectedKeywordId === keywordId ? undefined : keywordId);
   };
 
   return (
