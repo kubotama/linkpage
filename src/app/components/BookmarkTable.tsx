@@ -40,16 +40,14 @@ export const BookmarkTable = ({
 }: BookmarkTableProps): React.ReactElement => {
   const bookmarkRows: BookmarkRow[] = useMemo(() => {
     return bookmarks.map((bookmark) => {
-      const rowClasses = [];
-      if (selectedBookmarkId === bookmark.bookmark_id) {
-        rowClasses.push(ROW_STYLES.selected);
-      } else if (selectedKeywordId && hasKeyword(bookmark, selectedKeywordId)) {
-        rowClasses.push(ROW_STYLES.keywordSelected);
-      } else {
-        rowClasses.push(ROW_STYLES.default);
-      }
+      const rowStyle =
+        selectedBookmarkId === bookmark.bookmark_id
+          ? ROW_STYLES.selected
+          : selectedKeywordId && hasKeyword(bookmark, selectedKeywordId)
+          ? ROW_STYLES.keywordSelected
+          : ROW_STYLES.default;
       // 今後、他の条件に応じたクラスもここに追加できます
-      return { bookmark, rowStyle: rowClasses.join(" ") };
+      return { bookmark, rowStyle };
     });
   }, [bookmarks, selectedBookmarkId, selectedKeywordId]);
 
