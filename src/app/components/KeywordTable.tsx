@@ -1,6 +1,7 @@
 import React from "react";
 
 import {
+  BASE_CELL_STYLE,
   ROW_STYLE_DEFAULT,
   ROW_STYLE_KEYWORD_SELECTED,
   TABLE_NAME_KEYWORD,
@@ -44,10 +45,10 @@ export const KeywordTable = ({
             className="cursor-pointer"
           >
             <td
-              className={`p-1 text-sm border border-gray-700 ${
+              className={`text-sm ${BASE_CELL_STYLE} ${
                 selectedKeywordId === keyword.keyword_id
-                  ? `${ROW_STYLE_KEYWORD_SELECTED}`
-                  : `${ROW_STYLE_DEFAULT}`
+                  ? ROW_STYLE_KEYWORD_SELECTED
+                  : ROW_STYLE_DEFAULT
               }`}
             >
               {keyword.keyword_name}

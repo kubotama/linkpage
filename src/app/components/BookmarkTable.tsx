@@ -1,6 +1,7 @@
 import React, { useMemo } from "react";
 
 import {
+  BASE_CELL_STYLE,
   ROW_STYLE_BOOKMARK_SELECTED,
   ROW_STYLE_DEFAULT,
   ROW_STYLE_KEYWORD_SELECTED,
@@ -27,8 +28,6 @@ type BookmarkRow = {
   bookmark: Bookmark;
   rowStyle: string;
 };
-
-const BASE_CELL_STYLE = "p-1 border border-gray-700";
 
 export const BookmarkTable = ({
   bookmarks,
