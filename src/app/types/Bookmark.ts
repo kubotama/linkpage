@@ -44,13 +44,10 @@ export function parseAndValidateKeywords(jsonString: string): Keyword[] {
  * @returns キーワードが含まれていればtrue、そうでなければfalse
  */
 export const hasKeyword = (bookmark: Bookmark, keywordIdentifier: string | number): boolean => {
-  if (!bookmark || !bookmark.keywords) {
+  if (!bookmark.keywords) {
     return false;
   }
 
-  if (typeof keywordIdentifier === "string") {
-    return bookmark.keywords.some((k: Keyword) => k.keyword_name === keywordIdentifier);
-  } else {
-    return bookmark.keywords.some((k: Keyword) => k.keyword_id === keywordIdentifier);
-  }
+  const key: keyof Keyword = typeof keywordIdentifier === "string" ? "keyword_name" : "keyword_id";
+  return bookmark.keywords.some((k) => k[key] === keywordIdentifier);
 };
