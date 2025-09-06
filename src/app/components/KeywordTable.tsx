@@ -6,6 +6,7 @@ import {
   ROW_STYLE_KEYWORD_SELECTED,
   TABLE_NAME_KEYWORD,
 } from "../constants/constants";
+import { useKeywordTable } from "../hooks/useKeywordTable";
 import { Keyword } from "../types/Keyword";
 
 type KeywordTableProps = {
@@ -21,9 +22,10 @@ export const KeywordTable = ({
   selectedKeywordId,
   setSelectedKeywordId,
 }: KeywordTableProps): React.ReactElement => {
-  const handleSelectKeyword = (keywordId: number) => {
-    setSelectedKeywordId(selectedKeywordId === keywordId ? undefined : keywordId);
-  };
+  const { handleSelectKeyword } = useKeywordTable({
+    selectedKeywordId,
+    setSelectedKeywordId,
+  });
 
   return (
     <table aria-label={TABLE_NAME_KEYWORD} className={className}>
