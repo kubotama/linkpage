@@ -1,13 +1,8 @@
-import React, { useMemo } from "react";
+import React from "react";
 
-import {
-  BASE_CELL_STYLE,
-  ROW_STYLE_BOOKMARK_SELECTED,
-  ROW_STYLE_DEFAULT,
-  ROW_STYLE_KEYWORD_SELECTED,
-  TABLE_NAME_BOOKMARKS,
-} from "../constants/constants";
-import { Bookmark, hasKeyword } from "../types/Bookmark";
+import { BASE_CELL_STYLE, TABLE_NAME_BOOKMARKS, TITLE_CELL_STYLE } from "../constants/constants";
+import { useBookmarkTable } from "../hooks/useBookmarkTable";
+import { Bookmark } from "../types/Bookmark";
 
 type BookmarkTableProps = {
   bookmarks: Bookmark[];
@@ -18,17 +13,6 @@ type BookmarkTableProps = {
   className?: string;
 };
 
-const ROW_STYLES = {
-  selected: ROW_STYLE_BOOKMARK_SELECTED,
-  keywordSelected: ROW_STYLE_KEYWORD_SELECTED,
-  default: ROW_STYLE_DEFAULT,
-};
-
-type BookmarkRow = {
-  bookmark: Bookmark;
-  rowStyle: string;
-};
-
 export const BookmarkTable = ({
   bookmarks,
   selectedBookmarkId,
@@ -37,35 +21,19 @@ export const BookmarkTable = ({
   setSelectedKeywordId,
   className = "",
 }: BookmarkTableProps): React.ReactElement => {
-  const bookmarkRows: BookmarkRow[] = useMemo(() => {
-    return bookmarks.map((bookmark) => {
-      const rowStyle = (() => {
-        if (selectedBookmarkId === bookmark.bookmark_id) {
-          return ROW_STYLES.selected;
-        }
-        if (selectedKeywordId && hasKeyword(bookmark, selectedKeywordId)) {
-          return ROW_STYLES.keywordSelected;
-        }
-        return ROW_STYLES.default;
-      })();
-      // 今後、他の条件に応じたクラスもここに追加できます
-      return { bookmark, rowStyle };
-    });
-  }, [bookmarks, selectedBookmarkId, selectedKeywordId]);
-
-  const handleSelectBookmark = (bookmarkId: number) => {
-    onSelectBookmarkId(bookmarkId);
-    setSelectedKeywordId(undefined);
-  };
+  const { bookmarkRows, handleSelectBookmark } = useBookmarkTable({
+    bookmarks,
+    selectedBookmarkId,
+    selectedKeywordId,
+    onSelectBookmarkId,
+    setSelectedKeywordId,
+  });
 
   return (
     <table aria-label={TABLE_NAME_BOOKMARKS} className={className}>
       <thead>
         <tr>
-          <th
-            className={`text-base font-bold bg-slate-700 text-gray-200 ${BASE_CELL_STYLE}`}
-            scope="col"
-          >
+          <th className={`${TITLE_CELL_STYLE} ${BASE_CELL_STYLE}`} scope="col">
             タイトル
           </th>
         </tr>
