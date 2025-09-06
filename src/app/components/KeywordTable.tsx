@@ -1,18 +1,30 @@
 import React from "react";
 
+import {
+  BASE_CELL_STYLE,
+  ROW_STYLE_DEFAULT,
+  ROW_STYLE_KEYWORD_SELECTED,
+  TABLE_NAME_KEYWORD,
+} from "../constants/constants";
 import { Keyword } from "../types/Keyword";
-
-import { TABLE_NAME_KEYWORD } from "../constants/constants";
 
 type KeywordTableProps = {
   keywords?: Keyword[];
   className?: string;
+  selectedKeywordId?: number;
+  setSelectedKeywordId: (keywordId: number | undefined) => void;
 };
 
 export const KeywordTable = ({
   keywords = [],
   className,
+  selectedKeywordId,
+  setSelectedKeywordId,
 }: KeywordTableProps): React.ReactElement => {
+  const handleSelectKeyword = (keywordId: number) => {
+    setSelectedKeywordId(selectedKeywordId === keywordId ? undefined : keywordId);
+  };
+
   return (
     <table aria-label={TABLE_NAME_KEYWORD} className={className}>
       <thead className="sr-only">
@@ -22,8 +34,19 @@ export const KeywordTable = ({
       </thead>
       <tbody>
         {keywords.map((keyword) => (
-          <tr key={keyword.keyword_id}>
-            <td className="p-1 text-sm border border-gray-700 bg-gray-100 text-gray-900">
+          <tr
+            key={keyword.keyword_id}
+            data-testid={`keyword-row-${keyword.keyword_id}`}
+            onClick={() => handleSelectKeyword(keyword.keyword_id)}
+            className="cursor-pointer"
+          >
+            <td
+              className={`text-sm ${BASE_CELL_STYLE} ${
+                selectedKeywordId === keyword.keyword_id
+                  ? ROW_STYLE_KEYWORD_SELECTED
+                  : ROW_STYLE_DEFAULT
+              }`}
+            >
               {keyword.keyword_name}
             </td>
           </tr>

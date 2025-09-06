@@ -30,7 +30,9 @@ export const BookmarkManager = ({ className = "" }: BookmarkManagerProps) => {
     textKeyword,
     textMessage,
     selectedBookmarkId,
+    selectedKeywordId,
     setSelectedBookmarkId,
+    setSelectedKeywordId,
     setTextUrl,
     setTextTitle,
     setTextKeyword,
@@ -54,6 +56,8 @@ export const BookmarkManager = ({ className = "" }: BookmarkManagerProps) => {
           bookmarks={bookmarks}
           selectedBookmarkId={selectedBookmarkId}
           onSelectBookmarkId={setSelectedBookmarkId}
+          selectedKeywordId={selectedKeywordId}
+          setSelectedKeywordId={setSelectedKeywordId}
           className="w-bookmark-list"
         />
         <div className="w-bookmark-details">
@@ -105,7 +109,12 @@ export const BookmarkManager = ({ className = "" }: BookmarkManagerProps) => {
                   </ActionButton>
                 </div>
               </fieldset>
-              <KeywordTable keywords={selectedBookmark.keywords} className="mt-2 w-keyword-list" />
+              <KeywordTable
+                keywords={selectedBookmark.keywords}
+                className="mt-2 w-keyword-list"
+                selectedKeywordId={selectedKeywordId}
+                setSelectedKeywordId={setSelectedKeywordId}
+              />
             </form>
           )}
         </div>
