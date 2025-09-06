@@ -1,4 +1,4 @@
-import { useMemo } from "react";
+import { useCallback, useMemo } from "react";
 
 import {
   ROW_STYLE_BOOKMARK_SELECTED,
@@ -32,10 +32,13 @@ export const useBookmarkTable = ({
   onSelectBookmarkId,
   setSelectedKeywordId,
 }: UseBookmarkTableProps) => {
-  const handleSelectBookmark = (bookmarkId: number) => {
-    onSelectBookmarkId(bookmarkId);
-    setSelectedKeywordId(undefined);
-  };
+  const handleSelectBookmark = useCallback(
+    (bookmarkId: number) => {
+      onSelectBookmarkId(bookmarkId);
+      setSelectedKeywordId(undefined);
+    },
+    [onSelectBookmarkId, setSelectedKeywordId]
+  );
 
   const bookmarkRows: BookmarkRow[] = useMemo(() => {
     return bookmarks.map((bookmark) => {
