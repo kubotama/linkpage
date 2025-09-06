@@ -10,6 +10,7 @@ import {
   PARAMETER_BUTTON_ROLE_NAME,
   UPDATE_BUTTON_ROLE_NAME,
 } from "../constants/constants";
+import { useBookmarks } from "../hooks/useBookmark";
 import { useBookmarkManager } from "../hooks/useBookmarkManager";
 import { ActionButton } from "./ActionButton";
 import { BookmarkInputField } from "./BookmarkInputField";
@@ -22,8 +23,9 @@ type BookmarkManagerProps = {
 };
 
 export const BookmarkManager = ({ className = "" }: BookmarkManagerProps) => {
+  const { bookmarks, getBookmarks, deleteBookmark, updateBookmark, addKeyword } = useBookmarks();
+
   const {
-    bookmarks,
     isError,
     textUrl,
     textTitle,
@@ -42,7 +44,7 @@ export const BookmarkManager = ({ className = "" }: BookmarkManagerProps) => {
     handleErrorClose,
     updateClick,
     addKeywordClick,
-  } = useBookmarkManager();
+  } = useBookmarkManager({ bookmarks, getBookmarks, deleteBookmark, updateBookmark, addKeyword });
 
   const selectedBookmark = useMemo(
     () => bookmarks.find((b) => b.bookmark_id === selectedBookmarkId),
