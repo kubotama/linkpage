@@ -42,15 +42,12 @@ export const useBookmarkTable = ({
 
   const bookmarkRows: BookmarkRow[] = useMemo(() => {
     return bookmarks.map((bookmark) => {
-      const rowStyle = (() => {
-        if (selectedBookmarkId === bookmark.bookmark_id) {
-          return ROW_STYLES.selected;
-        }
-        if (selectedKeywordId && hasKeyword(bookmark, selectedKeywordId)) {
-          return ROW_STYLES.keywordSelected;
-        }
-        return ROW_STYLES.default;
-      })();
+      const rowStyle =
+        selectedBookmarkId === bookmark.bookmark_id
+          ? ROW_STYLES.selected
+          : selectedKeywordId && hasKeyword(bookmark, selectedKeywordId)
+          ? ROW_STYLES.keywordSelected
+          : ROW_STYLES.default;
       // 今後、他の条件に応じたクラスもここに追加できます
       return { bookmark, rowStyle };
     });
