@@ -12,6 +12,7 @@ export const useBookmarkManager = () => {
   const [textTitle, setTextTitle] = useState("");
   const [textKeyword, setTextKeyword] = useState("");
   const [selectedBookmarkId, setSelectedBookmarkId] = useState<number | undefined>(undefined);
+  const [selectedKeywordId, setSelectedKeywordId] = useState<number | undefined>(undefined);
 
   const { bookmarks, getBookmarks, deleteBookmark, updateBookmark, addKeyword } = useBookmarks();
 
@@ -219,6 +220,7 @@ export const useBookmarkManager = () => {
           return false; // Prevent default
         case "escape":
           setSelectedBookmarkId(undefined);
+          setSelectedKeywordId(undefined);
           return false; // Prevent default
         default:
           return true;
@@ -252,7 +254,9 @@ export const useBookmarkManager = () => {
     textTitle,
     textKeyword,
     selectedBookmarkId,
+    selectedKeywordId,
     setSelectedBookmarkId,
+    setSelectedKeywordId,
     textMessage,
     isError,
     setTextUrl,

@@ -1,23 +1,46 @@
 import "@testing-library/jest-dom";
 
-import { describe, expect, it, vi } from "vitest";
+import { beforeEach, describe, expect, it, vi } from "vitest";
 
 import { render, screen, within } from "@testing-library/react";
 
-import { TABLE_NAME_BOOKMARKS } from "../constants/constants";
-import { GOOGLE_BOOKMARK, mockBookmarks } from "../test-utils/bookmarkTestUtils";
+import {
+  ROW_STYLE_BOOKMARK_SELECTED,
+  ROW_STYLE_KEYWORD_SELECTED,
+  TABLE_NAME_BOOKMARKS,
+} from "../constants/constants";
+import {
+  buildMockBookmarksWithKeywords,
+  GOOGLE_BOOKMARK,
+  mockBookmarks,
+} from "../test-utils/bookmarkTestUtils";
+import { hasKeyword } from "../types/Bookmark";
 import { BookmarkTable } from "./BookmarkTable";
 
 describe("BookmarkTableのテスト", () => {
-  it("テーブルとヘッダーが正しく表示される", () => {
-    const mockOnSelectBookmark = vi.fn<(bookmarkId: number) => void>();
+  let mockOnSelectBookmark = vi.fn<(bookmarkId: number) => void>();
+  let mockSetSelectedKeywordId = vi.fn();
+
+  beforeEach(() => {
+    mockOnSelectBookmark = vi.fn();
+    mockSetSelectedKeywordId = vi.fn();
+  });
+
+  const renderComponent = (props = {}, customBookmarks = mockBookmarks) => {
     render(
       <BookmarkTable
-        bookmarks={mockBookmarks}
+        bookmarks={customBookmarks}
         selectedBookmarkId={undefined}
         onSelectBookmarkId={mockOnSelectBookmark}
+        selectedKeywordId={undefined}
+        setSelectedKeywordId={mockSetSelectedKeywordId}
+        {...props}
       />
     );
+  };
+
+  it("テーブルとヘッダーが正しく表示される", () => {
+    renderComponent();
 
     const table = screen.getByRole("table", { name: TABLE_NAME_BOOKMARKS });
     expect(table).toBeVisible();
@@ -30,14 +53,7 @@ describe("BookmarkTableのテスト", () => {
   });
 
   it("ブックマークデータが正しく表示される", () => {
-    const mockOnSelectBookmark = vi.fn<(bookmarkId: number) => void>();
-    render(
-      <BookmarkTable
-        bookmarks={mockBookmarks}
-        selectedBookmarkId={undefined}
-        onSelectBookmarkId={mockOnSelectBookmark}
-      />
-    );
+    renderComponent();
 
     // theadとtbodyはrowgroupロールを持つため、screen.getAllByRoleで取得する
     const [thead, tbody] = screen.getAllByRole("rowgroup");
@@ -60,14 +76,7 @@ describe("BookmarkTableのテスト", () => {
   });
 
   it("空のブックマークリストでテーブルが表示される", () => {
-    const mockOnSelectBookmark = vi.fn<(bookmarkId: number) => void>();
-    render(
-      <BookmarkTable
-        bookmarks={[]}
-        selectedBookmarkId={undefined}
-        onSelectBookmarkId={mockOnSelectBookmark}
-      />
-    );
+    renderComponent({ bookmarks: [] });
 
     const table = screen.getByRole("table");
     expect(table).toBeVisible();
@@ -79,17 +88,11 @@ describe("BookmarkTableのテスト", () => {
   });
 
   it("選択されたブックマークが正しくハイライト表示される", () => {
-    const mockOnSelectBookmark = vi.fn<(bookmarkId: number) => void>();
     const selected = GOOGLE_BOOKMARK; // "Google" を選択状態にする
 
-    render(
-      <BookmarkTable
-        bookmarks={mockBookmarks}
-        selectedBookmarkId={selected.bookmark_id}
-        onSelectBookmarkId={mockOnSelectBookmark}
-      />
-    );
-
+    renderComponent({
+      selectedBookmarkId: selected.bookmark_id,
+    });
     // 選択された行のセルを取得
     const selectedCell = screen.getByRole("cell", { name: selected.title });
     // 選択された行がハイライトクラスを持つことを確認
@@ -107,5 +110,67 @@ describe("BookmarkTableのテスト", () => {
     // 選択されていない行が通常のクラスを持つことを確認
     expect(unselectedCell).toHaveClass("bg-gray-100", "text-gray-900");
     expect(unselectedCell).not.toHaveClass("bg-sky-500", "text-gray-100");
+  });
+
+  it("選択されたキーワードを持つブックマークが正しくハイライト表示される", () => {
+    const mockBookmarksWithKeywords = buildMockBookmarksWithKeywords();
+    const selectedKeywordId = 1; // "キーワード1"
+
+    renderComponent(
+      {
+        selectedKeywordId: selectedKeywordId,
+      },
+      mockBookmarksWithKeywords
+    );
+
+    mockBookmarksWithKeywords.forEach((bookmark) => {
+      const cell = screen.getByRole("cell", { name: bookmark.title });
+      if (hasKeyword(bookmark, selectedKeywordId)) {
+        // キーワードを持つブックマークはハイライトされる
+        expect(cell).toHaveClass(ROW_STYLE_KEYWORD_SELECTED);
+        expect(cell).not.toHaveClass(ROW_STYLE_BOOKMARK_SELECTED);
+      } else {
+        // キーワードを持たないブックマークはハイライトされない
+        expect(cell).not.toHaveClass(ROW_STYLE_KEYWORD_SELECTED);
+        expect(cell).not.toHaveClass(ROW_STYLE_BOOKMARK_SELECTED);
+      }
+    });
+  });
+
+  it("ブックマーク選択がキーワード選択より優先してハイライト表示される", () => {
+    const mockBookmarksWithKeywords = buildMockBookmarksWithKeywords();
+    const selectedKeywordId = 1; // "キーワード1"
+    const bookmarkToSelect = mockBookmarksWithKeywords.find((b) =>
+      hasKeyword(b, selectedKeywordId)
+    );
+    if (!bookmarkToSelect) {
+      throw new Error("テストデータエラー: キーワードID 1 を持つブックマークが見つかりません。");
+    }
+    const selectedBookmarkId = bookmarkToSelect.bookmark_id;
+
+    renderComponent(
+      {
+        selectedKeywordId: selectedKeywordId,
+        selectedBookmarkId: selectedBookmarkId,
+      },
+      mockBookmarksWithKeywords
+    );
+
+    mockBookmarksWithKeywords.forEach((bookmark) => {
+      const cell = screen.getByRole("cell", { name: bookmark.title });
+      if (bookmark.bookmark_id === selectedBookmarkId) {
+        // 直接選択されたブックマークは、ブックマーク選択スタイルが適用される
+        expect(cell).toHaveClass(ROW_STYLE_BOOKMARK_SELECTED);
+        expect(cell).not.toHaveClass(ROW_STYLE_KEYWORD_SELECTED);
+      } else if (hasKeyword(bookmark, selectedKeywordId)) {
+        // キーワードを持つ他のブックマークは、キーワード選択スタイルが適用される
+        expect(cell).toHaveClass(ROW_STYLE_KEYWORD_SELECTED);
+        expect(cell).not.toHaveClass(ROW_STYLE_BOOKMARK_SELECTED);
+      } else {
+        // それ以外のブックマークはデフォルトスタイル
+        expect(cell).not.toHaveClass(ROW_STYLE_BOOKMARK_SELECTED);
+        expect(cell).not.toHaveClass(ROW_STYLE_KEYWORD_SELECTED);
+      }
+    });
   });
 });
