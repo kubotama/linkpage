@@ -17,3 +17,4 @@ export const ROW_STYLE_BOOKMARK_SELECTED = "bg-sky-500 text-gray-100";
 export const ROW_STYLE_DEFAULT = "bg-gray-100 text-gray-900";
 export const ROW_STYLE_KEYWORD_SELECTED = "bg-green-500 text-gray-100";
 export const BASE_CELL_STYLE = "p-1 border border-gray-700";
+export const TITLE_CELL_STYLE = "text-base font-bold bg-slate-700 text-gray-200";
