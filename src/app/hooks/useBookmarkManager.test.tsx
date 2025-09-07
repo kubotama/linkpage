@@ -168,8 +168,8 @@ describe("useBookmarkManager", () => {
       // updateBookmarkの呼び出し
       expect(updateBookmark).toHaveBeenCalledWith(
         LINKPAGE_BOOKMARK.bookmark_id,
-        result.current.textUrl,
-        result.current.textTitle
+        LINKPAGE_BOOKMARK.url,
+        LINKPAGE_BOOKMARK.title
       );
 
       // フォームの値が期待通りに設定されていることを確認
