@@ -158,7 +158,7 @@ describe("useBookmarkManager", () => {
       expect(result.current.textUrl).toBe(LINKPAGE_BOOKMARK.url);
     });
 
-    // 3. 追加ボタンをクリックする
+    // 3. 更新ボタンをクリックする
     act(() => {
       result.current.updateClick();
     });
