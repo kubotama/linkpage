@@ -7,7 +7,7 @@ import { getErrorMessage } from "../api/utils/ApiUtils";
 import { Bookmark } from "../types/Bookmark";
 import { useErrorMessage } from "./useErrorMessage";
 
-type UseBookmarkTableProps = {
+type UseBookmarkManagerProps = {
   bookmarks: Bookmark[];
   getBookmarks: () => Promise<void>;
   deleteBookmark: (bookmark_id: number) => Promise<void>;
@@ -21,7 +21,7 @@ export const useBookmarkManager = ({
   deleteBookmark,
   updateBookmark,
   addKeyword,
-}: UseBookmarkTableProps) => {
+}: UseBookmarkManagerProps) => {
   const [textUrl, setTextUrl] = useState("");
   const [textTitle, setTextTitle] = useState("");
   const [textKeyword, setTextKeyword] = useState("");
