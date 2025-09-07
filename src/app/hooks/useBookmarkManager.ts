@@ -4,17 +4,29 @@ import { useCallback, useEffect, useRef, useState } from "react";
 import { useHotkeys } from "react-hotkeys-hook";
 
 import { getErrorMessage } from "../api/utils/ApiUtils";
-import { useBookmarks } from "./useBookmark";
+import { Bookmark } from "../types/Bookmark";
 import { useErrorMessage } from "./useErrorMessage";
 
-export const useBookmarkManager = () => {
+type UseBookmarkManagerProps = {
+  bookmarks: Bookmark[];
+  getBookmarks: () => Promise<void>;
+  deleteBookmark: (bookmark_id: number) => Promise<void>;
+  updateBookmark: (bookmark_id: number, url: string, title: string) => Promise<void>;
+  addKeyword: (bookmark_id: number, keyword_name: string) => Promise<void>;
+};
+
+export const useBookmarkManager = ({
+  bookmarks,
+  getBookmarks,
+  deleteBookmark,
+  updateBookmark,
+  addKeyword,
+}: UseBookmarkManagerProps) => {
   const [textUrl, setTextUrl] = useState("");
   const [textTitle, setTextTitle] = useState("");
   const [textKeyword, setTextKeyword] = useState("");
   const [selectedBookmarkId, setSelectedBookmarkId] = useState<number | undefined>(undefined);
   const [selectedKeywordId, setSelectedKeywordId] = useState<number | undefined>(undefined);
-
-  const { bookmarks, getBookmarks, deleteBookmark, updateBookmark, addKeyword } = useBookmarks();
 
   const { textMessage, setMessage, isError, handleErrorClose } = useErrorMessage();
 
@@ -23,8 +35,11 @@ export const useBookmarkManager = () => {
     try {
       await getBookmarks();
       setMessage();
-    } catch {
-      setMessage("ブックマークのロード中にエラーが発生しました。", true);
+    } catch (error: unknown) {
+      setMessage(
+        getErrorMessage(error, "ブックマークのロード中にエラーが発生しました。", false),
+        true
+      );
     }
   }, [setMessage, getBookmarks]);
 
