@@ -40,10 +40,15 @@ describe("useBookmarkManager › SSE", () => {
     vi.restoreAllMocks();
   });
 
-  it("should connect to SSE and call getBookmarks on message", async () => {
-    renderHook(() =>
+  // フックをレンダリングするヘルパー関数
+  const renderMyHook = () => {
+    return renderHook(() =>
       useBookmarkManager({ bookmarks, getBookmarks, deleteBookmark, updateBookmark, addKeyword })
     );
+  };
+
+  it("should connect to SSE and call getBookmarks on message", async () => {
+    renderMyHook();
 
     // 初期ロードで1回呼ばれることを確認
     expect(getBookmarks).toHaveBeenCalledTimes(1);
@@ -64,9 +69,7 @@ describe("useBookmarkManager › SSE", () => {
   });
 
   it("should close EventSource on unmount", () => {
-    const { unmount } = renderHook(() =>
-      useBookmarkManager({ bookmarks, getBookmarks, deleteBookmark, updateBookmark, addKeyword })
-    );
+    const { unmount } = renderMyHook();
 
     expect(MockEventSource.instances).toHaveLength(1);
     const eventSourceInstance = MockEventSource.instances[0];
@@ -79,9 +82,7 @@ describe("useBookmarkManager › SSE", () => {
 
   it("should handle SSE errors and log them", () => {
     const consoleErrorSpy = vi.spyOn(console, "error").mockImplementation(() => {});
-    renderHook(() =>
-      useBookmarkManager({ bookmarks, getBookmarks, deleteBookmark, updateBookmark, addKeyword })
-    );
+    renderMyHook();
 
     const eventSourceInstance = MockEventSource.instances[0];
 
@@ -97,9 +98,7 @@ describe("useBookmarkManager › SSE", () => {
 
   it("should handle invalid JSON data from SSE and not call getBookmarks", () => {
     const consoleErrorSpy = vi.spyOn(console, "error").mockImplementation(() => {});
-    renderHook(() =>
-      useBookmarkManager({ bookmarks, getBookmarks, deleteBookmark, updateBookmark, addKeyword })
-    );
+    renderMyHook();
 
     // onmessageを直接呼び出して不正なデータを渡す
     act(() => {
