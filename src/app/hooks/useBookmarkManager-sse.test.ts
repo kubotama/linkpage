@@ -77,7 +77,7 @@ describe("useBookmarkManager › SSE", () => {
     expect(eventSourceInstance.close).toHaveBeenCalledTimes(1);
   });
 
-  it("should handle SSE errors and close the connection", () => {
+  it("should handle SSE errors and log them", () => {
     const consoleErrorSpy = vi.spyOn(console, "error").mockImplementation(() => {});
     renderHook(() =>
       useBookmarkManager({ bookmarks, getBookmarks, deleteBookmark, updateBookmark, addKeyword })
