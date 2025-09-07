@@ -86,29 +86,26 @@ describe("useBookmarkManager", () => {
 
     const newKeyword = "new keyword";
 
-    // 1. ブックマークを選択する
+    // Arrange: ブックマークを選択し、キーワードを入力する
     act(() => {
       result.current.setSelectedBookmarkId(LINKPAGE_BOOKMARK.bookmark_id);
     });
 
-    // 2. ブックマーク選択による副作用(useEffect)が完了し、フォームが更新されるのを待つ
     await waitFor(() => {
       expect(result.current.textUrl).toBe(LINKPAGE_BOOKMARK.url);
     });
 
-    // 3. キーワードを入力する
     act(() => {
       result.current.setTextKeyword(newKeyword);
     });
-    // 4. キーワード入力による副作用(useEffect)が完了し、フォームが更新されるのを待つ
     expect(result.current.textKeyword).toBe(newKeyword);
 
-    // 5. 追加ボタンをクリックする
+    // Act: 追加ボタンをクリックする
     act(() => {
       result.current.addKeywordClick();
     });
 
-    // 6. 結果を検証する
+    // Assert: addKeywordが呼び出され、フォームがリセットされることを確認する
     await waitFor(() => {
       // addKeywordの呼び出し
       expect(addKeyword).toHaveBeenCalledWith(LINKPAGE_BOOKMARK.bookmark_id, newKeyword);
