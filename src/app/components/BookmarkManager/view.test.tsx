@@ -48,7 +48,7 @@ describe("BookmarkManagerの表示を確認", () => {
   it("HTTPステータス500でfetchした場合、エラーメッセージが表示される", async () => {
     const consoleErrorSpy = vi.spyOn(console, "error").mockImplementation(() => {});
     try {
-      const errorText = "Internal Error";
+      const errorText = "サーバー内部でエラーが発生しました。";
       const statusCode = HTTP_STATUS_INTERNAL_SERVER_ERROR;
 
       mockFetch.mockResolvedValueOnce({
@@ -61,7 +61,7 @@ describe("BookmarkManagerの表示を確認", () => {
       render(<BookmarkManager />);
 
       await assertErrorMessage({
-        message: "ブックマークのロード中にエラーが発生しました。",
+        message: errorText,
         isError: true,
         isAsync: true,
       });

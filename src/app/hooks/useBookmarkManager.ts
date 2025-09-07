@@ -35,8 +35,11 @@ export const useBookmarkManager = ({
     try {
       await getBookmarks();
       setMessage();
-    } catch {
-      setMessage("ブックマークのロード中にエラーが発生しました。", true);
+    } catch (error: unknown) {
+      setMessage(
+        getErrorMessage(error, "ブックマークのロード中にエラーが発生しました。", false),
+        true
+      );
     }
   }, [setMessage, getBookmarks]);
 
