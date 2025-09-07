@@ -101,9 +101,7 @@ describe("useBookmarkManager", () => {
       result.current.setTextKeyword(newKeyword);
     });
     // 4. キーワード入力による副作用(useEffect)が完了し、フォームが更新されるのを待つ
-    await waitFor(() => {
-      expect(result.current.textKeyword).toBe(newKeyword);
-    });
+    expect(result.current.textKeyword).toBe(newKeyword);
 
     // 5. 追加ボタンをクリックする
     act(() => {
