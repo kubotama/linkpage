@@ -54,42 +54,57 @@ describe("DELETE /api/bookmarks/[bookmark_id]/keywords", () => {
     } as NextRequest;
   };
 
-  describe("正常系テスト", () => {
-    it("キーワードの解除に成功したら204(HTTP_STATUS_NO_CONTENT)を返す", async () => {
-      // Arrange
-      const bookmarkId = 2;
-      const keywordId = 1;
-      // 事前にBookmark ID=2でKeyword ID=1がDB上にあることを確認する
-      const countBefore = inMemoryDbInstance
-        .prepare(
-          "SELECT COUNT(*) as count FROM bookmark_keywords WHERE bookmark_id = ? and keyword_id = ?"
-        )
-        .get([bookmarkId, keywordId]) as { count: number };
-      expect(countBefore.count).toBe(1);
-      const keywordBefore = inMemoryDbInstance
-        .prepare("SELECT COUNT(*) as count FROM keywords WHERE keyword_id = ?")
-        .get(keywordId) as { count: number };
-      expect(keywordBefore.count).toBe(1);
+  describe("正常系テスト: キーワードの解除に成功したら204(HTTP_STATUS_NO_CONTENT)を返す", () => {
+    const successTestCases = [
+      {
+        description: "ブックマークに紐づくキーワードを1つ解除する",
+        bookmarkId: 2,
+        keywordId: 1,
+      },
+      {
+        description: "ブックマークに紐づくもう1つのキーワードを解除する",
+        bookmarkId: 2,
+        keywordId: 2,
+      },
+      {
+        description: "別のブックマークに紐づくキーワードを解除する",
+        bookmarkId: 3,
+        keywordId: 3,
+      },
+    ];
 
-      const request = mockRequest({ keyword_id: keywordId });
+    it.each(successTestCases)(
+      "$description (bookmarkId: $bookmarkId, keywordId: $keywordId)",
+      async ({ bookmarkId, keywordId }) => {
+        // Arrange
+        // 事前にDB上にブックマークとキーワードの関連が存在することを確認する
+        const associationBefore = inMemoryDbInstance
+          .prepare("SELECT * FROM bookmark_keywords WHERE bookmark_id = ? and keyword_id = ?")
+          .get(bookmarkId, keywordId);
+        expect(associationBefore).toBeDefined();
+        const keywordBefore = inMemoryDbInstance
+          .prepare("SELECT * FROM keywords WHERE keyword_id = ?")
+          .get(keywordId);
+        expect(keywordBefore).toBeDefined();
 
-      // // Act
-      const response = await DELETE(request, getContextParams(bookmarkId.toString()));
+        const request = mockRequest({ keyword_id: keywordId });
 
-      // Assert
-      expect(response.status).toBe(HTTP_STATUS_NO_CONTENT);
+        // // Act
+        const response = await DELETE(request, getContextParams(bookmarkId.toString()));
 
-      // Bookmark ID=2でKeyword ID=1が削除されたことを確認する
-      const countAfter = inMemoryDbInstance
-        .prepare(
-          "SELECT COUNT(*) as count FROM bookmark_keywords WHERE bookmark_id = ? and keyword_id = ?"
-        )
-        .get([bookmarkId, keywordId]) as { count: number };
-      expect(countAfter.count).toBe(0);
-      const keywordAfter = inMemoryDbInstance
-        .prepare("SELECT COUNT(*) as count FROM keywords WHERE keyword_id = ?")
-        .get(keywordId) as { count: number };
-      expect(keywordAfter.count).toBe(1);
-    });
+        // Assert
+        expect(response.status).toBe(HTTP_STATUS_NO_CONTENT);
+
+        // Bookmark ID=2でKeyword ID=1が削除されたことを確認する
+        const associationAfter = inMemoryDbInstance
+          .prepare("SELECT * FROM bookmark_keywords WHERE bookmark_id = ? and keyword_id = ?")
+          .get(bookmarkId, keywordId);
+        expect(associationAfter).toBeUndefined();
+        const keywordAfter = inMemoryDbInstance
+          .prepare("SELECT * FROM keywords WHERE keyword_id = ?")
+          .get(keywordId);
+        expect(keywordAfter).toBeDefined();
+      }
+    );
   });
 });
