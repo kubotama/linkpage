@@ -66,6 +66,10 @@ describe("DELETE /api/bookmarks/[bookmark_id]/keywords", () => {
         )
         .get([bookmarkId, keywordId]) as { count: number };
       expect(countBefore.count).toBe(1);
+      const keywordBefore = inMemoryDbInstance
+        .prepare("SELECT COUNT(*) as count FROM keywords WHERE keyword_id = ?")
+        .get(keywordId) as { count: number };
+      expect(keywordBefore.count).toBe(1);
 
       const request = mockRequest({ keyword_id: keywordId });
 
@@ -82,6 +86,10 @@ describe("DELETE /api/bookmarks/[bookmark_id]/keywords", () => {
         )
         .get([bookmarkId, keywordId]) as { count: number };
       expect(countAfter.count).toBe(0);
+      const keywordAfter = inMemoryDbInstance
+        .prepare("SELECT COUNT(*) as count FROM keywords WHERE keyword_id = ?")
+        .get(keywordId) as { count: number };
+      expect(keywordAfter.count).toBe(1);
     });
   });
 });

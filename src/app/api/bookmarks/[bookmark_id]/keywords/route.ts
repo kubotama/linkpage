@@ -1,6 +1,6 @@
 import { SqliteError } from "better-sqlite3";
 
-import { HTTP_STATUS_CREATED } from "../../../../constants/httpStatusCodes";
+import { HTTP_STATUS_CREATED, HTTP_STATUS_NO_CONTENT } from "../../../../constants/httpStatusCodes";
 import { isKeyword, KeywordPostParams } from "../../../../types/Keyword";
 import { getId, InvalidIdError } from "../../../utils/id";
 import {
@@ -109,4 +109,32 @@ export async function POST(request: Request, { params }: KeywordPostParams) {
   }
 }
 
-export const DELETE = async () => {};
+export const DELETE = async (request: Request, { params }: KeywordPostParams) => {
+  let bookmark_id: string;
+  try {
+    // Next.jsが提供するparamsのPromiseを解決する
+    ({ bookmark_id } = await params);
+  } catch (error) {
+    // paramsのPromiseがリジェクトされるという稀なケースをハンドル
+    console.error("Failed to resolve route params:", error);
+    return createInternalError(new Error("Failed to resolve route params"));
+  }
+
+  // DB操作
+  try {
+    const bookmarkId = getId({ id: bookmark_id });
+    const keyword_id = await request.json();
+    const keywordId = keyword_id.keyword_id;
+    const db = getDb();
+    const prepare = db.prepare(
+      "DELETE FROM bookmark_keywords WHERE bookmark_id = ? and keyword_id = ?"
+    );
+    const info = prepare.run(bookmarkId, keywordId);
+    if (info.changes === 0) {
+      return createNotFoundBookmarkError(bookmarkId);
+    }
+    return new Response(null, { status: HTTP_STATUS_NO_CONTENT });
+  } catch (error: unknown) {
+    return createInternalError(error);
+  }
+};
