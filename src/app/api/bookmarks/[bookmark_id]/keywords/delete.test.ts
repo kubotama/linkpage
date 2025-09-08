@@ -4,15 +4,13 @@ import { afterEach, beforeEach, describe, expect, it, MockInstance, vi } from "v
 
 import {
   HTTP_STATUS_BAD_REQUEST,
-  HTTP_STATUS_CONFLICT,
-  HTTP_STATUS_CREATED,
   HTTP_STATUS_INTERNAL_SERVER_ERROR,
   HTTP_STATUS_NO_CONTENT,
   HTTP_STATUS_NOT_FOUND,
 } from "../../../../constants/httpStatusCodes";
 import { assertErrorResponse } from "../../../../test-utils/assertions";
 import { setupInMemoryDb } from "../../../../test-utils/db-setup";
-import { isKeyword, KeywordPostParams } from "../../../../types/Keyword";
+import { KeywordPostParams } from "../../../../types/Keyword";
 import { ErrorTestCase } from "../../../utils/types";
 import { getDb } from "../../database";
 
@@ -120,15 +118,57 @@ describe("DELETE /api/bookmarks/[bookmark_id]/keywords", () => {
         statusCode: HTTP_STATUS_NOT_FOUND,
         errorMessage: "指定されたブックマークがありません。",
         logMessage: "Bookmark with id: 999 not found.",
+        requestBody: { keyword_id: 1 },
         body: "999",
+      },
+      {
+        description: "IDが正の整数でない場合、400エラーを返す",
+        statusCode: HTTP_STATUS_BAD_REQUEST,
+        errorMessage: "IDは正の整数である必要があります。",
+        logMessage: "Invalid ID provided: abc. It must be a positive integer.",
+        requestBody: { keyword_id: 1 },
+        body: "abc",
+      },
+      {
+        description: "IDが正の整数でない場合、400エラーを返す",
+        statusCode: HTTP_STATUS_BAD_REQUEST,
+        errorMessage: "リクエストボディのJSONが不正です。",
+        logMessage: "Invalid JSON format: keyword_id is required and must be a number.",
+        requestBody: "invalid data",
+        body: "1",
+      },
+      {
+        description: "IDが正の整数でない場合、400エラーを返す",
+        statusCode: HTTP_STATUS_BAD_REQUEST,
+        errorMessage: "IDは正の整数である必要があります。",
+        logMessage: "Invalid ID provided: -1. It must be a positive integer.",
+        requestBody: { keyword_id: -1 },
+        body: "1",
+      },
+      {
+        description: "データベースエラー時に500エラーを返す",
+        statusCode: HTTP_STATUS_INTERNAL_SERVER_ERROR,
+        errorMessage: "サーバー内部でエラーが発生しました。",
+        logMessage: "Internal Server Error: DB error",
+        body: "2",
+        requestBody: { keyword_id: 2 },
+        setup: () => {
+          vi.mocked(getDb).mockImplementation(() => {
+            throw new Error("DB error");
+          });
+        },
       },
       // TODO: 他の異常系テストケースをここに追加
     ];
 
     it.each(errorTestCases)(
       "$description",
-      async ({ statusCode, errorMessage, logMessage, body }) => {
-        const request = mockRequest({ keyword_id: 1 });
+      async ({ statusCode, errorMessage, logMessage, body, requestBody, setup }) => {
+        if (setup) {
+          setup();
+        }
+
+        const request = mockRequest(requestBody);
         const response = await DELETE(request, getContextParams(body));
 
         await assertErrorResponse(response, statusCode, errorMessage);
