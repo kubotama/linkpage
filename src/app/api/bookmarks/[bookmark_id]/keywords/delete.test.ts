@@ -107,4 +107,22 @@ describe("DELETE /api/bookmarks/[bookmark_id]/keywords", () => {
       }
     );
   });
+  describe("異常系テスト", () => {
+    let consoleErrorSpy: MockInstance;
+    beforeEach(() => {
+      // console.errorをスパイして、エラー出力がされるか確認
+      consoleErrorSpy = vi.spyOn(console, "error").mockImplementation(() => {});
+    });
+
+    it("ブックマークIDが存在しない場合、404エラーを返す", async () => {
+      const request = mockRequest({ keyword_id: 1 });
+      const response = await DELETE(request, getContextParams("999"));
+      await assertErrorResponse(
+        response,
+        HTTP_STATUS_NOT_FOUND,
+        "指定されたブックマークがありません。"
+      );
+      expect(consoleErrorSpy).toHaveBeenCalledWith("Bookmark with id: 999 not found.");
+    });
+  });
 });
