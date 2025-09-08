@@ -112,33 +112,46 @@ describe("DELETE /api/bookmarks/[bookmark_id]/keywords", () => {
       // console.errorをスパイして、エラー出力がされるか確認
       consoleErrorSpy = vi.spyOn(console, "error").mockImplementation(() => {});
     });
+
+    afterEach(() => {
+      consoleErrorSpy.mockRestore();
+    });
+
     const errorTestCases: ErrorTestCase<string>[] = [
       {
         description: "ブックマークIDが存在しない場合、404エラーを返す",
         statusCode: HTTP_STATUS_NOT_FOUND,
-        errorMessage: "指定されたブックマークがありません。",
-        logMessage: "Bookmark with id: 999 not found.",
-        requestBody: { keyword_id: 1 },
+        errorMessage: "指定されたブックマークに指定されたキーワードが設定されていません。",
+        logMessage: "Bookmark-keyword association not found for bookmark_id: 999 and keyword_id: 1",
         body: "999",
+        requestBody: { keyword_id: 1 },
       },
       {
-        description: "IDが正の整数でない場合、400エラーを返す",
+        description: "ブックマークIDが正の整数でない場合、400エラーを返す",
         statusCode: HTTP_STATUS_BAD_REQUEST,
         errorMessage: "IDは正の整数である必要があります。",
         logMessage: "Invalid ID provided: abc. It must be a positive integer.",
-        requestBody: { keyword_id: 1 },
         body: "abc",
+        requestBody: { keyword_id: 1 },
       },
       {
-        description: "IDが正の整数でない場合、400エラーを返す",
+        description: "keyword_idが指定されていない場合、400エラーを返す",
         statusCode: HTTP_STATUS_BAD_REQUEST,
-        errorMessage: "リクエストボディのJSONが不正です。",
-        logMessage: "Invalid JSON format: keyword_id is required and must be a number.",
-        requestBody: "invalid data",
+        errorMessage: "キーワードを指定してください。",
+        logMessage: "キーワードが指定されていません。",
         body: "1",
+        requestBody: {},
       },
       {
-        description: "IDが正の整数でない場合、400エラーを返す",
+        description: "keyword_idが数値でない場合、400エラーを返す",
+        statusCode: HTTP_STATUS_BAD_REQUEST,
+        errorMessage: "IDは正の整数である必要があります。",
+        logMessage: "Invalid ID provided: abc. It must be a positive integer.",
+        body: "1",
+        requestBody: { keyword_id: "abc" },
+      },
+      {
+        description: "keyword_idが負の整数の場合、400エラーを返す",
         statusCode: HTTP_STATUS_BAD_REQUEST,
         errorMessage: "IDは正の整数である必要があります。",
         logMessage: "Invalid ID provided: -1. It must be a positive integer.",
@@ -158,7 +171,14 @@ describe("DELETE /api/bookmarks/[bookmark_id]/keywords", () => {
           });
         },
       },
-      // TODO: 他の異常系テストケースをここに追加
+      {
+        description: "指定されたキーワードがブックマークに紐付いていない場合、404エラーを返す",
+        statusCode: HTTP_STATUS_NOT_FOUND,
+        errorMessage: "指定されたブックマークに指定されたキーワードが設定されていません。",
+        logMessage: "Bookmark-keyword association not found for bookmark_id: 1 and keyword_id: 999",
+        body: "1",
+        requestBody: { keyword_id: 999 },
+      },
     ];
 
     it.each(errorTestCases)(

@@ -9,6 +9,7 @@ import {
   createInvalidBodyError,
   createInvalidIdError,
   createNoKeywordError,
+  createNotAssignedKeywordError,
   createNotFoundBookmarkError,
 } from "../../../utils/response";
 import { getDb } from "../../database";
@@ -124,8 +125,11 @@ export const DELETE = async (request: Request, { params }: KeywordPostParams) =>
 
     const payload = await request.json();
     // リクエストボディとkeyword_idの存在・型チェック
-    if (!payload || typeof payload.keyword_id !== "number") {
-      return createInvalidBodyError(new Error("keyword_id is required and must be a number."));
+    if (!payload || !payload.keyword_id) {
+      return createNoKeywordError();
+    }
+    if (typeof payload.keyword_id !== "number") {
+      return createInvalidIdError({ id: payload.keyword_id });
     }
     keywordIdFromRequest = String(payload.keyword_id);
     const keywordId = getId({ id: payload.keyword_id });
@@ -138,7 +142,7 @@ export const DELETE = async (request: Request, { params }: KeywordPostParams) =>
     const info = prepare.run(bookmarkId, keywordId);
 
     if (info.changes === 0) {
-      return createNotFoundBookmarkError(bookmarkId);
+      return createNotAssignedKeywordError(bookmarkId, keywordId);
     }
 
     return new Response(null, { status: HTTP_STATUS_NO_CONTENT });
