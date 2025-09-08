@@ -108,3 +108,5 @@ export async function POST(request: Request, { params }: KeywordPostParams) {
     return createInternalError(error);
   }
 }
+
+export const DELETE = async () => {};
