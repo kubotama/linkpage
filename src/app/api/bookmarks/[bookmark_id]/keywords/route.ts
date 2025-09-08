@@ -120,21 +120,41 @@ export const DELETE = async (request: Request, { params }: KeywordPostParams) =>
     return createInternalError(new Error("Failed to resolve route params"));
   }
 
-  // DB操作
+  let keywordIdFromRequest: string | undefined;
   try {
     const bookmarkId = getId({ id: bookmark_id });
-    const keyword_id = await request.json();
-    const keywordId = keyword_id.keyword_id;
+
+    const payload = await request.json();
+
+    // リクエストボディとkeyword_idの存在・型チェック
+    if (!payload || typeof payload.keyword_id !== "number") {
+      return createInvalidBodyError(new Error("keyword_id is required and must be a number."));
+    }
+    keywordIdFromRequest = String(payload.keyword_id);
+    const keywordId = getId({ id: payload.keyword_id });
+
+    // DB操作
     const db = getDb();
     const prepare = db.prepare(
       "DELETE FROM bookmark_keywords WHERE bookmark_id = ? and keyword_id = ?"
     );
     const info = prepare.run(bookmarkId, keywordId);
+
     if (info.changes === 0) {
       return createNotFoundBookmarkError(bookmarkId);
     }
+
     return new Response(null, { status: HTTP_STATUS_NO_CONTENT });
   } catch (error: unknown) {
+    if (error instanceof SyntaxError) {
+      // request.json() に起因するエラー
+      return createInvalidBodyError(error);
+    }
+    if (error instanceof InvalidIdError) {
+      // bookmark_id または keyword_id の検証エラー
+      // keywordIdFromRequestがセットされていればkeyword_idのエラーと判断
+      return createInvalidIdError({ id: keywordIdFromRequest || "" });
+    }
     return createInternalError(error);
   }
 };
