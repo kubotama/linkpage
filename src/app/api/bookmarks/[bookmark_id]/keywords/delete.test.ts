@@ -107,22 +107,33 @@ describe("DELETE /api/bookmarks/[bookmark_id]/keywords", () => {
       }
     );
   });
+
   describe("異常系テスト", () => {
     let consoleErrorSpy: MockInstance;
     beforeEach(() => {
       // console.errorをスパイして、エラー出力がされるか確認
       consoleErrorSpy = vi.spyOn(console, "error").mockImplementation(() => {});
     });
+    const errorTestCases: ErrorTestCase<string>[] = [
+      {
+        description: "ブックマークIDが存在しない場合、404エラーを返す",
+        statusCode: HTTP_STATUS_NOT_FOUND,
+        errorMessage: "指定されたブックマークがありません。",
+        logMessage: "Bookmark with id: 999 not found.",
+        body: "999",
+      },
+      // TODO: 他の異常系テストケースをここに追加
+    ];
 
-    it("ブックマークIDが存在しない場合、404エラーを返す", async () => {
-      const request = mockRequest({ keyword_id: 1 });
-      const response = await DELETE(request, getContextParams("999"));
-      await assertErrorResponse(
-        response,
-        HTTP_STATUS_NOT_FOUND,
-        "指定されたブックマークがありません。"
-      );
-      expect(consoleErrorSpy).toHaveBeenCalledWith("Bookmark with id: 999 not found.");
-    });
+    it.each(errorTestCases)(
+      "$description",
+      async ({ statusCode, errorMessage, logMessage, body }) => {
+        const request = mockRequest({ keyword_id: 1 });
+        const response = await DELETE(request, getContextParams(body));
+
+        await assertErrorResponse(response, statusCode, errorMessage);
+        expect(consoleErrorSpy).toHaveBeenCalledWith(logMessage);
+      }
+    );
   });
 });
