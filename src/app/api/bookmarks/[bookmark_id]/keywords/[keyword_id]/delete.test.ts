@@ -1,7 +1,14 @@
 import ActualDatabase from "better-sqlite3"; // Import the actual library
-import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
+import { NextRequest } from "next/server";
+import { afterEach, beforeEach, describe, expect, it, MockInstance, vi } from "vitest";
 
-import { HTTP_STATUS_NO_CONTENT } from "../../../../../constants/httpStatusCodes";
+import {
+  HTTP_STATUS_BAD_REQUEST,
+  HTTP_STATUS_INTERNAL_SERVER_ERROR,
+  HTTP_STATUS_NO_CONTENT,
+  HTTP_STATUS_NOT_FOUND,
+} from "../../../../../constants/httpStatusCodes";
+import { assertErrorResponse } from "../../../../../test-utils/assertions";
 import {
   GMAIL_BOOKMARK,
   GMAIL_KEYWORD_1,
@@ -11,6 +18,8 @@ import {
 } from "../../../../../test-utils/bookmarkTestUtils";
 import { setupInMemoryDb } from "../../../../../test-utils/db-setup";
 import { API_BOOKMARKS_URL } from "../../../../utils/constants";
+import { ErrorTestCase } from "../../../../utils/types";
+// import { KeywordPostParams } from "../../../../../types/Keyword";
 import { getDb } from "../../../database";
 import { DELETE } from "./route";
 
@@ -98,6 +107,100 @@ describe("ブックマークに設定されているキーワードの解除テ�
           .prepare("SELECT * FROM keywords WHERE keyword_id = ?")
           .get(keywordToUnlink.keyword_id);
         expect(keywordAfter).toBeDefined();
+      }
+    );
+  });
+  describe("異常系テスト", () => {
+    let consoleErrorSpy: MockInstance;
+    beforeEach(() => {
+      // console.errorをスパイして、エラー出力がされるか確認
+      consoleErrorSpy = vi.spyOn(console, "error").mockImplementation(() => {});
+    });
+
+    afterEach(() => {
+      consoleErrorSpy.mockRestore();
+    });
+
+    const errorTestCases: ErrorTestCase<{
+      bookmark_id?: string;
+      keyword_id?: string;
+    }>[] = [
+      {
+        description: "ブックマークIDが存在しない場合、404エラーを返す",
+        statusCode: HTTP_STATUS_NOT_FOUND,
+        errorMessage: "指定されたブックマークに指定されたキーワードが設定されていません。",
+        logMessage: "Bookmark-keyword association not found for bookmark_id: 999 and keyword_id: 1",
+        body: { bookmark_id: "999", keyword_id: "1" },
+      },
+      {
+        description: "ブックマークIDが正の整数でない場合、400エラーを返す",
+        statusCode: HTTP_STATUS_BAD_REQUEST,
+        errorMessage: "IDは正の整数である必要があります。",
+        logMessage: "Invalid ID provided: abc. It must be a positive integer.",
+        body: { bookmark_id: "abc", keyword_id: "1" },
+      },
+      {
+        description: "keyword_idが指定されていない場合、400エラーを返す",
+        statusCode: HTTP_STATUS_BAD_REQUEST,
+        errorMessage: "キーワードを指定してください。",
+        logMessage: "キーワードが指定されていません。",
+        body: {
+          bookmark_id: "1",
+        },
+      },
+      {
+        description: "keyword_idが数値でない場合、400エラーを返す",
+        statusCode: HTTP_STATUS_BAD_REQUEST,
+        errorMessage: "IDは正の整数である必要があります。",
+        logMessage: "Invalid ID provided: abc. It must be a positive integer.",
+        body: { bookmark_id: "1", keyword_id: "abc" },
+      },
+      {
+        description: "keyword_idが負の整数の場合、400エラーを返す",
+        statusCode: HTTP_STATUS_BAD_REQUEST,
+        errorMessage: "IDは正の整数である必要があります。",
+        logMessage: "Invalid ID provided: -1. It must be a positive integer.",
+        body: { bookmark_id: "1", keyword_id: "-1" },
+      },
+      {
+        description: "データベースエラー時に500エラーを返す",
+        statusCode: HTTP_STATUS_INTERNAL_SERVER_ERROR,
+        errorMessage: "サーバー内部でエラーが発生しました。",
+        logMessage: "Internal Server Error: DB error",
+        body: { bookmark_id: "1", keyword_id: "2" },
+        requestBody: { keyword_id: 2 },
+        setup: () => {
+          vi.mocked(getDb).mockImplementation(() => {
+            throw new Error("DB error");
+          });
+        },
+      },
+      {
+        description: "指定されたキーワードがブックマークに紐付いていない場合、404エラーを返す",
+        statusCode: HTTP_STATUS_NOT_FOUND,
+        errorMessage: "指定されたブックマークに指定されたキーワードが設定されていません。",
+        logMessage: "Bookmark-keyword association not found for bookmark_id: 1 and keyword_id: 999",
+        body: { bookmark_id: "1", keyword_id: "999" },
+      },
+    ];
+
+    it.each(errorTestCases)(
+      "$description",
+      async ({ statusCode, errorMessage, logMessage, body, requestBody, setup }) => {
+        if (setup) {
+          setup();
+        }
+
+        const request = {
+          json: async () => Promise.resolve(requestBody),
+        } as NextRequest;
+        const context = {
+          params: Promise.resolve({ bookmark_id: body.bookmark_id, keyword_id: body.keyword_id }),
+        };
+        const response = await DELETE(request, context);
+
+        await assertErrorResponse(response, statusCode, errorMessage);
+        expect(consoleErrorSpy).toHaveBeenCalledWith(logMessage);
       }
     );
   });

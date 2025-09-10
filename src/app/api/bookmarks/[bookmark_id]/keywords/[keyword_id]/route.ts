@@ -6,17 +6,21 @@ import {
   getKeywordIdAsync,
   InvalidBookmarkError,
   InvalidKeywordError,
+  NotExistBookmarkError,
+  NotExistKeywordError,
 } from "../../../../utils/id";
 import {
   createInternalError,
   createInvalidIdError,
+  createNoBookmarkError,
+  createNoKeywordError,
   createNotAssignedKeywordError,
 } from "../../../../utils/response";
 import { getDb } from "../../../database";
 
 export async function DELETE(
   _request: Request,
-  { params }: { params: Promise<{ bookmark_id: string; keyword_id: string }> }
+  { params }: { params: Promise<{ bookmark_id?: string; keyword_id?: string }> }
 ) {
   try {
     const bookmarkId = await getBookmarkIdAsync({ params });
@@ -35,10 +39,16 @@ export async function DELETE(
     return new Response(null, { status: HTTP_STATUS_NO_CONTENT });
   } catch (error: unknown) {
     if (error instanceof InvalidBookmarkError) {
-      return createInvalidIdError({ id: (await params).bookmark_id });
+      return createInvalidIdError({ id: (await params).bookmark_id || "undefined" });
     }
     if (error instanceof InvalidKeywordError) {
-      return createInvalidIdError({ id: (await params).keyword_id });
+      return createInvalidIdError({ id: (await params).keyword_id || "undefined" });
+    }
+    if (error instanceof NotExistBookmarkError) {
+      return createNoBookmarkError();
+    }
+    if (error instanceof NotExistKeywordError) {
+      return createNoKeywordError();
     }
     return createInternalError(error);
   }

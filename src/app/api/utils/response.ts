@@ -118,6 +118,14 @@ export const createNotFoundBookmarkError = (bookmark_id: number) => {
   );
 };
 
+export const createNoBookmarkError = () => {
+  return createErrorResponse(
+    "ブックマークを指定してください。",
+    HTTP_STATUS_BAD_REQUEST,
+    "ブックマークが指定されていません。"
+  );
+};
+
 export const createNoKeywordError = () => {
   return createErrorResponse(
     "キーワードを指定してください。",

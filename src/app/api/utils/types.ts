@@ -7,5 +7,6 @@ export interface ErrorTestCase<T> {
   errorMessage: string;
   logMessage: string | ReturnType<typeof expect.stringContaining>;
   body: T;
+  requestBody?: unknown;
   setup?: () => void;
 }

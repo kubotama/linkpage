@@ -19,6 +19,20 @@ export class InvalidKeywordError extends InvalidIdError {
   }
 }
 
+export class NotExistBookmarkError extends Error {
+  constructor() {
+    super("ブックマークが指定されていません。");
+    this.name = "NotExistBookmarkError";
+  }
+}
+
+export class NotExistKeywordError extends Error {
+  constructor() {
+    super("キーワードが指定されていません。");
+    this.name = "NotExistKeywordError";
+  }
+}
+
 export const getId = (params: { id: string }): number => {
   const id = Number(params.id);
   if (!Number.isInteger(id) || id <= 0) {
@@ -27,22 +41,23 @@ export const getId = (params: { id: string }): number => {
   return id;
 };
 
-const getIdAsync = async <T extends InvalidIdError>(
+const getIdAsync = async <T extends Error>(
   paramsPromise: Promise<{ [key: string]: string }>,
   key: string,
-  ErrorClass: new (id: string | undefined) => T
+  NotExistErrorClass: new () => T,
+  InvalidIdErrorClass: new (id: string | undefined) => T
 ): Promise<number> => {
   let idValue: string | undefined;
   try {
     const params = await paramsPromise;
     idValue = params[key];
     if (idValue === undefined) {
-      throw new ErrorClass(idValue);
+      throw new NotExistErrorClass();
     }
     return getId({ id: idValue });
   } catch (error: unknown) {
     if (error instanceof InvalidIdError) {
-      throw new ErrorClass(idValue);
+      throw new InvalidIdErrorClass(idValue);
     }
     throw error;
   }
@@ -51,15 +66,15 @@ const getIdAsync = async <T extends InvalidIdError>(
 export const getBookmarkIdAsync = async ({
   params,
 }: {
-  params: Promise<{ bookmark_id: string }>;
+  params: Promise<{ bookmark_id?: string }>;
 }): Promise<number> => {
-  return getIdAsync(params, "bookmark_id", InvalidBookmarkError);
+  return getIdAsync(params, "bookmark_id", NotExistBookmarkError, InvalidBookmarkError);
 };
 
 export const getKeywordIdAsync = async ({
   params,
 }: {
-  params: Promise<{ keyword_id: string }>;
+  params: Promise<{ keyword_id?: string }>;
 }): Promise<number> => {
-  return getIdAsync(params, "keyword_id", InvalidKeywordError);
+  return getIdAsync(params, "keyword_id", NotExistKeywordError, InvalidKeywordError);
 };
