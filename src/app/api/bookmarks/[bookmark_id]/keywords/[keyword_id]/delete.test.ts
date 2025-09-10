@@ -133,11 +133,20 @@ describe("ブックマークに設定されているキーワードの解除テ�
         body: { bookmark_id: "999", keyword_id: "1" },
       },
       {
-        description: "ブックマークIDが正の整数でない場合、400エラーを返す",
+        description: "指定されたキーワードがブックマークに紐付いていない場合、404エラーを返す",
+        statusCode: HTTP_STATUS_NOT_FOUND,
+        errorMessage: "指定されたブックマークに指定されたキーワードが設定されていません。",
+        logMessage: "Bookmark-keyword association not found for bookmark_id: 1 and keyword_id: 999",
+        body: { bookmark_id: "1", keyword_id: "999" },
+      },
+      {
+        description: "bookmark_idが指定されていない場合、400エラーを返す",
         statusCode: HTTP_STATUS_BAD_REQUEST,
-        errorMessage: "IDは正の整数である必要があります。",
-        logMessage: "Invalid ID provided: abc. It must be a positive integer.",
-        body: { bookmark_id: "abc", keyword_id: "1" },
+        errorMessage: "ブックマークを指定してください。",
+        logMessage: "ブックマークが指定されていません。",
+        body: {
+          keyword_id: "1",
+        },
       },
       {
         description: "keyword_idが指定されていない場合、400エラーを返す",
@@ -147,6 +156,13 @@ describe("ブックマークに設定されているキーワードの解除テ�
         body: {
           bookmark_id: "1",
         },
+      },
+      {
+        description: "ブックマークIDが正の整数でない場合、400エラーを返す",
+        statusCode: HTTP_STATUS_BAD_REQUEST,
+        errorMessage: "IDは正の整数である必要があります。",
+        logMessage: "Invalid ID provided: abc. It must be a positive integer.",
+        body: { bookmark_id: "abc", keyword_id: "1" },
       },
       {
         description: "keyword_idが数値でない場合、400エラーを返す",
@@ -174,13 +190,6 @@ describe("ブックマークに設定されているキーワードの解除テ�
             throw new Error("DB error");
           });
         },
-      },
-      {
-        description: "指定されたキーワードがブックマークに紐付いていない場合、404エラーを返す",
-        statusCode: HTTP_STATUS_NOT_FOUND,
-        errorMessage: "指定されたブックマークに指定されたキーワードが設定されていません。",
-        logMessage: "Bookmark-keyword association not found for bookmark_id: 1 and keyword_id: 999",
-        body: { bookmark_id: "1", keyword_id: "999" },
       },
     ];
 
