@@ -187,7 +187,6 @@ describe("ブックマークに設定されているキーワードの解除テ�
         errorMessage: "サーバー内部でエラーが発生しました。",
         logMessage: "Internal Server Error: DB error",
         body: { bookmark_id: "1", keyword_id: "2" },
-        requestBody: { keyword_id: 2 },
         setup: () => {
           vi.mocked(getDb).mockImplementation(() => {
             throw new Error("DB error");
@@ -198,14 +197,12 @@ describe("ブックマークに設定されているキーワードの解除テ�
 
     it.each(errorTestCases)(
       "$description",
-      async ({ statusCode, errorMessage, logMessage, body, requestBody, setup }) => {
+      async ({ statusCode, errorMessage, logMessage, body, setup }) => {
         if (setup) {
           setup();
         }
 
-        const request = {
-          json: async () => Promise.resolve(requestBody),
-        } as NextRequest;
+        const request = {} as NextRequest;
         const context = {
           params: Promise.resolve({ bookmark_id: body.bookmark_id, keyword_id: body.keyword_id }),
         };
