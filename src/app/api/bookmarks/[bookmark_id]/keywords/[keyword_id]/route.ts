@@ -1,7 +1,12 @@
 "use server";
 
 import { HTTP_STATUS_NO_CONTENT } from "../../../../../constants/httpStatusCodes";
-import { getBookmarkIdAsync, getKeywordIdAsync, InvalidIdError } from "../../../../utils/id";
+import {
+  getBookmarkIdAsync,
+  getKeywordIdAsync,
+  InvalidBookmarkError,
+  InvalidKeywordError,
+} from "../../../../utils/id";
 import {
   createInternalError,
   createInvalidIdError,
@@ -29,8 +34,11 @@ export async function DELETE(
 
     return new Response(null, { status: HTTP_STATUS_NO_CONTENT });
   } catch (error: unknown) {
-    if (error instanceof InvalidIdError) {
+    if (error instanceof InvalidBookmarkError) {
       return createInvalidIdError({ id: (await params).bookmark_id });
+    }
+    if (error instanceof InvalidKeywordError) {
+      return createInvalidIdError({ id: (await params).keyword_id });
     }
     return createInternalError(error);
   }
