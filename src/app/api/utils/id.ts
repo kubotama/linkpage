@@ -41,7 +41,7 @@ export class NotExistKeywordError extends Error {
 export const getId = (params: { id: string }): number => {
   const id = Number(params.id);
   if (!Number.isInteger(id) || id <= 0) {
-    throw new InvalidIdError(id.toString());
+    throw new InvalidIdError(params.id, `無効なIDです: ${params.id}`);
   }
   return id;
 };
