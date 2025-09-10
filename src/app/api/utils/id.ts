@@ -1,20 +1,25 @@
 export class InvalidIdError extends Error {
-  constructor(message: string = "IDは正の整数である必要があります。") {
+  invalidId: string | undefined;
+  constructor(
+    invalidId: string | undefined,
+    message: string = "IDは正の整数である必要があります。"
+  ) {
     super(message);
     this.name = "InvalidIdError";
+    this.invalidId = invalidId;
   }
 }
 
 export class InvalidBookmarkError extends InvalidIdError {
   constructor(bookmarkId: string | undefined) {
-    super(`無効なブックマークIDです: ${bookmarkId ?? "undefined"}`);
+    super(`無効なブックマークIDです: ${bookmarkId ?? "undefined"}`, bookmarkId);
     this.name = "InvalidBookmarkError";
   }
 }
 
 export class InvalidKeywordError extends InvalidIdError {
   constructor(keywordId: string | undefined) {
-    super(`無効なキーワードIDです: ${keywordId ?? "undefined"}`);
+    super(`無効なキーワードIDです: ${keywordId ?? "undefined"}`, keywordId);
     this.name = "InvalidKeywordError";
   }
 }
@@ -36,7 +41,7 @@ export class NotExistKeywordError extends Error {
 export const getId = (params: { id: string }): number => {
   const id = Number(params.id);
   if (!Number.isInteger(id) || id <= 0) {
-    throw new InvalidIdError();
+    throw new InvalidIdError(id.toString());
   }
   return id;
 };

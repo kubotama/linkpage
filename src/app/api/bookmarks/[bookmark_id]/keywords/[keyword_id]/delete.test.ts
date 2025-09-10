@@ -161,21 +161,24 @@ describe("ブックマークに設定されているキーワードの解除テ�
         description: "ブックマークIDが正の整数でない場合、400エラーを返す",
         statusCode: HTTP_STATUS_BAD_REQUEST,
         errorMessage: "IDは正の整数である必要があります。",
-        logMessage: "Invalid ID provided: abc. It must be a positive integer.",
+        logMessage:
+          "Invalid ID provided: 無効なブックマークIDです: abc. It must be a positive integer.",
         body: { bookmark_id: "abc", keyword_id: "1" },
       },
       {
         description: "keyword_idが数値でない場合、400エラーを返す",
         statusCode: HTTP_STATUS_BAD_REQUEST,
         errorMessage: "IDは正の整数である必要があります。",
-        logMessage: "Invalid ID provided: abc. It must be a positive integer.",
+        logMessage:
+          "Invalid ID provided: 無効なキーワードIDです: abc. It must be a positive integer.",
         body: { bookmark_id: "1", keyword_id: "abc" },
       },
       {
         description: "keyword_idが負の整数の場合、400エラーを返す",
         statusCode: HTTP_STATUS_BAD_REQUEST,
         errorMessage: "IDは正の整数である必要があります。",
-        logMessage: "Invalid ID provided: -1. It must be a positive integer.",
+        logMessage:
+          "Invalid ID provided: 無効なキーワードIDです: -1. It must be a positive integer.",
         body: { bookmark_id: "1", keyword_id: "-1" },
       },
       {

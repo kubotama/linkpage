@@ -4,8 +4,7 @@ import { HTTP_STATUS_NO_CONTENT } from "../../../../../constants/httpStatusCodes
 import {
   getBookmarkIdAsync,
   getKeywordIdAsync,
-  InvalidBookmarkError,
-  InvalidKeywordError,
+  InvalidIdError,
   NotExistBookmarkError,
   NotExistKeywordError,
 } from "../../../../utils/id";
@@ -38,11 +37,8 @@ export async function DELETE(
 
     return new Response(null, { status: HTTP_STATUS_NO_CONTENT });
   } catch (error: unknown) {
-    if (error instanceof InvalidBookmarkError) {
-      return createInvalidIdError({ id: (await params).bookmark_id || "undefined" });
-    }
-    if (error instanceof InvalidKeywordError) {
-      return createInvalidIdError({ id: (await params).keyword_id || "undefined" });
+    if (error instanceof InvalidIdError) {
+      return createInvalidIdError({ id: error.invalidId || "undefined" });
     }
     if (error instanceof NotExistBookmarkError) {
       return createNoBookmarkError();
