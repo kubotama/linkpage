@@ -367,6 +367,8 @@ npm run start
 | 指定されたブックマークとキーワードの関連付けが見つからない | 404 Not Found    | `{ "message": "指定されたブックマークに指定されたキーワードが設定されていません。" }` |
 | `keyword_id` が未指定、または空                            | 400 Bad Request  | `{ "message": "キーワードを指定してください。" }`                                     |
 | `keyword_id` が不正な値                                    | 400 Bad Request  | `{ "message": "ID は正の整数である必要があります。" }`                                |
+| `bookmark_id` が未指定、または空                           | 400 Bad Request  | `{ "message": "ブックマークを指定してください。" }`                                   |
+| `bookmark_id` が不正な値                                   | 400 Bad Request  | `{ "message": "ID は正の整数である必要があります。" }`                                |
 
 #### エラーハンドリングの共通仕様:
 
