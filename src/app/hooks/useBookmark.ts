@@ -105,11 +105,40 @@ export const useBookmarks = () => {
     }
   }, []);
 
+  const unlinkKeyword = useCallback(async (bookmark_id: number, keyword_id: number) => {
+    try {
+      const response = await fetch(`${BOOKMARKS_ENDPOINT}/${bookmark_id}/keywords/${keyword_id}`, {
+        method: "DELETE",
+      });
+
+      if (response.ok) {
+        setBookmarks((currentBookmarks) =>
+          currentBookmarks.map((bookmark) =>
+            bookmark.bookmark_id === bookmark_id
+              ? {
+                  ...bookmark,
+                  keywords: bookmark.keywords.filter(
+                    (keyword) => keyword.keyword_id !== keyword_id
+                  ),
+                }
+              : bookmark
+          )
+        );
+      } else {
+        throw await parseApiError(response);
+      }
+    } catch (error: unknown) {
+      console.error("キーワードの解除エラー:", getErrorMessage(error));
+      throw error;
+    }
+  }, []);
+
   return {
     bookmarks,
     getBookmarks,
     deleteBookmark,
     updateBookmark,
     addKeyword,
+    unlinkKeyword,
   };
 };
