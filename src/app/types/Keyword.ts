@@ -13,5 +13,5 @@ export const isKeyword = (obj: unknown): obj is Keyword => {
 };
 
 export type KeywordPostParams = {
-  params: Promise<{ bookmark_id: string }>;
+  params: Promise<{ bookmark_id: string; keyword_id: string }>;
 };

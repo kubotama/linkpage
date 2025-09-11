@@ -102,11 +102,27 @@ export const createInvalidBodyError = (error: unknown, headers: Record<string, s
   );
 };
 
+export const createNotLinkedKeywordError = (bookmark_id: number, keyword_id: number) => {
+  return createErrorResponse(
+    "指定されたブックマークに指定されたキーワードが設定されていません。",
+    HTTP_STATUS_NOT_FOUND,
+    `Bookmark-keyword association not found for bookmark_id: ${bookmark_id} and keyword_id: ${keyword_id}`
+  );
+};
+
 export const createNotFoundBookmarkError = (bookmark_id: number) => {
   return createErrorResponse(
     "指定されたブックマークがありません。",
     HTTP_STATUS_NOT_FOUND,
     `Bookmark with id: ${bookmark_id} not found.`
+  );
+};
+
+export const createNoBookmarkError = () => {
+  return createErrorResponse(
+    "ブックマークを指定してください。",
+    HTTP_STATUS_BAD_REQUEST,
+    "ブックマークが指定されていません。"
   );
 };
 
