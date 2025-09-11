@@ -102,7 +102,7 @@ export const createInvalidBodyError = (error: unknown, headers: Record<string, s
   );
 };
 
-export const createNotAssignedKeywordError = (bookmark_id: number, keyword_id: number) => {
+export const createNotLinkedKeywordError = (bookmark_id: number, keyword_id: number) => {
   return createErrorResponse(
     "指定されたブックマークに指定されたキーワードが設定されていません。",
     HTTP_STATUS_NOT_FOUND,

@@ -13,7 +13,7 @@ import {
   createInvalidIdError,
   createNoBookmarkError,
   createNoKeywordError,
-  createNotAssignedKeywordError,
+  createNotLinkedKeywordError,
 } from "../../../../utils/response";
 import { getDb } from "../../../database";
 
@@ -32,7 +32,7 @@ export async function DELETE(
     const info = prepare.run(bookmarkId, keywordId);
 
     if (info.changes === 0) {
-      return createNotAssignedKeywordError(bookmarkId, keywordId);
+      return createNotLinkedKeywordError(bookmarkId, keywordId);
     }
 
     return new Response(null, { status: HTTP_STATUS_NO_CONTENT });
