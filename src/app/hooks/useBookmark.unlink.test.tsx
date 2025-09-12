@@ -5,7 +5,6 @@ import { act, renderHook, waitFor } from "@testing-library/react";
 import { BOOKMARKS_ENDPOINT } from "../constants/apiEndpoints";
 import {
   buildMockBookmarksWithKeywords,
-  mockBookmarks,
   GOOGLE_BOOKMARK,
   GOOGLE_KEYWORD_1,
 } from "../test-utils/bookmarkTestUtils";
@@ -66,7 +65,7 @@ describe("useBookmarks - unlinkKeyword", () => {
     });
 
     afterEach(() => {
-      vi.restoreAllMocks();
+      consoleErrorSpy.mockRestore();
     });
 
     const errorTestCase: { description: string; status?: number; errorMessage: string }[] = [
@@ -104,11 +103,12 @@ describe("useBookmarks - unlinkKeyword", () => {
 
     it.each(errorTestCase)("$description", async ({ status, errorMessage }) => {
       // Arrange
-      const bookmarkId = 1;
-      const keywordId = 1;
+      const bookmarkId = GOOGLE_BOOKMARK.bookmark_id;
+      const keywordId = GOOGLE_KEYWORD_1.keyword_id;
+      const mockDataWithKeywords = buildMockBookmarksWithKeywords();
       const logMessage = `ApiError: [${status}] ${errorMessage}`;
       vi.mocked(fetch)
-        .mockResolvedValueOnce(new Response(JSON.stringify(mockBookmarks), { status: 200 }))
+        .mockResolvedValueOnce(new Response(JSON.stringify(mockDataWithKeywords), { status: 200 }))
         .mockResolvedValueOnce(new Response(JSON.stringify({ message: errorMessage }), { status }));
 
       const { result } = renderHook(() => useBookmarks());
@@ -119,7 +119,7 @@ describe("useBookmarks - unlinkKeyword", () => {
       });
 
       // Assert
-      expect(result.current.bookmarks.length).toBe(mockBookmarks.length);
+      expect(result.current.bookmarks.length).toBe(mockDataWithKeywords.length);
 
       // Act & Assert
       await expect(result.current.unlinkKeyword(bookmarkId, keywordId)).rejects.toThrow();
