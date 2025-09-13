@@ -39,13 +39,6 @@ const addNewKeyword = async (user: UserEvent, keyword: string) => {
   await clickButtonByName(user, ADD_BUTTON_ROLE_NAME);
 };
 
-const expectTableRows = (expectRows: number) => {
-  const keywordTable = screen.getByRole("table", { name: TABLE_NAME_KEYWORD });
-  expect(keywordTable).toBeVisible();
-  const rows = within(keywordTable).getAllByRole("row");
-  expect(rows).toHaveLength(expectRows);
-};
-
 const expectRowsAndKeyword = async (expectRows: number, expectKeyword: string) => {
   const keywordTable = await screen.findByRole("table", { name: TABLE_NAME_KEYWORD });
   const keywordInput = await screen.findByRole("textbox", { name: KEYWORD_ROLE_NAME });
@@ -54,8 +47,12 @@ const expectRowsAndKeyword = async (expectRows: number, expectKeyword: string) =
   const rows = await within(keywordTable).findAllByRole("row");
   expect(rows).toHaveLength(expectRows);
   // ヘッダー行を考慮して、2行目のセルにキーワードが表示されることを確認します
-  const newKeywordCell = await within(rows[1]).findByRole("cell");
-  expect(newKeywordCell).toHaveTextContent(expectKeyword);
+  const newKeywordRow = await within(keywordTable).findByRole("row", {
+    name: new RegExp(expectKeyword),
+  });
+  const unlinkButton = await within(newKeywordRow).findByRole("button", { name: "解除" });
+  expect(newKeywordRow).toBeInTheDocument();
+  expect(unlinkButton).toHaveTextContent("解除");
   expect(keywordInput).toHaveValue("");
 };
 
@@ -100,8 +97,6 @@ describe("選択されたブックマークにキーワードを追加", () => {
       bookmarkToSelect = findBookmarkWithAtLeastNKeywords(mockBookmarksWithKeywords, 0);
       await clickBookmark(user, bookmarkToSelect);
       await assertBookmarkIsSelected(bookmarkToSelect);
-
-      expectTableRows(1);
 
       await addNewKeyword(user, keyword);
     });

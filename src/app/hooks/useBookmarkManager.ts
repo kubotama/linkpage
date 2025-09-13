@@ -13,6 +13,7 @@ type UseBookmarkManagerProps = {
   deleteBookmark: (bookmark_id: number) => Promise<void>;
   updateBookmark: (bookmark_id: number, url: string, title: string) => Promise<void>;
   addKeyword: (bookmark_id: number, keyword_name: string) => Promise<void>;
+  unlinkKeyword: (bookmark_id: number, keyword_id: number) => Promise<void>;
 };
 
 export const useBookmarkManager = ({
@@ -21,6 +22,7 @@ export const useBookmarkManager = ({
   deleteBookmark,
   updateBookmark,
   addKeyword,
+  unlinkKeyword,
 }: UseBookmarkManagerProps) => {
   const [textUrl, setTextUrl] = useState("");
   const [textTitle, setTextTitle] = useState("");
@@ -263,6 +265,24 @@ export const useBookmarkManager = ({
     }
   }, [textKeyword, selectedBookmarkId, addKeyword, setMessage, setTextKeyword]);
 
+  const unlinkKeywordClick = useCallback(
+    async (keyword_id: number) => {
+      if (!keyword_id || !selectedBookmarkId) {
+        return;
+      }
+      try {
+        await unlinkKeyword(selectedBookmarkId, keyword_id);
+        setMessage();
+      } catch (error: unknown) {
+        setMessage(
+          getErrorMessage(error, "キーワードの解除中にエラーが発生しました。", false),
+          true
+        );
+      }
+    },
+    [selectedBookmarkId, unlinkKeyword, setMessage]
+  );
+
   return {
     bookmarks,
     textUrl,
@@ -283,5 +303,6 @@ export const useBookmarkManager = ({
     handleErrorClose,
     updateClick,
     addKeywordClick,
+    unlinkKeywordClick,
   };
 };

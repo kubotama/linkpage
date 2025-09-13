@@ -77,17 +77,20 @@ describe("キーワード詳細フォームの表示のテスト", () => {
         await clickBookmark(user, bookmark);
         await assertBookmarkIsSelected(bookmark);
 
-        const keywordTable = await screen.findByRole("table", { name: TABLE_NAME_KEYWORD });
-        const rows = await within(keywordTable).findAllByRole("row");
-        expect(rows).toHaveLength(keywords.length + 1);
+        if (keywords.length > 0) {
+          const keywordTable = await screen.findByRole("table", { name: TABLE_NAME_KEYWORD });
+          const rows = await within(keywordTable).findAllByRole("row");
+          expect(rows).toHaveLength(keywords.length + 1);
 
-        // forEachはasyncなコールバックを待たないので、for...ofループを使用する
-        for (const [index, keyword] of keywords.entries()) {
-          // ヘッダ行の1行を考慮する
-          const row = rows[index + 1];
-          // そのrowのスコープ内でcellをクエリします
-          const cell = await within(row).findByRole("cell");
-          expect(cell).toHaveTextContent(keyword.keyword_name);
+          // forEachはasyncなコールバックを待たないので、for...ofループを使用する
+          for (const [index, keyword] of keywords.entries()) {
+            // ヘッダ行の1行を考慮する
+            const row = rows[index + 1];
+            // そのrowのスコープ内でcellをクエリします
+            const [keywordLabel, unlinkButton] = await within(row).findAllByRole("cell");
+            expect(keywordLabel).toHaveTextContent(keyword.keyword_name);
+            expect(unlinkButton).toHaveTextContent("解除");
+          }
         }
       }
     );
