@@ -95,6 +95,12 @@ export const BookmarkManager = ({ className = "" }: BookmarkManagerProps) => {
                   onChange={(e) => setTextTitle(e.target.value)}
                 />
               </div>
+              <KeywordTable
+                keywords={selectedBookmark.keywords}
+                className="mt-2 w-keyword-list"
+                selectedKeywordId={selectedKeywordId}
+                setSelectedKeywordId={setSelectedKeywordId}
+              />
               <fieldset className="mt-5 flex items-end justify-start border-none p-0">
                 <legend className="sr-only">{FIELDSET_KEYWORD_LABEL}</legend>
                 <BookmarkInputField
@@ -111,12 +117,6 @@ export const BookmarkManager = ({ className = "" }: BookmarkManagerProps) => {
                   </ActionButton>
                 </div>
               </fieldset>
-              <KeywordTable
-                keywords={selectedBookmark.keywords}
-                className="mt-2 w-keyword-list"
-                selectedKeywordId={selectedKeywordId}
-                setSelectedKeywordId={setSelectedKeywordId}
-              />
             </form>
           )}
         </div>
