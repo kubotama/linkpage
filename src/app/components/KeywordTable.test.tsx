@@ -20,15 +20,10 @@ describe("KeywordTableのテスト", () => {
   });
 
   it("キーワードのリストが空の場合、ヘッダー行のみ表示されデータ行は表示されない", () => {
-    render(<KeywordTable keywords={[]} setSelectedKeywordId={mockOnSelectKeyword} />);
-    const keywordTable = screen.getByRole("table", { name: "キーワードのテーブル" });
-    expect(keywordTable).toBeVisible();
-
-    const rows = screen.queryAllByRole("row");
-    expect(rows).toHaveLength(1); // ヘッダー行のみ
-
-    const cells = screen.queryAllByRole("cell");
-    expect(cells).toHaveLength(0); // データセルは存在しない
+    const { container } = render(
+      <KeywordTable keywords={[]} setSelectedKeywordId={mockOnSelectKeyword} />
+    );
+    expect(container.firstChild).toBeNull();
   });
 
   it("キーワードのリストが渡された場合、すべてのキーワードが正しく表示される", () => {
@@ -37,12 +32,16 @@ describe("KeywordTableのテスト", () => {
     expect(keywords.length).toBeGreaterThan(0); // Ensure test data is valid
 
     render(<KeywordTable keywords={keywords} setSelectedKeywordId={mockOnSelectKeyword} />);
-    // `getAllByRole` is used here as we expect rows to be present.
-    const rows = screen.getAllByRole("row");
-    expect(rows).toHaveLength(keywords.length + 1);
+
+    // theadとtbodyはrowgroupロールを持つ
+    const [thead, tbody] = screen.getAllByRole("rowgroup");
+    expect(within(thead).getByRole("row")).toBeInTheDocument();
+
+    const rows = within(tbody).getAllByRole("row");
+    expect(rows).toHaveLength(keywords.length);
 
     keywords.forEach((keyword, index) => {
-      const row = rows[index + 1];
+      const row = rows[index];
       const cell = within(row).getByRole("cell");
       expect(cell).toHaveTextContent(keyword.keyword_name);
     });

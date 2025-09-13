@@ -4,7 +4,6 @@ import {
   BASE_CELL_STYLE,
   ROW_STYLE_DEFAULT,
   ROW_STYLE_KEYWORD_SELECTED,
-  TABLE_NAME_KEYWORD,
 } from "../constants/constants";
 import { useKeywordTable } from "../hooks/useKeywordTable";
 import { Keyword } from "../types/Keyword";
@@ -21,17 +20,21 @@ export const KeywordTable = ({
   className,
   selectedKeywordId,
   setSelectedKeywordId,
-}: KeywordTableProps): React.ReactElement => {
+}: KeywordTableProps): React.ReactElement | null => {
   const { handleSelectKeyword } = useKeywordTable({
     selectedKeywordId,
     setSelectedKeywordId,
   });
 
+  if (keywords.length === 0) {
+    return null;
+  }
+
   return (
-    <table aria-label={TABLE_NAME_KEYWORD} className={className}>
-      <thead className="sr-only">
+    <table className={className}>
+      <thead>
         <tr>
-          <th scope="col">キーワード</th>
+          <th scope="col">キーワード一覧</th>
         </tr>
       </thead>
       <tbody>
