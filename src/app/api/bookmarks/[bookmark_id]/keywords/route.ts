@@ -1,7 +1,7 @@
 import { SqliteError } from "better-sqlite3";
 
 import { HTTP_STATUS_CREATED } from "../../../../constants/httpStatusCodes";
-import { isKeyword, KeywordPostParams } from "../../../../types/Keyword";
+import { isKeyword } from "../../../../types/Keyword";
 import { getId, InvalidIdError } from "../../../utils/id";
 import {
   createDuplicateKeywordAssociationError,
@@ -38,7 +38,7 @@ const getOrCreateKeyword = (name: string): number => {
   throw new Error(`Failed to get or create keyword '${name}'.`);
 };
 
-export async function POST(request: Request, { params }: KeywordPostParams) {
+export async function POST(request: Request, params: Promise<{ bookmark_id: string }>) {
   let bookmark_id: string;
   try {
     // Next.jsが提供するparamsのPromiseを解決する

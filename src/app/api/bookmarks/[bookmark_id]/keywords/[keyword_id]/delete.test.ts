@@ -19,7 +19,6 @@ import {
 import { setupInMemoryDb } from "../../../../../test-utils/db-setup";
 import { API_BOOKMARKS_URL } from "../../../../utils/constants";
 import { ErrorTestCase } from "../../../../utils/types";
-// import { KeywordPostParams } from "../../../../../types/Keyword";
 import { getDb } from "../../../database";
 import { DELETE } from "./route";
 

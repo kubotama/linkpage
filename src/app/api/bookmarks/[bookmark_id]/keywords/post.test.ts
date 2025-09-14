@@ -11,7 +11,7 @@ import {
 } from "../../../../constants/httpStatusCodes";
 import { assertErrorResponse } from "../../../../test-utils/assertions";
 import { setupInMemoryDb } from "../../../../test-utils/db-setup";
-import { isKeyword, KeywordPostParams } from "../../../../types/Keyword";
+import { isKeyword } from "../../../../types/Keyword";
 import { ErrorTestCase } from "../../../utils/types";
 import { getDb } from "../../database";
 
@@ -20,10 +20,8 @@ let POST: typeof import("./route").POST; // POST関数の型を宣言
 
 let inMemoryDbInstance: ActualDatabase.Database;
 
-const getPostParams = (bookmark_id: string): KeywordPostParams => {
-  return {
-    params: Promise.resolve({ bookmark_id }),
-  };
+const getPostParams = (bookmark_id: string): Promise<{ bookmark_id: string }> => {
+  return Promise.resolve({ bookmark_id });
 };
 
 describe("POST /api/bookmarks/[bookmark_id]/keywords", () => {
