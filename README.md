@@ -478,26 +478,6 @@ linkpage はリンクデータを SQLite のデータベースで管理します
 
 - `README.md` にキーワード解除 API (`DELETE /bookmarks/[bookmark_id]/keywords/[keyword_id]`) の仕様と変更履歴を追記しました。
 
-### 2025/09/10
-
-#### 新機能
-
-- **キーワード解除 API の実装**: `DELETE /api/bookmarks/[bookmark_id]/keywords/[keyword_id]` を追加し、ブックマークとキーワードの関連付けを削除できるようになりました。
-  - 削除成功時は `204 No Content` を返します。
-  - 関連付けが存在しない場合は `404 Not Found` を返します。
-
-#### 機能改善・リファクタリング
-
-- **エラーハンドリングの強化**:
-  - ID が URL パラメータで指定されない（`undefined`）場合を新たに検知し、適切なエラーレスポンスを返すようにしました。
-  - これまで汎用的だった ID 検証エラーを、`InvalidBookmarkError` と `InvalidKeywordError` に分離し、エラーの原因を特定しやすくしました。
-  - ID 未指定時にスローされる `NotExistBookmarkError` と `NotExistKeywordError` を新設しました。
-- **ID 検証ロジックの改善**:
-  - ID の取得と検証を非同期で行う汎用ヘルパー関数 `getIdAsync` を導入し、コードの重複を削減しました。
-- **テストの拡充と改善**:
-  - キーワード解除 API について、パラメータ不足、不正な ID、DB エラーなど、様々な異常系シナリオを網羅するテストケースを追加しました。
-  - `it.each` を活用してテストコードをリファクタリングし、可読性と保守性を向上させました。
-
 ### 2025/09/07
 
 - useBookmarkManager から状態管理を分離
