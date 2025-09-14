@@ -46,11 +46,11 @@ export const KeywordTable = ({
       </thead>
       <tbody>
         {keywords.map((keyword) => (
-          <tr key={keyword.keyword_id} className="cursor-pointer">
+          <tr key={keyword.keyword_id}>
             <td
               onClick={() => handleSelectKeyword(keyword.keyword_id)}
               data-testid={`keyword-row-${keyword.keyword_id}`}
-              className={`text-sm w-keyword-input ${BASE_CELL_STYLE} ${
+              className={`text-sm w-keyword-input cursor-pointer ${BASE_CELL_STYLE} ${
                 selectedKeywordId === keyword.keyword_id
                   ? ROW_STYLE_KEYWORD_SELECTED
                   : ROW_STYLE_DEFAULT
