@@ -5,6 +5,8 @@ import {
   HTTP_STATUS_NOT_FOUND,
 } from "../../constants/httpStatusCodes";
 
+import { InvalidIdError } from "./id";
+
 const ensureError = (error: unknown): Error =>
   error instanceof Error ? error : new Error(String(error));
 
@@ -29,11 +31,12 @@ export const createErrorResponse = (
 };
 
 // 共通のInvalidIdErrorハンドラー
-export function createInvalidIdError(params: { id: string }) {
+export function createInvalidIdError(error: InvalidIdError) {
+  const errorMessage = error.message || "IDは正の整数である必要があります。";
   return createErrorResponse(
-    "IDは正の整数である必要があります。",
+    errorMessage,
     HTTP_STATUS_BAD_REQUEST,
-    `Invalid ID provided: ${params.id}. It must be a positive integer.`
+    `Invalid ID provided: ${error.invalidId ?? "undefined"}. It must be a positive integer.`
   );
 }
 

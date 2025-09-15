@@ -60,7 +60,7 @@ export async function GET(
     });
   } catch (error: unknown) {
     if (error instanceof InvalidIdError) {
-      return createInvalidIdError({ id: (await params).bookmark_id });
+      return createInvalidIdError(error);
     }
     return createInternalError(error);
   }
@@ -97,7 +97,7 @@ export async function PUT(
       return createDuplicateBookmarkError(bookmark.url);
     }
     if (error instanceof InvalidIdError) {
-      return createInvalidIdError({ id: (await params).bookmark_id });
+      return createInvalidIdError(error);
     }
     return createInternalError(error);
   }
@@ -119,7 +119,7 @@ export async function DELETE(
     return new Response(null, { status: HTTP_STATUS_NO_CONTENT });
   } catch (error: unknown) {
     if (error instanceof InvalidIdError) {
-      return createInvalidIdError({ id: (await params).bookmark_id });
+      return createInvalidIdError(error);
     }
     return createInternalError(error);
   }

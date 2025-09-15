@@ -244,11 +244,7 @@ describe("ブックマーク更新APIのテスト (オンメモリDB)", () => {
       });
 
       // レスポンスステータスを確認 (400: Bad Request)
-      await assertErrorResponse(
-        response,
-        HTTP_STATUS_BAD_REQUEST,
-        "IDは正の整数である必要があります。"
-      );
+      await assertErrorResponse(response, HTTP_STATUS_BAD_REQUEST, "無効なブックマークIDです: ");
       expect(consoleErrorSpy).toHaveBeenCalledWith(
         "Invalid ID provided: . It must be a positive integer."
       );
@@ -276,7 +272,7 @@ describe("ブックマーク更新APIのテスト (オンメモリDB)", () => {
       await assertErrorResponse(
         response,
         HTTP_STATUS_BAD_REQUEST,
-        "IDは正の整数である必要があります。"
+        "無効なブックマークIDです: invalid id"
       );
       expect(consoleErrorSpy).toHaveBeenCalledWith(
         "Invalid ID provided: invalid id. It must be a positive integer."

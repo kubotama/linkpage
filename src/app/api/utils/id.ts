@@ -12,14 +12,14 @@ export class InvalidIdError extends Error {
 
 export class InvalidBookmarkError extends InvalidIdError {
   constructor(bookmarkId: string | undefined) {
-    super(`無効なブックマークIDです: ${bookmarkId ?? "undefined"}`, bookmarkId);
+    super(bookmarkId, `無効なブックマークIDです: ${bookmarkId ?? "undefined"}`);
     this.name = "InvalidBookmarkError";
   }
 }
 
 export class InvalidKeywordError extends InvalidIdError {
   constructor(keywordId: string | undefined) {
-    super(`無効なキーワードIDです: ${keywordId ?? "undefined"}`, keywordId);
+    super(keywordId, `無効なキーワードIDです: ${keywordId ?? "undefined"}`);
     this.name = "InvalidKeywordError";
   }
 }
@@ -50,7 +50,7 @@ const getIdAsync = async <T extends Error>(
   paramsPromise: Promise<{ [key: string]: string }>,
   key: string,
   NotExistErrorClass: new () => T,
-  InvalidIdErrorClass: new (id: string | undefined) => T
+  InvalidIdErrorClass: new (id: string | undefined, message?: string) => T
 ): Promise<number> => {
   let idValue: string | undefined;
   try {
@@ -62,7 +62,7 @@ const getIdAsync = async <T extends Error>(
     return getId({ id: idValue });
   } catch (error: unknown) {
     if (error instanceof InvalidIdError) {
-      throw new InvalidIdErrorClass(idValue);
+      throw new InvalidIdErrorClass(idValue, error.message);
     }
     throw error;
   }

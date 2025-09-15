@@ -55,7 +55,7 @@ export async function POST(request: Request, params: Promise<{ bookmark_id: stri
     bookmarkId = getId({ id: bookmark_id });
   } catch (error) {
     if (error instanceof InvalidIdError) {
-      return createInvalidIdError({ id: bookmark_id });
+      return createInvalidIdError(error);
     }
     return createInternalError(error);
   }

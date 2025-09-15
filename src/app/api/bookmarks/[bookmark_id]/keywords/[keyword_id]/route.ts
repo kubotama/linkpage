@@ -38,7 +38,7 @@ export async function DELETE(
     return new Response(null, { status: HTTP_STATUS_NO_CONTENT });
   } catch (error: unknown) {
     if (error instanceof InvalidIdError) {
-      return createInvalidIdError({ id: error.invalidId ?? "undefined" });
+      return createInvalidIdError(error);
     }
     if (error instanceof NotExistBookmarkError) {
       return createNoBookmarkError();

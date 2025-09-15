@@ -85,7 +85,7 @@ describe("キーワードDELETE APIのテスト", () => {
         description: "不正なIDを指定した場合",
         keywordId: "abc",
         statusCode: HTTP_STATUS_BAD_REQUEST,
-        errorMessage: "IDは正の整数である必要があります。",
+        errorMessage: "無効なキーワードIDです: abc",
         logMessage: "Invalid ID provided: abc. It must be a positive integer.",
         setup: undefined,
       },
