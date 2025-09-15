@@ -2,7 +2,11 @@ import { beforeEach, describe, expect, it, vi } from "vitest";
 
 import { act, renderHook, waitFor } from "@testing-library/react";
 
-import { LINKPAGE_BOOKMARK, mockBookmarks } from "../test-utils/bookmarkTestUtils";
+import {
+  GOOGLE_KEYWORD_1,
+  LINKPAGE_BOOKMARK,
+  mockBookmarks,
+} from "../test-utils/bookmarkTestUtils";
 import { Bookmark } from "../types/Bookmark";
 import { useBookmarkManager } from "./useBookmarkManager";
 
@@ -12,6 +16,7 @@ describe("useBookmarkManager", () => {
   let deleteBookmark: (bookmark_id: number) => Promise<void>;
   let updateBookmark: (bookmark_id: number, url: string, title: string) => Promise<void>;
   let addKeyword: (bookmark_id: number, keyword_name: string) => Promise<void>;
+  let unlinkKeyword: (bookmark_id: number, keyword_id: number) => Promise<void>;
 
   beforeEach(() => {
     bookmarks = mockBookmarks;
@@ -19,12 +24,20 @@ describe("useBookmarkManager", () => {
     deleteBookmark = vi.fn();
     updateBookmark = vi.fn();
     addKeyword = vi.fn();
+    unlinkKeyword = vi.fn();
   });
 
   // フックをレンダリングするヘルパー関数
   const renderMyHook = () => {
     return renderHook(() =>
-      useBookmarkManager({ bookmarks, getBookmarks, deleteBookmark, updateBookmark, addKeyword })
+      useBookmarkManager({
+        bookmarks,
+        getBookmarks,
+        deleteBookmark,
+        updateBookmark,
+        addKeyword,
+        unlinkKeyword,
+      })
     );
   };
 
@@ -177,6 +190,51 @@ describe("useBookmarkManager", () => {
       expect(result.current.textTitle).toBe(LINKPAGE_BOOKMARK.title);
 
       // エラーメッセージとキーワードの選択されたブックマーク
+      expect(result.current.textMessage).toBe("");
+      expect(result.current.selectedBookmarkId).toBe(LINKPAGE_BOOKMARK.bookmark_id);
+    });
+  });
+
+  it("ブックマークを選択しないでキーワードを解除しようとしてもunlinkKeywordは呼び出されない", async () => {
+    const { result } = renderMyHook();
+
+    act(() => {
+      result.current.setSelectedBookmarkId(undefined);
+      result.current.unlinkKeywordClick(GOOGLE_KEYWORD_1.keyword_id);
+    });
+
+    await waitFor(() => {
+      expect(unlinkKeyword).toHaveBeenCalledTimes(0);
+    });
+  });
+
+  it("ブックマークを選択してキーワードを解除するとunlinkKeywordが呼び出される", async () => {
+    const { result } = renderMyHook();
+
+    // 1. ブックマークを選択する
+    act(() => {
+      result.current.setSelectedBookmarkId(LINKPAGE_BOOKMARK.bookmark_id);
+    });
+
+    // 2. ブックマーク選択による副作用(useEffect)が完了し、フォームが更新されるのを待つ
+    await waitFor(() => {
+      expect(result.current.textUrl).toBe(LINKPAGE_BOOKMARK.url);
+    });
+
+    // 3. キーワード解除をクリックする
+    act(() => {
+      result.current.unlinkKeywordClick(GOOGLE_KEYWORD_1.keyword_id);
+    });
+
+    // 4. 結果を検証する
+    await waitFor(() => {
+      // unlinkKeywordの呼び出し
+      expect(unlinkKeyword).toHaveBeenCalledWith(
+        LINKPAGE_BOOKMARK.bookmark_id,
+        GOOGLE_KEYWORD_1.keyword_id
+      );
+
+      // エラーメッセージと選択されたブックマーク
       expect(result.current.textMessage).toBe("");
       expect(result.current.selectedBookmarkId).toBe(LINKPAGE_BOOKMARK.bookmark_id);
     });

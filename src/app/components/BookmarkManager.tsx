@@ -23,7 +23,8 @@ type BookmarkManagerProps = {
 };
 
 export const BookmarkManager = ({ className = "" }: BookmarkManagerProps) => {
-  const { bookmarks, getBookmarks, deleteBookmark, updateBookmark, addKeyword } = useBookmarks();
+  const { bookmarks, getBookmarks, deleteBookmark, updateBookmark, addKeyword, unlinkKeyword } =
+    useBookmarks();
 
   const {
     isError,
@@ -44,7 +45,15 @@ export const BookmarkManager = ({ className = "" }: BookmarkManagerProps) => {
     handleErrorClose,
     updateClick,
     addKeywordClick,
-  } = useBookmarkManager({ bookmarks, getBookmarks, deleteBookmark, updateBookmark, addKeyword });
+    unlinkKeywordClick,
+  } = useBookmarkManager({
+    bookmarks,
+    getBookmarks,
+    deleteBookmark,
+    updateBookmark,
+    addKeyword,
+    unlinkKeyword,
+  });
 
   const selectedBookmark = useMemo(
     () => bookmarks.find((b) => b.bookmark_id === selectedBookmarkId),
@@ -95,6 +104,13 @@ export const BookmarkManager = ({ className = "" }: BookmarkManagerProps) => {
                   onChange={(e) => setTextTitle(e.target.value)}
                 />
               </div>
+              <KeywordTable
+                keywords={selectedBookmark.keywords}
+                className="mt-2 w-keyword-list"
+                selectedKeywordId={selectedKeywordId}
+                setSelectedKeywordId={setSelectedKeywordId}
+                unlinkKeywordClick={unlinkKeywordClick}
+              />
               <fieldset className="mt-5 flex items-end justify-start border-none p-0">
                 <legend className="sr-only">{FIELDSET_KEYWORD_LABEL}</legend>
                 <BookmarkInputField
@@ -111,12 +127,6 @@ export const BookmarkManager = ({ className = "" }: BookmarkManagerProps) => {
                   </ActionButton>
                 </div>
               </fieldset>
-              <KeywordTable
-                keywords={selectedBookmark.keywords}
-                className="mt-2 w-keyword-list"
-                selectedKeywordId={selectedKeywordId}
-                setSelectedKeywordId={setSelectedKeywordId}
-              />
             </form>
           )}
         </div>
