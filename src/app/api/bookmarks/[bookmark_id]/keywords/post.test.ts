@@ -150,7 +150,7 @@ describe("POST /api/bookmarks/[bookmark_id]/keywords", () => {
       {
         description: "不正なIDの場合は400エラーを返す",
         statusCode: HTTP_STATUS_BAD_REQUEST,
-        errorMessage: "無効なIDです: abc",
+        errorMessage: "無効なブックマークIDです: abc",
         logMessage: "Invalid ID provided: abc. It must be a positive integer.",
         body: "abc",
       },

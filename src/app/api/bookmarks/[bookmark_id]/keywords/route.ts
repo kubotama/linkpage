@@ -2,7 +2,7 @@ import { SqliteError } from "better-sqlite3";
 
 import { HTTP_STATUS_CREATED } from "../../../../constants/httpStatusCodes";
 import { isKeyword } from "../../../../types/Keyword";
-import { getId, InvalidIdError } from "../../../utils/id";
+import { getBookmarkIdAsync, InvalidIdError } from "../../../utils/id";
 import {
   createDuplicateKeywordAssociationError,
   createInternalError,
@@ -39,20 +39,10 @@ const getOrCreateKeyword = (name: string): number => {
 };
 
 export async function POST(request: Request, params: Promise<{ bookmark_id: string }>) {
-  let bookmark_id: string;
-  try {
-    // Next.jsが提供するparamsのPromiseを解決する
-    ({ bookmark_id } = await params);
-  } catch (error) {
-    // paramsのPromiseがリジェクトされるという稀なケースをハンドル
-    console.error("Failed to resolve route params:", error);
-    return createInternalError(new Error("Failed to resolve route params"));
-  }
-
   let bookmarkId: number;
   try {
     // IDの検証
-    bookmarkId = getId({ id: bookmark_id });
+    bookmarkId = await getBookmarkIdAsync({ params });
   } catch (error) {
     if (error instanceof InvalidIdError) {
       return createInvalidIdError(error);
