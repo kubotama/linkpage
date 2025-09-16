@@ -50,7 +50,7 @@ const getIdAsync = async <T extends Error>(
   paramsPromise: Promise<{ [key: string]: string }>,
   key: string,
   NotExistErrorClass: new () => T,
-  InvalidIdErrorClass: new (id: string | undefined, message?: string) => T
+  InvalidIdErrorClass: new (id: string | undefined) => T
 ): Promise<number> => {
   let idValue: string | undefined;
   try {
@@ -62,7 +62,7 @@ const getIdAsync = async <T extends Error>(
     return getId({ id: idValue });
   } catch (error: unknown) {
     if (error instanceof InvalidIdError) {
-      throw new InvalidIdErrorClass(idValue, error.message);
+      throw new InvalidIdErrorClass(idValue);
     }
     throw error;
   }
