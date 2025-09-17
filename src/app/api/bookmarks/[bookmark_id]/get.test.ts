@@ -71,7 +71,7 @@ describe("ブックマークを1件取得するAPIのテスト", () => {
       {
         description: "不正なIDの場合400エラーを返す",
         statusCode: HTTP_STATUS_BAD_REQUEST,
-        errorMessage: "IDは正の整数である必要があります。",
+        errorMessage: "無効なブックマークIDです: abc",
         logMessage: "Invalid ID provided: abc. It must be a positive integer.",
         body: "abc",
       },

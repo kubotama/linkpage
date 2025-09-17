@@ -121,7 +121,7 @@ describe("ブックマーク削除APIのテスト (オンメモリDB)", () => {
       {
         description: "不正なIDの場合に400エラーを返す",
         statusCode: HTTP_STATUS_BAD_REQUEST,
-        errorMessage: "IDは正の整数である必要があります。",
+        errorMessage: "無効なブックマークIDです: -1",
         logMessage: "Invalid ID provided: -1. It must be a positive integer.",
         body: "-1",
       },
