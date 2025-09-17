@@ -45,9 +45,11 @@ export const KeywordTable = ({
       <thead>
         <tr>
           <th scope="col">{headerText}</th>
-          <th scope="col" className="sr-only">
-            操作
-          </th>
+          {rowActionButton && (
+            <th scope="col" className="sr-only">
+              操作
+            </th>
+          )}
         </tr>
       </thead>
       <tbody>
