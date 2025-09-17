@@ -9,7 +9,7 @@ import {
   ADD_BUTTON_ROLE_NAME,
   FIELDSET_KEYWORD_LABEL,
   KEYWORD_ROLE_NAME,
-  TABLE_NAME_KEYWORD,
+  TABLE_NAME_LINKED_KEYWORD,
 } from "../../constants/constants";
 import { HTTP_STATUS_OK } from "../../constants/httpStatusCodes";
 import {
@@ -78,7 +78,9 @@ describe("キーワード詳細フォームの表示のテスト", () => {
         await assertBookmarkIsSelected(bookmark);
 
         if (keywords.length > 0) {
-          const keywordTable = await screen.findByRole("table", { name: TABLE_NAME_KEYWORD });
+          const keywordTable = await screen.findByRole("table", {
+            name: TABLE_NAME_LINKED_KEYWORD,
+          });
           const rows = await within(keywordTable).findAllByRole("row");
           expect(rows).toHaveLength(keywords.length + 1);
 

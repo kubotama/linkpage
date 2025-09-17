@@ -9,7 +9,7 @@ import { BOOKMARKS_ENDPOINT } from "../../constants/apiEndpoints";
 import {
   ADD_BUTTON_ROLE_NAME,
   KEYWORD_ROLE_NAME,
-  TABLE_NAME_KEYWORD,
+  TABLE_NAME_LINKED_KEYWORD,
 } from "../../constants/constants";
 import {
   HTTP_STATUS_BAD_REQUEST,
@@ -40,7 +40,7 @@ const addNewKeyword = async (user: UserEvent, keyword: string) => {
 };
 
 const expectRowsAndKeyword = async (expectRows: number, expectKeyword: string) => {
-  const keywordTable = await screen.findByRole("table", { name: TABLE_NAME_KEYWORD });
+  const keywordTable = await screen.findByRole("table", { name: TABLE_NAME_LINKED_KEYWORD });
   const keywordInput = await screen.findByRole("textbox", { name: KEYWORD_ROLE_NAME });
 
   expect(keywordTable).toBeVisible();
@@ -131,7 +131,9 @@ describe("選択されたブックマークにキーワードを追加", () => {
         // 検証
         // キーワードのテーブルが表示されていないことを確認
         await waitFor(() =>
-          expect(screen.queryByRole("table", { name: TABLE_NAME_KEYWORD })).not.toBeInTheDocument()
+          expect(
+            screen.queryByRole("table", { name: TABLE_NAME_LINKED_KEYWORD })
+          ).not.toBeInTheDocument()
         );
       });
 
@@ -194,7 +196,7 @@ describe("選択されたブックマークにキーワードを追加", () => {
           consoleErrorSpy,
           errorMessage,
         });
-        const keywordTable = screen.getByRole("table", { name: TABLE_NAME_KEYWORD });
+        const keywordTable = screen.getByRole("table", { name: TABLE_NAME_LINKED_KEYWORD });
         expect(within(keywordTable).queryByText(newKeyword)).not.toBeInTheDocument();
       });
     });

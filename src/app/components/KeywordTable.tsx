@@ -4,7 +4,6 @@ import {
   BASE_CELL_STYLE,
   ROW_STYLE_DEFAULT,
   ROW_STYLE_KEYWORD_SELECTED,
-  TABLE_NAME_KEYWORD,
 } from "../constants/constants";
 import { useKeywordTable } from "../hooks/useKeywordTable";
 import { Keyword } from "../types/Keyword";
@@ -13,10 +12,11 @@ import { ActionButton } from "./ActionButton";
 type KeywordTableProps = {
   keywords?: Keyword[];
   className?: string;
+  labelText: string;
   headerText: string;
   selectedKeywordId?: number;
   setSelectedKeywordId: (keywordId: number | undefined) => void;
-  rowActionButton: {
+  rowActionButton?: {
     label: string;
     onClick: (keywordId: number) => void;
   };
@@ -25,10 +25,11 @@ type KeywordTableProps = {
 export const KeywordTable = ({
   keywords = [],
   className,
+  labelText,
   headerText,
   selectedKeywordId,
   setSelectedKeywordId,
-  rowActionButton,
+  rowActionButton = undefined,
 }: KeywordTableProps): React.ReactElement | null => {
   const { handleSelectKeyword } = useKeywordTable({
     selectedKeywordId,
@@ -40,7 +41,7 @@ export const KeywordTable = ({
   }
 
   return (
-    <table aria-label={TABLE_NAME_KEYWORD} className={className}>
+    <table aria-label={labelText} className={className}>
       <thead>
         <tr>
           <th scope="col">{headerText}</th>
@@ -63,14 +64,16 @@ export const KeywordTable = ({
             >
               {keyword.keyword_name}
             </td>
-            <td>
-              <ActionButton
-                className="w-auto"
-                onClick={() => rowActionButton.onClick(keyword.keyword_id)}
-              >
-                {rowActionButton.label}
-              </ActionButton>
-            </td>
+            {rowActionButton && (
+              <td>
+                <ActionButton
+                  className="w-auto"
+                  onClick={() => rowActionButton.onClick(keyword.keyword_id)}
+                >
+                  {rowActionButton.label}
+                </ActionButton>
+              </td>
+            )}
           </tr>
         ))}
       </tbody>

@@ -9,7 +9,8 @@ export const FORM_BOOKMARK_DETAIL = "ブックマーク詳細フォーム";
 export const FIELDSET_KEYWORD_LABEL = "キーワード入力";
 export const KEYWORD_ROLE_NAME = "キーワード";
 export const ADD_BUTTON_ROLE_NAME = "追加";
-export const TABLE_NAME_KEYWORD = "キーワードのテーブル";
+export const TABLE_NAME_LINKED_KEYWORD = "設定されたキーワードのテーブル";
+export const TABLE_HEADER_LINKED_KEYWORD = "設定されているキーワード";
 
 export const TABLE_NAME_BOOKMARKS = "ブックマークのテーブル";
 

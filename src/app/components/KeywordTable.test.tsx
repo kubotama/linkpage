@@ -5,7 +5,11 @@ import { beforeEach, describe, expect, it, vi } from "vitest";
 import { render, screen, within } from "@testing-library/react";
 import userEvent, { UserEvent } from "@testing-library/user-event";
 
-import { ROW_STYLE_KEYWORD_SELECTED } from "../constants/constants";
+import {
+  ROW_STYLE_KEYWORD_SELECTED,
+  TABLE_NAME_LINKED_KEYWORD,
+  TABLE_HEADER_LINKED_KEYWORD,
+} from "../constants/constants";
 import {
   buildMockBookmarksWithKeywords,
   findBookmarkWithAtLeastNKeywords,
@@ -25,7 +29,8 @@ describe("KeywordTableのテスト", () => {
     const { container } = render(
       <KeywordTable
         keywords={[]}
-        headerText="設定されているキーワード"
+        headerText={TABLE_HEADER_LINKED_KEYWORD}
+        labelText={TABLE_NAME_LINKED_KEYWORD}
         setSelectedKeywordId={mockOnSelectKeyword}
         rowActionButton={{
           label: "解除",
@@ -44,7 +49,8 @@ describe("KeywordTableのテスト", () => {
     render(
       <KeywordTable
         keywords={keywords}
-        headerText="設定されているキーワード"
+        headerText={TABLE_HEADER_LINKED_KEYWORD}
+        labelText={TABLE_NAME_LINKED_KEYWORD}
         setSelectedKeywordId={mockOnSelectKeyword}
         rowActionButton={{
           label: "解除",
@@ -83,7 +89,8 @@ describe("KeywordTableのテスト", () => {
       render(
         <KeywordTable
           keywords={keywords}
-          headerText="設定されているキーワード"
+          headerText={TABLE_HEADER_LINKED_KEYWORD}
+          labelText={TABLE_NAME_LINKED_KEYWORD}
           setSelectedKeywordId={mockOnSelectKeyword}
           rowActionButton={{
             label: "解除",
@@ -112,7 +119,8 @@ describe("KeywordTableのテスト", () => {
       render(
         <KeywordTable
           keywords={keywords}
-          headerText="設定されているキーワード"
+          headerText={TABLE_HEADER_LINKED_KEYWORD}
+          labelText={TABLE_NAME_LINKED_KEYWORD}
           setSelectedKeywordId={mockOnSelectKeyword}
           selectedKeywordId={selectedKeyword.keyword_id}
           rowActionButton={{
@@ -139,7 +147,8 @@ describe("KeywordTableのテスト", () => {
       render(
         <KeywordTable
           keywords={keywords}
-          headerText="設定されているキーワード"
+          headerText={TABLE_HEADER_LINKED_KEYWORD}
+          labelText={TABLE_NAME_LINKED_KEYWORD}
           setSelectedKeywordId={mockOnSelectKeyword}
           selectedKeywordId={selectedKeyword.keyword_id}
           rowActionButton={{
@@ -177,7 +186,8 @@ describe("KeywordTableのテスト", () => {
       render(
         <KeywordTable
           keywords={keywords}
-          headerText="設定されているキーワード"
+          headerText={TABLE_HEADER_LINKED_KEYWORD}
+          labelText={TABLE_NAME_LINKED_KEYWORD}
           setSelectedKeywordId={mockOnSelectKeyword}
           rowActionButton={{
             label: "解除",
