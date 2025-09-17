@@ -5,7 +5,12 @@ import { beforeEach, describe, expect, it, vi } from "vitest";
 import { render, screen, within } from "@testing-library/react";
 import userEvent, { UserEvent } from "@testing-library/user-event";
 
-import { ROW_STYLE_KEYWORD_SELECTED } from "../constants/constants";
+import {
+  ROW_STYLE_KEYWORD_SELECTED,
+  TABLE_NAME_LINKED_KEYWORD,
+  TABLE_HEADER_LINKED_KEYWORD,
+  UNLINK_BUTTON_ROLE_NAME,
+} from "../constants/constants";
 import {
   buildMockBookmarksWithKeywords,
   findBookmarkWithAtLeastNKeywords,
@@ -25,8 +30,13 @@ describe("KeywordTableのテスト", () => {
     const { container } = render(
       <KeywordTable
         keywords={[]}
+        headerText={TABLE_HEADER_LINKED_KEYWORD}
+        labelText={TABLE_NAME_LINKED_KEYWORD}
         setSelectedKeywordId={mockOnSelectKeyword}
-        unlinkKeywordClick={mockOnUnlinkKeyword}
+        rowActionButton={{
+          label: UNLINK_BUTTON_ROLE_NAME,
+          onClick: mockOnUnlinkKeyword,
+        }}
       />
     );
     expect(container.firstChild).toBeNull();
@@ -40,8 +50,13 @@ describe("KeywordTableのテスト", () => {
     render(
       <KeywordTable
         keywords={keywords}
+        headerText={TABLE_HEADER_LINKED_KEYWORD}
+        labelText={TABLE_NAME_LINKED_KEYWORD}
         setSelectedKeywordId={mockOnSelectKeyword}
-        unlinkKeywordClick={mockOnUnlinkKeyword}
+        rowActionButton={{
+          label: UNLINK_BUTTON_ROLE_NAME,
+          onClick: mockOnUnlinkKeyword,
+        }}
       />
     );
 
@@ -56,7 +71,7 @@ describe("KeywordTableのテスト", () => {
       const row = rows[index];
       const [keywordLabel, unlinkButton] = within(row).getAllByRole("cell");
       expect(keywordLabel).toHaveTextContent(keyword.keyword_name);
-      expect(unlinkButton).toHaveTextContent("解除");
+      expect(unlinkButton).toHaveTextContent(UNLINK_BUTTON_ROLE_NAME);
     });
   });
 
@@ -72,12 +87,16 @@ describe("KeywordTableのテスト", () => {
       const keywords = bookmarkToSelect.keywords;
       expect(keywords.length).toBeGreaterThan(0); // Ensure test data is valid
 
-      // prettier-ignore
       render(
         <KeywordTable
           keywords={keywords}
+          headerText={TABLE_HEADER_LINKED_KEYWORD}
+          labelText={TABLE_NAME_LINKED_KEYWORD}
           setSelectedKeywordId={mockOnSelectKeyword}
-          unlinkKeywordClick={mockOnUnlinkKeyword}
+          rowActionButton={{
+            label: UNLINK_BUTTON_ROLE_NAME,
+            onClick: mockOnUnlinkKeyword,
+          }}
         />
       );
 
@@ -99,12 +118,16 @@ describe("KeywordTableのテスト", () => {
       const otherKeyword = keywords[1];
 
       render(
-        // prettier-ignore
         <KeywordTable
           keywords={keywords}
+          headerText={TABLE_HEADER_LINKED_KEYWORD}
+          labelText={TABLE_NAME_LINKED_KEYWORD}
           setSelectedKeywordId={mockOnSelectKeyword}
           selectedKeywordId={selectedKeyword.keyword_id}
-          unlinkKeywordClick={mockOnUnlinkKeyword}
+          rowActionButton={{
+            label: UNLINK_BUTTON_ROLE_NAME,
+            onClick: mockOnUnlinkKeyword,
+          }}
         />
       );
 
@@ -123,12 +146,16 @@ describe("KeywordTableのテスト", () => {
       const selectedKeyword = keywords[0];
 
       render(
-        // prettier-ignore
         <KeywordTable
           keywords={keywords}
+          headerText={TABLE_HEADER_LINKED_KEYWORD}
+          labelText={TABLE_NAME_LINKED_KEYWORD}
           setSelectedKeywordId={mockOnSelectKeyword}
           selectedKeywordId={selectedKeyword.keyword_id}
-          unlinkKeywordClick={mockOnUnlinkKeyword}
+          rowActionButton={{
+            label: UNLINK_BUTTON_ROLE_NAME,
+            onClick: mockOnUnlinkKeyword,
+          }}
         />
       );
 
@@ -160,12 +187,17 @@ describe("KeywordTableのテスト", () => {
       render(
         <KeywordTable
           keywords={keywords}
+          headerText={TABLE_HEADER_LINKED_KEYWORD}
+          labelText={TABLE_NAME_LINKED_KEYWORD}
           setSelectedKeywordId={mockOnSelectKeyword}
-          unlinkKeywordClick={mockOnUnlinkKeyword}
+          rowActionButton={{
+            label: UNLINK_BUTTON_ROLE_NAME,
+            onClick: mockOnUnlinkKeyword,
+          }}
         />
       );
 
-      const unlinkButton = screen.getAllByRole("button", { name: "解除" })[0];
+      const unlinkButton = screen.getAllByRole("button", { name: UNLINK_BUTTON_ROLE_NAME })[0];
       await user.click(unlinkButton);
 
       expect(mockOnUnlinkKeyword).toHaveBeenCalledWith(keywordToUnlink.keyword_id);

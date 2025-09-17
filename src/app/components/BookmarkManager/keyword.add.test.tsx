@@ -9,7 +9,8 @@ import { BOOKMARKS_ENDPOINT } from "../../constants/apiEndpoints";
 import {
   ADD_BUTTON_ROLE_NAME,
   KEYWORD_ROLE_NAME,
-  TABLE_NAME_KEYWORD,
+  TABLE_NAME_LINKED_KEYWORD,
+  UNLINK_BUTTON_ROLE_NAME,
 } from "../../constants/constants";
 import {
   HTTP_STATUS_BAD_REQUEST,
@@ -40,7 +41,7 @@ const addNewKeyword = async (user: UserEvent, keyword: string) => {
 };
 
 const expectRowsAndKeyword = async (expectRows: number, expectKeyword: string) => {
-  const keywordTable = await screen.findByRole("table", { name: TABLE_NAME_KEYWORD });
+  const keywordTable = await screen.findByRole("table", { name: TABLE_NAME_LINKED_KEYWORD });
   const keywordInput = await screen.findByRole("textbox", { name: KEYWORD_ROLE_NAME });
 
   expect(keywordTable).toBeVisible();
@@ -50,9 +51,11 @@ const expectRowsAndKeyword = async (expectRows: number, expectKeyword: string) =
   const newKeywordRow = await within(keywordTable).findByRole("row", {
     name: new RegExp(expectKeyword),
   });
-  const unlinkButton = await within(newKeywordRow).findByRole("button", { name: "解除" });
+  const unlinkButton = await within(newKeywordRow).findByRole("button", {
+    name: UNLINK_BUTTON_ROLE_NAME,
+  });
   expect(newKeywordRow).toBeInTheDocument();
-  expect(unlinkButton).toHaveTextContent("解除");
+  expect(unlinkButton).toHaveTextContent(UNLINK_BUTTON_ROLE_NAME);
   expect(keywordInput).toHaveValue("");
 };
 
@@ -131,7 +134,9 @@ describe("選択されたブックマークにキーワードを追加", () => {
         // 検証
         // キーワードのテーブルが表示されていないことを確認
         await waitFor(() =>
-          expect(screen.queryByRole("table", { name: TABLE_NAME_KEYWORD })).not.toBeInTheDocument()
+          expect(
+            screen.queryByRole("table", { name: TABLE_NAME_LINKED_KEYWORD })
+          ).not.toBeInTheDocument()
         );
       });
 
@@ -194,7 +199,7 @@ describe("選択されたブックマークにキーワードを追加", () => {
           consoleErrorSpy,
           errorMessage,
         });
-        const keywordTable = screen.getByRole("table", { name: TABLE_NAME_KEYWORD });
+        const keywordTable = screen.getByRole("table", { name: TABLE_NAME_LINKED_KEYWORD });
         expect(within(keywordTable).queryByText(newKeyword)).not.toBeInTheDocument();
       });
     });

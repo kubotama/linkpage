@@ -4,7 +4,6 @@ import {
   BASE_CELL_STYLE,
   ROW_STYLE_DEFAULT,
   ROW_STYLE_KEYWORD_SELECTED,
-  TABLE_NAME_KEYWORD,
 } from "../constants/constants";
 import { useKeywordTable } from "../hooks/useKeywordTable";
 import { Keyword } from "../types/Keyword";
@@ -13,17 +12,24 @@ import { ActionButton } from "./ActionButton";
 type KeywordTableProps = {
   keywords?: Keyword[];
   className?: string;
+  labelText: string;
+  headerText: string;
   selectedKeywordId?: number;
   setSelectedKeywordId: (keywordId: number | undefined) => void;
-  unlinkKeywordClick: (keywordId: number) => void;
+  rowActionButton?: {
+    label: string;
+    onClick: (keywordId: number) => void;
+  };
 };
 
 export const KeywordTable = ({
   keywords = [],
   className,
+  labelText,
+  headerText,
   selectedKeywordId,
   setSelectedKeywordId,
-  unlinkKeywordClick,
+  rowActionButton,
 }: KeywordTableProps): React.ReactElement | null => {
   const { handleSelectKeyword } = useKeywordTable({
     selectedKeywordId,
@@ -35,13 +41,15 @@ export const KeywordTable = ({
   }
 
   return (
-    <table aria-label={TABLE_NAME_KEYWORD} className={className}>
+    <table aria-label={labelText} className={className}>
       <thead>
         <tr>
-          <th scope="col">キーワード一覧</th>
-          <th scope="col" className="sr-only">
-            操作
-          </th>
+          <th scope="col">{headerText}</th>
+          {rowActionButton && (
+            <th scope="col" className="sr-only">
+              操作
+            </th>
+          )}
         </tr>
       </thead>
       <tbody>
@@ -58,14 +66,16 @@ export const KeywordTable = ({
             >
               {keyword.keyword_name}
             </td>
-            <td>
-              <ActionButton
-                className="w-auto"
-                onClick={() => unlinkKeywordClick(keyword.keyword_id)}
-              >
-                解除
-              </ActionButton>
-            </td>
+            {rowActionButton && (
+              <td>
+                <ActionButton
+                  className="w-auto"
+                  onClick={() => rowActionButton.onClick(keyword.keyword_id)}
+                >
+                  {rowActionButton.label}
+                </ActionButton>
+              </td>
+            )}
           </tr>
         ))}
       </tbody>

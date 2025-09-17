@@ -9,7 +9,8 @@ import {
   ADD_BUTTON_ROLE_NAME,
   FIELDSET_KEYWORD_LABEL,
   KEYWORD_ROLE_NAME,
-  TABLE_NAME_KEYWORD,
+  TABLE_NAME_LINKED_KEYWORD,
+  UNLINK_BUTTON_ROLE_NAME,
 } from "../../constants/constants";
 import { HTTP_STATUS_OK } from "../../constants/httpStatusCodes";
 import {
@@ -78,7 +79,9 @@ describe("キーワード詳細フォームの表示のテスト", () => {
         await assertBookmarkIsSelected(bookmark);
 
         if (keywords.length > 0) {
-          const keywordTable = await screen.findByRole("table", { name: TABLE_NAME_KEYWORD });
+          const keywordTable = await screen.findByRole("table", {
+            name: TABLE_NAME_LINKED_KEYWORD,
+          });
           const rows = await within(keywordTable).findAllByRole("row");
           expect(rows).toHaveLength(keywords.length + 1);
 
@@ -89,7 +92,7 @@ describe("キーワード詳細フォームの表示のテスト", () => {
             // そのrowのスコープ内でcellをクエリします
             const [keywordLabel, unlinkButton] = await within(row).findAllByRole("cell");
             expect(keywordLabel).toHaveTextContent(keyword.keyword_name);
-            expect(unlinkButton).toHaveTextContent("解除");
+            expect(unlinkButton).toHaveTextContent(UNLINK_BUTTON_ROLE_NAME);
           }
         }
       }

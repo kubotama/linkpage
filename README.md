@@ -442,6 +442,23 @@ linkpage はリンクデータを SQLite のデータベースで管理します
 
 ## 変更履歴
 
+### 2025/09/17
+
+#### 変更内容
+
+- `KeywordTable`コンポーネントの props を変更しました。
+  - `headerText: string` を必須の prop として追加しました。
+  - `unlinkKeywordClick` prop を削除しました。
+  - 代わりに、`rowActionButton: { label: string, onClick: (id) => void }` を新しい prop として追加しました。
+- 上記の変更に伴い、`BookmarkManager`コンポーネントと関連するテストコードを更新しました。
+
+#### 破壊的変更 (BREAKING CHANGE) ⚠️
+
+このプルリクエストには破壊的変更が含まれます。
+
+- `unlinkKeywordClick` prop は削除されました。代わりに`rowActionButton` prop を使用してください。
+- `headerText` prop が必須になりました。テーブルのヘッダーに表示するテキストを指定する必要があります。
+
 ### 2025/09/13
 
 #### ✨ 新機能

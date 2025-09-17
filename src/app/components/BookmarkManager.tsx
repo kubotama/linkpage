@@ -8,6 +8,9 @@ import {
   FORM_BOOKMARK_DETAIL,
   KEYWORD_ROLE_NAME,
   PARAMETER_BUTTON_ROLE_NAME,
+  TABLE_HEADER_LINKED_KEYWORD,
+  TABLE_NAME_LINKED_KEYWORD,
+  UNLINK_BUTTON_ROLE_NAME,
   UPDATE_BUTTON_ROLE_NAME,
 } from "../constants/constants";
 import { useBookmarks } from "../hooks/useBookmark";
@@ -107,9 +110,14 @@ export const BookmarkManager = ({ className = "" }: BookmarkManagerProps) => {
               <KeywordTable
                 keywords={selectedBookmark.keywords}
                 className="mt-2 w-keyword-list"
+                labelText={TABLE_NAME_LINKED_KEYWORD}
+                headerText={TABLE_HEADER_LINKED_KEYWORD}
                 selectedKeywordId={selectedKeywordId}
                 setSelectedKeywordId={setSelectedKeywordId}
-                unlinkKeywordClick={unlinkKeywordClick}
+                rowActionButton={{
+                  label: UNLINK_BUTTON_ROLE_NAME,
+                  onClick: unlinkKeywordClick,
+                }}
               />
               <fieldset className="mt-5 flex items-end justify-start border-none p-0">
                 <legend className="sr-only">{FIELDSET_KEYWORD_LABEL}</legend>
