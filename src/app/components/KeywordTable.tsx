@@ -13,17 +13,22 @@ import { ActionButton } from "./ActionButton";
 type KeywordTableProps = {
   keywords?: Keyword[];
   className?: string;
+  headerText: string;
   selectedKeywordId?: number;
   setSelectedKeywordId: (keywordId: number | undefined) => void;
-  unlinkKeywordClick: (keywordId: number) => void;
+  rowActionButton: {
+    label: string;
+    onClick: (keywordId: number) => void;
+  };
 };
 
 export const KeywordTable = ({
   keywords = [],
   className,
+  headerText,
   selectedKeywordId,
   setSelectedKeywordId,
-  unlinkKeywordClick,
+  rowActionButton,
 }: KeywordTableProps): React.ReactElement | null => {
   const { handleSelectKeyword } = useKeywordTable({
     selectedKeywordId,
@@ -38,7 +43,7 @@ export const KeywordTable = ({
     <table aria-label={TABLE_NAME_KEYWORD} className={className}>
       <thead>
         <tr>
-          <th scope="col">キーワード一覧</th>
+          <th scope="col">{headerText}</th>
           <th scope="col" className="sr-only">
             操作
           </th>
@@ -61,9 +66,9 @@ export const KeywordTable = ({
             <td>
               <ActionButton
                 className="w-auto"
-                onClick={() => unlinkKeywordClick(keyword.keyword_id)}
+                onClick={() => rowActionButton.onClick(keyword.keyword_id)}
               >
-                解除
+                {rowActionButton.label}
               </ActionButton>
             </td>
           </tr>

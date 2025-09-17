@@ -25,8 +25,12 @@ describe("KeywordTableのテスト", () => {
     const { container } = render(
       <KeywordTable
         keywords={[]}
+        headerText="設定されているキーワード"
         setSelectedKeywordId={mockOnSelectKeyword}
-        unlinkKeywordClick={mockOnUnlinkKeyword}
+        rowActionButton={{
+          label: "解除",
+          onClick: mockOnUnlinkKeyword,
+        }}
       />
     );
     expect(container.firstChild).toBeNull();
@@ -40,8 +44,12 @@ describe("KeywordTableのテスト", () => {
     render(
       <KeywordTable
         keywords={keywords}
+        headerText="設定されているキーワード"
         setSelectedKeywordId={mockOnSelectKeyword}
-        unlinkKeywordClick={mockOnUnlinkKeyword}
+        rowActionButton={{
+          label: "解除",
+          onClick: mockOnUnlinkKeyword,
+        }}
       />
     );
 
@@ -72,12 +80,15 @@ describe("KeywordTableのテスト", () => {
       const keywords = bookmarkToSelect.keywords;
       expect(keywords.length).toBeGreaterThan(0); // Ensure test data is valid
 
-      // prettier-ignore
       render(
         <KeywordTable
           keywords={keywords}
+          headerText="設定されているキーワード"
           setSelectedKeywordId={mockOnSelectKeyword}
-          unlinkKeywordClick={mockOnUnlinkKeyword}
+          rowActionButton={{
+            label: "解除",
+            onClick: mockOnUnlinkKeyword,
+          }}
         />
       );
 
@@ -99,12 +110,15 @@ describe("KeywordTableのテスト", () => {
       const otherKeyword = keywords[1];
 
       render(
-        // prettier-ignore
         <KeywordTable
           keywords={keywords}
+          headerText="設定されているキーワード"
           setSelectedKeywordId={mockOnSelectKeyword}
           selectedKeywordId={selectedKeyword.keyword_id}
-          unlinkKeywordClick={mockOnUnlinkKeyword}
+          rowActionButton={{
+            label: "解除",
+            onClick: mockOnUnlinkKeyword,
+          }}
         />
       );
 
@@ -123,12 +137,15 @@ describe("KeywordTableのテスト", () => {
       const selectedKeyword = keywords[0];
 
       render(
-        // prettier-ignore
         <KeywordTable
           keywords={keywords}
+          headerText="設定されているキーワード"
           setSelectedKeywordId={mockOnSelectKeyword}
           selectedKeywordId={selectedKeyword.keyword_id}
-          unlinkKeywordClick={mockOnUnlinkKeyword}
+          rowActionButton={{
+            label: "解除",
+            onClick: mockOnUnlinkKeyword,
+          }}
         />
       );
 
@@ -160,8 +177,12 @@ describe("KeywordTableのテスト", () => {
       render(
         <KeywordTable
           keywords={keywords}
+          headerText="設定されているキーワード"
           setSelectedKeywordId={mockOnSelectKeyword}
-          unlinkKeywordClick={mockOnUnlinkKeyword}
+          rowActionButton={{
+            label: "解除",
+            onClick: mockOnUnlinkKeyword,
+          }}
         />
       );
 

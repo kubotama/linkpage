@@ -107,9 +107,13 @@ export const BookmarkManager = ({ className = "" }: BookmarkManagerProps) => {
               <KeywordTable
                 keywords={selectedBookmark.keywords}
                 className="mt-2 w-keyword-list"
+                headerText="設定されているキーワード"
                 selectedKeywordId={selectedKeywordId}
                 setSelectedKeywordId={setSelectedKeywordId}
-                unlinkKeywordClick={unlinkKeywordClick}
+                rowActionButton={{
+                  label: "解除",
+                  onClick: unlinkKeywordClick,
+                }}
               />
               <fieldset className="mt-5 flex items-end justify-start border-none p-0">
                 <legend className="sr-only">{FIELDSET_KEYWORD_LABEL}</legend>
