@@ -24,6 +24,7 @@ describe("useBookmarkManager › SSE", () => {
   let deleteBookmark: (bookmark_id: number) => Promise<void>;
   let updateBookmark: (bookmark_id: number, url: string, title: string) => Promise<void>;
   let addKeyword: (bookmark_id: number, keyword_name: string) => Promise<void>;
+  let unlinkKeyword: (bookmark_id: number, keyword_id: number) => Promise<void>;
 
   beforeEach(() => {
     // 各テストの前にモックとインスタンスリストをリセット
@@ -34,6 +35,7 @@ describe("useBookmarkManager › SSE", () => {
     deleteBookmark = vi.fn();
     updateBookmark = vi.fn();
     addKeyword = vi.fn();
+    unlinkKeyword = vi.fn();
   });
 
   afterEach(() => {
@@ -43,7 +45,14 @@ describe("useBookmarkManager › SSE", () => {
   // フックをレンダリングするヘルパー関数
   const renderMyHook = () => {
     return renderHook(() =>
-      useBookmarkManager({ bookmarks, getBookmarks, deleteBookmark, updateBookmark, addKeyword })
+      useBookmarkManager({
+        bookmarks,
+        getBookmarks,
+        deleteBookmark,
+        updateBookmark,
+        addKeyword,
+        unlinkKeyword,
+      })
     );
   };
 
