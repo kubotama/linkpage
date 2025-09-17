@@ -29,7 +29,7 @@ export const KeywordTable = ({
   headerText,
   selectedKeywordId,
   setSelectedKeywordId,
-  rowActionButton = undefined,
+  rowActionButton,
 }: KeywordTableProps): React.ReactElement | null => {
   const { handleSelectKeyword } = useKeywordTable({
     selectedKeywordId,
