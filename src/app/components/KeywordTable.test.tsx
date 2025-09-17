@@ -9,6 +9,7 @@ import {
   ROW_STYLE_KEYWORD_SELECTED,
   TABLE_NAME_LINKED_KEYWORD,
   TABLE_HEADER_LINKED_KEYWORD,
+  UNLINK_BUTTON_ROLE_NAME,
 } from "../constants/constants";
 import {
   buildMockBookmarksWithKeywords,
@@ -33,7 +34,7 @@ describe("KeywordTableのテスト", () => {
         labelText={TABLE_NAME_LINKED_KEYWORD}
         setSelectedKeywordId={mockOnSelectKeyword}
         rowActionButton={{
-          label: "解除",
+          label: UNLINK_BUTTON_ROLE_NAME,
           onClick: mockOnUnlinkKeyword,
         }}
       />
@@ -53,7 +54,7 @@ describe("KeywordTableのテスト", () => {
         labelText={TABLE_NAME_LINKED_KEYWORD}
         setSelectedKeywordId={mockOnSelectKeyword}
         rowActionButton={{
-          label: "解除",
+          label: UNLINK_BUTTON_ROLE_NAME,
           onClick: mockOnUnlinkKeyword,
         }}
       />
@@ -70,7 +71,7 @@ describe("KeywordTableのテスト", () => {
       const row = rows[index];
       const [keywordLabel, unlinkButton] = within(row).getAllByRole("cell");
       expect(keywordLabel).toHaveTextContent(keyword.keyword_name);
-      expect(unlinkButton).toHaveTextContent("解除");
+      expect(unlinkButton).toHaveTextContent(UNLINK_BUTTON_ROLE_NAME);
     });
   });
 
@@ -93,7 +94,7 @@ describe("KeywordTableのテスト", () => {
           labelText={TABLE_NAME_LINKED_KEYWORD}
           setSelectedKeywordId={mockOnSelectKeyword}
           rowActionButton={{
-            label: "解除",
+            label: UNLINK_BUTTON_ROLE_NAME,
             onClick: mockOnUnlinkKeyword,
           }}
         />
@@ -124,7 +125,7 @@ describe("KeywordTableのテスト", () => {
           setSelectedKeywordId={mockOnSelectKeyword}
           selectedKeywordId={selectedKeyword.keyword_id}
           rowActionButton={{
-            label: "解除",
+            label: UNLINK_BUTTON_ROLE_NAME,
             onClick: mockOnUnlinkKeyword,
           }}
         />
@@ -152,7 +153,7 @@ describe("KeywordTableのテスト", () => {
           setSelectedKeywordId={mockOnSelectKeyword}
           selectedKeywordId={selectedKeyword.keyword_id}
           rowActionButton={{
-            label: "解除",
+            label: UNLINK_BUTTON_ROLE_NAME,
             onClick: mockOnUnlinkKeyword,
           }}
         />
@@ -190,13 +191,13 @@ describe("KeywordTableのテスト", () => {
           labelText={TABLE_NAME_LINKED_KEYWORD}
           setSelectedKeywordId={mockOnSelectKeyword}
           rowActionButton={{
-            label: "解除",
+            label: UNLINK_BUTTON_ROLE_NAME,
             onClick: mockOnUnlinkKeyword,
           }}
         />
       );
 
-      const unlinkButton = screen.getAllByRole("button", { name: "解除" })[0];
+      const unlinkButton = screen.getAllByRole("button", { name: UNLINK_BUTTON_ROLE_NAME })[0];
       await user.click(unlinkButton);
 
       expect(mockOnUnlinkKeyword).toHaveBeenCalledWith(keywordToUnlink.keyword_id);

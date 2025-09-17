@@ -10,6 +10,7 @@ import {
   PARAMETER_BUTTON_ROLE_NAME,
   TABLE_HEADER_LINKED_KEYWORD,
   TABLE_NAME_LINKED_KEYWORD,
+  UNLINK_BUTTON_ROLE_NAME,
   UPDATE_BUTTON_ROLE_NAME,
 } from "../constants/constants";
 import { useBookmarks } from "../hooks/useBookmark";
@@ -114,7 +115,7 @@ export const BookmarkManager = ({ className = "" }: BookmarkManagerProps) => {
                 selectedKeywordId={selectedKeywordId}
                 setSelectedKeywordId={setSelectedKeywordId}
                 rowActionButton={{
-                  label: "解除",
+                  label: UNLINK_BUTTON_ROLE_NAME,
                   onClick: unlinkKeywordClick,
                 }}
               />

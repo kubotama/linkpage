@@ -10,6 +10,7 @@ import {
   FIELDSET_KEYWORD_LABEL,
   KEYWORD_ROLE_NAME,
   TABLE_NAME_LINKED_KEYWORD,
+  UNLINK_BUTTON_ROLE_NAME,
 } from "../../constants/constants";
 import { HTTP_STATUS_OK } from "../../constants/httpStatusCodes";
 import {
@@ -91,7 +92,7 @@ describe("キーワード詳細フォームの表示のテスト", () => {
             // そのrowのスコープ内でcellをクエリします
             const [keywordLabel, unlinkButton] = await within(row).findAllByRole("cell");
             expect(keywordLabel).toHaveTextContent(keyword.keyword_name);
-            expect(unlinkButton).toHaveTextContent("解除");
+            expect(unlinkButton).toHaveTextContent(UNLINK_BUTTON_ROLE_NAME);
           }
         }
       }

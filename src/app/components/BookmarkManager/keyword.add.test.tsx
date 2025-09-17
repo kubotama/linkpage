@@ -10,6 +10,7 @@ import {
   ADD_BUTTON_ROLE_NAME,
   KEYWORD_ROLE_NAME,
   TABLE_NAME_LINKED_KEYWORD,
+  UNLINK_BUTTON_ROLE_NAME,
 } from "../../constants/constants";
 import {
   HTTP_STATUS_BAD_REQUEST,
@@ -50,9 +51,11 @@ const expectRowsAndKeyword = async (expectRows: number, expectKeyword: string) =
   const newKeywordRow = await within(keywordTable).findByRole("row", {
     name: new RegExp(expectKeyword),
   });
-  const unlinkButton = await within(newKeywordRow).findByRole("button", { name: "解除" });
+  const unlinkButton = await within(newKeywordRow).findByRole("button", {
+    name: UNLINK_BUTTON_ROLE_NAME,
+  });
   expect(newKeywordRow).toBeInTheDocument();
-  expect(unlinkButton).toHaveTextContent("解除");
+  expect(unlinkButton).toHaveTextContent(UNLINK_BUTTON_ROLE_NAME);
   expect(keywordInput).toHaveValue("");
 };
 
