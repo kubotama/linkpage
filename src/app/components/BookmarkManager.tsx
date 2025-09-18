@@ -74,6 +74,14 @@ export const BookmarkManager = ({ className = "" }: BookmarkManagerProps) => {
     [bookmarks, selectedBookmarkId]
   );
 
+  const availableKeywords = useMemo(() => {
+    if (!selectedBookmark) {
+      return keywords;
+    }
+    const linkedKeywordIds = new Set(selectedBookmark.keywords.map((k) => k.keyword_id));
+    return keywords.filter((k) => !linkedKeywordIds.has(k.keyword_id));
+  }, [keywords, selectedBookmark]);
+
   return (
     <div className={`mt-5 mb-5 ${className}`}>
       <div className="flex space-x-4">
@@ -149,7 +157,7 @@ export const BookmarkManager = ({ className = "" }: BookmarkManagerProps) => {
             </form>
           )}
           <KeywordTable
-            keywords={keywords}
+            keywords={availableKeywords}
             className="mt-2 w-keyword-list"
             labelText={TABLE_NAME_ALL_KEYWORD}
             headerText={TABLE_HEADER_ALL_KEYWORD}
