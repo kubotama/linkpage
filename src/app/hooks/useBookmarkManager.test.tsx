@@ -13,6 +13,7 @@ import { useBookmarkManager } from "./useBookmarkManager";
 describe("useBookmarkManager", () => {
   let bookmarks: Bookmark[];
   let getBookmarks: () => Promise<void>;
+  let getKeywords: () => Promise<void>;
   let deleteBookmark: (bookmark_id: number) => Promise<void>;
   let updateBookmark: (bookmark_id: number, url: string, title: string) => Promise<void>;
   let addKeyword: (bookmark_id: number, keyword_name: string) => Promise<void>;
@@ -21,6 +22,7 @@ describe("useBookmarkManager", () => {
   beforeEach(() => {
     bookmarks = mockBookmarks;
     getBookmarks = vi.fn();
+    getKeywords = vi.fn();
     deleteBookmark = vi.fn();
     updateBookmark = vi.fn();
     addKeyword = vi.fn();
@@ -33,6 +35,7 @@ describe("useBookmarkManager", () => {
       useBookmarkManager({
         bookmarks,
         getBookmarks,
+        getKeywords,
         deleteBookmark,
         updateBookmark,
         addKeyword,

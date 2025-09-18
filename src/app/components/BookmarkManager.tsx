@@ -26,8 +26,15 @@ type BookmarkManagerProps = {
 };
 
 export const BookmarkManager = ({ className = "" }: BookmarkManagerProps) => {
-  const { bookmarks, getBookmarks, deleteBookmark, updateBookmark, addKeyword, unlinkKeyword } =
-    useBookmarks();
+  const {
+    bookmarks,
+    getBookmarks,
+    getKeywords,
+    deleteBookmark,
+    updateBookmark,
+    addKeyword,
+    unlinkKeyword,
+  } = useBookmarks();
 
   const {
     isError,
@@ -52,6 +59,7 @@ export const BookmarkManager = ({ className = "" }: BookmarkManagerProps) => {
   } = useBookmarkManager({
     bookmarks,
     getBookmarks,
+    getKeywords,
     deleteBookmark,
     updateBookmark,
     addKeyword,
