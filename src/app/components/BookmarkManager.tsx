@@ -75,7 +75,7 @@ export const BookmarkManager = ({ className = "" }: BookmarkManagerProps) => {
   );
 
   const availableKeywords = useMemo(() => {
-    if (!selectedBookmark) {
+    if (!selectedBookmark?.keywords) {
       return keywords;
     }
     const linkedKeywordIds = new Set(selectedBookmark.keywords.map((k) => k.keyword_id));
