@@ -28,6 +28,7 @@ type BookmarkManagerProps = {
 export const BookmarkManager = ({ className = "" }: BookmarkManagerProps) => {
   const {
     bookmarks,
+    keywords,
     getBookmarks,
     getKeywords,
     deleteBookmark,
@@ -145,6 +146,14 @@ export const BookmarkManager = ({ className = "" }: BookmarkManagerProps) => {
               </fieldset>
             </form>
           )}
+          <KeywordTable
+            keywords={keywords}
+            className="mt-2 w-keyword-list"
+            labelText={TABLE_NAME_LINKED_KEYWORD}
+            headerText={TABLE_HEADER_LINKED_KEYWORD}
+            selectedKeywordId={selectedKeywordId}
+            setSelectedKeywordId={setSelectedKeywordId}
+          />
         </div>
       </div>
     </div>
