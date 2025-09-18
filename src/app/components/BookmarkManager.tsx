@@ -8,8 +8,10 @@ import {
   FORM_BOOKMARK_DETAIL,
   KEYWORD_ROLE_NAME,
   PARAMETER_BUTTON_ROLE_NAME,
+  TABLE_HEADER_ALL_KEYWORD,
   TABLE_HEADER_LINKED_KEYWORD,
   TABLE_NAME_LINKED_KEYWORD,
+  TABLE_NAME_ALL_KEYWORD,
   UNLINK_BUTTON_ROLE_NAME,
   UPDATE_BUTTON_ROLE_NAME,
 } from "../constants/constants";
@@ -26,8 +28,16 @@ type BookmarkManagerProps = {
 };
 
 export const BookmarkManager = ({ className = "" }: BookmarkManagerProps) => {
-  const { bookmarks, getBookmarks, deleteBookmark, updateBookmark, addKeyword, unlinkKeyword } =
-    useBookmarks();
+  const {
+    bookmarks,
+    keywords,
+    getBookmarks,
+    getKeywords,
+    deleteBookmark,
+    updateBookmark,
+    addKeyword,
+    unlinkKeyword,
+  } = useBookmarks();
 
   const {
     isError,
@@ -52,6 +62,7 @@ export const BookmarkManager = ({ className = "" }: BookmarkManagerProps) => {
   } = useBookmarkManager({
     bookmarks,
     getBookmarks,
+    getKeywords,
     deleteBookmark,
     updateBookmark,
     addKeyword,
@@ -137,6 +148,14 @@ export const BookmarkManager = ({ className = "" }: BookmarkManagerProps) => {
               </fieldset>
             </form>
           )}
+          <KeywordTable
+            keywords={keywords}
+            className="mt-2 w-keyword-list"
+            labelText={TABLE_NAME_ALL_KEYWORD}
+            headerText={TABLE_HEADER_ALL_KEYWORD}
+            selectedKeywordId={selectedKeywordId}
+            setSelectedKeywordId={setSelectedKeywordId}
+          />
         </div>
       </div>
     </div>

@@ -5,7 +5,7 @@ import { beforeEach, describe, expect, it, vi } from "vitest";
 import { render, screen } from "@testing-library/react";
 
 import Home from "./page";
-import { mockBookmarks } from "./test-utils/bookmarkTestUtils";
+import { mockBookmarks, mockKeywords } from "./test-utils/bookmarkTestUtils";
 
 import { HTTP_STATUS_OK } from "./constants/httpStatusCodes";
 
@@ -22,6 +22,11 @@ describe("テスト環境を動作確認するためのサンプルのテスト"
       ok: true,
       status: HTTP_STATUS_OK,
       json: async () => mockBookmarks,
+    });
+    mockFetch.mockResolvedValueOnce({
+      ok: true,
+      status: HTTP_STATUS_OK,
+      json: async () => mockKeywords,
     });
     render(<Home />);
     const urlInput = await screen.findByText("kubotama/linkpage");

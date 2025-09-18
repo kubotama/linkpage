@@ -10,6 +10,7 @@ import { useErrorMessage } from "./useErrorMessage";
 type UseBookmarkManagerProps = {
   bookmarks: Bookmark[];
   getBookmarks: () => Promise<void>;
+  getKeywords: () => Promise<void>;
   deleteBookmark: (bookmark_id: number) => Promise<void>;
   updateBookmark: (bookmark_id: number, url: string, title: string) => Promise<void>;
   addKeyword: (bookmark_id: number, keyword_name: string) => Promise<void>;
@@ -19,6 +20,7 @@ type UseBookmarkManagerProps = {
 export const useBookmarkManager = ({
   bookmarks,
   getBookmarks,
+  getKeywords,
   deleteBookmark,
   updateBookmark,
   addKeyword,
@@ -45,8 +47,22 @@ export const useBookmarkManager = ({
     }
   }, [setMessage, getBookmarks]);
 
+  const loadKeywords = useCallback(async () => {
+    setMessage("キーワードをロード中...", false);
+    try {
+      await getKeywords();
+      setMessage();
+    } catch (error: unknown) {
+      setMessage(
+        getErrorMessage(error, "キーワードのロード中にエラーが発生しました。", false),
+        true
+      );
+    }
+  }, [setMessage, getKeywords]);
+
   useEffect(() => {
     loadBookmarks();
+    loadKeywords();
 
     // SSEエンドポイントに接続
     const eventSource = new EventSource("/api/events");
@@ -71,7 +87,7 @@ export const useBookmarkManager = ({
     return () => {
       eventSource.close();
     };
-  }, [loadBookmarks]);
+  }, [loadBookmarks, loadKeywords]);
 
   useEffect(() => {
     const selectedBookmark = bookmarks.find(

@@ -21,6 +21,7 @@ import {
   createMockResponse,
   GOOGLE_BOOKMARK,
   mockBookmarks,
+  mockKeywords,
   setupBookmarkManagerForTest,
   testApiErrorHandling,
 } from "../../test-utils/bookmarkTestUtils";
@@ -38,6 +39,11 @@ describe("削除ボタン", () => {
       ok: true,
       status: HTTP_STATUS_OK,
       json: async () => mockBookmarks,
+    });
+    mockFetch.mockResolvedValueOnce({
+      ok: true,
+      status: HTTP_STATUS_OK,
+      json: async () => mockKeywords,
     });
 
     user = userEvent.setup();

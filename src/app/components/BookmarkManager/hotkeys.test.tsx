@@ -15,6 +15,7 @@ import {
   GOOGLE_BOOKMARK,
   keyDown,
   mockBookmarks,
+  mockKeywords,
   setBookmarkFormValuesAndClickButton,
   setupBookmarkManagerForTest,
 } from "../../test-utils/bookmarkTestUtils";
@@ -71,6 +72,11 @@ describe("BookmarkManager Hotkeys", () => {
       ok: true,
       status: HTTP_STATUS_OK,
       json: async () => mockBookmarks,
+    });
+    mockFetch.mockResolvedValueOnce({
+      ok: true,
+      status: HTTP_STATUS_OK,
+      json: async () => mockKeywords,
     });
 
     // Reset href for window.location mock

@@ -5,7 +5,11 @@ import { beforeEach, describe, expect, it, vi } from "vitest";
 import { render, screen } from "@testing-library/react";
 
 import { HTTP_STATUS_INTERNAL_SERVER_ERROR, HTTP_STATUS_OK } from "../../constants/httpStatusCodes";
-import { assertErrorMessage, mockBookmarks } from "../../test-utils/bookmarkTestUtils";
+import {
+  assertErrorMessage,
+  mockBookmarks,
+  mockKeywords,
+} from "../../test-utils/bookmarkTestUtils";
 import { BookmarkManager } from "../BookmarkManager";
 
 const mockFetch = vi.fn();
@@ -22,6 +26,11 @@ describe("BookmarkManagerの表示を確認", () => {
       status: HTTP_STATUS_OK,
       json: async () => mockBookmarks,
     });
+    mockFetch.mockResolvedValueOnce({
+      ok: true,
+      status: HTTP_STATUS_OK,
+      json: async () => mockKeywords,
+    });
 
     render(<BookmarkManager />);
 
@@ -35,11 +44,16 @@ describe("BookmarkManagerの表示を確認", () => {
       status: HTTP_STATUS_OK,
       json: async () => new Promise(() => []),
     });
+    mockFetch.mockResolvedValueOnce({
+      ok: true,
+      status: HTTP_STATUS_OK,
+      json: async () => new Promise(() => []),
+    });
 
     render(<BookmarkManager />);
 
     await assertErrorMessage({
-      message: "ブックマークをロード中...",
+      message: "キーワードをロード中...",
       isError: false,
       isAsync: false,
     });

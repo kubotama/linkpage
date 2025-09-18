@@ -12,6 +12,7 @@ import {
   expectBookmarkFormValues,
   GOOGLE_BOOKMARK,
   mockBookmarks,
+  mockKeywords,
   setBookmarkFormValuesAndClickButton,
   setupBookmarkManagerForTest,
 } from "../../test-utils/bookmarkTestUtils";
@@ -29,6 +30,11 @@ describe("「パラメータ」ボタン: URLから無駄な文字列を削除�
         ok: true,
         status: HTTP_STATUS_OK,
         json: async () => mockBookmarks,
+      });
+      mockFetch.mockResolvedValueOnce({
+        ok: true,
+        status: HTTP_STATUS_OK,
+        json: async () => mockKeywords,
       });
 
       user = userEvent.setup();

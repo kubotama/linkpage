@@ -13,6 +13,7 @@ import {
   deselectBookmark,
   GOOGLE_BOOKMARK,
   mockBookmarks,
+  mockKeywords,
   setupBookmarkManagerForTest,
 } from "../../test-utils/bookmarkTestUtils";
 import { Bookmark } from "../../types/Bookmark";
@@ -29,6 +30,11 @@ describe("ブックマークの選択", () => {
       ok: true,
       status: HTTP_STATUS_OK,
       json: async () => mockBookmarks,
+    });
+    mockFetch.mockResolvedValueOnce({
+      ok: true,
+      status: HTTP_STATUS_OK,
+      json: async () => mockKeywords,
     });
     user = userEvent.setup();
 

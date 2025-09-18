@@ -18,6 +18,7 @@ import {
   buildMockBookmarksWithKeywords,
   clickBookmark,
   findBookmarkWithAtLeastNKeywords,
+  mockKeywords,
   setupBookmarkManagerForTest,
 } from "../../test-utils/bookmarkTestUtils";
 import { Bookmark } from "../../types/Bookmark";
@@ -39,6 +40,11 @@ describe("キーワード詳細フォームの表示のテスト", () => {
       ok: true,
       status: HTTP_STATUS_OK,
       json: async () => mockBookmarksWithKeywords,
+    });
+    mockFetch.mockResolvedValueOnce({
+      ok: true,
+      status: HTTP_STATUS_OK,
+      json: async () => mockKeywords,
     });
     user = userEvent.setup();
 

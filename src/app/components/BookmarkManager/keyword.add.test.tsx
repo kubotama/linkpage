@@ -27,6 +27,7 @@ import {
   createMockResponse,
   deselectBookmark,
   findBookmarkWithAtLeastNKeywords,
+  mockKeywords,
   setupBookmarkManagerForTest,
   testApiErrorHandling,
   typeInTextbox,
@@ -76,6 +77,11 @@ describe("選択されたブックマークにキーワードを追加", () => {
       ok: true,
       status: HTTP_STATUS_OK,
       json: async () => mockBookmarksWithKeywords,
+    });
+    mockFetch.mockResolvedValueOnce({
+      ok: true,
+      status: HTTP_STATUS_OK,
+      json: async () => mockKeywords,
     });
     user = userEvent.setup();
 

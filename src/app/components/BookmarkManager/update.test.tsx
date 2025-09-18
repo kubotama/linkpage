@@ -26,6 +26,7 @@ import {
   GMAIL_BOOKMARK,
   GOOGLE_BOOKMARK,
   mockBookmarks,
+  mockKeywords,
   setBookmarkFormValuesAndClickButton,
   setupBookmarkManagerForTest,
   testApiErrorHandling,
@@ -44,6 +45,11 @@ describe("タイトルの更新ボタン", () => {
       ok: true,
       status: HTTP_STATUS_OK,
       json: async () => mockBookmarks,
+    });
+    mockFetch.mockResolvedValueOnce({
+      ok: true,
+      status: HTTP_STATUS_OK,
+      json: async () => mockKeywords,
     });
     user = userEvent.setup();
 
