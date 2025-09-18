@@ -7,6 +7,7 @@ import { Keyword } from "../types/Keyword";
 
 export const useBookmarks = () => {
   const [bookmarks, setBookmarks] = useState<Bookmark[]>([]);
+  const [keywords, setKeywords] = useState<Keyword[]>([]);
 
   const getBookmarks = useCallback(async () => {
     try {
@@ -20,6 +21,22 @@ export const useBookmarks = () => {
       }
     } catch (error: unknown) {
       console.error("ブックマークのロードエラー:", getErrorMessage(error));
+      throw error;
+    }
+  }, []);
+
+  const getKeywords = useCallback(async () => {
+    try {
+      const response = await fetch("/api/keywords");
+      if (response.ok) {
+        const data = await response.json();
+        setKeywords(data);
+        return;
+      } else {
+        throw await parseApiError(response);
+      }
+    } catch (error: unknown) {
+      console.error("キーワードのロードエラー:", getErrorMessage(error));
       throw error;
     }
   }, []);
@@ -135,7 +152,9 @@ export const useBookmarks = () => {
 
   return {
     bookmarks,
+    keywords,
     getBookmarks,
+    getKeywords,
     deleteBookmark,
     updateBookmark,
     addKeyword,
