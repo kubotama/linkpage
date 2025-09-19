@@ -34,35 +34,18 @@ export const useBookmarkManager = ({
 
   const { textMessage, setMessage, isError, handleErrorClose } = useErrorMessage();
 
-  const loadBookmarks = useCallback(async () => {
-    setMessage("ブックマークをロード中...", false);
+  const loadData = useCallback(async () => {
+    setMessage("データをロード中...", false);
     try {
-      await getBookmarks();
+      await Promise.all([getBookmarks(), getKeywords()]);
       setMessage();
     } catch (error: unknown) {
-      setMessage(
-        getErrorMessage(error, "ブックマークのロード中にエラーが発生しました。", false),
-        true
-      );
+      setMessage(getErrorMessage(error, "データのロード中にエラーが発生しました。", false), true);
     }
-  }, [setMessage, getBookmarks]);
-
-  const loadKeywords = useCallback(async () => {
-    setMessage("キーワードをロード中...", false);
-    try {
-      await getKeywords();
-      setMessage();
-    } catch (error: unknown) {
-      setMessage(
-        getErrorMessage(error, "キーワードのロード中にエラーが発生しました。", false),
-        true
-      );
-    }
-  }, [setMessage, getKeywords]);
+  }, [setMessage, getBookmarks, getKeywords]);
 
   useEffect(() => {
-    loadBookmarks();
-    loadKeywords();
+    loadData();
 
     // SSEエンドポイントに接続
     const eventSource = new EventSource("/api/events");
@@ -71,7 +54,7 @@ export const useBookmarkManager = ({
       try {
         const data = JSON.parse(event.data);
         if (data.type === "bookmarks-updated") {
-          loadBookmarks();
+          loadData();
         }
       } catch (error) {
         console.error("Failed to parse SSE message data:", error, event.data);
@@ -87,7 +70,7 @@ export const useBookmarkManager = ({
     return () => {
       eventSource.close();
     };
-  }, [loadBookmarks, loadKeywords]);
+  }, [loadData]);
 
   useEffect(() => {
     const selectedBookmark = bookmarks.find(

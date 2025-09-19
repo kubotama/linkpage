@@ -53,7 +53,7 @@ describe("BookmarkManagerの表示を確認", () => {
     render(<BookmarkManager />);
 
     await assertErrorMessage({
-      message: "キーワードをロード中...",
+      message: "データをロード中...",
       isError: false,
       isAsync: false,
     });
@@ -72,6 +72,12 @@ describe("BookmarkManagerの表示を確認", () => {
         text: async () => JSON.stringify({ message: errorText }),
       });
 
+      mockFetch.mockResolvedValueOnce({
+        ok: false,
+        status: statusCode,
+        headers: { "Content-Type": "application/json" },
+        text: async () => JSON.stringify({ message: errorText }),
+      });
       render(<BookmarkManager />);
 
       await assertErrorMessage({
