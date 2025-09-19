@@ -74,14 +74,18 @@ export const BookmarkManager = ({ className = "" }: BookmarkManagerProps) => {
     [bookmarks, selectedBookmarkId]
   );
 
+  const selectedKeywords = useMemo(() => selectedBookmark?.keywords, [selectedBookmark]);
+
+  const linkedKeywordIds = useMemo(() => {
+    return new Set(selectedKeywords?.map((k) => k.keyword_id));
+  }, [selectedKeywords]);
+
   const availableKeywords = useMemo(() => {
-    const linkedKeywords = selectedBookmark?.keywords;
-    if (!linkedKeywords?.length) {
+    if (linkedKeywordIds.size === 0) {
       return keywords;
     }
-    const linkedKeywordIds = new Set(linkedKeywords.map((k) => k.keyword_id));
     return keywords.filter((k) => !linkedKeywordIds.has(k.keyword_id));
-  }, [keywords, selectedBookmark]);
+  }, [keywords, linkedKeywordIds]);
 
   return (
     <div className={`mt-5 mb-5 ${className}`}>
@@ -128,7 +132,7 @@ export const BookmarkManager = ({ className = "" }: BookmarkManagerProps) => {
                 />
               </div>
               <KeywordTable
-                keywords={selectedBookmark.keywords}
+                keywords={selectedKeywords}
                 className="mt-2 w-keyword-list"
                 labelText={TABLE_NAME_LINKED_KEYWORD}
                 headerText={TABLE_HEADER_LINKED_KEYWORD}
