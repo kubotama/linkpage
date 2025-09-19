@@ -292,7 +292,7 @@ export const setBookmarkFormValuesAndEnterKeydown = async (user: UserEvent, url:
   await keyDown(user, "{enter}");
 };
 
-type setupBookmarkManagerForTestProps = {
+type SetupBookmarkManagerForTestProps = {
   fetchForSetup: MockInstance;
   bookmarksForSetup?: Bookmark[];
   keywordsForSetup?: Keyword[];
@@ -305,7 +305,7 @@ export const setupBookmarkManagerForTest = async ({
   fetchForSetup,
   bookmarksForSetup = mockBookmarks,
   keywordsForSetup = mockKeywords,
-}: setupBookmarkManagerForTestProps) => {
+}: SetupBookmarkManagerForTestProps) => {
   fetchForSetup.mockReset();
   fetchForSetup.mockResolvedValueOnce({
     ok: true,
