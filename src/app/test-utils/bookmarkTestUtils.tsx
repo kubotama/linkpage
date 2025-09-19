@@ -318,7 +318,9 @@ export const setupBookmarkManagerForTest = async ({
     json: async () => keywordsForSetup,
   });
   render(<BookmarkManager />);
-  await screen.findByRole("cell", { name: LINKPAGE_BOOKMARK.title });
+  if (bookmarksForSetup.length > 0) {
+    await screen.findByRole("cell", { name: bookmarksForSetup[0].title });
+  }
   return userEvent.setup();
 };
 
