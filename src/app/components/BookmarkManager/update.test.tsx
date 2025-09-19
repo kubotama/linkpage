@@ -3,7 +3,7 @@ import "@testing-library/jest-dom";
 import { afterEach, beforeEach, describe, expect, it, MockInstance, vi } from "vitest";
 
 import { screen, waitFor, within } from "@testing-library/react";
-import userEvent, { UserEvent } from "@testing-library/user-event";
+import { UserEvent } from "@testing-library/user-event";
 
 import { BOOKMARKS_ENDPOINT } from "../../constants/apiEndpoints";
 import { TABLE_NAME_BOOKMARKS, UPDATE_BUTTON_ROLE_NAME } from "../../constants/constants";
@@ -13,7 +13,6 @@ import {
   HTTP_STATUS_INTERNAL_SERVER_ERROR,
   HTTP_STATUS_NO_CONTENT,
   HTTP_STATUS_NOT_FOUND,
-  HTTP_STATUS_OK,
 } from "../../constants/httpStatusCodes";
 import {
   assertBookmarkIsSelected,
@@ -25,8 +24,6 @@ import {
   expectBookmarkFormValues,
   GMAIL_BOOKMARK,
   GOOGLE_BOOKMARK,
-  mockBookmarks,
-  mockKeywords,
   setBookmarkFormValuesAndClickButton,
   setupBookmarkManagerForTest,
   testApiErrorHandling,
@@ -39,21 +36,9 @@ describe("タイトルの更新ボタン", () => {
   let user: UserEvent;
 
   beforeEach(async () => {
-    mockFetch.mockReset();
     global.fetch = mockFetch;
-    mockFetch.mockResolvedValueOnce({
-      ok: true,
-      status: HTTP_STATUS_OK,
-      json: async () => mockBookmarks,
-    });
-    mockFetch.mockResolvedValueOnce({
-      ok: true,
-      status: HTTP_STATUS_OK,
-      json: async () => mockKeywords,
-    });
-    user = userEvent.setup();
 
-    await setupBookmarkManagerForTest();
+    user = await setupBookmarkManagerForTest({ fetchForSetup: mockFetch });
   });
 
   it("ブックマークが選択されていない場合には、タイトルの更新ボタンは表示されない。", () => {

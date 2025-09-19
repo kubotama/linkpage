@@ -1,7 +1,7 @@
 import { expect, MockInstance } from "vitest";
 
 import { render, screen, waitFor, within } from "@testing-library/react";
-import { UserEvent } from "@testing-library/user-event";
+import userEvent, { UserEvent } from "@testing-library/user-event";
 
 import { BookmarkManager } from "../components/BookmarkManager";
 import {
@@ -292,12 +292,34 @@ export const setBookmarkFormValuesAndEnterKeydown = async (user: UserEvent, url:
   await keyDown(user, "{enter}");
 };
 
+type setupBookmarkManagerForTestProps = {
+  fetchForSetup: MockInstance;
+  bookmarksForSetup?: Bookmark[];
+  keywordsForSetup?: Keyword[];
+};
+
 /**
  * BookmarkManagerコンポーネントをレンダリングし、初期データがロードされるのを待つ
  */
-export const setupBookmarkManagerForTest = async () => {
+export const setupBookmarkManagerForTest = async ({
+  fetchForSetup,
+  bookmarksForSetup = mockBookmarks,
+  keywordsForSetup = mockKeywords,
+}: setupBookmarkManagerForTestProps) => {
+  fetchForSetup.mockReset();
+  fetchForSetup.mockResolvedValueOnce({
+    ok: true,
+    status: HTTP_STATUS_OK,
+    json: async () => bookmarksForSetup,
+  });
+  fetchForSetup.mockResolvedValueOnce({
+    ok: true,
+    status: HTTP_STATUS_OK,
+    json: async () => keywordsForSetup,
+  });
   render(<BookmarkManager />);
   await screen.findByRole("cell", { name: LINKPAGE_BOOKMARK.title });
+  return userEvent.setup();
 };
 
 export const deselectBookmark = async (user: UserEvent) => {

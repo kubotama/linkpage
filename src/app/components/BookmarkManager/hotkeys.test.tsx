@@ -3,9 +3,8 @@ import "@testing-library/jest-dom";
 import { afterAll, beforeAll, beforeEach, describe, expect, it, vi } from "vitest";
 
 import { waitFor } from "@testing-library/react";
-import userEvent, { UserEvent } from "@testing-library/user-event";
+import { UserEvent } from "@testing-library/user-event";
 
-import { HTTP_STATUS_OK } from "../../constants/httpStatusCodes";
 import {
   assertBookmarkIsSelected,
   assertErrorMessage,
@@ -15,7 +14,6 @@ import {
   GOOGLE_BOOKMARK,
   keyDown,
   mockBookmarks,
-  mockKeywords,
   setBookmarkFormValuesAndClickButton,
   setupBookmarkManagerForTest,
 } from "../../test-utils/bookmarkTestUtils";
@@ -66,25 +64,12 @@ describe("BookmarkManager Hotkeys", () => {
   beforeEach(async () => {
     // Reset mocks before each test
     vi.clearAllMocks();
-    mockFetch.mockReset();
     global.fetch = mockFetch;
-    mockFetch.mockResolvedValueOnce({
-      ok: true,
-      status: HTTP_STATUS_OK,
-      json: async () => mockBookmarks,
-    });
-    mockFetch.mockResolvedValueOnce({
-      ok: true,
-      status: HTTP_STATUS_OK,
-      json: async () => mockKeywords,
-    });
 
     // Reset href for window.location mock
     (window.location as MockedLocation).href = "";
 
-    user = userEvent.setup();
-
-    await setupBookmarkManagerForTest();
+    user = await setupBookmarkManagerForTest({ fetchForSetup: mockFetch });
   });
 
   describe("ブックマークが選択されている場合", () => {
