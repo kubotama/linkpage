@@ -39,7 +39,7 @@ export const useBookmarkManager = ({
     try {
       await Promise.all([getBookmarks(), getKeywords()]);
       setMessage();
-    } catch (error) {
+    } catch (error: unknown) {
       setMessage(getErrorMessage(error, "データのロード中にエラーが発生しました。", false), true);
     }
   }, [setMessage, getBookmarks, getKeywords]);
