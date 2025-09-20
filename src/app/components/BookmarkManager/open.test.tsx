@@ -63,8 +63,8 @@ describe("「開く」ボタン: 入力されたURLを新しいタブで開く",
 
   beforeEach(async () => {
     // 各テスト前にモックをリセット
-    global.fetch = mockFetch;
     vi.clearAllMocks();
+    global.fetch = mockFetch;
 
     // hrefをリセット
     (window.location as MockedLocation).href = "";
