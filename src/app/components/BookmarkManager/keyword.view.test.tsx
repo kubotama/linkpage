@@ -121,10 +121,10 @@ describe("キーワード詳細フォームの表示のテスト", () => {
       // ヘッダー行を除いた行数を検証
       expect(rows).toHaveLength(mockKeywords.length + 1);
 
-      for (let i = 1; i < rows.length; i++) {
-        const row = rows[i];
-        const cells = within(row).queryAllByRole("cell");
-        expect(cells[0].textContent).toBeTypeOf("string");
+      for (const [index, keyword] of mockKeywords.entries()) {
+        const row = rows[index + 1];
+        const cells = within(row).getAllByRole("cell");
+        expect(cells[0]).toHaveTextContent(keyword.keyword_name);
         expect(cells[1]).toHaveTextContent(LINK_BUTTON_ROLE_NAME);
       }
     });
