@@ -18,7 +18,7 @@ type KeywordTableProps = {
   setSelectedKeywordId: (keywordId: number | undefined) => void;
   rowActionButton?: {
     label: string;
-    onClick: (keywordId: number) => void;
+    onClick: (keyword: Keyword) => void;
   };
 };
 
@@ -68,10 +68,7 @@ export const KeywordTable = ({
             </td>
             {rowActionButton && (
               <td>
-                <ActionButton
-                  className="w-auto"
-                  onClick={() => rowActionButton.onClick(keyword.keyword_id)}
-                >
+                <ActionButton className="w-auto" onClick={() => rowActionButton.onClick(keyword)}>
                   {rowActionButton.label}
                 </ActionButton>
               </td>

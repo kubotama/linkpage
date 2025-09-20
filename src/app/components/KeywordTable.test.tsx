@@ -200,7 +200,7 @@ describe("KeywordTableのテスト", () => {
       const unlinkButton = screen.getAllByRole("button", { name: UNLINK_BUTTON_ROLE_NAME })[0];
       await user.click(unlinkButton);
 
-      expect(mockOnUnlinkKeyword).toHaveBeenCalledWith(keywordToUnlink.keyword_id);
+      expect(mockOnUnlinkKeyword).toHaveBeenCalledWith(keywordToUnlink);
     });
   });
 });

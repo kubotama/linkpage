@@ -125,6 +125,9 @@ export const GOOGLE_KEYWORD_1 = { bookmark_id: 2, keyword_id: 1 };
 export const GOOGLE_KEYWORD_2 = { bookmark_id: 2, keyword_id: 2 };
 export const GMAIL_KEYWORD_1 = { bookmark_id: 3, keyword_id: 3 };
 
+export const LINKED_KEYWORD = mockKeywords[0];
+export const NOLINKED_KEYWORD = mockKeywords[3];
+
 export const mockBookmarkKeywords = [GOOGLE_KEYWORD_1, GOOGLE_KEYWORD_2, GMAIL_KEYWORD_1];
 
 // Helper to construct expected keywords for each bookmark

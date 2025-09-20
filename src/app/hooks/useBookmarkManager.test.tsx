@@ -6,6 +6,7 @@ import {
   GOOGLE_KEYWORD_1,
   LINKPAGE_BOOKMARK,
   mockBookmarks,
+  LINKED_KEYWORD,
 } from "../test-utils/bookmarkTestUtils";
 import { Bookmark } from "../types/Bookmark";
 import { useBookmarkManager } from "./useBookmarkManager";
@@ -203,7 +204,7 @@ describe("useBookmarkManager", () => {
 
     act(() => {
       result.current.setSelectedBookmarkId(undefined);
-      result.current.unlinkKeywordClick(GOOGLE_KEYWORD_1.keyword_id);
+      result.current.unlinkKeywordClick(LINKED_KEYWORD);
     });
 
     await waitFor(() => {
@@ -226,15 +227,15 @@ describe("useBookmarkManager", () => {
 
     // 3. キーワード解除をクリックする
     act(() => {
-      result.current.unlinkKeywordClick(GOOGLE_KEYWORD_1.keyword_id);
+      result.current.unlinkKeywordClick(LINKED_KEYWORD);
     });
 
     // 4. 結果を検証する
     await waitFor(() => {
       // unlinkKeywordの呼び出し
       expect(unlinkKeyword).toHaveBeenCalledWith(
-        LINKPAGE_BOOKMARK.bookmark_id,
-        GOOGLE_KEYWORD_1.keyword_id
+        LINKPAGE_BOOKMARK.bookmark_id, // 選択されたブックマークのID
+        LINKED_KEYWORD.keyword_id // 解除されるキーワードのID
       );
 
       // エラーメッセージと選択されたブックマーク
