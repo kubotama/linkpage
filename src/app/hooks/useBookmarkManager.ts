@@ -267,7 +267,7 @@ export const useBookmarkManager = ({
 
   const linkKeywordClick = useCallback(
     async (keyword: Keyword) => {
-      if (!keyword || !keyword.keyword_id || !selectedBookmarkId) {
+      if (!keyword || !keyword.keyword_name || !selectedBookmarkId) {
         return;
       }
       try {
