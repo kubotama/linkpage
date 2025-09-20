@@ -299,7 +299,16 @@ type SetupBookmarkManagerForTestProps = {
 };
 
 /**
- * BookmarkManagerコンポーネントをレンダリングし、初期データがロードされるのを待つ
+ * テスト用にBookmarkManagerコンポーネントのセットアップを行います。
+ *
+ * この関数は以下の処理を実行します:
+ * 1. `fetch`をモックし、指定されたブックマークとキーワードを返すように設定します。
+ * 2. `BookmarkManager`コンポーネントをレンダリングします。
+ * 3. ブックマークデータが読み込まれるのを待ちます。
+ * 4. `userEvent`のインスタンスをセットアップして返します。
+ *
+ * @param props - セットアップのためのプロパティ。
+ * @returns セットアップされた`userEvent`のインスタンスを内包したPromise。
  */
 export const setupBookmarkManagerForTest = async ({
   fetchForSetup,
