@@ -265,6 +265,24 @@ export const useBookmarkManager = ({
     }
   }, [textKeyword, selectedBookmarkId, addKeyword, setMessage, setTextKeyword]);
 
+  const linkKeywordClick = useCallback(
+    async (keyword: Keyword) => {
+      if (!keyword || !keyword.keyword_id || !selectedBookmarkId) {
+        return;
+      }
+      try {
+        await addKeyword(selectedBookmarkId, keyword.keyword_name);
+        setMessage();
+      } catch (error: unknown) {
+        setMessage(
+          getErrorMessage(error, "キーワードの設定中にエラーが発生しました。", false),
+          true
+        );
+      }
+    },
+    [selectedBookmarkId, addKeyword, setMessage]
+  );
+
   const unlinkKeywordClick = useCallback(
     async (keyword: Keyword) => {
       if (!keyword || !keyword.keyword_id || !selectedBookmarkId) {
@@ -304,5 +322,6 @@ export const useBookmarkManager = ({
     updateClick,
     addKeywordClick,
     unlinkKeywordClick,
+    linkKeywordClick,
   };
 };
