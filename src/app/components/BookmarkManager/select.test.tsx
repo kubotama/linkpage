@@ -2,9 +2,8 @@ import "@testing-library/jest-dom";
 
 import { beforeEach, describe, expect, it, vi } from "vitest";
 
-import userEvent, { UserEvent } from "@testing-library/user-event";
+import { UserEvent } from "@testing-library/user-event";
 
-import { HTTP_STATUS_OK } from "../../constants/httpStatusCodes";
 import {
   assertBookmarkIsSelected,
   assertNoBookmarkIsSelected,
@@ -12,8 +11,6 @@ import {
   createBookmark,
   deselectBookmark,
   GOOGLE_BOOKMARK,
-  mockBookmarks,
-  mockKeywords,
   setupBookmarkManagerForTest,
 } from "../../test-utils/bookmarkTestUtils";
 import { Bookmark } from "../../types/Bookmark";
@@ -24,21 +21,9 @@ describe("ブックマークの選択", () => {
   let user: UserEvent;
 
   beforeEach(async () => {
-    mockFetch.mockReset();
     global.fetch = mockFetch;
-    mockFetch.mockResolvedValueOnce({
-      ok: true,
-      status: HTTP_STATUS_OK,
-      json: async () => mockBookmarks,
-    });
-    mockFetch.mockResolvedValueOnce({
-      ok: true,
-      status: HTTP_STATUS_OK,
-      json: async () => mockKeywords,
-    });
-    user = userEvent.setup();
 
-    await setupBookmarkManagerForTest();
+    user = await setupBookmarkManagerForTest({ fetchForSetup: mockFetch });
   });
 
   it("初期状態では、URLとタイトルのテキストボックスには、なにも表示されていない。選択解除のボタンが表示されていない。", async () => {

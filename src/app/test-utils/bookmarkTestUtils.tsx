@@ -1,7 +1,7 @@
 import { expect, MockInstance } from "vitest";
 
 import { render, screen, waitFor, within } from "@testing-library/react";
-import { UserEvent } from "@testing-library/user-event";
+import userEvent, { UserEvent } from "@testing-library/user-event";
 
 import { BookmarkManager } from "../components/BookmarkManager";
 import {
@@ -292,12 +292,43 @@ export const setBookmarkFormValuesAndEnterKeydown = async (user: UserEvent, url:
   await keyDown(user, "{enter}");
 };
 
+type SetupBookmarkManagerForTestProps = {
+  fetchForSetup: MockInstance;
+  bookmarksForSetup?: Bookmark[];
+  keywordsForSetup?: Keyword[];
+};
+
 /**
- * BookmarkManagerコンポーネントをレンダリングし、初期データがロードされるのを待つ
+ * テスト用にBookmarkManagerコンポーネントのセットアップを行います。
+ *
+ * この関数は以下の処理を実行します:
+ * 1. `fetch`をモックし、指定されたブックマークとキーワードを返すように設定します。
+ * 2. `BookmarkManager`コンポーネントをレンダリングします。
+ * 3. ブックマークデータが読み込まれるのを待ちます。
+ * 4. `userEvent`のインスタンスをセットアップして返します。
+ *
+ * @param props - セットアップのためのプロパティ。
+ * @returns セットアップされた`userEvent`のインスタンスを内包したPromise。
  */
-export const setupBookmarkManagerForTest = async () => {
+export const setupBookmarkManagerForTest = async ({
+  fetchForSetup,
+  bookmarksForSetup = mockBookmarks,
+  keywordsForSetup = mockKeywords,
+}: SetupBookmarkManagerForTestProps) => {
+  fetchForSetup.mockReset();
+  fetchForSetup.mockResolvedValueOnce({
+    ok: true,
+    status: HTTP_STATUS_OK,
+    json: async () => bookmarksForSetup,
+  });
+  fetchForSetup.mockResolvedValueOnce({
+    ok: true,
+    status: HTTP_STATUS_OK,
+    json: async () => keywordsForSetup,
+  });
   render(<BookmarkManager />);
-  await screen.findByRole("cell", { name: LINKPAGE_BOOKMARK.title });
+  await screen.findByRole("table", { name: TABLE_NAME_BOOKMARKS });
+  return userEvent.setup();
 };
 
 export const deselectBookmark = async (user: UserEvent) => {

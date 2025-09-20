@@ -2,17 +2,14 @@ import "@testing-library/jest-dom";
 
 import { beforeEach, describe, it, vi } from "vitest";
 
-import userEvent, { UserEvent } from "@testing-library/user-event";
+import { UserEvent } from "@testing-library/user-event";
 
 import { ARROW_BUTTON_ROLE_NAME } from "../../constants/constants";
-import { HTTP_STATUS_OK } from "../../constants/httpStatusCodes";
 import {
   assertBookmarkIsSelected,
   clickBookmark,
   expectBookmarkFormValues,
   GOOGLE_BOOKMARK,
-  mockBookmarks,
-  mockKeywords,
   setBookmarkFormValuesAndClickButton,
   setupBookmarkManagerForTest,
 } from "../../test-utils/bookmarkTestUtils";
@@ -23,22 +20,9 @@ describe("「←」ボタン", () => {
   let user: UserEvent;
 
   beforeEach(async () => {
-    mockFetch.mockReset();
     global.fetch = mockFetch;
-    mockFetch.mockResolvedValueOnce({
-      ok: true,
-      status: HTTP_STATUS_OK,
-      json: async () => mockBookmarks,
-    });
-    mockFetch.mockResolvedValueOnce({
-      ok: true,
-      status: HTTP_STATUS_OK,
-      json: async () => mockKeywords,
-    });
 
-    user = userEvent.setup();
-
-    await setupBookmarkManagerForTest();
+    user = await setupBookmarkManagerForTest({ fetchForSetup: mockFetch });
 
     await clickBookmark(user, GOOGLE_BOOKMARK);
     await assertBookmarkIsSelected(GOOGLE_BOOKMARK);

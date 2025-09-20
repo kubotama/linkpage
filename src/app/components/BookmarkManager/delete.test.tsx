@@ -3,7 +3,7 @@ import "@testing-library/jest-dom";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 
 import { screen, waitFor } from "@testing-library/react";
-import userEvent, { UserEvent } from "@testing-library/user-event";
+import { UserEvent } from "@testing-library/user-event";
 
 import { BOOKMARKS_ENDPOINT } from "../../constants/apiEndpoints";
 import { DELETE_BUTTON_ROLE_NAME } from "../../constants/constants";
@@ -12,7 +12,6 @@ import {
   HTTP_STATUS_INTERNAL_SERVER_ERROR,
   HTTP_STATUS_NO_CONTENT,
   HTTP_STATUS_NOT_FOUND,
-  HTTP_STATUS_OK,
 } from "../../constants/httpStatusCodes";
 import {
   assertBookmarkIsSelected,
@@ -20,8 +19,6 @@ import {
   clickButtonByName,
   createMockResponse,
   GOOGLE_BOOKMARK,
-  mockBookmarks,
-  mockKeywords,
   setupBookmarkManagerForTest,
   testApiErrorHandling,
 } from "../../test-utils/bookmarkTestUtils";
@@ -34,21 +31,8 @@ describe("削除ボタン", () => {
 
   beforeEach(async () => {
     global.fetch = mockFetch;
-    mockFetch.mockReset();
-    mockFetch.mockResolvedValueOnce({
-      ok: true,
-      status: HTTP_STATUS_OK,
-      json: async () => mockBookmarks,
-    });
-    mockFetch.mockResolvedValueOnce({
-      ok: true,
-      status: HTTP_STATUS_OK,
-      json: async () => mockKeywords,
-    });
 
-    user = userEvent.setup();
-
-    await setupBookmarkManagerForTest();
+    user = await setupBookmarkManagerForTest({ fetchForSetup: mockFetch });
   });
 
   it("ブックマークが選択されていない場合には削除ボタンは表示されない", () => {

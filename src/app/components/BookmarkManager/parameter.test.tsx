@@ -2,17 +2,14 @@ import "@testing-library/jest-dom";
 
 import { beforeEach, describe, it, vi } from "vitest";
 
-import userEvent, { UserEvent } from "@testing-library/user-event";
+import { UserEvent } from "@testing-library/user-event";
 
 import { PARAMETER_BUTTON_ROLE_NAME } from "../../constants/constants";
-import { HTTP_STATUS_OK } from "../../constants/httpStatusCodes";
 import {
   assertBookmarkIsSelected,
   clickBookmark,
   expectBookmarkFormValues,
   GOOGLE_BOOKMARK,
-  mockBookmarks,
-  mockKeywords,
   setBookmarkFormValuesAndClickButton,
   setupBookmarkManagerForTest,
 } from "../../test-utils/bookmarkTestUtils";
@@ -24,22 +21,9 @@ describe("「パラメータ」ボタン: URLから無駄な文字列を削除�
 
   describe("#や?の後ろを削除する", () => {
     beforeEach(async () => {
-      mockFetch.mockReset();
       global.fetch = mockFetch;
-      mockFetch.mockResolvedValueOnce({
-        ok: true,
-        status: HTTP_STATUS_OK,
-        json: async () => mockBookmarks,
-      });
-      mockFetch.mockResolvedValueOnce({
-        ok: true,
-        status: HTTP_STATUS_OK,
-        json: async () => mockKeywords,
-      });
 
-      user = userEvent.setup();
-
-      await setupBookmarkManagerForTest();
+      user = await setupBookmarkManagerForTest({ fetchForSetup: mockFetch });
 
       const bookmarkToSelect = GOOGLE_BOOKMARK; // Google
       await clickBookmark(user, bookmarkToSelect);

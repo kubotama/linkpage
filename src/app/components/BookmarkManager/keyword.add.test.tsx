@@ -1,9 +1,9 @@
 import "@testing-library/jest-dom";
 
-import { afterEach, beforeEach, describe, expect, it, MockInstance, vi } from "vitest";
+import { afterEach, beforeAll, beforeEach, describe, expect, it, MockInstance, vi } from "vitest";
 
 import { screen, waitFor, within } from "@testing-library/react";
-import userEvent, { UserEvent } from "@testing-library/user-event";
+import { UserEvent } from "@testing-library/user-event";
 
 import { BOOKMARKS_ENDPOINT } from "../../constants/apiEndpoints";
 import {
@@ -17,7 +17,6 @@ import {
   HTTP_STATUS_CONFLICT,
   HTTP_STATUS_FORBIDDEN,
   HTTP_STATUS_INTERNAL_SERVER_ERROR,
-  HTTP_STATUS_OK,
 } from "../../constants/httpStatusCodes";
 import {
   assertBookmarkIsSelected,
@@ -27,7 +26,6 @@ import {
   createMockResponse,
   deselectBookmark,
   findBookmarkWithAtLeastNKeywords,
-  mockKeywords,
   setupBookmarkManagerForTest,
   testApiErrorHandling,
   typeInTextbox,
@@ -67,25 +65,17 @@ describe("選択されたブックマークにキーワードを追加", () => {
   let user: UserEvent;
   let bookmarkToSelect: Bookmark;
 
-  beforeEach(async () => {
-    mockFetch.mockReset();
+  beforeAll(() => {
+    mockBookmarksWithKeywords = buildMockBookmarksWithKeywords();
+  });
 
+  beforeEach(async () => {
     global.fetch = mockFetch;
 
-    mockBookmarksWithKeywords = buildMockBookmarksWithKeywords();
-    mockFetch.mockResolvedValueOnce({
-      ok: true,
-      status: HTTP_STATUS_OK,
-      json: async () => mockBookmarksWithKeywords,
+    user = await setupBookmarkManagerForTest({
+      fetchForSetup: mockFetch,
+      bookmarksForSetup: mockBookmarksWithKeywords,
     });
-    mockFetch.mockResolvedValueOnce({
-      ok: true,
-      status: HTTP_STATUS_OK,
-      json: async () => mockKeywords,
-    });
-    user = userEvent.setup();
-
-    await setupBookmarkManagerForTest();
   });
 
   afterEach(() => {

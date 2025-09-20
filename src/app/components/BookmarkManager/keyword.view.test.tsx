@@ -3,7 +3,7 @@ import "@testing-library/jest-dom";
 import { beforeAll, beforeEach, describe, expect, it, vi } from "vitest";
 
 import { screen, within } from "@testing-library/react";
-import userEvent, { UserEvent } from "@testing-library/user-event";
+import { UserEvent } from "@testing-library/user-event";
 
 import {
   ADD_BUTTON_ROLE_NAME,
@@ -12,13 +12,11 @@ import {
   TABLE_NAME_LINKED_KEYWORD,
   UNLINK_BUTTON_ROLE_NAME,
 } from "../../constants/constants";
-import { HTTP_STATUS_OK } from "../../constants/httpStatusCodes";
 import {
   assertBookmarkIsSelected,
   buildMockBookmarksWithKeywords,
   clickBookmark,
   findBookmarkWithAtLeastNKeywords,
-  mockKeywords,
   setupBookmarkManagerForTest,
 } from "../../test-utils/bookmarkTestUtils";
 import { Bookmark } from "../../types/Bookmark";
@@ -34,21 +32,12 @@ describe("キーワード詳細フォームの表示のテスト", () => {
   });
 
   beforeEach(async () => {
-    mockFetch.mockReset();
     global.fetch = mockFetch;
-    mockFetch.mockResolvedValueOnce({
-      ok: true,
-      status: HTTP_STATUS_OK,
-      json: async () => mockBookmarksWithKeywords,
-    });
-    mockFetch.mockResolvedValueOnce({
-      ok: true,
-      status: HTTP_STATUS_OK,
-      json: async () => mockKeywords,
-    });
-    user = userEvent.setup();
 
-    await setupBookmarkManagerForTest();
+    user = await setupBookmarkManagerForTest({
+      fetchForSetup: mockFetch,
+      bookmarksForSetup: mockBookmarksWithKeywords,
+    });
   });
 
   describe("ブックマークが選択されていない場合", () => {

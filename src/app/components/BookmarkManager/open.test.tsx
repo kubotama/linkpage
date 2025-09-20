@@ -3,16 +3,13 @@ import "@testing-library/jest-dom";
 import { afterAll, beforeAll, beforeEach, describe, expect, it, vi } from "vitest";
 
 import { waitFor } from "@testing-library/react";
-import userEvent, { UserEvent } from "@testing-library/user-event";
+import { UserEvent } from "@testing-library/user-event";
 
-import { HTTP_STATUS_OK } from "../../constants/httpStatusCodes";
 import {
   assertBookmarkIsSelected,
   assertErrorMessage,
   clickBookmark,
   GOOGLE_BOOKMARK,
-  mockBookmarks,
-  mockKeywords,
   setBookmarkFormValuesAndEnterKeydown,
   setupBookmarkManagerForTest,
 } from "../../test-utils/bookmarkTestUtils";
@@ -66,26 +63,13 @@ describe("「開く」ボタン: 入力されたURLを新しいタブで開く",
 
   beforeEach(async () => {
     // 各テスト前にモックをリセット
-    // jest.clearAllMocks();
     vi.clearAllMocks();
     global.fetch = mockFetch;
-    mockFetch.mockResolvedValueOnce({
-      ok: true,
-      status: HTTP_STATUS_OK,
-      json: async () => mockBookmarks,
-    });
-    mockFetch.mockResolvedValueOnce({
-      ok: true,
-      status: HTTP_STATUS_OK,
-      json: async () => mockKeywords,
-    });
 
     // hrefをリセット
     (window.location as MockedLocation).href = "";
 
-    user = userEvent.setup();
-
-    await setupBookmarkManagerForTest();
+    user = await setupBookmarkManagerForTest({ fetchForSetup: mockFetch });
   });
 
   describe("ブックマーク選択後", () => {
