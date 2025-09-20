@@ -2,12 +2,7 @@ import { beforeEach, describe, expect, it, vi } from "vitest";
 
 import { act, renderHook, waitFor } from "@testing-library/react";
 
-import {
-  GOOGLE_KEYWORD_1,
-  LINKPAGE_BOOKMARK,
-  mockBookmarks,
-  LINKED_KEYWORD,
-} from "../test-utils/bookmarkTestUtils";
+import { LINKPAGE_BOOKMARK, mockBookmarks, LINKED_KEYWORD } from "../test-utils/bookmarkTestUtils";
 import { Bookmark } from "../types/Bookmark";
 import { useBookmarkManager } from "./useBookmarkManager";
 
