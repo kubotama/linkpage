@@ -9,6 +9,8 @@ import {
   ADD_BUTTON_ROLE_NAME,
   FIELDSET_KEYWORD_LABEL,
   KEYWORD_ROLE_NAME,
+  LINK_BUTTON_ROLE_NAME,
+  TABLE_NAME_ALL_KEYWORD,
   TABLE_NAME_LINKED_KEYWORD,
   UNLINK_BUTTON_ROLE_NAME,
 } from "../../constants/constants";
@@ -17,6 +19,7 @@ import {
   buildMockBookmarksWithKeywords,
   clickBookmark,
   findBookmarkWithAtLeastNKeywords,
+  mockKeywords,
   setupBookmarkManagerForTest,
 } from "../../test-utils/bookmarkTestUtils";
 import { Bookmark } from "../../types/Bookmark";
@@ -41,10 +44,24 @@ describe("キーワード詳細フォームの表示のテスト", () => {
   });
 
   describe("ブックマークが選択されていない場合", () => {
-    it("キーワード設定フォームは表示されない", () => {
+    it("キーワード設定フォームは表示されない", async () => {
       expect(screen.queryByRole("group", { name: FIELDSET_KEYWORD_LABEL })).not.toBeInTheDocument();
       expect(screen.queryByRole("textbox", { name: KEYWORD_ROLE_NAME })).not.toBeInTheDocument();
       expect(screen.queryByRole("button", { name: ADD_BUTTON_ROLE_NAME })).not.toBeInTheDocument();
+      const allKeywordTable = await screen.findByRole("table", { name: TABLE_NAME_ALL_KEYWORD });
+      expect(allKeywordTable).toBeInTheDocument();
+
+      const rows = await within(allKeywordTable).findAllByRole("row");
+      expect(rows).toHaveLength(mockKeywords.length + 1);
+
+      for (const [index, keyword] of mockKeywords.entries()) {
+        // ヘッダ行の1行を考慮する
+        const row = rows[index + 1];
+        // そのrowのスコープ内でcellをクエリします
+        const cells = await within(row).findAllByRole("cell");
+        expect(cells).toHaveLength(1);
+        expect(cells[0]).toHaveTextContent(keyword.keyword_name);
+      }
     });
   });
 
@@ -92,5 +109,24 @@ describe("キーワード詳細フォームの表示のテスト", () => {
         }
       }
     );
+
+    it("すべてのキーワードテーブルに「設定」ボタンが表示される", async () => {
+      const bookmarkToSelect = findBookmarkWithAtLeastNKeywords(mockBookmarksWithKeywords, 0); // キーワードが0個のブックマークを選ぶ
+      await clickBookmark(user, bookmarkToSelect);
+      await assertBookmarkIsSelected(bookmarkToSelect);
+
+      const allKeywordTable = await screen.findByRole("table", { name: TABLE_NAME_ALL_KEYWORD });
+      const rows = await within(allKeywordTable).findAllByRole("row");
+
+      // ヘッダー行を除いた行数を検証
+      expect(rows).toHaveLength(mockKeywords.length + 1);
+
+      for (const [index, keyword] of mockKeywords.entries()) {
+        const row = rows[index + 1];
+        const cells = within(row).getAllByRole("cell");
+        expect(cells[0]).toHaveTextContent(keyword.keyword_name);
+        expect(cells[1]).toHaveTextContent(LINK_BUTTON_ROLE_NAME);
+      }
+    });
   });
 });
