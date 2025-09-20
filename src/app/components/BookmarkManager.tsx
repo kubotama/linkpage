@@ -6,6 +6,7 @@ import {
   DELETE_BUTTON_ROLE_NAME,
   FIELDSET_KEYWORD_LABEL,
   FORM_BOOKMARK_DETAIL,
+  LINK_BUTTON_ROLE_NAME,
   KEYWORD_ROLE_NAME,
   PARAMETER_BUTTON_ROLE_NAME,
   TABLE_HEADER_ALL_KEYWORD,
@@ -168,6 +169,12 @@ export const BookmarkManager = ({ className = "" }: BookmarkManagerProps) => {
             headerText={TABLE_HEADER_ALL_KEYWORD}
             selectedKeywordId={selectedKeywordId}
             setSelectedKeywordId={setSelectedKeywordId}
+            {...(selectedBookmark && {
+              rowActionButton: {
+                label: LINK_BUTTON_ROLE_NAME,
+                onClick: () => {},
+              },
+            })}
           />
         </div>
       </div>
