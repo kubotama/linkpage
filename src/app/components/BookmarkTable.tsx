@@ -9,7 +9,6 @@ type BookmarkTableProps = {
   selectedBookmarkId: number | undefined;
   onSelectBookmarkId: (bookmarkId: number) => void;
   selectedKeywordId: number | undefined;
-  setSelectedKeywordId: (keywordId: number | undefined) => void;
   className?: string;
 };
 
@@ -18,7 +17,6 @@ export const BookmarkTable = ({
   selectedBookmarkId,
   onSelectBookmarkId,
   selectedKeywordId,
-  setSelectedKeywordId,
   className = "",
 }: BookmarkTableProps): React.ReactElement => {
   const { bookmarkRows, handleSelectBookmark } = useBookmarkTable({
@@ -26,7 +24,6 @@ export const BookmarkTable = ({
     selectedBookmarkId,
     selectedKeywordId,
     onSelectBookmarkId,
-    setSelectedKeywordId,
   });
 
   return (
