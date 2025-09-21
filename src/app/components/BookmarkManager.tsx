@@ -133,18 +133,6 @@ export const BookmarkManager = ({ className = "" }: BookmarkManagerProps) => {
                   onChange={(e) => setTextTitle(e.target.value)}
                 />
               </div>
-              <KeywordTable
-                keywords={selectedKeywords}
-                className="mt-2 w-keyword-list"
-                labelText={TABLE_NAME_LINKED_KEYWORD}
-                headerText={TABLE_HEADER_LINKED_KEYWORD}
-                selectedKeywordId={selectedKeywordId}
-                setSelectedKeywordId={setSelectedKeywordId}
-                rowActionButton={{
-                  label: UNLINK_BUTTON_ROLE_NAME,
-                  onClick: unlinkKeywordClick,
-                }}
-              />
               <fieldset className="mt-5 flex items-end justify-start border-none p-0">
                 <legend className="sr-only">{FIELDSET_KEYWORD_LABEL}</legend>
                 <BookmarkInputField
@@ -162,6 +150,20 @@ export const BookmarkManager = ({ className = "" }: BookmarkManagerProps) => {
                 </div>
               </fieldset>
             </form>
+          )}
+          {selectedBookmark && (
+            <KeywordTable
+              keywords={selectedKeywords}
+              className="mt-4 w-keyword-list"
+              labelText={TABLE_NAME_LINKED_KEYWORD}
+              headerText={TABLE_HEADER_LINKED_KEYWORD}
+              selectedKeywordId={selectedKeywordId}
+              setSelectedKeywordId={setSelectedKeywordId}
+              rowActionButton={{
+                label: UNLINK_BUTTON_ROLE_NAME,
+                onClick: unlinkKeywordClick,
+              }}
+            />
           )}
           <KeywordTable
             keywords={availableKeywords}

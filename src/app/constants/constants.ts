@@ -15,7 +15,7 @@ export const ADD_BUTTON_ROLE_NAME = "追加";
 export const TABLE_NAME_LINKED_KEYWORD = "設定されたキーワードのテーブル";
 export const TABLE_NAME_ALL_KEYWORD = "すべてのキーワードのテーブル";
 export const TABLE_HEADER_LINKED_KEYWORD = "設定されているキーワード";
-export const TABLE_HEADER_ALL_KEYWORD = "すべてのキーワード";
+export const TABLE_HEADER_ALL_KEYWORD = "設定されていないキーワード";
 
 export const TABLE_NAME_BOOKMARKS = "ブックマークのテーブル";
 
