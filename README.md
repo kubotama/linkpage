@@ -446,8 +446,7 @@ linkpage はリンクデータを SQLite のデータベースで管理します
 
 #### 変更内容
 
-- `useBookmarkTable` フックの `handleSelectBookmark` 関数から、キーワード選択を解除する `setSelectedKeywordId(undefined)` の呼び出しを削除しました。
-- 上記の変更に伴い、`BookmarkTable` コンポーネントおよび関連するフックから、不要になった `setSelectedKeywordId` プロパティを削除しました。
+- キーワードでブックマークを絞り込んだ後、別のブックマークを選択しても絞り込み状態が維持されるようになりました。
 
 ### ✨ feat: 2025/09/21 キーワード紐付け機能
 
