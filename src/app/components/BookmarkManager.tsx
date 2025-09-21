@@ -60,6 +60,7 @@ export const BookmarkManager = ({ className = "" }: BookmarkManagerProps) => {
     updateClick,
     addKeywordClick,
     unlinkKeywordClick,
+    linkKeywordClick,
   } = useBookmarkManager({
     bookmarks,
     getBookmarks,
@@ -172,7 +173,7 @@ export const BookmarkManager = ({ className = "" }: BookmarkManagerProps) => {
             {...(selectedBookmark && {
               rowActionButton: {
                 label: LINK_BUTTON_ROLE_NAME,
-                onClick: () => {},
+                onClick: linkKeywordClick,
               },
             })}
           />

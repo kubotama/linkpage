@@ -20,8 +20,14 @@ let POST: typeof import("./route").POST; // POST関数の型を宣言
 
 let inMemoryDbInstance: ActualDatabase.Database;
 
-const getPostParams = (bookmark_id: string): Promise<{ bookmark_id: string }> => {
-  return Promise.resolve({ bookmark_id });
+const getPostParams = (
+  bookmark_id: string
+): Promise<{
+  params: Promise<{
+    bookmark_id: string;
+  }>;
+}> => {
+  return Promise.resolve({ params: Promise.resolve({ bookmark_id }) });
 };
 
 describe("POST /api/bookmarks/[bookmark_id]/keywords", () => {

@@ -38,11 +38,14 @@ const getOrCreateKeyword = (name: string): number => {
   throw new Error(`Failed to get or create keyword '${name}'.`);
 };
 
-export async function POST(request: Request, params: Promise<{ bookmark_id: string }>) {
+export async function POST(
+  request: Request,
+  params: Promise<{ params: Promise<{ bookmark_id: string }> }>
+) {
   let bookmarkId: number;
   try {
     // IDの検証
-    bookmarkId = await getBookmarkIdAsync({ params });
+    bookmarkId = await getBookmarkIdAsync(await params);
   } catch (error) {
     if (error instanceof InvalidIdError) {
       return createInvalidIdError(error);

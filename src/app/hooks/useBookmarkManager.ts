@@ -6,6 +6,7 @@ import { useHotkeys } from "react-hotkeys-hook";
 import { getErrorMessage } from "../api/utils/ApiUtils";
 import { Bookmark } from "../types/Bookmark";
 import { useErrorMessage } from "./useErrorMessage";
+import { Keyword } from "../types/Keyword";
 
 type UseBookmarkManagerProps = {
   bookmarks: Bookmark[];
@@ -264,13 +265,31 @@ export const useBookmarkManager = ({
     }
   }, [textKeyword, selectedBookmarkId, addKeyword, setMessage, setTextKeyword]);
 
-  const unlinkKeywordClick = useCallback(
-    async (keyword_id: number) => {
-      if (!keyword_id || !selectedBookmarkId) {
+  const linkKeywordClick = useCallback(
+    async (keyword: Keyword) => {
+      if (!keyword || !keyword.keyword_name || !selectedBookmarkId) {
         return;
       }
       try {
-        await unlinkKeyword(selectedBookmarkId, keyword_id);
+        await addKeyword(selectedBookmarkId, keyword.keyword_name);
+        setMessage();
+      } catch (error: unknown) {
+        setMessage(
+          getErrorMessage(error, "キーワードの設定中にエラーが発生しました。", false),
+          true
+        );
+      }
+    },
+    [selectedBookmarkId, addKeyword, setMessage]
+  );
+
+  const unlinkKeywordClick = useCallback(
+    async (keyword: Keyword) => {
+      if (!keyword || !keyword.keyword_id || !selectedBookmarkId) {
+        return;
+      }
+      try {
+        await unlinkKeyword(selectedBookmarkId, keyword.keyword_id);
         setMessage();
       } catch (error: unknown) {
         setMessage(
@@ -303,5 +322,6 @@ export const useBookmarkManager = ({
     updateClick,
     addKeywordClick,
     unlinkKeywordClick,
+    linkKeywordClick,
   };
 };
