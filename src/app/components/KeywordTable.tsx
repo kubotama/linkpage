@@ -2,8 +2,8 @@ import React from "react";
 
 import {
   BASE_CELL_STYLE,
-  ROW_STYLE_DEFAULT,
   ROW_STYLE_KEYWORD_SELECTED,
+  ROW_STYLE_KEYWORD_UNSELECTED,
 } from "../constants/constants";
 import { useKeywordTable } from "../hooks/useKeywordTable";
 import { Keyword } from "../types/Keyword";
@@ -61,7 +61,7 @@ export const KeywordTable = ({
               className={`text-sm w-keyword-input cursor-pointer ${BASE_CELL_STYLE} ${
                 selectedKeywordId === keyword.keyword_id
                   ? ROW_STYLE_KEYWORD_SELECTED
-                  : ROW_STYLE_DEFAULT
+                  : ROW_STYLE_KEYWORD_UNSELECTED
               }`}
             >
               {keyword.keyword_name}
