@@ -20,8 +20,8 @@ export const TABLE_HEADER_ALL_KEYWORD = "設定されていないキーワード
 export const TABLE_NAME_BOOKMARKS = "ブックマークのテーブル";
 
 export const ROW_STYLE_BOOKMARK_SELECTED = "border-4 font-bold";
-export const ROW_STYLE_BOOKMARK_UNSELECTED = "border";
+export const ROW_STYLE_BOOKMARK_UNSELECTED = "";
 export const ROW_STYLE_KEYWORD_SELECTED = "bg-sky-500 text-gray-100";
 export const ROW_STYLE_KEYWORD_UNSELECTED = "bg-gray-100 text-gray-900";
-export const BASE_CELL_STYLE = "p-1 border-gray-700";
+export const BASE_CELL_STYLE = "p-1 border border-gray-700";
 export const TITLE_CELL_STYLE = "text-base font-bold bg-slate-700 text-gray-200";

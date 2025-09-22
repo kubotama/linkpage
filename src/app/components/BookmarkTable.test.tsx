@@ -5,8 +5,8 @@ import { beforeEach, describe, expect, it, vi } from "vitest";
 import { render, screen, within } from "@testing-library/react";
 
 import {
+  BASE_CELL_STYLE,
   ROW_STYLE_BOOKMARK_SELECTED,
-  ROW_STYLE_BOOKMARK_UNSELECTED,
   ROW_STYLE_KEYWORD_SELECTED,
   TABLE_NAME_BOOKMARKS,
 } from "../constants/constants";
@@ -95,7 +95,6 @@ describe("BookmarkTableのテスト", () => {
     const selectedCell = screen.getByRole("cell", { name: selected.title });
     // 選択された行がハイライトクラスを持つことを確認
     expect(selectedCell).toHaveClass(ROW_STYLE_BOOKMARK_SELECTED);
-    expect(selectedCell).not.toHaveClass(ROW_STYLE_BOOKMARK_UNSELECTED);
 
     // 選択されていない行のセルを取得
     const unselectedBookmark = mockBookmarks.find((b) => b.bookmark_id !== selected.bookmark_id);
@@ -106,7 +105,7 @@ describe("BookmarkTableのテスト", () => {
       name: unselectedBookmark.title,
     });
     // 選択されていない行が通常のクラスを持つことを確認
-    expect(unselectedCell).toHaveClass(ROW_STYLE_BOOKMARK_UNSELECTED);
+    expect(unselectedCell).toHaveClass(BASE_CELL_STYLE);
     expect(unselectedCell).not.toHaveClass(ROW_STYLE_BOOKMARK_SELECTED);
   });
 
@@ -157,7 +156,6 @@ describe("BookmarkTableのテスト", () => {
     // 選択されたブックマークの検証
     const selectedBookmarkCell = screen.getByRole("cell", { name: bookmarkToSelect.title });
     expect(selectedBookmarkCell).toHaveClass(ROW_STYLE_BOOKMARK_SELECTED);
-    expect(selectedBookmarkCell).not.toHaveClass(ROW_STYLE_BOOKMARK_UNSELECTED);
 
     // キーワードが一致するブックマークの検証
     const bookmarksWithKeyword = mockBookmarksWithKeywords.filter((b) =>
