@@ -22,7 +22,6 @@ type UseBookmarkTableProps = {
   selectedBookmarkId: number | undefined;
   selectedKeywordId: number | undefined;
   onSelectBookmarkId: (bookmarkId: number) => void;
-  setSelectedKeywordId: (keywordId: number | undefined) => void;
 };
 
 export const useBookmarkTable = ({
@@ -30,14 +29,12 @@ export const useBookmarkTable = ({
   selectedBookmarkId,
   selectedKeywordId,
   onSelectBookmarkId,
-  setSelectedKeywordId,
 }: UseBookmarkTableProps) => {
   const handleSelectBookmark = useCallback(
     (bookmarkId: number) => {
       onSelectBookmarkId(bookmarkId);
-      setSelectedKeywordId(undefined);
     },
-    [onSelectBookmarkId, setSelectedKeywordId]
+    [onSelectBookmarkId]
   );
 
   const bookmarkRows: BookmarkRow[] = useMemo(() => {

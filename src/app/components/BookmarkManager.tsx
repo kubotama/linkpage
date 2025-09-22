@@ -97,7 +97,6 @@ export const BookmarkManager = ({ className = "" }: BookmarkManagerProps) => {
           selectedBookmarkId={selectedBookmarkId}
           onSelectBookmarkId={setSelectedBookmarkId}
           selectedKeywordId={selectedKeywordId}
-          setSelectedKeywordId={setSelectedKeywordId}
           className="w-bookmark-list"
         />
         <div className="w-bookmark-details">

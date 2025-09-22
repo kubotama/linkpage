@@ -19,11 +19,9 @@ import { BookmarkTable } from "./BookmarkTable";
 
 describe("BookmarkTableのテスト", () => {
   let mockOnSelectBookmark = vi.fn<(bookmarkId: number) => void>();
-  let mockSetSelectedKeywordId = vi.fn();
 
   beforeEach(() => {
     mockOnSelectBookmark = vi.fn();
-    mockSetSelectedKeywordId = vi.fn();
   });
 
   const renderComponent = (props = {}, customBookmarks = mockBookmarks) => {
@@ -33,7 +31,6 @@ describe("BookmarkTableのテスト", () => {
         selectedBookmarkId={undefined}
         onSelectBookmarkId={mockOnSelectBookmark}
         selectedKeywordId={undefined}
-        setSelectedKeywordId={mockSetSelectedKeywordId}
         {...props}
       />
     );
