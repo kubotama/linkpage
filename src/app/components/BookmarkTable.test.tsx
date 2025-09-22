@@ -156,6 +156,7 @@ describe("BookmarkTableのテスト", () => {
     // 選択されたブックマークの検証
     const selectedBookmarkCell = screen.getByRole("cell", { name: bookmarkToSelect.title });
     expect(selectedBookmarkCell).toHaveClass(ROW_STYLE_BOOKMARK_SELECTED);
+    expect(selectedBookmarkCell).toHaveClass(ROW_STYLE_KEYWORD_SELECTED);
 
     // キーワードが一致するブックマークの検証
     const bookmarksWithKeyword = mockBookmarksWithKeywords.filter((b) =>
