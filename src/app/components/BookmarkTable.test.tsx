@@ -5,6 +5,7 @@ import { beforeEach, describe, expect, it, vi } from "vitest";
 import { render, screen, within } from "@testing-library/react";
 
 import {
+  BASE_CELL_STYLE,
   ROW_STYLE_BOOKMARK_SELECTED,
   ROW_STYLE_KEYWORD_SELECTED,
   TABLE_NAME_BOOKMARKS,
@@ -93,8 +94,7 @@ describe("BookmarkTableのテスト", () => {
     // 選択された行のセルを取得
     const selectedCell = screen.getByRole("cell", { name: selected.title });
     // 選択された行がハイライトクラスを持つことを確認
-    expect(selectedCell).toHaveClass("bg-sky-500", "text-gray-100");
-    expect(selectedCell).not.toHaveClass("bg-gray-100", "text-gray-900");
+    expect(selectedCell).toHaveClass(ROW_STYLE_BOOKMARK_SELECTED);
 
     // 選択されていない行のセルを取得
     const unselectedBookmark = mockBookmarks.find((b) => b.bookmark_id !== selected.bookmark_id);
@@ -105,8 +105,8 @@ describe("BookmarkTableのテスト", () => {
       name: unselectedBookmark.title,
     });
     // 選択されていない行が通常のクラスを持つことを確認
-    expect(unselectedCell).toHaveClass("bg-gray-100", "text-gray-900");
-    expect(unselectedCell).not.toHaveClass("bg-sky-500", "text-gray-100");
+    expect(unselectedCell).toHaveClass(BASE_CELL_STYLE);
+    expect(unselectedCell).not.toHaveClass(ROW_STYLE_BOOKMARK_SELECTED);
   });
 
   it("選択されたキーワードを持つブックマークが正しくハイライト表示される", () => {
@@ -134,7 +134,7 @@ describe("BookmarkTableのテスト", () => {
     });
   });
 
-  it("ブックマーク選択がキーワード選択より優先してハイライト表示される", () => {
+  it("ブックマークとキーワードが両方選択された場合に正しくハイライト表示される", () => {
     const mockBookmarksWithKeywords = buildMockBookmarksWithKeywords();
     const selectedKeywordId = 1; // "キーワード1"
     const bookmarkToSelect = mockBookmarksWithKeywords.find((b) =>
@@ -155,17 +155,18 @@ describe("BookmarkTableのテスト", () => {
 
     mockBookmarksWithKeywords.forEach((bookmark) => {
       const cell = screen.getByRole("cell", { name: bookmark.title });
-      if (bookmark.bookmark_id === selectedBookmarkId) {
-        // 直接選択されたブックマークは、ブックマーク選択スタイルが適用される
+      const isBookmarkSelected = bookmark.bookmark_id === selectedBookmarkId;
+      const hasKeywordSelected = hasKeyword(bookmark, selectedKeywordId);
+
+      if (isBookmarkSelected) {
         expect(cell).toHaveClass(ROW_STYLE_BOOKMARK_SELECTED);
-        expect(cell).not.toHaveClass(ROW_STYLE_KEYWORD_SELECTED);
-      } else if (hasKeyword(bookmark, selectedKeywordId)) {
-        // キーワードを持つ他のブックマークは、キーワード選択スタイルが適用される
-        expect(cell).toHaveClass(ROW_STYLE_KEYWORD_SELECTED);
-        expect(cell).not.toHaveClass(ROW_STYLE_BOOKMARK_SELECTED);
       } else {
-        // それ以外のブックマークはデフォルトスタイル
         expect(cell).not.toHaveClass(ROW_STYLE_BOOKMARK_SELECTED);
+      }
+
+      if (hasKeywordSelected) {
+        expect(cell).toHaveClass(ROW_STYLE_KEYWORD_SELECTED);
+      } else {
         expect(cell).not.toHaveClass(ROW_STYLE_KEYWORD_SELECTED);
       }
     });
