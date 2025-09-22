@@ -153,27 +153,22 @@ describe("BookmarkTableのテスト", () => {
       mockBookmarksWithKeywords
     );
 
-    // 選択されたブックマークの検証
-    const selectedBookmarkCell = screen.getByRole("cell", { name: bookmarkToSelect.title });
-    expect(selectedBookmarkCell).toHaveClass(ROW_STYLE_BOOKMARK_SELECTED);
-    expect(selectedBookmarkCell).toHaveClass(ROW_STYLE_KEYWORD_SELECTED);
-
-    // キーワードが一致するブックマークの検証
-    const bookmarksWithKeyword = mockBookmarksWithKeywords.filter((b) =>
-      hasKeyword(b, selectedKeywordId)
-    );
-    bookmarksWithKeyword.forEach((bookmark) => {
+    mockBookmarksWithKeywords.forEach((bookmark) => {
       const cell = screen.getByRole("cell", { name: bookmark.title });
-      expect(cell).toHaveClass(ROW_STYLE_KEYWORD_SELECTED);
-    });
+      const isBookmarkSelected = bookmark.bookmark_id === selectedBookmarkId;
+      const hasKeywordSelected = hasKeyword(bookmark, selectedKeywordId);
 
-    // キーワードが一致しないブックマークの検証
-    const bookmarksWithoutKeyword = mockBookmarksWithKeywords.filter(
-      (b) => !hasKeyword(b, selectedKeywordId)
-    );
-    bookmarksWithoutKeyword.forEach((bookmark) => {
-      const cell = screen.getByRole("cell", { name: bookmark.title });
-      expect(cell).not.toHaveClass(ROW_STYLE_KEYWORD_SELECTED);
+      if (isBookmarkSelected) {
+        expect(cell).toHaveClass(ROW_STYLE_BOOKMARK_SELECTED);
+      } else {
+        expect(cell).not.toHaveClass(ROW_STYLE_BOOKMARK_SELECTED);
+      }
+
+      if (hasKeywordSelected) {
+        expect(cell).toHaveClass(ROW_STYLE_KEYWORD_SELECTED);
+      } else {
+        expect(cell).not.toHaveClass(ROW_STYLE_KEYWORD_SELECTED);
+      }
     });
   });
 });
