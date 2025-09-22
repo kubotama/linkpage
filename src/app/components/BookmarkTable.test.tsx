@@ -154,11 +154,27 @@ describe("BookmarkTableのテスト", () => {
       mockBookmarksWithKeywords
     );
 
-    const selectedCell = screen.getByRole("cell", {
-      name: bookmarkToSelect.title,
+    // 選択されたブックマークの検証
+    const selectedBookmarkCell = screen.getByRole("cell", { name: bookmarkToSelect.title });
+    expect(selectedBookmarkCell).toHaveClass(ROW_STYLE_BOOKMARK_SELECTED);
+    expect(selectedBookmarkCell).not.toHaveClass(ROW_STYLE_BOOKMARK_UNSELECTED);
+
+    // キーワードが一致するブックマークの検証
+    const bookmarksWithKeyword = mockBookmarksWithKeywords.filter((b) =>
+      hasKeyword(b, selectedKeywordId)
+    );
+    bookmarksWithKeyword.forEach((bookmark) => {
+      const cell = screen.getByRole("cell", { name: bookmark.title });
+      expect(cell).toHaveClass(ROW_STYLE_KEYWORD_SELECTED);
     });
-    // ブックマーク選択スタイルとキーワード選択スタイルの両方が適用されていることを確認
-    expect(selectedCell).toHaveClass(ROW_STYLE_BOOKMARK_SELECTED);
-    expect(selectedCell).toHaveClass(ROW_STYLE_KEYWORD_SELECTED);
+
+    // キーワードが一致しないブックマークの検証
+    const bookmarksWithoutKeyword = mockBookmarksWithKeywords.filter(
+      (b) => !hasKeyword(b, selectedKeywordId)
+    );
+    bookmarksWithoutKeyword.forEach((bookmark) => {
+      const cell = screen.getByRole("cell", { name: bookmark.title });
+      expect(cell).not.toHaveClass(ROW_STYLE_KEYWORD_SELECTED);
+    });
   });
 });
