@@ -89,6 +89,14 @@ export const BookmarkManager = ({ className = "" }: BookmarkManagerProps) => {
     return keywords.filter((k) => !linkedKeywordIds.has(k.keyword_id));
   }, [keywords, linkedKeywordIds]);
 
+  const isEnableAddKeywordButton = useMemo(() => {
+    const normalizedKeyword = textKeyword.trim();
+    return (
+      normalizedKeyword.length > 0 &&
+      !keywords.some((k) => k.keyword_name.toLowerCase() === normalizedKeyword.toLowerCase())
+    );
+  }, [textKeyword, keywords]);
+
   return (
     <div className={`mt-5 mb-5 ${className}`}>
       <div className="flex space-x-4">
@@ -142,11 +150,13 @@ export const BookmarkManager = ({ className = "" }: BookmarkManagerProps) => {
                   className="min-w-keyword-input"
                   onChange={(e) => setTextKeyword(e.target.value)}
                 />
-                <div className="ml-2">
-                  <ActionButton onClick={addKeywordClick} className="w-auto">
-                    {ADD_BUTTON_ROLE_NAME}
-                  </ActionButton>
-                </div>
+                {isEnableAddKeywordButton && (
+                  <div className="ml-2">
+                    <ActionButton onClick={addKeywordClick} className="w-auto">
+                      {ADD_BUTTON_ROLE_NAME}
+                    </ActionButton>
+                  </div>
+                )}
               </fieldset>
             </form>
           )}

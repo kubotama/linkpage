@@ -19,8 +19,10 @@ import {
   buildMockBookmarksWithKeywords,
   clickBookmark,
   findBookmarkWithAtLeastNKeywords,
+  LINKED_KEYWORD,
   mockKeywords,
   setupBookmarkManagerForTest,
+  typeInTextbox,
 } from "../../test-utils/bookmarkTestUtils";
 import { Bookmark } from "../../types/Bookmark";
 
@@ -66,21 +68,42 @@ describe("キーワード詳細フォームの表示のテスト", () => {
   });
 
   describe("ブックマークが選択されている場合", () => {
-    it("キーワード設定フォーム（入力欄と追加ボタン）が表示される", async () => {
-      const bookmarkToSelect = findBookmarkWithAtLeastNKeywords(mockBookmarksWithKeywords);
-      await clickBookmark(user, bookmarkToSelect);
-      await assertBookmarkIsSelected(bookmarkToSelect);
+    it.each([
+      { description: "空の場合", keyword: "", shouldBeVisible: false },
+      {
+        description: "登録済みのキーワードの場合",
+        keyword: LINKED_KEYWORD.keyword_name,
+        shouldBeVisible: false,
+      },
+      {
+        description: "登録済みのキーワードの場合（大文字）",
+        keyword: LINKED_KEYWORD.keyword_name.toUpperCase(),
+        shouldBeVisible: false,
+      },
+      {
+        description: "未登録のキーワードの場合",
+        keyword: "未登録のキーワード",
+        shouldBeVisible: true,
+      },
+    ])(
+      "キーワード入力が$description、追加ボタンの表示が期待通りであること",
+      async ({ keyword, shouldBeVisible }) => {
+        const bookmarkToSelect = findBookmarkWithAtLeastNKeywords(mockBookmarksWithKeywords, 1);
+        await clickBookmark(user, bookmarkToSelect);
+        await assertBookmarkIsSelected(bookmarkToSelect);
 
-      expect(screen.getByRole("group", { name: FIELDSET_KEYWORD_LABEL })).toBeVisible();
+        expect(screen.getByRole("group", { name: FIELDSET_KEYWORD_LABEL })).toBeVisible();
+        await typeInTextbox(user, KEYWORD_ROLE_NAME, keyword);
 
-      const keywordInput = screen.getByRole("textbox", { name: KEYWORD_ROLE_NAME });
-      expect(keywordInput).toBeVisible();
-      expect(keywordInput).toHaveValue("");
-
-      const addButton = screen.getByRole("button", { name: ADD_BUTTON_ROLE_NAME });
-      expect(addButton).toBeVisible();
-      expect(addButton).toBeEnabled();
-    });
+        if (shouldBeVisible) {
+          expect(screen.getByRole("button", { name: ADD_BUTTON_ROLE_NAME })).toBeVisible();
+        } else {
+          expect(
+            screen.queryByRole("button", { name: ADD_BUTTON_ROLE_NAME })
+          ).not.toBeInTheDocument();
+        }
+      }
+    );
 
     it.each(buildMockBookmarksWithKeywords())(
       "選択されたブックマーク「$title」に設定されたキーワードが一覧で表示される",
