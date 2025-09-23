@@ -115,6 +115,11 @@ export const useBookmarks = () => {
             : bookmark
         )
       );
+      // 既存のキーワードリストにない場合のみ追加する
+      setKeywords((currentKeywords) => {
+        const isAlreadyExist = currentKeywords.some((k) => k.keyword_id === newKeyword.keyword_id);
+        return isAlreadyExist ? currentKeywords : [...currentKeywords, newKeyword];
+      });
       return;
     } catch (error: unknown) {
       console.error("キーワードの追加エラー:", getErrorMessage(error)); // 詳細なエラーはコンソールへ
