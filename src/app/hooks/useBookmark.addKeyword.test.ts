@@ -35,7 +35,6 @@ describe("useBookmarks - addKeyword", () => {
 
     it("未登録のキーワードを追加する", async () => {
       // Arrange
-
       const newKeywordId = 99;
       mockFetch.mockResolvedValueOnce(
         createMockResponse({
@@ -163,5 +162,78 @@ describe("useBookmarks - addKeyword", () => {
     });
   });
 
-  describe("エラーの出力をテストする", () => {});
+  describe("エラーの出力をテストする", () => {
+    let consoleErrorSpy: MockInstance;
+
+    beforeEach(() => {
+      // console.errorをスパイして、エラー出力がされるか確認
+      consoleErrorSpy = vi.spyOn(console, "error").mockImplementation(() => {});
+    });
+
+    afterEach(() => {
+      consoleErrorSpy.mockRestore();
+    });
+
+    const errorTestCases: { description: string; status: number; errorMessage: string }[] = [
+      {
+        description: "指定されたブックマークが見つからない (404)",
+        status: 404,
+        errorMessage: "指定されたブックマークがありません。",
+      },
+      {
+        description: "キーワードが既に登録済み (409)",
+        status: 409,
+        errorMessage: "指定されたキーワードは既にこのブックマークに登録されています。",
+      },
+      // ... 他のエラーケース
+      {
+        description: "サーバー内部エラー (500)",
+        status: 500,
+        errorMessage: "サーバー内部でエラーが発生しました。",
+      },
+    ];
+    it.each(errorTestCases)("$description", async ({ status, errorMessage }) => {
+      // Arrange
+      const { result } = renderHook(() => useBookmarks());
+      await act(async () => {
+        await result.current.getBookmarks();
+        await result.current.getKeywords();
+      });
+      const bookmarkToSelect = findBookmarkWithAtLeastNKeywords(result.current.bookmarks, 0); // キーワードが0個のブックマークを選択
+
+      mockFetch.mockReset();
+      mockFetch.mockResolvedValueOnce(
+        createMockResponse({
+          message: errorMessage,
+          status: status,
+          isOk: false,
+        })
+      );
+      // Act
+      await expect(
+        result.current.addKeyword(bookmarkToSelect.bookmark_id, NOLINKED_KEYWORD.keyword_name)
+      ).rejects.toThrow();
+
+      // Assert
+      await waitFor(() => {
+        expect(mockFetch).toHaveBeenCalledTimes(1);
+        expect(mockFetch).toHaveBeenCalledWith(
+          `${BOOKMARKS_ENDPOINT}/${bookmarkToSelect.bookmark_id}/keywords`,
+          {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify({
+              keyword_name: NOLINKED_KEYWORD.keyword_name,
+            }),
+          }
+        );
+        expect(consoleErrorSpy).toHaveBeenCalledWith(
+          "キーワードの追加エラー:",
+          expect.stringContaining(errorMessage)
+        );
+      });
+    });
+  });
 });
