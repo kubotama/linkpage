@@ -76,6 +76,11 @@ describe("キーワード詳細フォームの表示のテスト", () => {
         shouldBeVisible: false,
       },
       {
+        description: "登録済みのキーワードの場合（大文字）",
+        keyword: LINKED_KEYWORD.keyword_name.toUpperCase(),
+        shouldBeVisible: false,
+      },
+      {
         description: "未登録のキーワードの場合",
         keyword: "未登録のキーワード",
         shouldBeVisible: true,
