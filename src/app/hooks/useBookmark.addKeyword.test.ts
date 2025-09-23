@@ -4,6 +4,12 @@ import { act, renderHook, waitFor } from "@testing-library/react";
 
 import { BOOKMARKS_ENDPOINT } from "../constants/apiEndpoints";
 import {
+  HTTP_STATUS_CONFLICT,
+  HTTP_STATUS_INTERNAL_SERVER_ERROR,
+  HTTP_STATUS_NOT_FOUND,
+  HTTP_STATUS_OK,
+} from "../constants/httpStatusCodes";
+import {
   buildMockBookmarksWithKeywords,
   createMockResponse,
   findBookmarkWithAtLeastNKeywords,
@@ -21,9 +27,11 @@ describe("useBookmarks - addKeyword", () => {
     mockFetch.mockClear();
     const mockDataWithKeywords = buildMockBookmarksWithKeywords();
     mockFetch.mockResolvedValueOnce(
-      new Response(JSON.stringify(mockDataWithKeywords), { status: 200 })
+      new Response(JSON.stringify(mockDataWithKeywords), { status: HTTP_STATUS_OK })
     );
-    mockFetch.mockResolvedValueOnce(new Response(JSON.stringify(mockKeywords), { status: 200 }));
+    mockFetch.mockResolvedValueOnce(
+      new Response(JSON.stringify(mockKeywords), { status: HTTP_STATUS_OK })
+    );
   });
 
   afterEach(() => {
@@ -177,18 +185,17 @@ describe("useBookmarks - addKeyword", () => {
     const errorTestCases: { description: string; status: number; errorMessage: string }[] = [
       {
         description: "指定されたブックマークが見つからない (404)",
-        status: 404,
+        status: HTTP_STATUS_NOT_FOUND,
         errorMessage: "指定されたブックマークがありません。",
       },
       {
         description: "キーワードが既に登録済み (409)",
-        status: 409,
+        status: HTTP_STATUS_CONFLICT,
         errorMessage: "指定されたキーワードは既にこのブックマークに登録されています。",
       },
-      // ... 他のエラーケース
       {
         description: "サーバー内部エラー (500)",
-        status: 500,
+        status: HTTP_STATUS_INTERNAL_SERVER_ERROR,
         errorMessage: "サーバー内部でエラーが発生しました。",
       },
     ];
