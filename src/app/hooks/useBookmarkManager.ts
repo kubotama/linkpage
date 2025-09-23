@@ -253,11 +253,13 @@ export const useBookmarkManager = ({
   );
 
   const addKeywordClick = useCallback(async () => {
-    if (!textKeyword || !selectedBookmarkId) {
+    const normalizedTextKeyword = textKeyword.trim();
+
+    if (!normalizedTextKeyword || !selectedBookmarkId) {
       return;
     }
     try {
-      await addKeyword(selectedBookmarkId, textKeyword);
+      await addKeyword(selectedBookmarkId, normalizedTextKeyword);
       setTextKeyword("");
       setMessage();
     } catch (error: unknown) {

@@ -90,7 +90,11 @@ export const BookmarkManager = ({ className = "" }: BookmarkManagerProps) => {
   }, [keywords, linkedKeywordIds]);
 
   const isEnableAddKeywordButton = useMemo(() => {
-    return textKeyword.length > 0 && !keywords.some((k) => k.keyword_name === textKeyword);
+    const normalizedKeyword = textKeyword.trim();
+    return (
+      normalizedKeyword.length > 0 &&
+      !keywords.some((k) => k.keyword_name.toLowerCase() === normalizedKeyword.toLowerCase())
+    );
   }, [textKeyword, keywords]);
 
   return (
