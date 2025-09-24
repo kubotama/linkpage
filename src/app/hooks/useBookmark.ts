@@ -115,10 +115,16 @@ export const useBookmarks = () => {
             : bookmark
         )
       );
-      // 既存のキーワードリストにない場合のみ追加する
       setKeywords((currentKeywords) => {
-        const isAlreadyExist = currentKeywords.some((k) => k.keyword_id === newKeyword.keyword_id);
-        return isAlreadyExist ? currentKeywords : [...currentKeywords, newKeyword];
+        const keywordExists = currentKeywords.some((k) => k.keyword_id === newKeyword.keyword_id);
+        if (keywordExists) {
+          // 既存のキーワードを更新して、名前の変更などを反映する
+          return currentKeywords.map((k) =>
+            k.keyword_id === newKeyword.keyword_id ? newKeyword : k
+          );
+        }
+        // 新しいキーワードを追加する
+        return [...currentKeywords, newKeyword];
       });
       return;
     } catch (error: unknown) {
