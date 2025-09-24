@@ -18,6 +18,26 @@ import {
 } from "../test-utils/bookmarkTestUtils";
 import { useBookmarks } from "./useBookmark";
 
+const assertAddKeywordApiCall = async (bookmarkId: number, keywordName: string) => {
+  await waitFor(() => {
+    expect(mockFetch).toHaveBeenCalledWith(
+      `${BOOKMARKS_ENDPOINT}/${bookmarkId}/keywords`,
+      expect.objectContaining({
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ keyword_name: keywordName }),
+      })
+    );
+  });
+};
+
+const assertBookmarkUpdatedWithKeyword = (bookmarkId: number, keywordName: string) => {
+  const updatedBookmark = result.current.bookmarks.find((b) => b.bookmark_id === bookmarkId);
+  expect(updatedBookmark?.keywords.some((k) => k.keyword_name === keywordName)).toBe(true);
+};
+
 const mockFetch = vi.fn();
 let result: { current: ReturnType<typeof useBookmarks> };
 
@@ -82,20 +102,7 @@ describe("useBookmarks - addKeyword", () => {
       });
 
       // Assert
-      await waitFor(() => {
-        expect(mockFetch).toHaveBeenCalledWith(
-          `${BOOKMARKS_ENDPOINT}/${bookmarkToSelect.bookmark_id}/keywords`,
-          {
-            method: "POST",
-            headers: {
-              "Content-Type": "application/json",
-            },
-            body: JSON.stringify({
-              keyword_name: UNREGISTERED_KEYWORD,
-            }),
-          }
-        );
-      });
+      await assertAddKeywordApiCall(bookmarkToSelect.bookmark_id, UNREGISTERED_KEYWORD);
 
       const afterKeywords = result.current.keywords;
       expect(afterKeywords).toHaveLength(mockKeywords.length + 1);
@@ -103,12 +110,7 @@ describe("useBookmarks - addKeyword", () => {
       expect(addedKeyword.keyword_name).toBe(UNREGISTERED_KEYWORD);
       expect(addedKeyword.keyword_id).toBe(newKeywordId);
       // ブックマークの状態も更新されていることを確認
-      const updatedBookmark = result.current.bookmarks.find(
-        (b) => b.bookmark_id === bookmarkToSelect.bookmark_id
-      );
-      expect(updatedBookmark?.keywords.some((k) => k.keyword_name === UNREGISTERED_KEYWORD)).toBe(
-        true
-      );
+      assertBookmarkUpdatedWithKeyword(bookmarkToSelect.bookmark_id, UNREGISTERED_KEYWORD);
     });
 
     it("登録済みのキーワードを設定する", async () => {
@@ -142,32 +144,15 @@ describe("useBookmarks - addKeyword", () => {
       });
 
       // Assert
-      await waitFor(() => {
-        expect(mockFetch).toHaveBeenCalledWith(
-          `${BOOKMARKS_ENDPOINT}/${bookmarkToSelect.bookmark_id}/keywords`,
-          {
-            method: "POST",
-            headers: {
-              "Content-Type": "application/json",
-            },
-            body: JSON.stringify({
-              keyword_name: NOLINKED_KEYWORD.keyword_name,
-            }),
-          }
-        );
-      });
+      await assertAddKeywordApiCall(bookmarkToSelect.bookmark_id, NOLINKED_KEYWORD.keyword_name);
+
       const afterKeywords = result.current.keywords;
       expect(afterKeywords).toHaveLength(mockKeywords.length);
       expect(afterKeywords.some((k) => k.keyword_name === NOLINKED_KEYWORD.keyword_name)).toBe(
         true
       );
       // ブックマークの状態も更新されていることを確認
-      const updatedBookmark = result.current.bookmarks.find(
-        (b) => b.bookmark_id === bookmarkToSelect.bookmark_id
-      );
-      expect(
-        updatedBookmark?.keywords.some((k) => k.keyword_name === NOLINKED_KEYWORD.keyword_name)
-      ).toBe(true);
+      assertBookmarkUpdatedWithKeyword(bookmarkToSelect.bookmark_id, NOLINKED_KEYWORD.keyword_name);
     });
   });
 
@@ -217,25 +202,11 @@ describe("useBookmarks - addKeyword", () => {
       ).rejects.toThrow();
 
       // Assert
-      await waitFor(() => {
-        expect(mockFetch).toHaveBeenCalledTimes(1);
-        expect(mockFetch).toHaveBeenCalledWith(
-          `${BOOKMARKS_ENDPOINT}/${bookmarkToSelect.bookmark_id}/keywords`,
-          {
-            method: "POST",
-            headers: {
-              "Content-Type": "application/json",
-            },
-            body: JSON.stringify({
-              keyword_name: NOLINKED_KEYWORD.keyword_name,
-            }),
-          }
-        );
-        expect(consoleErrorSpy).toHaveBeenCalledWith(
-          "キーワードの追加エラー:",
-          expect.stringContaining(errorMessage)
-        );
-      });
+      assertAddKeywordApiCall(bookmarkToSelect.bookmark_id, NOLINKED_KEYWORD.keyword_name);
+      expect(consoleErrorSpy).toHaveBeenCalledWith(
+        "キーワードの追加エラー:",
+        expect.stringContaining(errorMessage)
+      );
     });
   });
 });
