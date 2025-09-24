@@ -5,6 +5,7 @@ import { act, renderHook, waitFor } from "@testing-library/react";
 import { BOOKMARKS_ENDPOINT } from "../constants/apiEndpoints";
 import {
   HTTP_STATUS_CONFLICT,
+  HTTP_STATUS_CREATED,
   HTTP_STATUS_INTERNAL_SERVER_ERROR,
   HTTP_STATUS_NOT_FOUND,
   HTTP_STATUS_OK,
@@ -12,19 +13,19 @@ import {
 import {
   buildMockBookmarksWithKeywords,
   createMockResponse,
-  findBookmarkWithAtLeastNKeywords,
-  GOOGLE_BOOKMARK,
   mockKeywords,
   NOLINKED_KEYWORD,
 } from "../test-utils/bookmarkTestUtils";
 import { useBookmarks } from "./useBookmark";
 
 const mockFetch = vi.fn();
+let result: { current: ReturnType<typeof useBookmarks> };
+
 global.fetch = mockFetch;
 
 describe("useBookmarks - addKeyword", () => {
   beforeEach(async () => {
-    mockFetch.mockClear();
+    mockFetch.mockReset();
     const mockDataWithKeywords = buildMockBookmarksWithKeywords();
     mockFetch.mockResolvedValueOnce(
       new Response(JSON.stringify(mockDataWithKeywords), { status: HTTP_STATUS_OK })
@@ -32,6 +33,15 @@ describe("useBookmarks - addKeyword", () => {
     mockFetch.mockResolvedValueOnce(
       new Response(JSON.stringify(mockKeywords), { status: HTTP_STATUS_OK })
     );
+
+    const { result: hookResult } = renderHook(() => useBookmarks());
+    result = hookResult;
+
+    await act(async () => {
+      await result.current.getBookmarks();
+      await result.current.getKeywords();
+    });
+    mockFetch.mockClear(); // mockReset() から mockClear() へ変更
   });
 
   afterEach(() => {
@@ -46,19 +56,15 @@ describe("useBookmarks - addKeyword", () => {
       const newKeywordId = 99;
       mockFetch.mockResolvedValueOnce(
         createMockResponse({
-          message: "キーワードをブックマークに追加しました。",
-          keyword_name: UNREGISTERED_KEYWORD,
           keyword_id: newKeywordId,
+          keyword_name: UNREGISTERED_KEYWORD,
+          status: HTTP_STATUS_CREATED,
         })
       );
-      const { result } = renderHook(() => useBookmarks());
-      await act(async () => {
-        await result.current.getBookmarks();
-        await result.current.getKeywords();
-      });
-      const bookmarkToSelect = findBookmarkWithAtLeastNKeywords(result.current.bookmarks, 0); // キーワードが0個のブックマークを選択
+      const bookmarkToSelect = result.current.bookmarks.find((b) => b.keywords.length === 0)!;
 
       // Actの前の状態を確認
+      expect(bookmarkToSelect).toBeDefined();
       // 登録されているキーワードはテスト用のデータ
       expect(result.current.keywords).toEqual(mockKeywords);
       // 設定するキーワードはキーワードとして未登録
@@ -66,7 +72,7 @@ describe("useBookmarks - addKeyword", () => {
         false
       );
       // 設定するブックマークにはキーワードとして登録されていない
-      expect(GOOGLE_BOOKMARK.keywords.some((k) => k.keyword_name === UNREGISTERED_KEYWORD)).toBe(
+      expect(bookmarkToSelect.keywords.some((k) => k.keyword_name === UNREGISTERED_KEYWORD)).toBe(
         false
       );
 
@@ -109,18 +115,13 @@ describe("useBookmarks - addKeyword", () => {
       // Arrange
       mockFetch.mockResolvedValueOnce(
         createMockResponse({
-          message: "キーワードをブックマークに追加しました。",
-          keyword_name: NOLINKED_KEYWORD.keyword_name,
           keyword_id: NOLINKED_KEYWORD.keyword_id,
+          keyword_name: NOLINKED_KEYWORD.keyword_name,
+          status: HTTP_STATUS_CREATED,
         })
       );
-      const { result } = renderHook(() => useBookmarks());
-      await act(async () => {
-        await result.current.getBookmarks();
-        await result.current.getKeywords();
-      });
-      const bookmarkToSelect = findBookmarkWithAtLeastNKeywords(result.current.bookmarks, 0); // キーワードが0個のブックマークを選択
-
+      const bookmarkToSelect = result.current.bookmarks.find((b) => b.keywords.length === 0)!;
+      expect(bookmarkToSelect).toBeDefined();
       // Actの前の状態を確認
       // 登録されているキーワードはテスト用のデータ
       expect(result.current.keywords).toEqual(mockKeywords);
@@ -201,14 +202,8 @@ describe("useBookmarks - addKeyword", () => {
     ];
     it.each(errorTestCases)("$description", async ({ status, errorMessage }) => {
       // Arrange
-      const { result } = renderHook(() => useBookmarks());
-      await act(async () => {
-        await result.current.getBookmarks();
-        await result.current.getKeywords();
-      });
-      const bookmarkToSelect = findBookmarkWithAtLeastNKeywords(result.current.bookmarks, 0); // キーワードが0個のブックマークを選択
+      const bookmarkToSelect = result.current.bookmarks.find((b) => b.keywords.length === 0)!;
 
-      mockFetch.mockReset();
       mockFetch.mockResolvedValueOnce(
         createMockResponse({
           message: errorMessage,
