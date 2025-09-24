@@ -117,14 +117,20 @@ export const useBookmarks = () => {
       );
       setKeywords((currentKeywords) => {
         const index = currentKeywords.findIndex((k) => k.keyword_id === newKeyword.keyword_id);
-        if (index !== -1) {
-          // 既存のキーワードを更新して、名前の変更などを反映する
-          const updatedKeywords = [...currentKeywords];
-          updatedKeywords[index] = newKeyword;
-          return updatedKeywords;
+        if (index === -1) {
+          // 新しいキーワードなので追加
+          return [...currentKeywords, newKeyword];
         }
-        // 新しいキーワードを追加する
-        return [...currentKeywords, newKeyword];
+
+        // 既存のキーワードと内容が同じ場合は、ステートを更新しない
+        if (currentKeywords[index].keyword_name === newKeyword.keyword_name) {
+          return currentKeywords;
+        }
+
+        // キーワード名が変更されている場合のみ更新
+        const updatedKeywords = [...currentKeywords];
+        updatedKeywords[index] = newKeyword;
+        return updatedKeywords;
       });
       return;
     } catch (error: unknown) {
