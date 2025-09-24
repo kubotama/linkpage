@@ -115,6 +115,23 @@ export const useBookmarks = () => {
             : bookmark
         )
       );
+      setKeywords((currentKeywords) => {
+        const index = currentKeywords.findIndex((k) => k.keyword_id === newKeyword.keyword_id);
+        if (index === -1) {
+          // 新しいキーワードなので追加
+          return [...currentKeywords, newKeyword];
+        }
+
+        // 既存のキーワードと内容が同じ場合は、ステートを更新しない
+        if (currentKeywords[index].keyword_name === newKeyword.keyword_name) {
+          return currentKeywords;
+        }
+
+        // キーワード名が変更されている場合のみ更新
+        const updatedKeywords = [...currentKeywords];
+        updatedKeywords[index] = newKeyword;
+        return updatedKeywords;
+      });
       return;
     } catch (error: unknown) {
       console.error("キーワードの追加エラー:", getErrorMessage(error)); // 詳細なエラーはコンソールへ
