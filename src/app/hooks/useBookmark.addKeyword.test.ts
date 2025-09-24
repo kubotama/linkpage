@@ -154,6 +154,35 @@ describe("useBookmarks - addKeyword", () => {
       // ブックマークの状態も更新されていることを確認
       assertBookmarkUpdatedWithKeyword(bookmarkToSelect.bookmark_id, NOLINKED_KEYWORD.keyword_name);
     });
+
+    it("既存のキーワードの名前が変更された場合に更新する", async () => {
+      // Arrange
+      const keywordToUpdate = result.current.keywords[0];
+      const updatedKeywordName = "更新されたキーワード名";
+      mockFetch.mockResolvedValueOnce(
+        createMockResponse({
+          keyword_id: keywordToUpdate.keyword_id,
+          keyword_name: updatedKeywordName,
+          status: HTTP_STATUS_CREATED,
+        })
+      );
+      const bookmarkToSelect = result.current.bookmarks.find((b) => b.keywords.length === 0)!;
+
+      // Act
+      await act(async () => {
+        await result.current.addKeyword(bookmarkToSelect.bookmark_id, updatedKeywordName);
+      });
+
+      // Assert
+      await assertAddKeywordApiCall(bookmarkToSelect.bookmark_id, updatedKeywordName);
+      const updatedKeyword = result.current.keywords.find(
+        (k) => k.keyword_id === keywordToUpdate.keyword_id
+      );
+      expect(updatedKeyword?.keyword_name).toBe(updatedKeywordName);
+      expect(result.current.keywords).toHaveLength(mockKeywords.length);
+      // ブックマークの状態も更新されていることを確認
+      assertBookmarkUpdatedWithKeyword(bookmarkToSelect.bookmark_id, updatedKeywordName);
+    });
   });
 
   describe("エラーの出力をテストする", () => {
