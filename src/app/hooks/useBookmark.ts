@@ -116,12 +116,12 @@ export const useBookmarks = () => {
         )
       );
       setKeywords((currentKeywords) => {
-        const keywordExists = currentKeywords.some((k) => k.keyword_id === newKeyword.keyword_id);
-        if (keywordExists) {
+        const index = currentKeywords.findIndex((k) => k.keyword_id === newKeyword.keyword_id);
+        if (index !== -1) {
           // 既存のキーワードを更新して、名前の変更などを反映する
-          return currentKeywords.map((k) =>
-            k.keyword_id === newKeyword.keyword_id ? newKeyword : k
-          );
+          const updatedKeywords = [...currentKeywords];
+          updatedKeywords[index] = newKeyword;
+          return updatedKeywords;
         }
         // 新しいキーワードを追加する
         return [...currentKeywords, newKeyword];
