@@ -34,13 +34,18 @@ export const useBookmarksLogic = ({
     return keywords.filter((k) => !linkedKeywordIds.has(k.keyword_id));
   }, [keywords, linkedKeywordIds]);
 
+  const existingKeywordNames = useMemo(
+    () => new Set(keywords.map((k) => k.keyword_name.toLowerCase())),
+    [keywords]
+  );
+
   const isEnableAddKeywordButton = useMemo(() => {
-    const normalizedKeyword = textKeyword.trim();
-    return (
-      normalizedKeyword.length > 0 &&
-      !keywords.some((k) => k.keyword_name.toLowerCase() === normalizedKeyword.toLowerCase())
-    );
-  }, [textKeyword, keywords]);
+    const normalizedKeyword = textKeyword.trim().toLowerCase();
+    if (normalizedKeyword.length === 0) {
+      return false;
+    }
+    return !existingKeywordNames.has(normalizedKeyword);
+  }, [textKeyword, existingKeywordNames]);
 
   return {
     selectedBookmark,
