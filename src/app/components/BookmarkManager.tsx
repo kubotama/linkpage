@@ -1,4 +1,4 @@
-import React, { useMemo } from "react";
+import React from "react";
 
 import {
   ADD_BUTTON_ROLE_NAME,
@@ -17,6 +17,7 @@ import {
   UPDATE_BUTTON_ROLE_NAME,
 } from "../constants/constants";
 import { useBookmarks } from "../hooks/useBookmark";
+import { useBookmarksLogic } from "../hooks/useBookmarkLogic";
 import { useBookmarkManager } from "../hooks/useBookmarkManager";
 import { ActionButton } from "./ActionButton";
 import { BookmarkInputField } from "./BookmarkInputField";
@@ -71,31 +72,13 @@ export const BookmarkManager = ({ className = "" }: BookmarkManagerProps) => {
     unlinkKeyword,
   });
 
-  const selectedBookmark = useMemo(
-    () => bookmarks.find((b) => b.bookmark_id === selectedBookmarkId),
-    [bookmarks, selectedBookmarkId]
-  );
-
-  const selectedKeywords = useMemo(() => selectedBookmark?.keywords, [selectedBookmark]);
-
-  const linkedKeywordIds = useMemo(() => {
-    return new Set(selectedKeywords?.map((k) => k.keyword_id));
-  }, [selectedKeywords]);
-
-  const availableKeywords = useMemo(() => {
-    if (linkedKeywordIds.size === 0) {
-      return keywords;
-    }
-    return keywords.filter((k) => !linkedKeywordIds.has(k.keyword_id));
-  }, [keywords, linkedKeywordIds]);
-
-  const isEnableAddKeywordButton = useMemo(() => {
-    const normalizedKeyword = textKeyword.trim();
-    return (
-      normalizedKeyword.length > 0 &&
-      !keywords.some((k) => k.keyword_name.toLowerCase() === normalizedKeyword.toLowerCase())
-    );
-  }, [textKeyword, keywords]);
+  const { selectedBookmark, selectedKeywords, availableKeywords, isEnableAddKeywordButton } =
+    useBookmarksLogic({
+      bookmarks,
+      keywords,
+      selectedBookmarkId,
+      textKeyword,
+    });
 
   return (
     <div className={`mt-5 mb-5 ${className}`}>
