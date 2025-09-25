@@ -62,7 +62,9 @@ describe("useBookmarkLogic", () => {
         );
       }
     );
+  });
 
+  describe("isEnableAddKeywordButtonのテスト", () => {
     const testKeywordCases: { description: string; textKeyword: string; expected: boolean }[] = [
       {
         description: "キーワードが空文字の場合、ボタンは無効であること",
@@ -82,7 +84,7 @@ describe("useBookmarkLogic", () => {
     ];
     it.each(testKeywordCases)("$description: 入力されたキーワード", ({ textKeyword, expected }) => {
       // Arrange & Act
-      const { result } = renderMyHook(mockBookmarksWithKeywords[0].bookmark_id, textKeyword);
+      const { result } = renderMyHook(undefined, textKeyword);
 
       // Assert
       expect(result.current.isEnableAddKeywordButton).toBe(expected);
