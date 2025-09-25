@@ -24,10 +24,10 @@ export const useBookmarksLogic = ({
   const selectedKeywords = useMemo(() => selectedBookmark?.keywords, [selectedBookmark]);
 
   const availableKeywords = useMemo(() => {
-    const linkedKeywordIds = new Set((selectedKeywords ?? []).map((k) => k.keyword_id));
-    if (linkedKeywordIds.size === 0) {
+    if (!selectedKeywords?.length) {
       return keywords;
     }
+    const linkedKeywordIds = new Set(selectedKeywords.map((k) => k.keyword_id));
     return keywords.filter((k) => !linkedKeywordIds.has(k.keyword_id));
   }, [keywords, selectedKeywords]);
 
