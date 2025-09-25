@@ -24,7 +24,7 @@ export const useBookmarksLogic = ({
   const selectedKeywords = useMemo(() => selectedBookmark?.keywords, [selectedBookmark]);
 
   const linkedKeywordIds = useMemo(() => {
-    return new Set(selectedKeywords?.map((k) => k.keyword_id));
+    return new Set((selectedKeywords ?? []).map((k) => k.keyword_id));
   }, [selectedKeywords]);
 
   const availableKeywords = useMemo(() => {
