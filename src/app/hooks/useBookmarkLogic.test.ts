@@ -78,6 +78,16 @@ describe("useBookmarkLogic", () => {
         textKeyword: "キーワード1",
         expected: false,
       },
+      {
+        description: "登録済みのキーワード（前後に空白あり）の場合、ボタンは無効であること",
+        textKeyword: "  キーワード1  ",
+        expected: false,
+      },
+      {
+        description: "キーワードが空白のみの場合、ボタンは無効であること",
+        textKeyword: "   ",
+        expected: false,
+      },
     ];
     it.each(testKeywordCases)("$description: 入力されたキーワード", ({ textKeyword, expected }) => {
       // Arrange & Act
