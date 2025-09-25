@@ -23,16 +23,13 @@ export const useBookmarksLogic = ({
 
   const selectedKeywords = useMemo(() => selectedBookmark?.keywords, [selectedBookmark]);
 
-  const linkedKeywordIds = useMemo(() => {
-    return new Set((selectedKeywords ?? []).map((k) => k.keyword_id));
-  }, [selectedKeywords]);
-
   const availableKeywords = useMemo(() => {
+    const linkedKeywordIds = new Set((selectedKeywords ?? []).map((k) => k.keyword_id));
     if (linkedKeywordIds.size === 0) {
       return keywords;
     }
     return keywords.filter((k) => !linkedKeywordIds.has(k.keyword_id));
-  }, [keywords, linkedKeywordIds]);
+  }, [keywords, selectedKeywords]);
 
   const existingKeywordNames = useMemo(
     () => new Set(keywords.map((k) => k.keyword_name.toLowerCase())),
