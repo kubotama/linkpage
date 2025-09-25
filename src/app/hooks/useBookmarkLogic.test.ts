@@ -1,4 +1,4 @@
-import { beforeEach, describe, expect, it } from "vitest";
+import { describe, expect, it } from "vitest";
 
 import { renderHook } from "@testing-library/react";
 
@@ -21,26 +21,23 @@ const renderMyHook = (selectedBookmarkId?: number, textKeyword: string = "") => 
 
 describe("useBookmarkLogic", () => {
   describe("ブックマークが選択されていない場合", () => {
-    let result: { current: ReturnType<typeof useBookmarksLogic> };
-
-    beforeEach(() => {
-      const { result: hookResult } = renderMyHook();
-      result = hookResult;
-    });
-
     it("selectedBookmarkはundefinedであること", () => {
+      const { result } = renderMyHook();
       expect(result.current.selectedBookmark).toBeUndefined();
     });
 
     it("selectedKeywordsはundefinedであること", () => {
+      const { result } = renderMyHook();
       expect(result.current.selectedKeywords).toBeUndefined();
     });
 
     it("availableKeywordsはkeywordsと同じであること", () => {
+      const { result } = renderMyHook();
       expect(result.current.availableKeywords).toEqual(mockKeywords);
     });
 
     it("isEnableAddKeywordButtonはfalseであること", () => {
+      const { result } = renderMyHook();
       expect(result.current.isEnableAddKeywordButton).toBe(false);
     });
   });
