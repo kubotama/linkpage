@@ -184,7 +184,7 @@ describe("useBookmarkManager", () => {
       });
     });
 
-    it("ブックマークを選択してキーワードを解除するとunlinkKeywordが呼び出される", async () => {
+    it("ブックマークを選択してキーワードの解除ボタンをクリックするとunlinkKeywordが呼び出される", async () => {
       const { result } = renderMyHook();
 
       // 1. ブックマークを選択する
@@ -216,7 +216,7 @@ describe("useBookmarkManager", () => {
       });
     });
 
-    it("ブックマークを選択してキーワードを解除するとlinkKeywordが呼び出される", async () => {
+    it("ブックマークを選択してキーワードの設定ボタンをクリックするとlinkKeywordが呼び出される", async () => {
       const { result } = renderMyHook();
 
       // 1. ブックマークを選択する
