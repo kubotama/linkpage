@@ -2,7 +2,7 @@ import { beforeEach, describe, expect, it, vi } from "vitest";
 
 import { act, renderHook, waitFor } from "@testing-library/react";
 
-import { LINKPAGE_BOOKMARK, mockBookmarks, LINKED_KEYWORD } from "../test-utils/bookmarkTestUtils";
+import { LINKED_KEYWORD, LINKPAGE_BOOKMARK, mockBookmarks } from "../test-utils/bookmarkTestUtils";
 import { Bookmark } from "../types/Bookmark";
 import { useBookmarkManager } from "./useBookmarkManager";
 
@@ -40,202 +40,377 @@ describe("useBookmarkManager", () => {
     );
   };
 
-  it("useBookmarkManagerを初期化するとgetBookmarksが呼び出される", async () => {
-    const { result } = renderMyHook();
+  describe("getBookmarks", () => {
+    it("useBookmarkManagerを初期化するとgetBookmarksが呼び出される", async () => {
+      const { result } = renderMyHook();
 
-    // 結果を検証する
-    await waitFor(() => {
-      // getBookmarksの呼び出し
-      expect(getBookmarks).toHaveBeenCalledWith();
+      // 結果を検証する
+      await waitFor(() => {
+        // getBookmarksの呼び出し
+        expect(getBookmarks).toHaveBeenCalledWith();
 
-      // エラーメッセージとキーワードのテキストボックス
-      expect(result.current.textMessage).toBe("");
-      expect(result.current.selectedBookmarkId).toBe(undefined);
+        // エラーメッセージとキーワードのテキストボックス
+        expect(result.current.textMessage).toBe("");
+        expect(result.current.selectedBookmarkId).toBe(undefined);
+      });
     });
   });
 
-  it("ブックマークを選択しないで「削除」ボタンを押すとdeleteBookmarkは呼び出されない", async () => {
-    const { result } = renderMyHook();
+  describe("ブックマークを選択しない場合", () => {
+    it("ブックマークを選択しないでボタンをクリックしても関数は呼び出されない", async () => {
+      // Arrange
+      const { result } = renderMyHook();
+      act(() => {
+        result.current.setSelectedBookmarkId(undefined);
+      });
 
-    act(() => {
-      result.current.setSelectedBookmarkId(undefined);
-      result.current.deleteClick();
-    });
+      // Act
+      act(() => {
+        result.current.deleteClick();
+        result.current.updateClick();
+        result.current.addKeywordClick();
+        result.current.unlinkKeywordClick(LINKED_KEYWORD);
+      });
 
-    await waitFor(() => {
-      expect(deleteBookmark).toHaveBeenCalledTimes(0);
-    });
-  });
-
-  it("ブックマークを選択しないで「更新」ボタンを押すとupdateBookmarkは呼び出されない", async () => {
-    const { result } = renderMyHook();
-
-    act(() => {
-      result.current.setSelectedBookmarkId(undefined);
-      result.current.updateClick();
-    });
-
-    await waitFor(() => {
-      expect(updateBookmark).toHaveBeenCalledTimes(0);
-    });
-  });
-
-  it("ブックマークを選択しないで「追加」ボタンを押すとaddKeywordは呼び出されない", async () => {
-    const { result } = renderMyHook();
-
-    act(() => {
-      result.current.setSelectedBookmarkId(undefined);
-      result.current.addKeywordClick();
-    });
-
-    await waitFor(() => {
-      expect(addKeyword).toHaveBeenCalledTimes(0);
+      // Assert
+      await waitFor(() => {
+        expect(deleteBookmark).toHaveBeenCalledTimes(0);
+        expect(updateBookmark).toHaveBeenCalledTimes(0);
+        expect(addKeyword).toHaveBeenCalledTimes(0);
+        expect(unlinkKeyword).toHaveBeenCalledTimes(0);
+      });
     });
   });
 
-  it("ブックマークを選択してキーワードを入力して「追加」ボタンをクリックするとaddKeywordが呼び出される", async () => {
-    const { result } = renderMyHook();
+  describe("正常系のテスト", () => {
+    it("ブックマークを選択して削除ボタンをクリックするとdeleteBookmarkが呼び出される", async () => {
+      // Arrange
+      // 1. ブックマークを選択する
+      const { result } = renderMyHook();
+      act(() => {
+        result.current.setSelectedBookmarkId(LINKPAGE_BOOKMARK.bookmark_id);
+      });
 
-    const newKeyword = "new keyword";
+      // 2. ブックマーク選択による副作用(useEffect)が完了し、フォームが更新されるのを待つ
+      await waitFor(() => {
+        expect(result.current.textUrl).toBe(LINKPAGE_BOOKMARK.url);
+      });
 
-    // Arrange: ブックマークを選択し、キーワードを入力する
-    act(() => {
-      result.current.setSelectedBookmarkId(LINKPAGE_BOOKMARK.bookmark_id);
+      // Act
+      // 3. ボタンをクリックする
+      act(() => {
+        result.current.deleteClick();
+      });
+
+      // 4. 結果を検証する
+      await waitFor(() => {
+        expect(deleteBookmark).toHaveBeenCalledWith(LINKPAGE_BOOKMARK.bookmark_id);
+
+        // エラーメッセージと選択されたブックマーク
+        expect(result.current.textMessage).toBe("");
+        expect(result.current.selectedBookmarkId).toBe(undefined);
+      });
     });
 
-    await waitFor(() => {
-      expect(result.current.textUrl).toBe(LINKPAGE_BOOKMARK.url);
+    it("ブックマークを選択して「更新」ボタンをクリックするとupdateBookmarkが呼び出される", async () => {
+      const { result } = renderMyHook();
+
+      // 1. ブックマークを選択する
+      act(() => {
+        result.current.setSelectedBookmarkId(LINKPAGE_BOOKMARK.bookmark_id);
+      });
+
+      // 2. ブックマーク選択による副作用(useEffect)が完了し、フォームが更新されるのを待つ
+      await waitFor(() => {
+        expect(result.current.textUrl).toBe(LINKPAGE_BOOKMARK.url);
+      });
+
+      // 3. 更新ボタンをクリックする
+      act(() => {
+        result.current.updateClick();
+      });
+
+      // 4. 結果を検証する
+      await waitFor(() => {
+        // updateBookmarkの呼び出し
+        expect(updateBookmark).toHaveBeenCalledWith(
+          LINKPAGE_BOOKMARK.bookmark_id,
+          LINKPAGE_BOOKMARK.url,
+          LINKPAGE_BOOKMARK.title
+        );
+
+        // フォームの値が期待通りに設定されていることを確認
+        expect(result.current.textUrl).toBe(LINKPAGE_BOOKMARK.url);
+        expect(result.current.textTitle).toBe(LINKPAGE_BOOKMARK.title);
+
+        // エラーメッセージとキーワードの選択されたブックマーク
+        expect(result.current.textMessage).toBe("");
+        expect(result.current.selectedBookmarkId).toBe(LINKPAGE_BOOKMARK.bookmark_id);
+      });
     });
 
-    act(() => {
-      result.current.setTextKeyword(newKeyword);
+    it("ブックマークを選択してキーワードを入力して「追加」ボタンをクリックするとaddKeywordが呼び出される", async () => {
+      const { result } = renderMyHook();
+
+      const newKeyword = "new keyword";
+
+      // Arrange: ブックマークを選択し、キーワードを入力する
+      act(() => {
+        result.current.setSelectedBookmarkId(LINKPAGE_BOOKMARK.bookmark_id);
+      });
+
+      await waitFor(() => {
+        expect(result.current.textUrl).toBe(LINKPAGE_BOOKMARK.url);
+      });
+
+      act(() => {
+        result.current.setTextKeyword(newKeyword);
+      });
+      expect(result.current.textKeyword).toBe(newKeyword);
+
+      // Act: 追加ボタンをクリックする
+      act(() => {
+        result.current.addKeywordClick();
+      });
+
+      // Assert: addKeywordが呼び出され、フォームがリセットされることを確認する
+      await waitFor(() => {
+        // addKeywordの呼び出し
+        expect(addKeyword).toHaveBeenCalledWith(LINKPAGE_BOOKMARK.bookmark_id, newKeyword);
+
+        // エラーメッセージとキーワードのテキストボックス
+        expect(result.current.textMessage).toBe("");
+        expect(result.current.textKeyword).toBe("");
+      });
     });
-    expect(result.current.textKeyword).toBe(newKeyword);
 
-    // Act: 追加ボタンをクリックする
-    act(() => {
-      result.current.addKeywordClick();
+    it("ブックマークを選択してキーワードを解除するとunlinkKeywordが呼び出される", async () => {
+      const { result } = renderMyHook();
+
+      // 1. ブックマークを選択する
+      act(() => {
+        result.current.setSelectedBookmarkId(LINKPAGE_BOOKMARK.bookmark_id);
+      });
+
+      // 2. ブックマーク選択による副作用(useEffect)が完了し、フォームが更新されるのを待つ
+      await waitFor(() => {
+        expect(result.current.textUrl).toBe(LINKPAGE_BOOKMARK.url);
+      });
+
+      // 3. キーワード解除をクリックする
+      act(() => {
+        result.current.unlinkKeywordClick(LINKED_KEYWORD);
+      });
+
+      // 4. 結果を検証する
+      await waitFor(() => {
+        // unlinkKeywordの呼び出し
+        expect(unlinkKeyword).toHaveBeenCalledWith(
+          LINKPAGE_BOOKMARK.bookmark_id, // 選択されたブックマークのID
+          LINKED_KEYWORD.keyword_id // 解除されるキーワードのID
+        );
+
+        // エラーメッセージと選択されたブックマーク
+        expect(result.current.textMessage).toBe("");
+        expect(result.current.selectedBookmarkId).toBe(LINKPAGE_BOOKMARK.bookmark_id);
+      });
     });
 
-    // Assert: addKeywordが呼び出され、フォームがリセットされることを確認する
-    await waitFor(() => {
-      // addKeywordの呼び出し
-      expect(addKeyword).toHaveBeenCalledWith(LINKPAGE_BOOKMARK.bookmark_id, newKeyword);
+    it("ブックマークを選択してキーワードを解除するとlinkKeywordが呼び出される", async () => {
+      const { result } = renderMyHook();
 
-      // エラーメッセージとキーワードのテキストボックス
-      expect(result.current.textMessage).toBe("");
-      expect(result.current.textKeyword).toBe("");
+      // 1. ブックマークを選択する
+      act(() => {
+        result.current.setSelectedBookmarkId(LINKPAGE_BOOKMARK.bookmark_id);
+      });
+
+      // 2. ブックマーク選択による副作用(useEffect)が完了し、フォームが更新されるのを待つ
+      await waitFor(() => {
+        expect(result.current.textUrl).toBe(LINKPAGE_BOOKMARK.url);
+      });
+
+      // 3. キーワード解除をクリックする
+      act(() => {
+        result.current.linkKeywordClick(LINKED_KEYWORD);
+      });
+
+      // 4. 結果を検証する
+      await waitFor(() => {
+        // unlinkKeywordの呼び出し
+        expect(addKeyword).toHaveBeenCalledWith(
+          LINKPAGE_BOOKMARK.bookmark_id, // 選択されたブックマークのID
+          LINKED_KEYWORD.keyword_name // 解除されるキーワードの文字列
+        );
+
+        // エラーメッセージと選択されたブックマーク
+        expect(result.current.textMessage).toBe("");
+        expect(result.current.selectedBookmarkId).toBe(LINKPAGE_BOOKMARK.bookmark_id);
+      });
     });
   });
 
-  it("ブックマークを選択して「削除」ボタンをクリックするとdeleteBookmarkが呼び出される", async () => {
-    const { result } = renderMyHook();
+  describe("エラー系のテスト", () => {
+    it("deleteClick: deleteBookmarkに失敗するとエラーメッセージが表示される", async () => {
+      // Arrange
+      vi.mocked(deleteBookmark).mockRejectedValueOnce(new Error("エラーが発生しました"));
 
-    // 1. ブックマークを選択する
-    act(() => {
-      result.current.setSelectedBookmarkId(LINKPAGE_BOOKMARK.bookmark_id);
+      const { result } = renderMyHook();
+
+      act(() => {
+        result.current.setSelectedBookmarkId(LINKPAGE_BOOKMARK.bookmark_id);
+      });
+      await waitFor(() => {
+        expect(result.current.textUrl).toBe(LINKPAGE_BOOKMARK.url);
+      });
+
+      // Act
+      await act(async () => {
+        await result.current.deleteClick();
+      });
+
+      // Assert
+      await waitFor(() => {
+        // deleteBookmarkの呼び出し
+        expect(deleteBookmark).toHaveBeenCalledWith(LINKPAGE_BOOKMARK.bookmark_id);
+
+        // エラーメッセージと選択されたブックマーク
+        expect(result.current.textMessage).toBe("エラーが発生しました");
+        expect(result.current.selectedBookmarkId).toBe(LINKPAGE_BOOKMARK.bookmark_id);
+      });
     });
 
-    // 2. ブックマーク選択による副作用(useEffect)が完了し、フォームが更新されるのを待つ
-    await waitFor(() => {
-      expect(result.current.textUrl).toBe(LINKPAGE_BOOKMARK.url);
+    it("updateClick: updateBookmarkに失敗するとエラーメッセージが表示される", async () => {
+      // Arrange
+      vi.mocked(updateBookmark).mockRejectedValueOnce(new Error("エラーが発生しました"));
+
+      const { result } = renderMyHook();
+
+      act(() => {
+        result.current.setSelectedBookmarkId(LINKPAGE_BOOKMARK.bookmark_id);
+      });
+      await waitFor(() => {
+        expect(result.current.textUrl).toBe(LINKPAGE_BOOKMARK.url);
+      });
+
+      // Act
+      await act(async () => {
+        await result.current.updateClick();
+      });
+
+      // Assert
+      await waitFor(() => {
+        // deleteBookmarkの呼び出し
+        expect(updateBookmark).toHaveBeenCalledWith(
+          LINKPAGE_BOOKMARK.bookmark_id,
+          LINKPAGE_BOOKMARK.url,
+          LINKPAGE_BOOKMARK.title
+        );
+
+        // エラーメッセージと選択されたブックマーク
+        expect(result.current.textMessage).toBe("エラーが発生しました");
+        expect(result.current.selectedBookmarkId).toBe(LINKPAGE_BOOKMARK.bookmark_id);
+      });
     });
 
-    // 3. 削除ボタンをクリックする
-    act(() => {
-      result.current.deleteClick();
+    it("addKeywordClick: addKeywordに失敗するとエラーメッセージが表示される", async () => {
+      // Arrange
+      vi.mocked(addKeyword).mockRejectedValueOnce(new Error("エラーが発生しました"));
+
+      const { result } = renderMyHook();
+      const newKeyword = "new keyword";
+
+      act(() => {
+        result.current.setSelectedBookmarkId(LINKPAGE_BOOKMARK.bookmark_id);
+      });
+      await waitFor(() => {
+        expect(result.current.textUrl).toBe(LINKPAGE_BOOKMARK.url);
+      });
+
+      act(() => {
+        result.current.setTextKeyword(newKeyword);
+      });
+      await waitFor(() => {
+        expect(result.current.textKeyword).toBe(newKeyword);
+      });
+
+      // Act
+      await act(async () => {
+        await result.current.addKeywordClick();
+      });
+
+      // Assert
+      await waitFor(() => {
+        // addKeywordの呼び出し
+        expect(addKeyword).toHaveBeenCalledWith(LINKPAGE_BOOKMARK.bookmark_id, newKeyword);
+
+        // エラーメッセージと選択されたブックマーク
+        expect(result.current.textMessage).toBe("エラーが発生しました");
+        expect(result.current.selectedBookmarkId).toBe(LINKPAGE_BOOKMARK.bookmark_id);
+      });
     });
 
-    // 4. 結果を検証する
-    await waitFor(() => {
-      // deleteBookmarkの呼び出し
-      expect(deleteBookmark).toHaveBeenCalledWith(LINKPAGE_BOOKMARK.bookmark_id);
+    it("unlinkKeywordClick: unlinkKeywordに失敗するとエラーメッセージが表示される", async () => {
+      // Arrange
+      vi.mocked(unlinkKeyword).mockRejectedValueOnce(new Error("エラーが発生しました"));
 
-      // エラーメッセージと選択されたブックマーク
-      expect(result.current.textMessage).toBe("");
-      expect(result.current.selectedBookmarkId).toBe(undefined);
-    });
-  });
+      const { result } = renderMyHook();
 
-  it("ブックマークを選択して「更新」ボタンをクリックするとupdateBookmarkが呼び出される", async () => {
-    const { result } = renderMyHook();
+      act(() => {
+        result.current.setSelectedBookmarkId(LINKPAGE_BOOKMARK.bookmark_id);
+      });
+      await waitFor(() => {
+        expect(result.current.textUrl).toBe(LINKPAGE_BOOKMARK.url);
+      });
 
-    // 1. ブックマークを選択する
-    act(() => {
-      result.current.setSelectedBookmarkId(LINKPAGE_BOOKMARK.bookmark_id);
-    });
+      // Act
+      await act(async () => {
+        await result.current.unlinkKeywordClick(LINKED_KEYWORD);
+      });
 
-    // 2. ブックマーク選択による副作用(useEffect)が完了し、フォームが更新されるのを待つ
-    await waitFor(() => {
-      expect(result.current.textUrl).toBe(LINKPAGE_BOOKMARK.url);
-    });
+      // Assert
+      await waitFor(() => {
+        // unlinkKeywordの呼び出し
+        expect(unlinkKeyword).toHaveBeenCalledWith(
+          LINKPAGE_BOOKMARK.bookmark_id,
+          LINKED_KEYWORD.keyword_id
+        );
 
-    // 3. 更新ボタンをクリックする
-    act(() => {
-      result.current.updateClick();
-    });
-
-    // 4. 結果を検証する
-    await waitFor(() => {
-      // updateBookmarkの呼び出し
-      expect(updateBookmark).toHaveBeenCalledWith(
-        LINKPAGE_BOOKMARK.bookmark_id,
-        LINKPAGE_BOOKMARK.url,
-        LINKPAGE_BOOKMARK.title
-      );
-
-      // フォームの値が期待通りに設定されていることを確認
-      expect(result.current.textUrl).toBe(LINKPAGE_BOOKMARK.url);
-      expect(result.current.textTitle).toBe(LINKPAGE_BOOKMARK.title);
-
-      // エラーメッセージとキーワードの選択されたブックマーク
-      expect(result.current.textMessage).toBe("");
-      expect(result.current.selectedBookmarkId).toBe(LINKPAGE_BOOKMARK.bookmark_id);
-    });
-  });
-
-  it("ブックマークを選択しないでキーワードを解除しようとしてもunlinkKeywordは呼び出されない", async () => {
-    const { result } = renderMyHook();
-
-    act(() => {
-      result.current.setSelectedBookmarkId(undefined);
-      result.current.unlinkKeywordClick(LINKED_KEYWORD);
+        // エラーメッセージと選択されたブックマーク
+        expect(result.current.textMessage).toBe("エラーが発生しました");
+        expect(result.current.selectedBookmarkId).toBe(LINKPAGE_BOOKMARK.bookmark_id);
+      });
     });
 
-    await waitFor(() => {
-      expect(unlinkKeyword).toHaveBeenCalledTimes(0);
-    });
-  });
+    it("linkKeywordClick: addKeywordに失敗するとエラーメッセージが表示される", async () => {
+      // Arrange
+      vi.mocked(addKeyword).mockRejectedValueOnce(new Error("エラーが発生しました"));
 
-  it("ブックマークを選択してキーワードを解除するとunlinkKeywordが呼び出される", async () => {
-    const { result } = renderMyHook();
+      const { result } = renderMyHook();
 
-    // 1. ブックマークを選択する
-    act(() => {
-      result.current.setSelectedBookmarkId(LINKPAGE_BOOKMARK.bookmark_id);
-    });
+      act(() => {
+        result.current.setSelectedBookmarkId(LINKPAGE_BOOKMARK.bookmark_id);
+      });
+      await waitFor(() => {
+        expect(result.current.textUrl).toBe(LINKPAGE_BOOKMARK.url);
+      });
 
-    // 2. ブックマーク選択による副作用(useEffect)が完了し、フォームが更新されるのを待つ
-    await waitFor(() => {
-      expect(result.current.textUrl).toBe(LINKPAGE_BOOKMARK.url);
-    });
+      // Act
+      await act(async () => {
+        await result.current.linkKeywordClick(LINKED_KEYWORD);
+      });
 
-    // 3. キーワード解除をクリックする
-    act(() => {
-      result.current.unlinkKeywordClick(LINKED_KEYWORD);
-    });
+      // Assert
+      await waitFor(() => {
+        // addKeywordの呼び出し
+        expect(addKeyword).toHaveBeenCalledWith(
+          LINKPAGE_BOOKMARK.bookmark_id,
+          LINKED_KEYWORD.keyword_name
+        );
 
-    // 4. 結果を検証する
-    await waitFor(() => {
-      // unlinkKeywordの呼び出し
-      expect(unlinkKeyword).toHaveBeenCalledWith(
-        LINKPAGE_BOOKMARK.bookmark_id, // 選択されたブックマークのID
-        LINKED_KEYWORD.keyword_id // 解除されるキーワードのID
-      );
-
-      // エラーメッセージと選択されたブックマーク
-      expect(result.current.textMessage).toBe("");
-      expect(result.current.selectedBookmarkId).toBe(LINKPAGE_BOOKMARK.bookmark_id);
+        // エラーメッセージと選択されたブックマーク
+        expect(result.current.textMessage).toBe("エラーが発生しました");
+        expect(result.current.selectedBookmarkId).toBe(LINKPAGE_BOOKMARK.bookmark_id);
+      });
     });
   });
 });
