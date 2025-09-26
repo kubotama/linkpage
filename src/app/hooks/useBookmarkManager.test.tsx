@@ -5,6 +5,7 @@ import { act, renderHook, waitFor } from "@testing-library/react";
 import { LINKED_KEYWORD, LINKPAGE_BOOKMARK, mockBookmarks } from "../test-utils/bookmarkTestUtils";
 import { Bookmark } from "../types/Bookmark";
 import { useBookmarkManager } from "./useBookmarkManager";
+import { Keyword } from "../types/Keyword";
 
 describe("useBookmarkManager", () => {
   let bookmarks: Bookmark[];
@@ -56,7 +57,7 @@ describe("useBookmarkManager", () => {
     });
   });
 
-  describe("ブックマークを選択しない場合", () => {
+  describe("不正な入力の場合", () => {
     it("ブックマークを選択しないでボタンをクリックしても関数は呼び出されない", async () => {
       // Arrange
       const { result } = renderMyHook();
@@ -78,6 +79,36 @@ describe("useBookmarkManager", () => {
         expect(updateBookmark).toHaveBeenCalledTimes(0);
         expect(addKeyword).toHaveBeenCalledTimes(0);
         expect(unlinkKeyword).toHaveBeenCalledTimes(0);
+      });
+    });
+
+    describe("ブックマーク選択後の不正な入力", () => {
+      let result: ReturnType<typeof renderMyHook>["result"];
+
+      beforeEach(async () => {
+        const hook = renderMyHook();
+        result = hook.result;
+
+        act(() => {
+          result.current.setSelectedBookmarkId(LINKPAGE_BOOKMARK.bookmark_id);
+        });
+
+        await waitFor(() => {
+          expect(result.current.textUrl).toBe(LINKPAGE_BOOKMARK.url);
+        });
+      });
+
+      it("キーワードを指定しないで設定ボタンをクリックするとlinkKeywordが呼び出されない", async () => {
+        // Arrange: 空のキーワードで設定ボタンのクリックをシミュレートする
+        const emptyKeyword: Keyword = { keyword_id: 0, keyword_name: "" };
+        act(() => {
+          result.current.linkKeywordClick(emptyKeyword);
+        });
+
+        // Assert: addKeywordが呼び出されないことを確認
+        await waitFor(() => {
+          expect(addKeyword).toHaveBeenCalledTimes(0);
+        });
       });
     });
   });
