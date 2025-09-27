@@ -212,7 +212,6 @@ describe("useBookmarkManager", () => {
 
         // Assert
         await waitFor(() => {
-          // deleteBookmarkの呼び出し
           expect(deleteBookmark).toHaveBeenCalledWith(LINKPAGE_BOOKMARK.bookmark_id);
 
           // エラーメッセージと選択されたブックマーク
@@ -232,7 +231,6 @@ describe("useBookmarkManager", () => {
 
         // Assert
         await waitFor(() => {
-          // updateBookmarkの呼び出し
           expect(updateBookmark).toHaveBeenCalledWith(
             LINKPAGE_BOOKMARK.bookmark_id,
             LINKPAGE_BOOKMARK.url,
@@ -264,7 +262,6 @@ describe("useBookmarkManager", () => {
 
         // Assert
         await waitFor(() => {
-          // addKeywordの呼び出し
           expect(addKeyword).toHaveBeenCalledWith(LINKPAGE_BOOKMARK.bookmark_id, newKeyword);
 
           // エラーメッセージと選択されたブックマーク
@@ -284,7 +281,6 @@ describe("useBookmarkManager", () => {
 
         // Assert
         await waitFor(() => {
-          // unlinkKeywordの呼び出し
           expect(unlinkKeyword).toHaveBeenCalledWith(
             LINKPAGE_BOOKMARK.bookmark_id,
             LINKED_KEYWORD.keyword_id
@@ -307,7 +303,6 @@ describe("useBookmarkManager", () => {
 
         // Assert
         await waitFor(() => {
-          // addKeywordの呼び出し
           expect(addKeyword).toHaveBeenCalledWith(
             LINKPAGE_BOOKMARK.bookmark_id,
             LINKED_KEYWORD.keyword_name
