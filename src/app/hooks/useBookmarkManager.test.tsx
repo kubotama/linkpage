@@ -61,9 +61,6 @@ describe("useBookmarkManager", () => {
     it("ブックマークを選択しないでボタンをクリックしても関数は呼び出されない", async () => {
       // Arrange
       const { result } = renderMyHook();
-      act(() => {
-        result.current.setSelectedBookmarkId(undefined);
-      });
 
       // Act
       await act(async () => {
@@ -74,12 +71,10 @@ describe("useBookmarkManager", () => {
       });
 
       // Assert
-      await waitFor(() => {
-        expect(deleteBookmark).toHaveBeenCalledTimes(0);
-        expect(updateBookmark).toHaveBeenCalledTimes(0);
-        expect(addKeyword).toHaveBeenCalledTimes(0);
-        expect(unlinkKeyword).toHaveBeenCalledTimes(0);
-      });
+      expect(deleteBookmark).not.toHaveBeenCalled();
+      expect(updateBookmark).not.toHaveBeenCalled();
+      expect(addKeyword).not.toHaveBeenCalled();
+      expect(unlinkKeyword).not.toHaveBeenCalled();
     });
   });
 
