@@ -230,7 +230,7 @@ describe("useBookmarkManager", () => {
 
         // Assert
         await waitFor(() => {
-          // deleteBookmarkの呼び出し
+          // updateBookmarkの呼び出し
           expect(updateBookmark).toHaveBeenCalledWith(
             LINKPAGE_BOOKMARK.bookmark_id,
             LINKPAGE_BOOKMARK.url,
