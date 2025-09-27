@@ -66,11 +66,11 @@ describe("useBookmarkManager", () => {
       });
 
       // Act
-      act(() => {
-        result.current.deleteClick();
-        result.current.updateClick();
-        result.current.addKeywordClick();
-        result.current.unlinkKeywordClick(LINKED_KEYWORD);
+      await act(async () => {
+        await result.current.deleteClick();
+        await result.current.updateClick();
+        await result.current.addKeywordClick();
+        await result.current.unlinkKeywordClick(LINKED_KEYWORD);
       });
 
       // Assert
@@ -102,8 +102,8 @@ describe("useBookmarkManager", () => {
     it("キーワードを指定しないで設定ボタンをクリックするとlinkKeywordが呼び出されない", async () => {
       // Arrange: 空のキーワードで設定ボタンのクリックをシミュレートする
       const emptyKeyword: Keyword = { keyword_id: 0, keyword_name: "" };
-      act(() => {
-        result.current.linkKeywordClick(emptyKeyword);
+      await act(async () => {
+        await result.current.linkKeywordClick(emptyKeyword);
       });
 
       // Assert: addKeywordが呼び出されないことを確認
@@ -115,8 +115,8 @@ describe("useBookmarkManager", () => {
     describe("正常系のテスト", () => {
       it("削除ボタンをクリックするとdeleteBookmarkが呼び出される", async () => {
         // Act
-        act(() => {
-          result.current.deleteClick();
+        await act(async () => {
+          await result.current.deleteClick();
         });
 
         // Assert
@@ -129,8 +129,8 @@ describe("useBookmarkManager", () => {
 
       it("「更新」ボタンをクリックするとupdateBookmarkが呼び出される", async () => {
         // Act
-        act(() => {
-          result.current.updateClick();
+        await act(async () => {
+          await result.current.updateClick();
         });
 
         // Assert
@@ -156,8 +156,8 @@ describe("useBookmarkManager", () => {
         expect(result.current.textKeyword).toBe(newKeyword);
 
         // Act
-        act(() => {
-          result.current.addKeywordClick();
+        await act(async () => {
+          await result.current.addKeywordClick();
         });
 
         // Assert
@@ -170,8 +170,8 @@ describe("useBookmarkManager", () => {
 
       it("キーワードの解除ボタンをクリックするとunlinkKeywordが呼び出される", async () => {
         // Act
-        act(() => {
-          result.current.unlinkKeywordClick(LINKED_KEYWORD);
+        await act(async () => {
+          await result.current.unlinkKeywordClick(LINKED_KEYWORD);
         });
 
         // Assert
@@ -187,8 +187,8 @@ describe("useBookmarkManager", () => {
 
       it("キーワードの設定ボタンをクリックするとaddKeyword(linkKeyword)が呼び出される", async () => {
         // Act
-        act(() => {
-          result.current.linkKeywordClick(LINKED_KEYWORD);
+        await act(async () => {
+          await result.current.linkKeywordClick(LINKED_KEYWORD);
         });
 
         // Assert
