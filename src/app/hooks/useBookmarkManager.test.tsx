@@ -105,7 +105,7 @@ describe("useBookmarkManager", () => {
 
       // Assert: addKeywordが呼び出されないことを確認
       await waitFor(() => {
-        expect(addKeyword).toHaveBeenCalledTimes(0);
+        expect(addKeyword).not.toHaveBeenCalled();
       });
     });
 
