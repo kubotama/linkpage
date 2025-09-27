@@ -64,10 +64,12 @@ describe("useBookmarkManager", () => {
 
       // Act
       await act(async () => {
-        await result.current.deleteClick();
-        await result.current.updateClick();
-        await result.current.addKeywordClick();
-        await result.current.unlinkKeywordClick(LINKED_KEYWORD);
+        await Promise.all([
+          result.current.deleteClick(),
+          result.current.updateClick(),
+          result.current.addKeywordClick(),
+          result.current.unlinkKeywordClick(LINKED_KEYWORD),
+        ]);
       });
 
       // Assert
