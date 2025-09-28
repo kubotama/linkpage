@@ -9,7 +9,6 @@ import {
   ROW_STYLE_BOOKMARK_SELECTED,
   ROW_STYLE_KEYWORD_SELECTED,
   TABLE_NAME_ALL_BOOKMARK,
-  TABLE_NAME_BOOKMARKS,
 } from "../constants/constants";
 import {
   buildMockBookmarksWithKeywords,
@@ -42,7 +41,7 @@ describe("BookmarkTableのテスト", () => {
   it("テーブルとヘッダーが正しく表示される", () => {
     renderComponent();
 
-    const table = screen.getByRole("table", { name: TABLE_NAME_BOOKMARKS });
+    const table = screen.getByRole("table", { name: TABLE_NAME_ALL_BOOKMARK });
     expect(table).toBeVisible();
 
     const headers = within(table).getAllByRole("columnheader");

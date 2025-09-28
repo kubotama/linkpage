@@ -6,7 +6,7 @@ import { screen, waitFor, within } from "@testing-library/react";
 import { UserEvent } from "@testing-library/user-event";
 
 import { BOOKMARKS_ENDPOINT } from "../../constants/apiEndpoints";
-import { TABLE_NAME_BOOKMARKS, UPDATE_BUTTON_ROLE_NAME } from "../../constants/constants";
+import { TABLE_NAME_ALL_BOOKMARK, UPDATE_BUTTON_ROLE_NAME } from "../../constants/constants";
 import {
   HTTP_STATUS_BAD_REQUEST,
   HTTP_STATUS_CONFLICT,
@@ -146,7 +146,7 @@ describe("タイトルの更新ボタン", () => {
           buttonName: UPDATE_BUTTON_ROLE_NAME,
         });
 
-        const table = await screen.findByRole("table", { name: TABLE_NAME_BOOKMARKS });
+        const table = await screen.findByRole("table", { name: TABLE_NAME_ALL_BOOKMARK });
         await within(table).findByText(bookmarkToSelect.title);
       });
 
