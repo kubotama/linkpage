@@ -8,6 +8,7 @@ import {
   BASE_CELL_STYLE,
   ROW_STYLE_BOOKMARK_SELECTED,
   ROW_STYLE_KEYWORD_SELECTED,
+  TABLE_NAME_ALL_BOOKMARK,
   TABLE_NAME_BOOKMARKS,
 } from "../constants/constants";
 import {
@@ -29,6 +30,7 @@ describe("BookmarkTableのテスト", () => {
     render(
       <BookmarkTable
         bookmarks={customBookmarks}
+        tableName={TABLE_NAME_ALL_BOOKMARK}
         selectedBookmarkId={undefined}
         onSelectBookmarkId={mockOnSelectBookmark}
         selectedKeywordId={undefined}
@@ -45,7 +47,7 @@ describe("BookmarkTableのテスト", () => {
 
     const headers = within(table).getAllByRole("columnheader");
     expect(headers).toHaveLength(1);
-    expect(headers[0]).toHaveTextContent("タイトル");
+    expect(headers[0]).toHaveTextContent(TABLE_NAME_ALL_BOOKMARK);
 
     expect(mockOnSelectBookmark).not.toHaveBeenCalled();
   });
@@ -60,7 +62,7 @@ describe("BookmarkTableのテスト", () => {
     expect(headerRows).toHaveLength(1);
     const headerCells = within(headerRows[0]).getAllByRole("columnheader");
     expect(headerCells).toHaveLength(1);
-    expect(headerCells[0]).toHaveTextContent("タイトル");
+    expect(headerCells[0]).toHaveTextContent(TABLE_NAME_ALL_BOOKMARK);
 
     const bodyRows = within(tbody).getAllByRole("row");
     expect(bodyRows).toHaveLength(mockBookmarks.length);

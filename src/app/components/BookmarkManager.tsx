@@ -6,13 +6,14 @@ import {
   DELETE_BUTTON_ROLE_NAME,
   FIELDSET_KEYWORD_LABEL,
   FORM_BOOKMARK_DETAIL,
-  LINK_BUTTON_ROLE_NAME,
   KEYWORD_ROLE_NAME,
+  LINK_BUTTON_ROLE_NAME,
   PARAMETER_BUTTON_ROLE_NAME,
   TABLE_HEADER_ALL_KEYWORD,
   TABLE_HEADER_LINKED_KEYWORD,
-  TABLE_NAME_LINKED_KEYWORD,
+  TABLE_NAME_ALL_BOOKMARK,
   TABLE_NAME_ALL_KEYWORD,
+  TABLE_NAME_LINKED_KEYWORD,
   UNLINK_BUTTON_ROLE_NAME,
   UPDATE_BUTTON_ROLE_NAME,
 } from "../constants/constants";
@@ -85,6 +86,7 @@ export const BookmarkManager = ({ className = "" }: BookmarkManagerProps) => {
       <div className="flex space-x-4">
         <BookmarkTable
           bookmarks={bookmarks}
+          tableName={TABLE_NAME_ALL_BOOKMARK}
           selectedBookmarkId={selectedBookmarkId}
           onSelectBookmarkId={setSelectedBookmarkId}
           selectedKeywordId={selectedKeywordId}

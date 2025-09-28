@@ -6,6 +6,7 @@ import { Bookmark } from "../types/Bookmark";
 
 type BookmarkTableProps = {
   bookmarks: Bookmark[];
+  tableName: string;
   selectedBookmarkId: number | undefined;
   onSelectBookmarkId: (bookmarkId: number) => void;
   selectedKeywordId: number | undefined;
@@ -14,6 +15,7 @@ type BookmarkTableProps = {
 
 export const BookmarkTable = ({
   bookmarks,
+  tableName,
   selectedBookmarkId,
   onSelectBookmarkId,
   selectedKeywordId,
@@ -31,7 +33,7 @@ export const BookmarkTable = ({
       <thead>
         <tr>
           <th className={`${TITLE_CELL_STYLE} ${BASE_CELL_STYLE}`} scope="col">
-            タイトル
+            {tableName}
           </th>
         </tr>
       </thead>
