@@ -11,7 +11,7 @@ import {
   PARAMETER_BUTTON_ROLE_NAME,
   TABLE_HEADER_ALL_KEYWORD,
   TABLE_HEADER_LINKED_KEYWORD,
-  TABLE_NAME_ALL_BOOKMARK,
+  TABLE_NAME_ALL_BOOKMARKS,
   TABLE_NAME_ALL_KEYWORD,
   TABLE_NAME_LINKED_BOOKMARKS,
   TABLE_NAME_LINKED_KEYWORD,
@@ -104,7 +104,7 @@ export const BookmarkManager = ({ className = "" }: BookmarkManagerProps) => {
           )}
           <BookmarkTable
             bookmarks={bookmarks}
-            tableName={TABLE_NAME_ALL_BOOKMARK}
+            tableName={TABLE_NAME_ALL_BOOKMARKS}
             selectedBookmarkId={selectedBookmarkId}
             onSelectBookmarkId={setSelectedBookmarkId}
             selectedKeywordId={selectedKeywordId}

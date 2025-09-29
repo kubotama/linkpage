@@ -5,7 +5,7 @@ import { beforeAll, beforeEach, describe, expect, it, vi } from "vitest";
 import { screen } from "@testing-library/react";
 import { UserEvent } from "@testing-library/user-event";
 
-import { TABLE_NAME_ALL_BOOKMARK, TABLE_NAME_LINKED_BOOKMARKS } from "../../constants/constants";
+import { TABLE_NAME_ALL_BOOKMARKS, TABLE_NAME_LINKED_BOOKMARKS } from "../../constants/constants";
 
 import {
   buildMockBookmarksWithKeywords,
@@ -35,7 +35,7 @@ describe("選択したキーワードを設定しているブックマークを�
 
   it("キーワードを選択していない場合、すべてのブックマークテーブルは表示されるが、関連ブックマークテーブルは表示されない", async () => {
     // すべてのブックマークテーブルは常に表示されている
-    expect(screen.getByRole("table", { name: TABLE_NAME_ALL_BOOKMARK })).toBeInTheDocument();
+    expect(screen.getByRole("table", { name: TABLE_NAME_ALL_BOOKMARKS })).toBeInTheDocument();
     // 関連ブックマークテーブルは表示されていない
     expect(
       screen.queryByRole("table", { name: TABLE_NAME_LINKED_BOOKMARKS })

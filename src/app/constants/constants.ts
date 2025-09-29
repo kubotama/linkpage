@@ -12,7 +12,7 @@ export const FORM_BOOKMARK_DETAIL = "ブックマーク詳細フォーム";
 export const FIELDSET_KEYWORD_LABEL = "キーワード入力";
 export const KEYWORD_ROLE_NAME = "キーワード";
 export const ADD_BUTTON_ROLE_NAME = "追加";
-export const TABLE_NAME_ALL_BOOKMARK = "すべてのブックマークのテーブル";
+export const TABLE_NAME_ALL_BOOKMARKS = "すべてのブックマークのテーブル";
 export const TABLE_NAME_LINKED_BOOKMARKS =
   "選択されたキーワードが設定されているブックマークのテーブル";
 export const TABLE_NAME_ALL_KEYWORD = "すべてのキーワードのテーブル";
