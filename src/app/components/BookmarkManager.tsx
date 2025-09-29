@@ -118,8 +118,9 @@ export const BookmarkManager = ({ className = "" }: BookmarkManagerProps) => {
             handleErrorClose={handleErrorClose}
             className="mb-1 flex justify-center items-center h-8"
           />
-          {selectedBookmark && (
-            <form aria-label={FORM_BOOKMARK_DETAIL} onSubmit={(e) => e.preventDefault()}>
+
+          {selectedBookmark && ( // フォーム内のボタンはtype="button"のため、onSubmitイベントは発生せず、e.preventDefault()は不要
+            <form aria-label={FORM_BOOKMARK_DETAIL}>
               <div className="mb-2 flex justify-between">
                 <ActionButton onClick={updateClick}>{UPDATE_BUTTON_ROLE_NAME}</ActionButton>
                 <ActionButton onClick={deleteClick}>{DELETE_BUTTON_ROLE_NAME}</ActionButton>
