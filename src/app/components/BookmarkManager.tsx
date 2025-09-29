@@ -13,6 +13,7 @@ import {
   TABLE_HEADER_LINKED_KEYWORD,
   TABLE_NAME_ALL_BOOKMARK,
   TABLE_NAME_ALL_KEYWORD,
+  TABLE_NAME_LINKED_BOOKMARKS,
   TABLE_NAME_LINKED_KEYWORD,
   UNLINK_BUTTON_ROLE_NAME,
   UPDATE_BUTTON_ROLE_NAME,
@@ -73,25 +74,43 @@ export const BookmarkManager = ({ className = "" }: BookmarkManagerProps) => {
     unlinkKeyword,
   });
 
-  const { selectedBookmark, selectedKeywords, availableKeywords, isEnableAddKeywordButton } =
-    useBookmarksLogic({
-      bookmarks,
-      keywords,
-      selectedBookmarkId,
-      textKeyword,
-    });
+  const {
+    selectedBookmark,
+    selectedKeywords,
+    availableKeywords,
+    isEnableAddKeywordButton,
+    linkedBookmarkWithSelectedKeywords,
+  } = useBookmarksLogic({
+    bookmarks,
+    keywords,
+    selectedBookmarkId,
+    selectedKeywordId,
+    textKeyword,
+  });
 
   return (
     <div className={`mt-5 mb-5 ${className}`}>
       <div className="flex space-x-4">
-        <BookmarkTable
-          bookmarks={bookmarks}
-          tableName={TABLE_NAME_ALL_BOOKMARK}
-          selectedBookmarkId={selectedBookmarkId}
-          onSelectBookmarkId={setSelectedBookmarkId}
-          selectedKeywordId={selectedKeywordId}
-          className="w-bookmark-list"
-        />
+        <div>
+          {linkedBookmarkWithSelectedKeywords && (
+            <BookmarkTable
+              bookmarks={linkedBookmarkWithSelectedKeywords}
+              tableName={TABLE_NAME_LINKED_BOOKMARKS}
+              selectedBookmarkId={selectedBookmarkId}
+              onSelectBookmarkId={setSelectedBookmarkId}
+              selectedKeywordId={selectedKeywordId}
+              className="w-bookmark-list mb-2"
+            />
+          )}
+          <BookmarkTable
+            bookmarks={bookmarks}
+            tableName={TABLE_NAME_ALL_BOOKMARK}
+            selectedBookmarkId={selectedBookmarkId}
+            onSelectBookmarkId={setSelectedBookmarkId}
+            selectedKeywordId={selectedKeywordId}
+            className="w-bookmark-list"
+          />
+        </div>
         <div className="w-bookmark-details">
           <ErrorMessage
             textMessage={textMessage}
