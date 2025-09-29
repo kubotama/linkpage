@@ -46,12 +46,25 @@ export const useBookmarksLogic = ({
     return !existingKeywordNames.has(normalizedKeyword);
   }, [textKeyword, existingKeywordNames]);
 
+  const bookmarksByKeyword = useMemo(() => {
+    const map = new Map<number, Bookmark[]>();
+    for (const bookmark of bookmarks) {
+      for (const keyword of bookmark.keywords) {
+        if (!map.has(keyword.keyword_id)) {
+          map.set(keyword.keyword_id, []);
+        }
+        map.get(keyword.keyword_id)!.push(bookmark);
+      }
+    }
+    return map;
+  }, [bookmarks]);
+
   const linkedBookmarkWithSelectedKeywords = useMemo(() => {
     if (selectedKeywordId === undefined) {
       return undefined;
     }
-    return bookmarks.filter((b) => b.keywords.some((k) => k.keyword_id === selectedKeywordId));
-  }, [bookmarks, selectedKeywordId]);
+    return bookmarksByKeyword.get(selectedKeywordId) || [];
+  }, [bookmarksByKeyword, selectedKeywordId]);
 
   return {
     selectedBookmark,
