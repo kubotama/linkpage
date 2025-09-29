@@ -50,10 +50,12 @@ export const useBookmarksLogic = ({
     const map = new Map<number, Bookmark[]>();
     for (const bookmark of bookmarks) {
       for (const keyword of bookmark.keywords) {
-        if (!map.has(keyword.keyword_id)) {
-          map.set(keyword.keyword_id, []);
+        const list = map.get(keyword.keyword_id);
+        if (list) {
+          list.push(bookmark);
+        } else {
+          map.set(keyword.keyword_id, [bookmark]);
         }
-        map.get(keyword.keyword_id)!.push(bookmark);
       }
     }
     return map;
