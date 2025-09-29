@@ -6,6 +6,7 @@ import { Keyword } from "../types/Keyword";
 type UseBookmarksLogicProps = {
   bookmarks: Bookmark[];
   selectedBookmarkId: number | undefined;
+  selectedKeywordId?: number | undefined;
   keywords: Keyword[];
   textKeyword: string;
 };
@@ -13,6 +14,7 @@ type UseBookmarksLogicProps = {
 export const useBookmarksLogic = ({
   bookmarks,
   selectedBookmarkId,
+  selectedKeywordId = undefined,
   keywords,
   textKeyword,
 }: UseBookmarksLogicProps) => {
@@ -44,10 +46,18 @@ export const useBookmarksLogic = ({
     return !existingKeywordNames.has(normalizedKeyword);
   }, [textKeyword, existingKeywordNames]);
 
+  const linkedBookmarkWithSelectedKeywords = useMemo(() => {
+    if (selectedKeywordId === undefined) {
+      return undefined;
+    }
+    return bookmarks.filter((b) => b.keywords.some((k) => k.keyword_id === selectedKeywordId));
+  }, [bookmarks, selectedKeywordId]);
+
   return {
     selectedBookmark,
     selectedKeywords,
     availableKeywords,
     isEnableAddKeywordButton,
+    linkedBookmarkWithSelectedKeywords,
   };
 };
