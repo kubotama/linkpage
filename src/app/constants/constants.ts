@@ -12,12 +12,13 @@ export const FORM_BOOKMARK_DETAIL = "ブックマーク詳細フォーム";
 export const FIELDSET_KEYWORD_LABEL = "キーワード入力";
 export const KEYWORD_ROLE_NAME = "キーワード";
 export const ADD_BUTTON_ROLE_NAME = "追加";
-export const TABLE_NAME_LINKED_KEYWORD = "設定されたキーワードのテーブル";
+export const TABLE_NAME_ALL_BOOKMARKS = "すべてのブックマークのテーブル";
+export const TABLE_NAME_LINKED_BOOKMARKS =
+  "選択されたキーワードが設定されているブックマークのテーブル";
 export const TABLE_NAME_ALL_KEYWORD = "すべてのキーワードのテーブル";
+export const TABLE_NAME_LINKED_KEYWORD = "設定されているキーワードのテーブル";
 export const TABLE_HEADER_LINKED_KEYWORD = "設定されているキーワード";
 export const TABLE_HEADER_ALL_KEYWORD = "設定されていないキーワード";
-
-export const TABLE_NAME_BOOKMARKS = "ブックマークのテーブル";
 
 export const ROW_STYLE_BOOKMARK_SELECTED = "border-4 font-bold";
 export const ROW_STYLE_BOOKMARK_UNSELECTED = "";

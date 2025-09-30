@@ -1,11 +1,12 @@
 import React from "react";
 
-import { BASE_CELL_STYLE, TABLE_NAME_BOOKMARKS, TITLE_CELL_STYLE } from "../constants/constants";
+import { BASE_CELL_STYLE, TITLE_CELL_STYLE } from "../constants/constants";
 import { useBookmarkTable } from "../hooks/useBookmarkTable";
 import { Bookmark } from "../types/Bookmark";
 
 type BookmarkTableProps = {
   bookmarks: Bookmark[];
+  tableName: string;
   selectedBookmarkId: number | undefined;
   onSelectBookmarkId: (bookmarkId: number) => void;
   selectedKeywordId: number | undefined;
@@ -14,6 +15,7 @@ type BookmarkTableProps = {
 
 export const BookmarkTable = ({
   bookmarks,
+  tableName,
   selectedBookmarkId,
   onSelectBookmarkId,
   selectedKeywordId,
@@ -27,11 +29,11 @@ export const BookmarkTable = ({
   });
 
   return (
-    <table aria-label={TABLE_NAME_BOOKMARKS} className={className}>
+    <table aria-label={tableName} className={className}>
       <thead>
         <tr>
           <th className={`${TITLE_CELL_STYLE} ${BASE_CELL_STYLE}`} scope="col">
-            タイトル
+            {tableName}
           </th>
         </tr>
       </thead>

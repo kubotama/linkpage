@@ -2,17 +2,33 @@ import { describe, expect, it } from "vitest";
 
 import { renderHook } from "@testing-library/react";
 
-import { buildMockBookmarksWithKeywords, mockKeywords } from "../test-utils/bookmarkTestUtils";
+import {
+  buildMockBookmarksWithKeywords,
+  LINKED_KEYWORD,
+  mockKeywords,
+  NOLINKED_KEYWORD,
+} from "../test-utils/bookmarkTestUtils";
 import { useBookmarksLogic } from "./useBookmarkLogic";
 import { Bookmark } from "../types/Bookmark";
 
 const mockBookmarksWithKeywords = buildMockBookmarksWithKeywords();
 
-const renderMyHook = (selectedBookmarkId?: number, textKeyword: string = "") => {
+type RenderMyHookProps = {
+  selectedBookmarkId?: number;
+  selectedKeywordId?: number;
+  textKeyword?: string;
+};
+
+const renderMyHook = ({
+  selectedBookmarkId,
+  selectedKeywordId,
+  textKeyword = "",
+}: RenderMyHookProps = {}) => {
   return renderHook(() =>
     useBookmarksLogic({
       bookmarks: mockBookmarksWithKeywords,
       selectedBookmarkId,
+      selectedKeywordId,
       keywords: mockKeywords,
       textKeyword,
     })
@@ -47,7 +63,7 @@ describe("useBookmarkLogic", () => {
       "$title: 対応するブックマークとキーワードが選択されること、設定可能なキーワードが表示される",
       (bookmark: Bookmark) => {
         // Arrange & Act
-        const { result } = renderMyHook(bookmark.bookmark_id);
+        const { result } = renderMyHook({ selectedBookmarkId: bookmark.bookmark_id });
 
         // Assert
         expect(result.current.selectedBookmark).toEqual(bookmark);
@@ -91,10 +107,40 @@ describe("useBookmarkLogic", () => {
     ];
     it.each(testKeywordCases)("$description: 入力されたキーワード", ({ textKeyword, expected }) => {
       // Arrange & Act
-      const { result } = renderMyHook(undefined, textKeyword);
+      const { result } = renderMyHook({ textKeyword });
 
       // Assert
       expect(result.current.isEnableAddKeywordButton).toBe(expected);
+    });
+  });
+
+  describe("選択されたキーワードが設定されているブックマーク(linkedBookmarkWithSelectedKeywords)のテスト", () => {
+    it("キーワードが選択されていない場合にはundefinedを返すこと", () => {
+      // Arrange & Act
+      const { result } = renderMyHook();
+
+      // Assert
+      expect(result.current.linkedBookmarkWithSelectedKeywords).toBeUndefined();
+    });
+
+    describe("キーワードが選択されている場合", () => {
+      it("ブックマークに設定されていないキーワード", () => {
+        // Arrange & Act
+        const { result } = renderMyHook({ selectedKeywordId: NOLINKED_KEYWORD.keyword_id });
+
+        // Assert
+        expect(result.current.linkedBookmarkWithSelectedKeywords).toEqual([]);
+      });
+
+      it("ブックマークに設定されているキーワード", () => {
+        // Arrange & Act
+        const { result } = renderMyHook({ selectedKeywordId: LINKED_KEYWORD.keyword_id });
+
+        // Assert
+        expect(result.current.linkedBookmarkWithSelectedKeywords).toEqual([
+          mockBookmarksWithKeywords[1],
+        ]);
+      });
     });
   });
 });

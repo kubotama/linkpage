@@ -6,7 +6,7 @@ import userEvent, { UserEvent } from "@testing-library/user-event";
 import { BookmarkManager } from "../components/BookmarkManager";
 import {
   FORM_BOOKMARK_DETAIL,
-  TABLE_NAME_BOOKMARKS,
+  TABLE_NAME_ALL_BOOKMARKS,
   TITLE_ROLE_NAME,
   URL_ROLE_NAME,
 } from "../constants/constants";
@@ -79,7 +79,7 @@ export const assertNoBookmarkIsSelected = async () => {
 };
 
 export const getCellWithTitle = (title: string) => {
-  const table = screen.getByRole("table", { name: TABLE_NAME_BOOKMARKS });
+  const table = screen.getByRole("table", { name: TABLE_NAME_ALL_BOOKMARKS });
 
   const cellWithTitle = within(table).getByRole("cell", { name: title });
   return cellWithTitle;
@@ -330,7 +330,7 @@ export const setupBookmarkManagerForTest = async ({
     json: async () => keywordsForSetup,
   });
   render(<BookmarkManager />);
-  await screen.findByRole("table", { name: TABLE_NAME_BOOKMARKS });
+  await screen.findByRole("table", { name: TABLE_NAME_ALL_BOOKMARKS });
   return userEvent.setup();
 };
 
