@@ -1,12 +1,12 @@
 "use client";
 
-import { useCallback, useEffect, useRef, useState } from "react";
-import { useHotkeys } from "react-hotkeys-hook";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 
 import { getErrorMessage } from "../api/utils/ApiUtils";
 import { Bookmark } from "../types/Bookmark";
-import { useErrorMessage } from "./useErrorMessage";
 import { Keyword } from "../types/Keyword";
+import { useErrorMessage } from "./useErrorMessage";
+import { useKeyHandler } from "./useKeyHandler";
 
 type UseBookmarkManagerProps = {
   bookmarks: Bookmark[];
@@ -186,71 +186,63 @@ export const useBookmarkManager = ({
     selectedBookmarkIdRef.current = selectedBookmarkId;
   }, [selectedBookmarkId]);
 
-  // getSelectedBookmarkIndex は useHotkeys の内部で定義し、ref を使用する
-  useHotkeys(
-    "enter, escape, arrowup, arrowdown",
-    (_, handler) => {
-      const key = handler.keys?.[0];
-      if (!key) {
+  const keyHandlerMap = useMemo(() => {
+    const getSelectedBookmarkIndexInternal = () => {
+      const currentSelectedBookmarkId = selectedBookmarkIdRef.current;
+      const currentBookmarks = bookmarksRef.current;
+      if (currentSelectedBookmarkId === undefined) {
+        return undefined;
+      }
+      const currentIndex = currentBookmarks.findIndex(
+        (bookmark) => bookmark.bookmark_id === currentSelectedBookmarkId
+      );
+      if (currentIndex === -1) {
+        return undefined;
+      }
+      return currentIndex;
+    };
+
+    const handleArrowKey = (key: "ArrowUp" | "ArrowDown") => {
+      const currentBookmarks = bookmarksRef.current;
+      if (currentBookmarks.length === 0) {
         return true;
       }
-      // ホットキーハンドラ内で最新のブックマークと選択状態を参照するためのヘルパー関数
-      const getSelectedBookmarkIndexInternal = () => {
-        const currentSelectedBookmarkId = selectedBookmarkIdRef.current;
-        const currentBookmarks = bookmarksRef.current;
-        if (currentSelectedBookmarkId === undefined) {
-          return undefined;
-        }
-        const currentIndex = currentBookmarks.findIndex(
-          (bookmark) => bookmark.bookmark_id === currentSelectedBookmarkId
-        );
-        if (currentIndex === -1) {
-          return undefined;
-        }
-        return currentIndex;
-      };
-      if (key === "arrowup" || key === "arrowdown") {
-        const currentBookmarks = bookmarksRef.current;
-        if (currentBookmarks.length === 0) {
-          return true;
-        }
-        const currentIndex = getSelectedBookmarkIndexInternal();
-        const increment = key === "arrowdown" ? 1 : -1;
-        let newIndex;
-        if (currentIndex === undefined) {
-          // ブックマークが選択されていない場合、最初または最後に移動
-          newIndex = increment === 1 ? 0 : currentBookmarks.length - 1;
-        } else {
-          // ブックマークを循環
-          newIndex = (currentIndex + increment + currentBookmarks.length) % currentBookmarks.length;
-        }
-        setSelectedBookmarkId(currentBookmarks[newIndex].bookmark_id);
-        return false; // Prevent default scroll
+      const currentIndex = getSelectedBookmarkIndexInternal();
+      const increment = key === "ArrowDown" ? 1 : -1;
+      let newIndex;
+      if (currentIndex === undefined) {
+        // ブックマークが選択されていない場合、最初または最後に移動
+        newIndex = increment === 1 ? 0 : currentBookmarks.length - 1;
+      } else {
+        // ブックマークを循環
+        newIndex = (currentIndex + increment + currentBookmarks.length) % currentBookmarks.length;
       }
-      // 以降のキー操作はブックマーク選択中のみ有効
-      if (selectedBookmarkIdRef.current === undefined) {
-        return true;
-      }
-      switch (key) {
-        case "enter":
+      setSelectedBookmarkId(currentBookmarks[newIndex].bookmark_id);
+      return false; // Prevent default scroll
+    };
+
+    return {
+      ArrowUp: () => handleArrowKey("ArrowUp"),
+      ArrowDown: () => handleArrowKey("ArrowDown"),
+      Enter: () => {
+        if (selectedBookmarkIdRef.current !== undefined) {
           openBookmark();
           return false; // Prevent default
-        case "escape":
+        }
+        return true;
+      },
+      Escape: () => {
+        if (selectedBookmarkIdRef.current !== undefined) {
           setSelectedBookmarkId(undefined);
           setSelectedKeywordId(undefined);
           return false; // Prevent default
-        default:
-          return true;
-      }
-    },
-    [
-      openBookmark,
-      setSelectedBookmarkId,
-      // bookmarks, selectedBookmark, textUrl は ref を介してアクセスされるため、
-      // 依存配列から除外しています。
-      // isBookmarkSelected もインライン化されたため、依存配列から削除されます。
-    ]
-  );
+        }
+        return true;
+      },
+    };
+  }, [openBookmark, setSelectedBookmarkId, setSelectedKeywordId]);
+
+  useKeyHandler(keyHandlerMap);
 
   const addKeywordClick = useCallback(async () => {
     const normalizedTextKeyword = textKeyword.trim();
