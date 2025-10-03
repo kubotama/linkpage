@@ -442,6 +442,15 @@ linkpage はリンクデータを SQLite のデータベースで管理します
 
 ## 変更履歴
 
+### ✨ feat: 2025/10/03 独自キーハンドラフックを導入し `react-hotkeys-hook` を削除
+
+#### 変更内容
+
+- `useKeyHandler` カスタムフックを新規作成
+- `useKeyHandler` のための単体テストを追加
+- `useBookmarkManager` で `useHotkeys` の代わりに `useKeyHandler` を使用するようにリファクタリング
+- `package.json` と `package-lock.json` から `react-hotkeys-hook` を削除
+
 ### ✨ feat: 2025/09/30 キーワード選択時に紐付くブックマークを絞り込み表示
 
 #### 変更内容
