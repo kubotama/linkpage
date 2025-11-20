@@ -144,38 +144,26 @@ export const BookmarkManager = ({ className = "" }: BookmarkManagerProps) => {
               isDraggable={false}
             />
           )}
-          {process.env.NODE_ENV === "test" ? (
-            <BookmarkTable
-              bookmarks={bookmarks}
-              tableName={TABLE_NAME_ALL_BOOKMARKS}
-              selectedBookmarkId={selectedBookmarkId}
-              onSelectBookmarkId={setSelectedBookmarkId}
-              selectedKeywordId={selectedKeywordId}
-              className="w-bookmark-list"
-              isDraggable={false}
-            />
-          ) : (
-            <DndContext
-              sensors={sensors}
-              collisionDetection={closestCenter}
-              onDragEnd={handleDragEnd}
+          <DndContext
+            sensors={sensors}
+            collisionDetection={closestCenter}
+            onDragEnd={handleDragEnd}
+          >
+            <SortableContext
+              items={bookmarks.map((b) => b.bookmark_id)}
+              strategy={verticalListSortingStrategy}
             >
-              <SortableContext
-                items={bookmarks.map((b) => b.bookmark_id)}
-                strategy={verticalListSortingStrategy}
-              >
-                <BookmarkTable
-                  bookmarks={bookmarks}
-                  tableName={TABLE_NAME_ALL_BOOKMARKS}
-                  selectedBookmarkId={selectedBookmarkId}
-                  onSelectBookmarkId={setSelectedBookmarkId}
-                  selectedKeywordId={selectedKeywordId}
-                  className="w-bookmark-list"
-                  isDraggable={true}
-                />
-              </SortableContext>
-            </DndContext>
-          )}
+              <BookmarkTable
+                bookmarks={bookmarks}
+                tableName={TABLE_NAME_ALL_BOOKMARKS}
+                selectedBookmarkId={selectedBookmarkId}
+                onSelectBookmarkId={setSelectedBookmarkId}
+                selectedKeywordId={selectedKeywordId}
+                className="w-bookmark-list"
+                isDraggable={true}
+              />
+            </SortableContext>
+          </DndContext>
         </div>
         <div className="w-bookmark-details">
           <ErrorMessage

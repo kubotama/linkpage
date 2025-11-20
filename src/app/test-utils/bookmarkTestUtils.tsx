@@ -33,8 +33,9 @@ export function createBookmark({
   url = "",
   title = "",
   keywords = [],
+  order = 1,
 }: Partial<Bookmark>): Bookmark {
-  return { bookmark_id, url, title, keywords };
+  return { bookmark_id, url, title, keywords, order };
 }
 
 export const LINKPAGE_BOOKMARK: Bookmark = createBookmark({
