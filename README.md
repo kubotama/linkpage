@@ -433,14 +433,27 @@ linkpage はリンクデータを SQLite のデータベースで管理します
 | ツール名                                      | バージョン |
 | --------------------------------------------- | ---------- |
 | [Node.js](https://nodejs.org/)                | 22.15.1    |
-| [Next.js](https://nextjs.org/)                | 15.3.3     |
-| [React](https://reactjs.org/)                 | 19.0.0     |
-| [TypeScript](https://www.typescriptlang.org/) | 5.8.2      |
-| [Tailwind CSS](https://tailwindcss.com/)      | 3.4.17     |
+| [Next.js](https://nextjs.org/)                | 15.5.7     |
+| [React](https://reactjs.org/)                 | 19.1.1     |
+| [TypeScript](https://www.typescriptlang.org/) | 5.9.2      |
+| [Tailwind CSS](https://tailwindcss.com/)      | 4.1.17     |
 | [SQLite](https://www.sqlite.org/index.html)   | 3.37.2     |
-| [vitest](https://vitest.dev)                  | 3.2.3      |
+| [vitest](https://vitest.dev)                  | 4.0.16     |
 
 ## 変更履歴
+
+### ⬆️ 2025/12/31: Tailwind CSS v4 と Vitest v4 への移行
+
+#### 変更内容
+
+- **Tailwind CSS v4 へのアップグレード**:
+  - `tailwindcss` を `v4.1.17` に更新しました。
+  - `postcss.config.js` を削除し、`postcss.config.mjs` を作成して `@tailwindcss/postcss` を使用するように構成を更新しました。
+  - `src/app/globals.css` のインポートを `@import "tailwindcss";` に変更しました。
+- **Vitest v4 へのアップグレード**:
+  - `vitest` および `@vitest/coverage-v8` を v4 系に更新しました。
+- **その他の依存関係の更新**:
+  - Next.js, React, TypeScript などを最新バージョンに更新しました。
 
 ### ✨ feat: 2025/10/03 独自キーハンドラフックを導入し `react-hotkeys-hook` を削除
 
