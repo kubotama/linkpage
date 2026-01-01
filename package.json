@@ -1,6 +1,6 @@
 {
   "name": "linkpage",
-  "version": "5.7.0",
+  "version": "5.7.1",
   "private": true,
   "scripts": {
     "build": "next build",
