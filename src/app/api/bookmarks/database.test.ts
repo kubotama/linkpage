@@ -4,24 +4,21 @@ import { beforeEach, describe, expect, it, vi } from "vitest";
 import { DB_SCHEMA } from "./schema";
 
 // Define mocks for 'better-sqlite3'
-// This mock will replace the actual 'better-sqlite3' module when 'database.ts' imports it.
+// Use vi.hoisted to ensure these are initialized before vi.mock is called
+const { mockDatabaseConstructor, mockExec, mockDbInstance } = vi.hoisted(() => {
+  const mockExec = vi.fn();
+  const mockDbInstance = {
+    exec: mockExec,
+  };
+  // Use a standard function so it can be called with 'new'
+  const mockDatabaseConstructor = vi.fn(function () {
+    return mockDbInstance;
+  });
 
-// mockExec will allow us to spy on calls to db.exec()
-const mockExec = vi.fn();
-
-// mockDbInstance is the object that our mock Database constructor will return.
-// It needs to have an 'exec' method, as that's what getDb calls.
-const mockDbInstance = {
-  exec: mockExec,
-  // Add any other methods of better-sqlite3.Database that getDb might eventually call.
-};
-
-// mockDatabaseConstructor is our mock for the 'new Database()' constructor.
-// It's a Jest mock function that, when called, returns our mockDbInstance.
-const mockDatabaseConstructor = vi.fn().mockReturnValue(mockDbInstance);
+  return { mockDatabaseConstructor, mockExec, mockDbInstance };
+});
 
 // Apply the mock for the 'better-sqlite3' module.
-// The factory function must return the mock constructor.
 vi.mock("better-sqlite3", () => ({
   default: mockDatabaseConstructor,
 }));
