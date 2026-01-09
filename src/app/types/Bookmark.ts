@@ -5,7 +5,7 @@ export type Bookmark = {
   url: string;
   title: string;
   keywords: Keyword[];
-  order: number;
+  order?: number;
 };
 
 export type IncomingBookmarkPayload = {
