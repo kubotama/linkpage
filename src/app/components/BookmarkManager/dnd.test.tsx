@@ -24,37 +24,11 @@ vi.mock("../../hooks/useBookmark", async (importOriginal) => {
   };
 });
 
-// useBookmarkLogicフックをモック
 vi.mock("../../hooks/useBookmarkLogic", () => ({
-  useBookmarksLogic: ({
-    bookmarks,
-    filteredBookmarks: bookmarksByKeyword,
-  }: {
-    bookmarks: Bookmark[];
-    filteredBookmarks: Bookmark[] | undefined;
-  }) => ({
-    handleSelectBookmark: vi.fn(),
-    handleSelectKeyword: vi.fn(),
-    handleUpdateBookmark: vi.fn(),
-    handleDeleteBookmark: vi.fn(),
-    handleOpenBookmark: vi.fn(),
-    handleOpenAllBookmarks: vi.fn(),
-    handleCopyBookmark: vi.fn(),
-    handleCopyAllBookmarks: vi.fn(),
-    handleShowAllBookmarks: vi.fn(),
-    handleShowLinkedBookmarks: vi.fn(),
-    handleLinkBookmark: vi.fn(),
-    handleViewKeywords: vi.fn(),
-    handleAddKeyword: vi.fn(),
-    handleUnlinkBookmark: vi.fn(),
-
-    // レンダリングに必要なプロパティを追加
-    filteredBookmarks: bookmarksByKeyword || bookmarks,
+  useBookmarksLogic: () => ({
     selectedBookmark: undefined,
-    isEditing: false,
-    editingBookmark: null,
-    isKeywordTableVisible: false,
-    bookmarkKeywords: [],
+    selectedKeywords: [],
+    availableKeywords: [],
     isEnableAddKeywordButton: false,
     linkedBookmarkWithSelectedKeywords: [],
   }),
