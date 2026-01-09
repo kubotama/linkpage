@@ -31,7 +31,6 @@ export async function GET(
         b.bookmark_id,
         b.url,
         b.title,
-        b.order,
         COALESCE(
          JSON_GROUP_ARRAY(JSON_OBJECT('keyword_id', k.keyword_id, 'keyword_name', k.keyword_name) ORDER BY k.keyword_id) FILTER (WHERE k.keyword_id IS NOT NULL),
           '[]'
