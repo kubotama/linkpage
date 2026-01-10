@@ -1,3 +1,18 @@
+import {
+  closestCenter,
+  DndContext,
+  DragEndEvent,
+  KeyboardSensor,
+  PointerSensor,
+  useSensor,
+  useSensors,
+} from "@dnd-kit/core";
+import {
+  arrayMove,
+  SortableContext,
+  sortableKeyboardCoordinates,
+  verticalListSortingStrategy,
+} from "@dnd-kit/sortable";
 import React from "react";
 
 import {
@@ -34,6 +49,7 @@ type BookmarkManagerProps = {
 export const BookmarkManager = ({ className = "" }: BookmarkManagerProps) => {
   const {
     bookmarks,
+    setBookmarks,
     keywords,
     getBookmarks,
     getKeywords,
@@ -88,6 +104,31 @@ export const BookmarkManager = ({ className = "" }: BookmarkManagerProps) => {
     textKeyword,
   });
 
+  const sensors = useSensors(
+    useSensor(PointerSensor, {
+      activationConstraint: {
+        distance: 8,
+      },
+    }),
+    useSensor(KeyboardSensor, {
+      coordinateGetter: sortableKeyboardCoordinates,
+    })
+  );
+
+  const handleDragEnd = (event: DragEndEvent) => {
+    const { active, over } = event;
+
+    if (over && active.id !== over.id) {
+      setBookmarks((items) => {
+        const oldIndex = items.findIndex((item) => item.bookmark_id === active.id);
+        const newIndex = items.findIndex((item) => item.bookmark_id === over.id);
+        return arrayMove(items, oldIndex, newIndex);
+      });
+      // 将来的にはここでAPIを呼び出して、サーバー側のデータも更新する
+      // e.g., updateBookmarkOrder(arrayMove(items, oldIndex, newIndex));
+    }
+  };
+
   return (
     <div className={`mt-5 mb-5 ${className}`}>
       <div className="flex space-x-4">
@@ -100,16 +141,29 @@ export const BookmarkManager = ({ className = "" }: BookmarkManagerProps) => {
               onSelectBookmarkId={setSelectedBookmarkId}
               selectedKeywordId={selectedKeywordId}
               className="w-bookmark-list mb-2"
+              isDraggable={false}
             />
           )}
-          <BookmarkTable
-            bookmarks={bookmarks}
-            tableName={TABLE_NAME_ALL_BOOKMARKS}
-            selectedBookmarkId={selectedBookmarkId}
-            onSelectBookmarkId={setSelectedBookmarkId}
-            selectedKeywordId={selectedKeywordId}
-            className="w-bookmark-list"
-          />
+          <DndContext
+            sensors={sensors}
+            collisionDetection={closestCenter}
+            onDragEnd={handleDragEnd}
+          >
+            <SortableContext
+              items={bookmarks.map((b) => b.bookmark_id)}
+              strategy={verticalListSortingStrategy}
+            >
+              <BookmarkTable
+                bookmarks={bookmarks}
+                tableName={TABLE_NAME_ALL_BOOKMARKS}
+                selectedBookmarkId={selectedBookmarkId}
+                onSelectBookmarkId={setSelectedBookmarkId}
+                selectedKeywordId={selectedKeywordId}
+                className="w-bookmark-list"
+                isDraggable={true}
+              />
+            </SortableContext>
+          </DndContext>
         </div>
         <div className="w-bookmark-details">
           <ErrorMessage

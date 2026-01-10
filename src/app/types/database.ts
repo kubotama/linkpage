@@ -3,4 +3,5 @@ export type BookmarkFromDb = {
   url: string;
   title: string;
   keywords: string;
+  order?: number;
 };

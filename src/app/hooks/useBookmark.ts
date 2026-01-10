@@ -169,6 +169,7 @@ export const useBookmarks = () => {
 
   return {
     bookmarks,
+    setBookmarks,
     keywords,
     getBookmarks,
     getKeywords,

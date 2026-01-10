@@ -41,15 +41,16 @@ export async function GET() {
         keywords AS k ON bk.keyword_id = k.keyword_id
       GROUP BY
         b.bookmark_id
-      ORDER BY
-        b.bookmark_id
     `);
     const bookmarksFromDb = stmt.all() as BookmarkFromDb[];
 
     const bookmarks = bookmarksFromDb.map(
       (b): Bookmark => ({
-        ...b,
+        bookmark_id: b.bookmark_id,
+        url: b.url,
+        title: b.title,
         keywords: parseAndValidateKeywords(b.keywords),
+        order: 0,
       })
     );
     return new Response(JSON.stringify(bookmarks), {
@@ -103,14 +104,23 @@ export async function POST(request: Request) {
 
     // Bookmark型に適合するようにオブジェクトを構築
     // bookmark_idは新規作成の場合は0、データベースで自動生成されることを想定
+    const db = getDb();
+
+    // Get the current maximum order value
+    // const maxOrderStmt = db.prepare("SELECT MAX(`order`) as maxOrder FROM bookmarks");
+    // const maxOrderResult = maxOrderStmt.get() as { maxOrder: number | null };
+    // const newOrder = (maxOrderResult.maxOrder ?? 0) + 1;
+
     const bookmark: Bookmark = {
       bookmark_id: 0,
       url: incomingData.url,
       title: incomingData.title,
       keywords: [], // 現在はブックマークの追加は拡張機能からのみのためキーワードを設定されることはない。
+      order: 0,
     };
 
-    const db = getDb();
+    // const insertStmt = db.prepare("INSERT INTO bookmarks (url, title, `order`) VALUES (?, ?, ?)");
+    // const result = insertStmt.run(bookmark.url, bookmark.title, bookmark.order);
     const insertStmt = db.prepare("INSERT INTO bookmarks (url, title) VALUES (?, ?)");
     const result = insertStmt.run(bookmark.url, bookmark.title);
 
