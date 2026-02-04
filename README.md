@@ -1,3 +1,7 @@
+> **Note**  
+> このリポジトリは **[kubotama/bookmark-page](https://github.com/kubotama/bookmark-page)** に移行しました。  
+> 現在、このリポジトリはアーカイブされており、読み取り専用です。最新の開発やメンテナンスは移行先の新しいリポジトリで行われています。
+
 # linkpage
 
 linkpage は、Web サイトのブックマークを管理するウェブアプリケーションです。Next.js+typescript+vitest+tailwindcss で開発しています。クライアントサーバー構成です。サーバーは next.js で RESTful 形式の API として提供されています。クライアントは、API から取得したデータを web ブラウザ上に表示します。
